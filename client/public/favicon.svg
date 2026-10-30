@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="looply-grad" x1="8" y1="12" x2="56" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#DB2777" />
+    </linearGradient>
+    <linearGradient id="looply-glow" x1="16" y1="16" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#EC4899" stop-opacity="0.8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background container with subtle rounded corners -->
+  <rect width="64" height="64" rx="16" fill="#0F172A" />
+
+  <!-- Distinctive Looply Mobius / Interlocking Loop -->
+  <path
+    d="M20 22 C13 22 9 27 9 32 C9 37 13 42 20 42 C28 42 36 22 44 22 C51 22 55 27 55 32 C55 37 51 42 44 42 C36 42 28 22 20 22 Z"
+    stroke="url(#looply-grad)"
+    stroke-width="6.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+
+  <!-- Center crossing accent nodes symbolizing connection -->
+  <circle cx="20" cy="32" r="3" fill="#818CF8" />
+  <circle cx="44" cy="32" r="3" fill="#F472B6" />
+</svg>

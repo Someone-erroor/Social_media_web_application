@@ -1,0 +1,23 @@
+import express from 'express';
+import cors from 'cors';
+import { corsOptions } from './config/cors.js';
+import apiRoutes from './routes/index.js';
+import { notFoundHandler, errorHandler } from './middleware/error.middleware.js';
+
+const app = express();
+
+// Security and utility middleware
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Primary API Router mounted at /api
+app.use('/api', apiRoutes);
+
+// Catch 404 routes
+app.use(notFoundHandler);
+
+// Catch-all global error handler
+app.use(errorHandler);
+
+export default app;
