@@ -392,13 +392,18 @@ Phase 4 development delivered real end-to-end user registration, authentication,
      - Frontend is built specifically for E2E testing prior to `next start`, with `NEXT_PUBLIC_API_URL=http://127.0.0.1:5000/api` configured at build time.
      - Build completion and exit code are verified before starting `next start`.
      - Static `.next` chunk bundles are scanned and verified to confirm `http://127.0.0.1:5000/api` is inlined.
-     - Runtime network interception monitors all browser HTTP requests and strictly enforces that 100% of API requests target `http://127.0.0.1:5000/api` exclusively (never production or primary application backend).
+   - **Puppeteer Request Interception (`page.setRequestInterception(true)`)**:
+     - Allows only `http://127.0.0.1:5000/api` requests (`interceptedReq.continue()`).
+     - Immediately aborts unexpected API requests (`interceptedReq.abort('blockedbyclient')`).
+     - Records security violations in an array without throwing exceptions inside event callbacks.
+     - Fails test after browser execution if any violations were recorded.
+     - Guaranteed single try/finally cleanup covers all scenarios.
    - **Comprehensive Single try/finally Resource Lifecycle**:
      - All setup (test DB connection, port checks, backend startup, frontend build, frontend startup, browser launch) and test interactions run inside a unified `try / finally` lifecycle.
      - Guaranteed cleanup of all owned resources even if MongoDB connection fails, port check fails, backend fails, build fails, startup fails, or assertions fail:
        - Created user document and audit logs cleaned up from `looply_test`.
        - Headless Chrome browser cleanly closed.
-       - Next.js test process tree reliably terminated across Windows (taskkill /pid /T /F), macOS, and Linux (pkill -P and process group SIGKILL) without touching unrelated processes.
+       - Next.js test process tree reliably terminated across Windows (taskkill with /T) and Linux/macOS (dedicated process group) without touching unrelated processes.
        - Express API test backend server cleanly closed.
        - Mongoose connection to `looply_test` cleanly disconnected.
    - 30 browser assertions verified:
@@ -425,7 +430,7 @@ Phase 4 development delivered real end-to-end user registration, authentication,
      - User logged out through the real browser UI by clicking "Sign Out".
      - HTTP-only cookie verified cleared from browser cookie jar upon logout.
      - Request interception security assertion: zero unexpected API request violations occurred (violations: 0).
-      - Target isolation assertion: 100% of intercepted browser API requests targeted test backend exclusively (`http://127.0.0.1:5000/api`).
+     - Target isolation assertion: 100% of intercepted browser API requests targeted test backend exclusively (`http://127.0.0.1:5000/api`).
    - 100% passing (`npm run test:e2e`: 30 passed, 0 failed).
 
 9. **Automated Backend & Integration Test Suite (`server/test/test-phase4.mjs`)**:
