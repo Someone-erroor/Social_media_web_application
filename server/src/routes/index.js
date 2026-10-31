@@ -4,6 +4,9 @@ import authRoutes from './auth.routes.js';
 import adminRoutes from './admin.routes.js';
 import profileRoutes from './profile.routes.js';
 import postRoutes from './post.routes.js';
+import commentRoutes from './comment.routes.js';
+import notificationRoutes from './notification.routes.js';
+import aiRoutes from './ai.routes.js';
 import feedRoutes from './feed.routes.js';
 import { getExplore } from '../controllers/post.controller.js';
 
@@ -24,6 +27,15 @@ router.use('/profiles', profileRoutes);
 
 // Mount post management routes at /posts (accessible via /api/posts)
 router.use('/posts', postRoutes);
+
+// Mount comment routes at /comments (accessible via /api/comments)
+router.use('/comments', commentRoutes);
+
+// Mount notification routes at /notifications (accessible via /api/notifications)
+router.use('/notifications', notificationRoutes);
+
+// Mount AI routes at /ai (accessible via /api/ai)
+router.use('/ai', aiRoutes);
 
 // Mount community feed routes at /feed (accessible via /api/feed)
 router.use('/feed', feedRoutes);

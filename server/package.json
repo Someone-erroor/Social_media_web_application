@@ -12,11 +12,13 @@
     "test": "node test/test-phase3.mjs",
     "test:auth": "node test/test-phase4.mjs",
     "test:batch2": "node test/test-batch2.mjs",
+    "test:batch3": "node test/test-batch3.mjs",
     "test:e2e": "node test/test-e2e-browser.mjs",
     "test:atlas": "node test/test-atlas-connection.mjs",
     "test:all": "node test/test-phase3.mjs && node test/test-phase4.mjs"
   },
   "dependencies": {
+    "@google/genai": "^2.32.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -24,9 +26,11 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.4",
-    "nodemailer": "^10.3.1"
+    "nodemailer": "^10.3.1",
+    "socket.io": "^4.8.4"
   },
   "devDependencies": {
-    "puppeteer-core": "^25.16.0"
+    "puppeteer-core": "^25.16.0",
+    "socket.io-client": "^4.8.4"
   }
 }

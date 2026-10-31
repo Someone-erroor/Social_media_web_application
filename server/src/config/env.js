@@ -176,6 +176,10 @@ const smtpPass = process.env.SMTP_PASS ? String(process.env.SMTP_PASS).trim() : 
 const smtpFrom = process.env.SMTP_FROM ? String(process.env.SMTP_FROM).trim() : 'Looply <noreply@looply.net>';
 const clientUrl = process.env.CLIENT_URL ? String(process.env.CLIENT_URL).trim() : (clientOrigins[0] || 'http://localhost:3000');
 
+// AI / Gemini Configuration (Phase 14)
+const geminiApiKey = process.env.GEMINI_API_KEY ? String(process.env.GEMINI_API_KEY).trim() : '';
+const geminiModel = process.env.GEMINI_MODEL ? String(process.env.GEMINI_MODEL).trim() : 'gemini-2.5-flash';
+
 export const env = {
   NODE_ENV: nodeEnv,
   PORT: port,
@@ -193,6 +197,9 @@ export const env = {
   SMTP_PASS: smtpPass,
   SMTP_FROM: smtpFrom,
   isSmtpConfigured: Boolean(smtpHost && smtpUser && smtpPass),
+  GEMINI_API_KEY: geminiApiKey,
+  GEMINI_MODEL: geminiModel,
+  isGeminiConfigured: Boolean(geminiApiKey),
   isDevelopment: nodeEnv === 'development',
   isProduction: nodeEnv === 'production',
   isTest: nodeEnv === 'test'

@@ -1,8 +1,9 @@
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
-import { User, ActivityLog } from '../models/index.js';
+import { User, ActivityLog, Notification } from '../models/index.js';
 import { generateToken } from '../config/jwt.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from './email.service.js';
+import { sendAdminNotification } from './socket.service.js';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -249,6 +250,37 @@ export const loginUser = async ({ email, password }) => {
     await auditLog.save();
   } catch (auditErr) {
     console.error(`[ActivityLog] Failed to record login audit: ${auditErr.message}`);
+  }
+
+  // 7. Critical Phase 13 Requirement: Create persistent admin notification when normal user logs in
+  if (user.role === 'user') {
+    try {
+      const admins = await User.find({ role: 'admin' }).select('_id');
+      for (const admin of admins) {
+        await Notification.create({
+          recipient: admin._id,
+          actor: user._id,
+          type: 'login_alert',
+          message: `${user.fullName} (${user.email}) successfully logged in.`,
+          resourceType: 'User',
+          resourceId: user._id
+        });
+      }
+
+      sendAdminNotification({
+        type: 'login_alert',
+        message: `${user.fullName} (${user.email}) successfully logged in.`,
+        actor: {
+          _id: user._id.toString(),
+          fullName: user.fullName,
+          email: user.email,
+          avatarUrl: user.profile?.avatarUrl || ''
+        },
+        createdAt: new Date().toISOString()
+      }, 'admin_login_alert');
+    } catch (notifErr) {
+      console.error(`[Notification] Failed to create admin login alert: ${notifErr.message}`);
+    }
   }
 
   return {

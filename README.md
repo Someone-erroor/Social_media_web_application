@@ -47,25 +47,35 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **Testing:** Isolated dedicated test database (`looply_test`) with strict zero-fallback policy and real browser E2E automation (Headless Chrome via `puppeteer-core`)
 - **Status:** Phase 4 completed and verified with 39 backend tests and 31 real browser E2E tests.
 
-### Email Verification & Password Recovery (Phase 5 Completed)
-- **Transport Architecture:** `nodemailer` with dynamic SMTP configuration (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) and graceful mock/fallback handling.
+### Email Verification & Password Recovery (Phase 5 Approved)
+- **Transport Architecture:** `nodemailer` with dynamic SMTP configuration (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) and isolated in-memory test mail outbox.
+- **SMTP Status:** SMTP integration is fully implemented. A development/test in-memory outbox is available for 100% deterministic automated testing. Real SMTP delivery requires manual configuration of third-party credentials in `server/.env`; live external delivery is not claimed without configuration.
 - **Cryptographic Security:** High-entropy random tokens (`crypto.randomBytes(32)`), stored strictly as 64-character SHA-256 digests (`select: false`), never plaintext.
 - **Expiration Policies:** 24-hour verification token lifespan; 30-minute password reset token lifespan.
 - **Protection:** Prevents user enumeration by responding with generic success messages on unknown emails.
-- **Status:** Phase 5 completed and verified.
+- **Status:** Phase 5 completed and **APPROVED**.
 
-### Security, Roles & Session Invalidation (Phase 6 Completed)
+### Security, Roles & Session Invalidation (Phase 6 Approved)
 - **Role-Based Access Control:** Dual-layer `requireAuth` and `requireRole` middleware with authoritative database role verification (`user`, `admin`).
+- **Strict `tokenVersion` Verification:** Incoming JWTs must contain an integer `tokenVersion` claim matching the database value; missing or mismatched versions trigger immediate HTTP 401 Unauthorized rejection.
 - **Instantaneous Session Invalidation:** User model `tokenVersion` incremented upon password reset, revoking all active sessions across all devices instantly.
-- **Lifecycle Guards:** Suspended or deleted user accounts immediately rejected on all protected routes.
+- **Authoritative Account Status Guard:** Checks `accountStatus === 'active'`; suspended accounts are rejected with HTTP 403 Forbidden on all protected routes (replacing legacy `isActive` references).
 - **Client Route Guards:** `UserShell` and `AdminShell` enforce authentication and role boundaries before rendering protected content.
-- **Status:** Phase 6 completed and verified.
+- **Status:** Phase 6 completed and **APPROVED**.
 
-### Profiles, Content & Social Feed (Phases 7, 8, 9 Completed)
-- **User Profiles (Phase 7):** Profile view (`GET /api/profile/me`), profile update (`PATCH /api/profile/me`), and public profile endpoint (`GET /api/profiles/:userId`) strictly adhering to Mongoose schema: `fullName`, `profile.bio` (maximum 250 characters), and `profile.avatarUrl`. Private email, `passwordHash`, verification tokens, and `tokenVersion` are never exposed publicly.
-- **Post Management (Phase 8):** Full post CRUD (`POST /api/posts`, `GET /api/posts/mine`, `GET /api/posts/:postId`, `PATCH /api/posts/:postId`, `DELETE /api/posts/:postId`) with author ownership enforcement (non-author edits/deletes strictly blocked with HTTP 403) and atomic deletion using MongoDB transactions across post, comments, and likes.
-- **Social Feed & Explore (Phase 9):** Reverse-chronological timeline (`GET /api/feed`), discovery explore endpoint (`GET /api/explore`), and user post grid (`GET /api/profiles/:userId/posts`) with complete pagination metadata and automatic filtering excluding posts from suspended accounts or deleted authors.
-- **Status:** Phases 7, 8, and 9 completed, verified, and final corrections applied.
+### Profiles, Content & Social Feed (Phases 7, 8, 9 Approved)
+- **User Profiles (Phase 7 Approved):** Profile view (`GET /api/profile/me`), profile update (`PATCH /api/profile/me`), and public profile endpoint (`GET /api/profiles/:userId`) strictly adhering to Mongoose schema: `fullName`, private `email`, `profile.bio` (maximum 250 characters), and `profile.avatarUrl`. Private credentials, `tokenVersion`, and internal fields are never exposed publicly.
+- **Post Management (Phase 8 Approved):** Full post CRUD (`POST /api/posts`, `GET /api/posts/mine`, `GET /api/posts/:postId`, `PATCH /api/posts/:postId`, `DELETE /api/posts/:postId`) with author ownership enforcement (non-author edits/deletes strictly blocked with HTTP 403) and atomic deletion using MongoDB transactions across post, comments, and likes.
+- **Social Feed & Explore (Phase 9 Approved):** Reverse-chronological timeline (`GET /api/feed`), discovery explore endpoint (`GET /api/explore`), and user post grid (`GET /api/profiles/:userId/posts`) with complete pagination metadata and automatic filtering excluding posts from suspended accounts or deleted authors.
+- **Status:** Phases 7, 8, and 9 completed, verified, and **APPROVED**. Batch 2 (Phases 5–9) is officially **APPROVED**.
+
+### Batch 3: Interaction, Administration, Real-Time & AI (Phases 10, 11, 12, 13, 14 Completed)
+- **Likes & Comments (Phase 10 Completed):** Complete interaction engine. Post liking and unliking (`POST/DELETE /api/posts/:id/like`), duplicate prevention via unique compound index `{ post: 1, user: 1 }`, live like counts, comment listing, creation (max 500 characters), inline editing, and deletion with author ownership enforcement.
+- **Admin Dashboard & Real Telemetry (Phase 11 Completed):** Dedicated administrator dashboard (`GET /api/admin/stats` and `GET /api/admin/activity`). Computes platform KPIs from actual MongoDB collections (`users`, `posts`, `comments`, `likes`, `newRegistrations`) with zero fabricated metrics, real database connectivity state indicators, and an immutable audit activity stream.
+- **Administrative Management (Phase 12 Completed):** Full user moderation (`GET /api/admin/users`, `PATCH /api/admin/users/:userId/status`), suspension and reactivation with immediate session invalidation via `tokenVersion`, admin self-suspension protection, post moderation with cascading cleanup of comments and likes (`DELETE /api/admin/posts/:postId`), and comment moderation (`DELETE /api/admin/comments/:commentId`).
+- **Real-Time Notifications & Socket.IO (Phase 13 Completed):** Socket.IO integrated on root Express HTTP server (`http.createServer(app)`) on port 5000. Features JWT authentication handshake with tokenVersion validation, isolated rooms (`user_${id}` and `admin_room`), instant admin alerts on regular user logins, persistent `Notification` documents, unread badge counters, and REST endpoints (`GET /api/notifications`, unread count, single read, and read-all).
+- **Google Gemini AI Post Drafting & Improvement (Phase 14 Completed):** Integrated official Google Gen AI SDK (`@google/genai`) using model `gemini-2.5-flash`. Exposes endpoints `POST /api/ai/posts/generate` (topics, tone, length) and `POST /api/ai/posts/improve` (tone polish, clarity, grammar). Post composer AI drawers and dedicated AI Assistant Workbench (`/assistant`) with prompt suggestions, tone selectors, and clipboard transfer. Features deterministic test mock mode with timeout and failure simulation.
+- **Status:** Batch 3 (Phases 10, 11, 12, 13, and 14) completed, integrated, and verified with 45 automated tests. Awaiting external review. Phase 15 remains pending.
 
 ---
 
@@ -141,6 +151,8 @@ c:/assestement_project/
 │   │   ├── posts/
 │   │   │   ├── PostCard.js
 │   │   │   └── PostComposer.js
+│   │   ├── ai/
+│   │   │   └── AssistantWorkbench.js
 │   │   ├── navigation/
 │   │   │   ├── PublicNavbar.js
 │   │   │   ├── PublicFooter.js
@@ -156,17 +168,22 @@ c:/assestement_project/
 │   │       ├── UserShell.js
 │   │       └── AdminShell.js
 │   ├── context/
-│   │   └── AuthContext.js
+│   │   ├── AuthContext.js
+│   │   └── NotificationContext.js
 │   ├── features/
 │   ├── hooks/
-│   │   └── useAuth.js
+│   │   ├── useAuth.js
+│   │   └── useNotifications.js
 │   ├── lib/
 │   │   └── routes.js
 │   ├── services/
 │   │   ├── api.js
 │   │   ├── authService.js
 │   │   ├── postService.js
-│   │   └── profileService.js
+│   │   ├── profileService.js
+│   │   ├── adminService.js
+│   │   ├── notificationService.js
+│   │   └── aiService.js
 │   └── public/
 │       ├── favicon.svg
 │       └── logo.svg
@@ -178,6 +195,7 @@ c:/assestement_project/
     │   ├── test-phase3.mjs
     │   ├── test-phase4.mjs
     │   ├── test-batch2.mjs
+    │   ├── test-batch3.mjs
     │   ├── test-e2e-browser.mjs
     │   ├── test-helpers.mjs
     │   └── test-atlas-connection.mjs
@@ -193,7 +211,12 @@ c:/assestement_project/
         │   ├── health.controller.js
         │   ├── auth.controller.js
         │   ├── profile.controller.js
-        │   └── post.controller.js
+        │   ├── post.controller.js
+        │   ├── like.controller.js
+        │   ├── comment.controller.js
+        │   ├── admin.controller.js
+        │   ├── notification.controller.js
+        │   └── ai.controller.js
         ├── middleware/
         │   ├── error.middleware.js
         │   └── auth.middleware.js
@@ -212,17 +235,28 @@ c:/assestement_project/
         │   ├── admin.routes.js
         │   ├── profile.routes.js
         │   ├── post.routes.js
+        │   ├── comment.routes.js
+        │   ├── notification.routes.js
+        │   ├── ai.routes.js
         │   └── feed.routes.js
         ├── services/
         │   ├── auth.service.js
         │   ├── email.service.js
         │   ├── email-template.service.js
         │   ├── profile.service.js
-        │   └── post.service.js
+        │   ├── post.service.js
+        │   ├── like.service.js
+        │   ├── comment.service.js
+        │   ├── admin.service.js
+        │   ├── notification.service.js
+        │   ├── socket.service.js
+        │   └── ai.service.js
         └── validators/
             ├── auth.validator.js
             ├── profile.validator.js
-            └── post.validator.js
+            ├── post.validator.js
+            ├── comment.validator.js
+            └── ai.validator.js
 ```
 
 ---
@@ -318,6 +352,12 @@ cd server
 npm run test:batch2
 ```
 
+### Run Batch 3 Test Suite (Phases 10 to 14: Likes, Comments, Admin, Sockets, AI)
+```bash
+cd server
+npm run test:batch3
+```
+
 ### Run Phase 4 End-to-End Real Browser Test Suite (Headless Chrome)
 ```bash
 cd server
@@ -352,18 +392,19 @@ npm run lint
 | **Phase 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
 | **Phase 3** | **Backend foundation and database design.** | **APPROVED** |
 | **Phase 4** | **User registration and login.** | **APPROVED** |
-| **Phase 5** | **Email verification, forgot password and password reset.** | **IMPLEMENTATION COMPLETED** |
-| **Phase 6** | **Authentication security and role-based access control.** | **IMPLEMENTATION COMPLETED** |
-| **Phase 7** | **User profile management.** | **IMPLEMENTATION COMPLETED** |
-| **Phase 8** | **Post creation, editing and deletion.** | **IMPLEMENTATION COMPLETED** |
-| **Phase 9** | **Social media feed and viewing other users' posts.** | **IMPLEMENTATION COMPLETED** |
-| **Batch 2** | **Phases 5–9 Integrated Batch Delivery** | **IMPLEMENTATION COMPLETED<br>FINAL CORRECTIONS APPLIED<br>AWAITING EXTERNAL REVIEW** |
-| **Phase 10** | Likes and comments. | **PENDING** |
-| Phase 11 | Admin dashboard and platform statistics. | Pending |
-| Phase 12 | Admin user, post and comment management. | Pending |
-| Phase 13 | Real-time notifications and login activity tracking. | Pending |
-| Phase 14 | AI-powered post generation and improvement. | Pending |
-| Phase 15 | AI discussion summarization. | Pending |
+| **Phase 5** | **Email verification, forgot password and password reset.** | **APPROVED** |
+| **Phase 6** | **Authentication security and role-based access control.** | **APPROVED** |
+| **Phase 7** | **User profile management.** | **APPROVED** |
+| **Phase 8** | **Post creation, editing and deletion.** | **APPROVED** |
+| **Phase 9** | **Social media feed and viewing other users' posts.** | **APPROVED** |
+| **Batch 2** | **Phases 5–9 Integrated Batch Delivery** | **APPROVED** |
+| **Phase 10** | **Likes and comments.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 11** | **Admin dashboard and platform statistics.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 12** | **Admin user, post and comment management.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 13** | **Real-time notifications and login activity tracking.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 14** | **AI-powered post generation and improvement.** | **IMPLEMENTATION COMPLETED** |
+| **Batch 3** | **Phases 10–14 Integrated Batch Delivery** | **AWAITING EXTERNAL REVIEW** |
+| Phase 15 | AI discussion summarization. | Pending Authorization |
 | Phase 16 | Responsive design, accessibility and UI consistency. | Pending |
 | Phase 17 | Animations and final UI/UX polish. | Pending |
 | Phase 18 | Complete testing, security verification, deployment and final submission documentation. | Pending |

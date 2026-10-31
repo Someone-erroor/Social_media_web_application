@@ -5,6 +5,7 @@ import Logo from '@/components/brand/Logo';
 import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
+import { useNotifications } from '@/context/NotificationContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
@@ -13,6 +14,8 @@ import { ROUTES } from '@/lib/routes';
  */
 export default function UserHeader() {
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
+
   return (
     <header className="sticky top-0 z-20 w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80">
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
@@ -45,6 +48,11 @@ export default function UserHeader() {
             aria-label="View notifications"
           >
             <Icon name="notifications" className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-indigo-600 rounded-full">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
           </Link>
 
           <Link
@@ -52,7 +60,7 @@ export default function UserHeader() {
             className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-indigo-500/30 transition-all"
             aria-label="View profile"
           >
-            <Avatar name={user?.fullName || 'Guest User'} size="sm" />
+            <Avatar name={user?.fullName || 'Guest User'} src={user?.profile?.avatarUrl} size="sm" />
           </Link>
         </div>
       </div>

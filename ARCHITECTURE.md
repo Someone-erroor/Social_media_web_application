@@ -14,44 +14,72 @@ Looply is engineered as an enterprise-grade social media platform ("Connect. Sha
 
 ## 2. System Architecture Diagram
 
-```
-+--------------------------------------------------------------------+
-|                         CLIENT LAYER (Next.js)                     |
-|                                                                    |
-|  +------------------+  +-------------------+  +-----------------+  |
-|  |  (public)/(auth) |  |       (user)      |  |     (admin)     |  |
-|  |   Route Group    |  |    Route Group    |  |   Route Group   |  |
-|  +------------------+  +-------------------+  +-----------------+  |
-|           |                      |                      |          |
-|      [PublicShell]          [UserShell]           [AdminShell]     |
-|           |                      |                      |          |
-|           +----------------------+----------------------+          |
-|                                  |                                 |
-|                    Centralized Routes (lib/routes.js)              |
-|                                  |                                 |
-+----------------------------------+---------------------------------+
-                                   | HTTP/REST (Strict CORS Origin)
-                                   v
-+--------------------------------------------------------------------+
-|                         SERVER LAYER (Express.js)                  |
-|                                                                    |
-|  [src/server.js]  --> Server Startup & Graceful Termination        |
-|          |                                                         |
-|  [src/app.js]     --> App Initialization & Global Middleware       |
-|          |                                                         |
-|  [src/config/]    --> env.js (Environment), cors.js (Strict CORS)  |
-|          |                                                         |
-|  [src/routes/]    --> Root API router (/api)                       |
-|          |            └── health.routes.js (/api/health)           |
-|          |                                                         |
-|  [src/controllers]--> health.controller.js                         |
-|          |                                                         |
-|  [src/middleware] --> error.middleware.js (404 & Global Handler)   |
-|          |                                                         |
-|  [src/models]     --> Domain Schemas (Phase 3+)                    |
-|  [src/services]   --> Business Logic Layer (Phase 3+)              |
-|  [src/validators] --> Schema Validation Layer (Phase 4+)           |
-+--------------------------------------------------------------------+
+```text
++-----------------------------------------------------------------------------------------+
+|                                CLIENT LAYER (Next.js)                                   |
+|                                                                                         |
+|  +--------------------+  +----------------------+  +---------------------------------+  |
+|  |  (public)/(auth)   |  |        (user)        |  |             (admin)             |  |
+|  |    Route Group     |  |     Route Group      |  |           Route Group           |  |
+|  +--------------------+  +----------------------+  +---------------------------------+  |
+|            |                         |                               |                  |
+|       [PublicShell]             [UserShell]                    [AdminShell]             |
+|            |                         |                               |                  |
+|            +-------------------------+-------------------------------+                  |
+|                                      |                                                  |
+|                        Centralized Routes (lib/routes.js)                               |
+|                                      |                                                  |
++--------------------------------------+--------------------------------------------------+
+                                       | HTTP/REST (Strict CORS Origin & Credentials)
+                                       v
++-----------------------------------------------------------------------------------------+
+|                                SERVER LAYER (Express.js)                                |
+|                                                                                         |
+|  [src/server.js]    --> Server Process, Port Listener, Graceful Shutdown                |
+|           |                                                                             |
+|  [src/app.js]       --> Express App, Global Middleware (CORS, Cookie Parser, JSON)      |
+|           |                                                                             |
+|  [src/config/]      --> env.js, cors.js, database.js, jwt.js                            |
+|           |                                                                             |
+|  [src/routes/]      --> Root API Router (/api)                                          |
+|           ├── health.routes.js       --> GET /api/health, GET /api/health/ready         |
+|           ├── auth.routes.js         --> POST register, login, logout, verify, reset, me|
+|           ├── profile.routes.js      --> GET/PATCH /api/profile/me, GET /api/profiles/:id|
+|           ├── post.routes.js         --> CRUD /api/posts, like/unlike, post comments     |
+|           ├── comment.routes.js      --> PATCH/DELETE /api/comments/:commentId           |
+|           ├── feed.routes.js         --> GET /api/feed, GET /api/explore                |
+|           ├── admin.routes.js        --> Admin stats, activity, users, posts, comments   |
+|           ├── notification.routes.js --> GET/read /api/notifications, unread count      |
+|           └── ai.routes.js           --> POST /api/ai/posts/generate, /ai/posts/improve  |
+|           |                                                                             |
+|  [src/middleware]   --> auth.middleware.js (requireAuth, requireRole, optionalAuth)     |
+|                     --> error.middleware.js (404 Not Found & Global Error Handler)      |
+|           |                                                                             |
+|  [src/validators]   --> auth, profile, post, comment, ai validators                     |
+|           |                                                                             |
+|  [src/controllers]  --> auth, profile, post, like, comment, admin, notification, ai     |
+|           |                                                                             |
+|  [src/services/]    --> auth.service.js         (Registration, JWT, login alerts)       |
+|                     --> email.service.js        (Nodemailer SMTP & test outbox)         |
+|                     --> post.service.js         (Post CRUD, enriched counters, feeds)   |
+|                     --> like.service.js         (Like toggle, idempotency, alerts)      |
+|                     --> comment.service.js      (Comment CRUD, ownership checks)        |
+|                     --> admin.service.js        (Platform metrics, user/post/comment mod)|
+|                     --> notification.service.js (Alert list, unread counts, read-all)   |
+|                     --> socket.service.js       (Socket.IO server, JWT handshake, rooms)|
+|                     --> ai.service.js           (Google Gemini AI via @google/genai)    |
+|           |                                                                             |
+|  [Database Services]--> config/database.js (Mongoose connection pool & event monitoring)|
+|  [src/models/]      --> User, Post, Comment, Like, Notification, ActivityLog Schemas    |
++-----------------------------------------------------------------------------------------+
+                                       |
+                                       v
++-----------------------------------------------------------------------------------------+
+|                                DATA PERSISTENCE LAYER                                   |
+|                                                                                         |
+|  [MongoDB Atlas]    --> Primary Replica Set Cluster (looply)                            |
+|  [Isolated Test DB] --> Dedicated Automated Test Database (looply_test)                 |
++-----------------------------------------------------------------------------------------+
 ```
 
 ---
@@ -179,7 +207,11 @@ client/components/
   - Modular Nodemailer integration configured via `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`.
   - Professional, responsive HTML templates with inline styles and plain-text fallback alternatives.
   - Application starts safely without SMTP credentials in development/test.
-  - Test-only in-memory mail outbox (`testMailOutbox`) captures messages during automated testing without external network delivery.
+  - **SMTP Integration & Delivery Status:**
+    - SMTP integration is fully implemented in the backend via Nodemailer.
+    - A development/test in-memory mail outbox (`testMailOutbox`) is available and used for all automated tests without external network dependencies.
+    - Real SMTP outbound delivery requires manual configuration of valid third-party credentials in `server/.env`.
+    - Real email delivery has not been claimed without actual SMTP configuration; automated tests verify cryptographic tokens and dispatch logic using the test outbox.
   - Never logs or exposes raw verification or reset tokens in logs or responses.
 - **Email Verification Workflow:**
   - Registration generates high-entropy random token (`crypto.randomBytes(32)`).

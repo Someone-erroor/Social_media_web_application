@@ -39,7 +39,11 @@ export const createPost = async ({ authorId, content }) => {
     console.error(`[ActivityLog] Failed to record post creation: ${auditErr.message}`);
   }
 
-  return post;
+  const postObj = post.toObject ? post.toObject() : { ...post };
+  postObj.likesCount = 0;
+  postObj.commentsCount = 0;
+
+  return postObj;
 };
 
 /**
@@ -64,7 +68,16 @@ export const getPostById = async (postId) => {
     throw error;
   }
 
-  return post;
+  const [likesCount, commentsCount] = await Promise.all([
+    Like.countDocuments({ post: postId }),
+    Comment.countDocuments({ post: postId })
+  ]);
+
+  const postObj = post.toObject ? post.toObject() : { ...post };
+  postObj.likesCount = likesCount;
+  postObj.commentsCount = commentsCount;
+
+  return postObj;
 };
 
 /**
@@ -89,8 +102,21 @@ export const getMyPosts = async ({ authorId, page, limit, skip }) => {
     Post.countDocuments(filter)
   ]);
 
+  const enrichedPosts = await Promise.all(
+    posts.map(async (p) => {
+      const [likesCount, commentsCount] = await Promise.all([
+        Like.countDocuments({ post: p._id }),
+        Comment.countDocuments({ post: p._id })
+      ]);
+      const obj = p.toObject ? p.toObject() : { ...p };
+      obj.likesCount = likesCount;
+      obj.commentsCount = commentsCount;
+      return obj;
+    })
+  );
+
   return {
-    posts,
+    posts: enrichedPosts,
     pagination: {
       total,
       page,
@@ -137,8 +163,21 @@ export const getUserPosts = async ({ userId, page = 1, limit = 10, skip = 0 }) =
     Post.countDocuments(filter)
   ]);
 
+  const enrichedPosts = await Promise.all(
+    posts.map(async (p) => {
+      const [likesCount, commentsCount] = await Promise.all([
+        Like.countDocuments({ post: p._id }),
+        Comment.countDocuments({ post: p._id })
+      ]);
+      const obj = p.toObject ? p.toObject() : { ...p };
+      obj.likesCount = likesCount;
+      obj.commentsCount = commentsCount;
+      return obj;
+    })
+  );
+
   return {
-    posts,
+    posts: enrichedPosts,
     pagination: {
       total,
       page: Number(page),
@@ -184,11 +223,29 @@ export const getFeed = async ({ page = 1, limit = 10, skip = 0 }) => {
       { $skip: skip },
       { $limit: limit },
       {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'post',
+          as: 'likes'
+        }
+      },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'post',
+          as: 'comments'
+        }
+      },
+      {
         $project: {
           _id: 1,
           content: 1,
           createdAt: 1,
           updatedAt: 1,
+          likesCount: { $size: '$likes' },
+          commentsCount: { $size: '$comments' },
           author: {
             _id: '$authorDoc._id',
             fullName: '$authorDoc.fullName',
@@ -275,7 +332,16 @@ export const updatePost = async ({ postId, authorId, content }) => {
     console.error(`[ActivityLog] Failed to record post update: ${auditErr.message}`);
   }
 
-  return post;
+  const [likesCount, commentsCount] = await Promise.all([
+    Like.countDocuments({ post: postId }),
+    Comment.countDocuments({ post: postId })
+  ]);
+
+  const postObj = post.toObject ? post.toObject() : { ...post };
+  postObj.likesCount = likesCount;
+  postObj.commentsCount = commentsCount;
+
+  return postObj;
 };
 
 /**

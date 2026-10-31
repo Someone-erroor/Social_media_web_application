@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
 import Card, { CardContent } from '@/components/ui/Card';
@@ -35,11 +35,173 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
 
   const isOwner = user && (user._id === authorId || user.id === authorId);
 
+  // Post edit / delete state
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content || '');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+  // Like interaction state (Phase 10)
+  const [likesCount, setLikesCount] = useState(post.likesCount || 0);
+  const [hasLiked, setHasLiked] = useState(post.hasLiked || false);
+  const [likeLoading, setLikeLoading] = useState(false);
+
+  // Comments state (Phase 10)
+  const [commentsCount, setCommentsCount] = useState(post.commentsCount || 0);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editCommentContent, setEditCommentContent] = useState('');
+  const [submittingEditComment, setSubmittingEditComment] = useState(false);
+  const [commentErrorMessage, setCommentErrorMessage] = useState('');
+
+  // Fetch like status if not provided by backend projection
+  useEffect(() => {
+    let isMounted = true;
+    if (user && post.hasLiked === undefined) {
+      postService.getPostLikes(post._id)
+        .then((res) => {
+          if (isMounted) {
+            setHasLiked(Boolean(res.hasLiked));
+            if (typeof res.likesCount === 'number') {
+              setLikesCount(res.likesCount);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [user, post._id, post.hasLiked]);
+
+  // Load comments when section is opened
+  const handleToggleComments = async () => {
+    const nextState = !showComments;
+    setShowComments(nextState);
+
+    if (nextState && comments.length === 0) {
+      setLoadingComments(true);
+      setCommentErrorMessage('');
+      try {
+        const res = await postService.getComments(post._id);
+        setComments(res.comments || []);
+        if (typeof res.pagination?.total === 'number') {
+          setCommentsCount(res.pagination.total);
+        }
+      } catch (err) {
+        setCommentErrorMessage(err.message || 'Failed to load comments.');
+      } finally {
+        setLoadingComments(false);
+      }
+    }
+  };
+
+  // Optimistic like toggle
+  const handleToggleLike = async () => {
+    if (!user) {
+      setErrorMessage('Please sign in to like posts.');
+      return;
+    }
+    if (!user.isEmailVerified) {
+      setErrorMessage('Please verify your email address to like posts.');
+      return;
+    }
+    if (likeLoading) return;
+
+    const prevHasLiked = hasLiked;
+    const prevCount = likesCount;
+
+    // Optimistic UI state
+    setHasLiked(!prevHasLiked);
+    setLikesCount(prevHasLiked ? Math.max(0, prevCount - 1) : prevCount + 1);
+    setLikeLoading(true);
+    setErrorMessage('');
+
+    try {
+      if (prevHasLiked) {
+        const res = await postService.unlikePost(post._id);
+        setLikesCount(res.likesCount);
+        setHasLiked(res.hasLiked);
+      } else {
+        const res = await postService.likePost(post._id);
+        setLikesCount(res.likesCount);
+        setHasLiked(res.hasLiked);
+      }
+    } catch (err) {
+      // Revert on error
+      setHasLiked(prevHasLiked);
+      setLikesCount(prevCount);
+      setErrorMessage(err.message || 'Failed to update like status.');
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
+  // Submit new comment
+  const handleAddComment = async (e) => {
+    e?.preventDefault();
+    const trimmed = commentText.trim();
+    if (!trimmed) return;
+
+    if (!user) {
+      setCommentErrorMessage('Please sign in to comment.');
+      return;
+    }
+    if (!user.isEmailVerified) {
+      setCommentErrorMessage('Please verify your email address to comment.');
+      return;
+    }
+
+    setSubmittingComment(true);
+    setCommentErrorMessage('');
+
+    try {
+      const res = await postService.createComment(post._id, { content: trimmed });
+      setComments((prev) => [res.comment, ...prev]);
+      setCommentsCount((c) => c + 1);
+      setCommentText('');
+    } catch (err) {
+      setCommentErrorMessage(err.message || 'Failed to post comment.');
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
+  // Save comment edit
+  const handleSaveEditComment = async (commentId) => {
+    const trimmed = editCommentContent.trim();
+    if (!trimmed) return;
+
+    setSubmittingEditComment(true);
+    setCommentErrorMessage('');
+
+    try {
+      const res = await postService.updateComment(commentId, { content: trimmed });
+      setComments((prev) => prev.map((c) => (c._id === commentId ? res.comment : c)));
+      setEditingCommentId(null);
+      setEditCommentContent('');
+    } catch (err) {
+      setCommentErrorMessage(err.message || 'Failed to update comment.');
+    } finally {
+      setSubmittingEditComment(false);
+    }
+  };
+
+  // Delete comment
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await postService.deleteComment(commentId);
+      setComments((prev) => prev.filter((c) => c._id !== commentId));
+      setCommentsCount((c) => Math.max(0, c - 1));
+    } catch (err) {
+      setCommentErrorMessage(err.message || 'Failed to delete comment.');
+    }
+  };
 
   const handleUpdate = async () => {
     const trimmed = editContent.trim();
@@ -214,8 +376,212 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
             {post.content}
           </p>
         )}
+
+        {/* Interaction Actions Bar (Phase 10: Likes & Comments) */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
+          <div className="flex items-center gap-4">
+            {/* Like Button */}
+            <button
+              type="button"
+              onClick={handleToggleLike}
+              disabled={likeLoading}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
+                hasLiked
+                  ? 'text-red-600 bg-red-50 hover:bg-red-100 font-semibold'
+                  : 'text-slate-500 hover:text-red-600 hover:bg-slate-50'
+              }`}
+              title={hasLiked ? 'Unlike post' : 'Like post'}
+            >
+              <Icon
+                name="heart"
+                className={`w-4 h-4 ${hasLiked ? 'fill-red-600 stroke-red-600' : ''}`}
+              />
+              <span>{likesCount}</span>
+            </button>
+
+            {/* Comments Toggle Button */}
+            <button
+              type="button"
+              onClick={handleToggleComments}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
+                showComments
+                  ? 'text-indigo-600 bg-indigo-50 font-semibold'
+                  : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'
+              }`}
+              title="View comments"
+            >
+              <Icon name="comments" className="w-4 h-4" />
+              <span>{commentsCount}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Expandable Comments Section (Phase 10) */}
+        {showComments && (
+          <div className="pt-3 border-t border-slate-100 space-y-4">
+            {commentErrorMessage && (
+              <div className="p-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+                {commentErrorMessage}
+              </div>
+            )}
+
+            {/* Comment Composer */}
+            {user ? (
+              <form onSubmit={handleAddComment} className="flex gap-2.5">
+                <Avatar
+                  name={user.fullName}
+                  src={user.profile?.avatarUrl}
+                  size="sm"
+                  className="shrink-0 mt-0.5"
+                />
+                <div className="flex-1 space-y-1.5">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Write a comment..."
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      maxLength={500}
+                      disabled={submittingComment}
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
+                    />
+                  </div>
+                  {commentText.length > 0 && (
+                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <span>{commentText.length} / 500</span>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        size="sm"
+                        disabled={submittingComment || !commentText.trim()}
+                      >
+                        {submittingComment ? 'Posting...' : 'Comment'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </form>
+            ) : (
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-600">
+                <Link href={ROUTES.AUTH.LOGIN} className="text-indigo-600 font-semibold hover:underline">
+                  Sign in
+                </Link>{' '}
+                to join the discussion and post a comment.
+              </div>
+            )}
+
+            {/* Comments List */}
+            {loadingComments ? (
+              <div className="py-4 text-center text-xs text-slate-400">
+                Loading comments...
+              </div>
+            ) : comments.length === 0 ? (
+              <p className="py-2 text-center text-xs text-slate-400">
+                No comments yet. Be the first to start the conversation!
+              </p>
+            ) : (
+              <div className="space-y-3 pt-1">
+                {comments.map((comment) => {
+                  const commentAuthor = comment.author || {};
+                  const commentAuthorId = commentAuthor._id || comment.author;
+                  const commentAuthorName = commentAuthor.fullName || 'User';
+                  const commentAuthorAvatar = commentAuthor.profile?.avatarUrl || '';
+                  const isCommentOwner = user && (user._id === commentAuthorId || user.id === commentAuthorId);
+                  const isEditingThis = editingCommentId === comment._id;
+
+                  return (
+                    <div key={comment._id} className="flex gap-2.5 group text-xs">
+                      <Link href={commentAuthorId ? ROUTES.USER.USER_PROFILE(commentAuthorId) : ROUTES.USER.FEED}>
+                        <Avatar
+                          name={commentAuthorName}
+                          src={commentAuthorAvatar}
+                          size="sm"
+                          className="shrink-0 mt-0.5"
+                        />
+                      </Link>
+
+                      <div className="flex-1 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                        <div className="flex items-center justify-between gap-2">
+                          <Link
+                            href={commentAuthorId ? ROUTES.USER.USER_PROFILE(commentAuthorId) : ROUTES.USER.FEED}
+                            className="font-semibold text-slate-900 hover:text-indigo-600 transition-colors"
+                          >
+                            {commentAuthorName}
+                          </Link>
+                          <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                            <span>{formatTimestamp(comment.createdAt)}</span>
+                            {isCommentOwner && !isEditingThis && (
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-1">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingCommentId(comment._id);
+                                    setEditCommentContent(comment.content);
+                                  }}
+                                  className="text-slate-400 hover:text-indigo-600 p-0.5"
+                                  title="Edit comment"
+                                >
+                                  <Icon name="edit" className="w-3 h-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteComment(comment._id)}
+                                  className="text-slate-400 hover:text-red-600 p-0.5"
+                                  title="Delete comment"
+                                >
+                                  <Icon name="trash" className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Comment Content / Edit Form */}
+                        {isEditingThis ? (
+                          <div className="mt-2 space-y-2">
+                            <input
+                              type="text"
+                              value={editCommentContent}
+                              onChange={(e) => setEditCommentContent(e.target.value)}
+                              maxLength={500}
+                              disabled={submittingEditComment}
+                              className="w-full rounded-lg border border-slate-300 bg-white p-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
+                            />
+                            <div className="flex items-center justify-end gap-1.5">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setEditingCommentId(null)}
+                                disabled={submittingEditComment}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="primary"
+                                size="sm"
+                                onClick={() => handleSaveEditComment(comment._id)}
+                                disabled={submittingEditComment || !editCommentContent.trim()}
+                              >
+                                {submittingEditComment ? 'Saving...' : 'Save'}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="mt-1 text-slate-700 whitespace-pre-wrap break-words leading-relaxed">
+                            {comment.content}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
-

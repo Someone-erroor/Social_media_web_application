@@ -102,6 +102,95 @@ export const postService = {
     return apiClient(`/feed/explore?page=${page}&limit=${limit}`, {
       method: 'GET'
     });
+  },
+
+  /**
+   * Likes a post. (Phase 10)
+   *
+   * @param {string} postId
+   * @returns {Promise<{ success: boolean, likesCount: number, hasLiked: boolean }>}
+   */
+  async likePost(postId) {
+    return apiClient(`/posts/${postId}/like`, {
+      method: 'POST'
+    });
+  },
+
+  /**
+   * Unlikes a post. (Phase 10)
+   *
+   * @param {string} postId
+   * @returns {Promise<{ success: boolean, likesCount: number, hasLiked: boolean }>}
+   */
+  async unlikePost(postId) {
+    return apiClient(`/posts/${postId}/like`, {
+      method: 'DELETE'
+    });
+  },
+
+  /**
+   * Retrieves like status and count for a post. (Phase 10)
+   *
+   * @param {string} postId
+   * @returns {Promise<{ success: boolean, likesCount: number, hasLiked: boolean }>}
+   */
+  async getPostLikes(postId) {
+    return apiClient(`/posts/${postId}/likes`, {
+      method: 'GET'
+    });
+  },
+
+  /**
+   * Retrieves comments for a post. (Phase 10)
+   *
+   * @param {string} postId
+   * @param {{ page?: number, limit?: number }} [params]
+   * @returns {Promise<{ success: boolean, comments: object[], pagination: object }>}
+   */
+  async getComments(postId, { page = 1, limit = 20 } = {}) {
+    return apiClient(`/posts/${postId}/comments?page=${page}&limit=${limit}`, {
+      method: 'GET'
+    });
+  },
+
+  /**
+   * Adds a comment to a post. (Phase 10)
+   *
+   * @param {string} postId
+   * @param {{ content: string }} data
+   * @returns {Promise<{ success: boolean, message: string, comment: object }>}
+   */
+  async createComment(postId, data) {
+    return apiClient(`/posts/${postId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
+   * Updates an existing comment. (Phase 10)
+   *
+   * @param {string} commentId
+   * @param {{ content: string }} data
+   * @returns {Promise<{ success: boolean, message: string, comment: object }>}
+   */
+  async updateComment(commentId, data) {
+    return apiClient(`/comments/${commentId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
+   * Deletes a comment. (Phase 10)
+   *
+   * @param {string} commentId
+   * @returns {Promise<{ success: boolean, message: string }>}
+   */
+  async deleteComment(commentId) {
+    return apiClient(`/comments/${commentId}`, {
+      method: 'DELETE'
+    });
   }
 };
 

@@ -2,8 +2,8 @@
 
 > **Project:** Looply ("Connect. Share. Express.")  
 > **Target Database:** MongoDB (v6.0+) via Mongoose ODM (v9.x)  
-> **Phase Milestone:** Batch 2 (Phases 5 to 9) — Verification, Security & RBAC, Profiles, Posts & Feed  
-> **Phase Status:** Phase 1: APPROVED | Phase 2: APPROVED | Phase 3: APPROVED | Phase 4: APPROVED | Phase 5: IMPLEMENTATION COMPLETED | Phase 6: IMPLEMENTATION COMPLETED | Phase 7: IMPLEMENTATION COMPLETED | Phase 8: IMPLEMENTATION COMPLETED | Phase 9: IMPLEMENTATION COMPLETED | Batch 2: IMPLEMENTATION COMPLETED, FINAL CORRECTIONS APPLIED, AWAITING EXTERNAL REVIEW | Phase 10: PENDING  
+> **Phase Milestone:** Batch 3 (Phases 10 to 14) — Likes, Comments, Admin Dashboard, Moderation, Real-Time Notifications & Gemini AI  
+> **Phase Status:** Phases 1–9: APPROVED | Batch 3 (Phases 10–14): IMPLEMENTATION COMPLETED (AWAITING REVIEW) | Phase 15: PENDING (DO NOT START)  
 > **Architecture:** Decoupled Express.js REST API (`server/`) with Mongoose Schemas  
 
 ---
@@ -51,7 +51,7 @@ Represents registered platform members and administrative accounts.
 | `_id` | `ObjectId` | Auto | Generated | Unique primary identifier | System-generated MongoDB ID |
 | `fullName` | `String` | **Yes** | — | `trim`, min: 2, max: 70 chars | User's public display name |
 | `email` | `String` | **Yes** | — | `lowercase`, `trim`, unique index, regex | Unique contact and sign-in email |
-| `passwordHash` | `String` | **Yes** | — | `select: false` (hidden by default) | Argon2 / bcrypt password digest |
+| `passwordHash` | `String` | **Yes** | — | `select: false` (hidden by default) | bcryptjs with 12 salt rounds (never plaintext) |
 | `role` | `String` | **Yes** | `'user'` | Enum: `['user', 'admin']` | Platform clearance role |
 | `isEmailVerified`| `Boolean` | No | `false` | Boolean flag | Email ownership verification status |
 | `profile.bio` | `String` | No | `''` | `trim`, max: 250 chars | Public member biographical summary |
@@ -152,7 +152,7 @@ An immutable audit ledger tracking security checkpoints, content mutations, and 
 | :--- | :--- | :---: | :--- | :--- | :--- |
 | `_id` | `ObjectId` | Auto | Generated | Unique primary identifier | System-generated MongoDB ID |
 | `actor` | `ObjectId` | No | `null` | `ref: 'User'` | Initiating user (`null` for system/visitor) |
-| `action` | `String` | **Yes** | — | Enum: `[user_registration, successful_login, post_creation, post_update, post_deletion, comment_creation, like_creation, admin_action]` | Audit action identifier |
+| `action` | `String` | **Yes** | — | Enum: `['user_registration', 'email_verification', 'successful_login', 'password_reset_request', 'password_reset', 'password_reset_success', 'profile_update', 'post_creation', 'post_update', 'post_deletion', 'comment_creation', 'like_creation', 'admin_action']` | Audit action identifier |
 | `targetType` | `String` | No | `null` | `trim` | Type of affected entity |
 | `targetId` | `ObjectId` | No | `null` | Reference identifier | Primary key of affected entity |
 | `metadata` | `Mixed` | No | `{}` | Programmatic security validator | Additional context (no credentials) |
@@ -186,23 +186,26 @@ Post ──────── 1:N ────────> Like
 
 ---
 
-## 4. Deletion & Referential Cleanup Strategy (Future Phases)
+## 4. Deletion & Referential Cleanup Strategy (Active Implementation — Phases 8, 10, 12, 13)
 
-In future functionality phases (Phase 7: Profile Management, Phase 8: Post CRUD, Phase 12: Admin Management), cascade deletions and reference integrity will be managed according to the following specifications:
+Referential integrity and cascade deletions are actively enforced across all post, comment, and administrative management workflows:
 
 1. **User Deletion / Account Suspension:**
-   - **Soft Deletion:** Primary policy marks `accountStatus: 'suspended'`. Posts and comments remain visible with an inactive user badge, preserving discussion context.
-   - **Hard Deletion (GDPR/Right to Be Forgotten):** Implemented via transactional batch operations or background reconciliation jobs:
-     - Delete all `Like` documents where `user === userId`.
-     - Delete all `Notification` documents where `recipient === userId`.
-     - Anonymize `Comment` and `Post` documents or perform cascaded removal of user posts and their associated likes and comments.
-     - Redact personal information from `ActivityLog` while retaining audit entries for regulatory compliance.
+   - **Status Suspension (Phase 12):** Administrative policy marks `accountStatus: 'suspended'`. Suspended users are immediately rejected by `requireAuth` (HTTP 403) and their `tokenVersion` is incremented to invalidate active sessions instantly.
+   - **Feed Filtering (Phase 9 & 12):** Posts from suspended accounts or deleted authors are automatically omitted from `/api/feed` and `/api/explore` queries.
+   - **Admin Self-Protection (Phase 12):** Administrators are strictly prohibited from suspending their own accounts (HTTP 400).
 
-2. **Post Deletion:**
-   - When a `Post` document is deleted:
-     - Automatically remove all associated `Comment` records matching `{ post: postId }`.
-     - Automatically remove all associated `Like` records matching `{ post: postId }`.
-     - Nullify or remove corresponding notifications matching `{ resourceType: 'Post', resourceId: postId }`.
+2. **Post Deletion (Author & Admin Moderation — Phase 8 & 12):**
+   - When a `Post` document is deleted via author `DELETE /api/posts/:postId` or administrator `DELETE /api/admin/posts/:postId`:
+     - Cascaded cleanup removes all associated `Comment` records matching `{ post: postId }`.
+     - Cascaded cleanup removes all associated `Like` records matching `{ post: postId }`.
+     - Cascaded cleanup removes all associated `Notification` records matching `{ resourceType: 'Post', resourceId: postId }`.
+     - Recorded in `ActivityLog` with action `post_deletion` or `admin_action`.
+
+3. **Comment Moderation & Like Removal (Phase 10 & 12):**
+   - When a comment is deleted by author or administrator: the comment is removed and the post's dynamic comment count updates cleanly.
+   - When a like is toggled off: the like record is removed and the post's dynamic like count updates cleanly.
+   - Post likes enforce uniqueness via compound index `{ post: 1, user: 1 }` preventing duplicate likes at the database engine layer.
 
 ---
 

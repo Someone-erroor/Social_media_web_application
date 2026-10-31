@@ -1,11 +1,13 @@
+import http from 'http';
 import app from './app.js';
 import { env } from './config/env.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { initSocketServer, closeSocketServer } from './services/socket.service.js';
 
 let server;
 
 /**
- * Initializes database connection and starts HTTP listener.
+ * Initializes database connection, attaches Socket.IO, and starts HTTP listener.
  * Prevents accepting requests until database connection succeeds.
  */
 const startServer = async () => {
@@ -13,7 +15,13 @@ const startServer = async () => {
     // Establish database connection before accepting HTTP requests
     await connectDatabase();
 
-    server = app.listen(env.PORT, () => {
+    // Create HTTP server wrapping Express app
+    server = http.createServer(app);
+
+    // Initialize Socket.IO on the HTTP server (Phase 13)
+    initSocketServer(server);
+
+    server.listen(env.PORT, () => {
       console.log(`[Looply Server] Running in ${env.NODE_ENV} mode on port ${env.PORT}`);
       console.log(`[Looply Server] Liveness probe: http://localhost:${env.PORT}/api/health`);
       console.log(`[Looply Server] Readiness probe: http://localhost:${env.PORT}/api/health/ready`);
@@ -34,6 +42,12 @@ const handleShutdown = async (signal) => {
   console.log(`\n[Looply Server] Received ${signal}. Shutting down gracefully...`);
 
   if (server) {
+    try {
+      await closeSocketServer();
+    } catch (sockErr) {
+      console.error(`[Looply Server] Error closing Socket.IO: ${sockErr.message}`);
+    }
+
     server.close(async () => {
       console.log('[Looply Server] HTTP server closed.');
       try {

@@ -137,8 +137,66 @@ export const requireRole = (...allowedRoles) => {
   };
 };
 
+/**
+ * Optional authentication middleware (optionalAuth).
+ * If a valid token is provided, attaches req.user.
+ * If no token or invalid token, proceeds with req.user = null.
+ *
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ * @param {import('express').NextFunction} next - Express next handler
+ */
+export const optionalAuth = async (req, res, next) => {
+  try {
+    let token = null;
+    if (req.cookies && req.cookies[AUTH_COOKIE_NAME]) {
+      token = req.cookies[AUTH_COOKIE_NAME];
+    } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      req.user = null;
+      return next();
+    }
+
+    let decoded;
+    try {
+      decoded = verifyToken(token);
+    } catch {
+      req.user = null;
+      return next();
+    }
+
+    if (!decoded || !decoded.userId) {
+      req.user = null;
+      return next();
+    }
+
+    const user = await User.findById(decoded.userId).select('+tokenVersion');
+    if (!user || user.accountStatus === 'suspended') {
+      req.user = null;
+      return next();
+    }
+
+    const currentTokenVersion = typeof user.tokenVersion === 'number' ? user.tokenVersion : 0;
+    const tokenVersionInJwt = typeof decoded.tokenVersion === 'number' ? decoded.tokenVersion : -1;
+    if (tokenVersionInJwt !== currentTokenVersion) {
+      req.user = null;
+      return next();
+    }
+
+    req.user = toSafeUser(user);
+    next();
+  } catch {
+    req.user = null;
+    next();
+  }
+};
+
 export default {
   requireAuth,
   authenticate,
-  requireRole
+  requireRole,
+  optionalAuth
 };
