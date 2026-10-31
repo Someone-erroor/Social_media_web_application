@@ -222,9 +222,13 @@ In response to Phase 1 review feedback, the following corrections were executed 
    - Updated `server/src/config/cors.js` to utilize validated origin arrays.
 
 4. **`client/app/globals.css`**:
-   - Corrected undefined Geist font variables by defining complete, robust font stacks in `:root` (`--font-geist-sans`, `--font-geist-mono`).
-   - Integrated defined font stacks into `@theme inline` and `body`.
+   - Corrected undefined Geist font variables by defining complete, robust font stacks in `:root` (`--font-geist-sans`, `--font-geist-mono`, `--font-sans`, `--font-mono`).
+   - Integrated defined font stacks into `@theme inline` and `body` to establish a consistent font configuration across the application.
    - Preserved all existing Tailwind CSS functionality and utility mappings.
+
+5. **`server/src/config/cors.js`**:
+   - Enforced consistent no-Origin request handling aligned with documented policy: requests without an `Origin` header (such as curl, mobile clients, or internal tools) are allowed in development only and strictly rejected in production with HTTP 403 Forbidden.
+   - Preserved all explicitly allowed frontend origins from environment configuration (`CLIENT_ORIGINS`).
 
 ---
 

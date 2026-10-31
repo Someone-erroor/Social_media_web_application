@@ -99,7 +99,7 @@ Next.js route groups (`(...)`) allow modular layout inheritance without pollutin
 ## 4. Backend Architecture (`server/`)
 
 ### 4.1 Technology Stack
-- **Runtime:** Node.js (v24+)
+- **Runtime:** Node.js (20.9+)
 - **Module System:** ES Modules (`"type": "module"`)
 - **Framework:** Express.js
 - **CORS:** `cors` middleware with environment-governed origin validation
@@ -114,7 +114,8 @@ Next.js route groups (`(...)`) allow modular layout inheritance without pollutin
    - Prevents unvalidated runtime accesses to `process.env`.
 3. **Restricted CORS Policy (`src/config/cors.js`):**
    - Wildcard origins (`*`) are disallowed.
-   - Origins are checked against `env.CLIENT_ORIGIN` (supports single origin or comma-delimited list).
+   - Origins are checked against `env.CLIENT_ORIGINS` / `env.CLIENT_ORIGIN` (supports single origin or comma-delimited list).
+   - Requests without an Origin header (such as curl, mobile clients, or internal tools) are allowed in development only and strictly blocked in production with HTTP 403 Forbidden.
    - Unauthorized origins receive an explicit `403 Forbidden` response.
 4. **Foundation Error Handling (`src/middleware/error.middleware.js`):**
    - `notFoundHandler`: Catches unhandled routes and returns standard JSON:
