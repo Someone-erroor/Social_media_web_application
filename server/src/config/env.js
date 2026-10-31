@@ -120,12 +120,14 @@ const validateClientOrigins = (rawOrigins) => {
 const nodeEnv = validateNodeEnv(process.env.NODE_ENV);
 const port = validatePort(process.env.PORT);
 const clientOrigins = validateClientOrigins(process.env.CLIENT_ORIGIN);
+const mongodbUri = process.env.MONGODB_URI ? String(process.env.MONGODB_URI).trim() : '';
 
 export const env = {
   NODE_ENV: nodeEnv,
   PORT: port,
   CLIENT_ORIGIN: clientOrigins.join(','),
   CLIENT_ORIGINS: clientOrigins,
+  MONGODB_URI: mongodbUri,
   isDevelopment: nodeEnv === 'development',
   isProduction: nodeEnv === 'production',
   isTest: nodeEnv === 'test'

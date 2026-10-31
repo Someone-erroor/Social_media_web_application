@@ -8,12 +8,13 @@
 
 ## 1. Project Information
 - **Project Name:** Looply
-- **Current Phase:** Phase 2 — UI foundation, routing and dashboard layouts
+- **Current Phase:** Phase 3 — Backend foundation and database design
 - **Phase Status:**
   - **Phase 1: APPROVED**
-  - **Phase 2: IMPLEMENTATION COMPLETED, AWAITING EXTERNAL REVIEW**
-  - **Phase 3: PENDING**
-- **Next Permitted Phase:** Phase 3 — Backend foundation and database design (*Halted until Phase 2 review is approved*)
+  - **Phase 2: APPROVED**
+  - **Phase 3: IMPLEMENTATION COMPLETED, AWAITING EXTERNAL REVIEW**
+  - **Phase 4: PENDING**
+- **Next Permitted Phase:** Phase 4 — User registration and login (*Halted until Phase 3 review is approved*)
 
 ---
 
@@ -24,9 +25,9 @@ The development of Looply follows the technical assignment's authoritative 18-ph
 | Phase | Title & Description | Phase Status |
 | :--- | :--- | :--- |
 | **PHASE 1** | **Project architecture and initial setup.** | **APPROVED** |
-| **PHASE 2** | **UI foundation, routing and dashboard layouts.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| **PHASE 3** | **Backend foundation and database design.** | **PENDING** |
-| **PHASE 4** | User registration and login. | Pending |
+| **PHASE 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
+| **PHASE 3** | **Backend foundation and database design.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 4** | User registration and login. | **PENDING** |
 | **PHASE 5** | Email verification, forgot password and password reset. | Pending |
 | **PHASE 6** | Authentication security and role-based access control. | Pending |
 | **PHASE 7** | User profile management. | Pending |
@@ -60,7 +61,7 @@ The primary development specification is the original technical assignment. All 
 | **User Experience Shell & Routes** | Phase 2 | 3-column `UserShell`, `/feed`, `/explore`, `/profile`, `/assistant`, `/settings` | Completed (Phase 2) |
 | **Admin Experience Shell & Routes** | Phase 2 | Dark `AdminShell`, `/admin`, `/users`, `/posts`, `/comments`, `/activity` | Completed (Phase 2) |
 | **Responsive Design & Accessibility**| Phase 2 | Mobile top/bottom nav, tablet overflow tables, desktop 3-column, WCAG a11y | Completed (Phase 2) |
-| **Database Schema & ER Diagram** | Phase 3 | MongoDB / Mongoose schema design, collections, relations, ER documentation | Scheduled for Phase 3 |
+| **Database Schema & ER Diagram** | Phase 3 | MongoDB / Mongoose schema design, collections, relations, ER documentation | Completed (Phase 3) |
 | **Password Hashing** | Phase 4 | Secure bcrypt / Argon2 password hashing on registration | Scheduled for Phase 4 |
 | **Secure Authentication** | Phase 4 | User registration, authentication controllers, error handling | Scheduled for Phase 4 |
 | **Session / Token Management** | Phase 4 & 6 | JWT / secure session cookie issuance, verification, refresh & invalidation | Scheduled for Phase 4 & 6 |
@@ -167,6 +168,33 @@ In strict adherence to assignment requirements, development resources are focuse
 #### Custom Not Found Route
 - `client/app/not-found.js`: Custom, accessible 404 error page with Looply branding and navigation back to feed or home.
 
+### 5.3 Phase 3 Backend Foundation & Database Models (`server/`)
+
+#### Configuration & Connection Management
+- `server/src/config/database.js`: Centralized MongoDB connection manager using Mongoose. Features duplicate connection protection (`readyState` checks), credential masking in logs (`sanitizeMongoUri`), lifecycle monitoring (`connected`, `error`, `disconnected`), and graceful termination on SIGINT/SIGTERM.
+- `server/src/config/env.js`: Integrated `MONGODB_URI` environment variable parsing alongside strict `NODE_ENV`, `PORT`, and `CLIENT_ORIGIN` validation.
+- `server/.env.example`: Updated with local MongoDB and MongoDB Atlas configuration templates (no real credentials).
+- `server/src/server.js`: Updated server startup sequence to establish database connection prior to accepting HTTP requests, with graceful shutdown closing HTTP listener then database connection.
+
+#### Health Probes
+- `server/src/controllers/health.controller.js` & `server/src/routes/health.routes.js`:
+  - `GET /api/health`: Process liveness probe, preserving exact existing contract (`{ success: true, message: 'Looply backend is running' }`).
+  - `GET /api/health/ready`: Database readiness probe returning HTTP 200 `{ success: true, status: 'ready', database: 'connected' }` when active, or HTTP 503 `{ success: false, status: 'unready', database: 'disconnected', message: 'Database connection is not ready' }` when disconnected (never leaking credentials).
+
+#### Mongoose Data Models (`server/src/models/`)
+- `User.js`: Schema for registered users and administrators. Requires `fullName`, unique lowercase trimmed `email`, `passwordHash` (excluded via `select: false`), `role` (`'user'`, `'admin'`), `isEmailVerified`, `profile` (`bio`, `avatarUrl`), and `accountStatus` (`'active'`, `'suspended'`). Unique index on `email`.
+- `Post.js`: Schema for publications. Requires `author` (ref: User) and `content` (1–1000 chars). Indexes: `{ createdAt: -1 }` (feed) and `{ author: 1, createdAt: -1 }` (author timeline).
+- `Comment.js`: Schema for discussion replies. Requires `post` (ref: Post), `author` (ref: User), and `content` (1–500 chars). Index: `{ post: 1, createdAt: -1 }`.
+- `Like.js`: Schema for post reactions. Requires `post` (ref: Post) and `user` (ref: User). Unique compound index on `{ post: 1, user: 1 }` preventing duplicate likes at the database storage engine layer.
+- `Notification.js`: Schema for in-app alerts. Requires `recipient` (ref: User), `actor` (optional ref: User), `type` (`login_alert`, `post_like`, `post_comment`, `system`), `message`, `resourceType`, `resourceId`, and `readAt`. Indexes: `{ recipient: 1, createdAt: -1 }` and `{ recipient: 1, readAt: 1 }`.
+- `ActivityLog.js`: Schema for immutable security audit ledger. Enforces action enums and programmatic metadata validator rejecting passwords, tokens, and secrets. Indexes: `{ createdAt: -1 }` and `{ actor: 1, createdAt: -1 }`.
+- `index.js`: Central barrel export for all models and activity constants.
+
+#### Documentation & Test Suites
+- `DATABASE_SCHEMA.md`: Comprehensive database schema specification, types, indexes, cascade deletion strategy, and Atlas guide.
+- `docs/ER_DIAGRAM.md`: Visual Mermaid ER diagram matching all six schemas, fields, and relationships.
+- `server/test/test-phase3.mjs`: Automated Phase 3 test suite containing 27 unit and integration assertions runnable via `npm test`.
+
 ---
 
 ## 6. Verification Tests & Results
@@ -201,6 +229,25 @@ In strict adherence to assignment requirements, development resources are focuse
 | 26 | Backend CORS Allowed Origin | `Origin: http://localhost:3000` | HTTP 200 OK — Access-Control-Allow-Origin header verified | **PASSED** |
 | 27 | Backend CORS Disallowed Origin| `Origin: http://evil.com` | HTTP 403 Forbidden — Rejected with CORS violation message | **PASSED** |
 | 28 | Backend Prod CORS No-Origin | `NODE_ENV=production GET /api/health` | HTTP 403 Forbidden — Strictly rejected with zero stack trace | **PASSED** |
+| 29 | Mongoose Installation | `server/package.json` | Mongoose v9.11.4 verified and installed | **PASSED** |
+| 30 | URI Credential Sanitization | `sanitizeMongoUri()` | Passwords replaced with `***` in all logged strings | **PASSED** |
+| 31 | Missing MONGODB_URI Handling | `validateMongoUri('')` | Rejects with clear configuration error | **PASSED** |
+| 32 | Invalid MONGODB_URI Format | `validateMongoUri('invalid://')` | Rejects non-mongo URI formats | **PASSED** |
+| 33 | User Model Validation | `User.validate()` | Validates fullName, email format, role enum, profile limits | **PASSED** |
+| 34 | User Email Index | `User.schema.indexes()` | Verified unique index on `{ email: 1 }` | **PASSED** |
+| 35 | User Password Projection | `User.schema.paths.passwordHash` | Configured with `select: false` by default | **PASSED** |
+| 36 | Post Model Validation | `Post.validate()` | Enforces author ref, content required, 1000 char limit | **PASSED** |
+| 37 | Post Schema Indexes | `Post.schema.indexes()` | Verified `{ createdAt: -1 }` & `{ author: 1, createdAt: -1 }` | **PASSED** |
+| 38 | Comment Model Validation | `Comment.validate()` | Enforces post ref, author ref, content required, 500 char limit | **PASSED** |
+| 39 | Comment Schema Index | `Comment.schema.indexes()` | Verified `{ post: 1, createdAt: -1 }` index | **PASSED** |
+| 40 | Like Model Validation | `Like.validate()` | Enforces post ref, user ref, createdAt | **PASSED** |
+| 41 | Like Unique Compound Index | `Like.schema.indexes()` | Verified unique compound index on `{ post: 1, user: 1 }` | **PASSED** |
+| 42 | Notification Model Validation| `Notification.validate()` | Enforces recipient, valid type enums, message limits | **PASSED** |
+| 43 | Notification Schema Indexes | `Notification.schema.indexes()` | Verified `{ recipient: 1, createdAt: -1 }` & `{ recipient: 1, readAt: 1 }` | **PASSED** |
+| 44 | ActivityLog Security Validator| `ActivityLog.validate()` | Programmatically rejects passwords and tokens in metadata | **PASSED** |
+| 45 | ActivityLog Schema Indexes | `ActivityLog.schema.indexes()` | Verified `{ createdAt: -1 }` & `{ actor: 1, createdAt: -1 }` | **PASSED** |
+| 46 | Backend Readiness Endpoint | `GET /api/health/ready` | HTTP 503 unready when disconnected; HTTP 200 when ready | **PASSED** |
+| 47 | Connection Timeout Handling | `connectDatabase('mongodb://...')` | Gracefully times out and returns safe error | **PASSED** | |
 
 ---
 
@@ -222,71 +269,63 @@ In strict adherence to assignment requirements, development resources are focuse
 
 ## 8. Strict Phase Boundaries & Intentionally Deferred Scope
 
-In strict accordance with the 18-phase roadmap, the following features remain intentionally unbuilt:
-- **No MongoDB / Mongoose connection:** Scheduled for Phase 3.
-- **No authentication logic or JWT:** Scheduled for Phase 4 & 6.
-- **No email dispatch or SMTP:** Scheduled for Phase 5.
-- **No post CRUD, likes, or comments:** Scheduled for Phase 8 & 10.
-- **No real AI provider calls:** Scheduled for Phase 14 & 15.
-- **No fabricated mock data:** All lists and statistics display authentic empty states.
+In strict accordance with the 18-phase roadmap, Phase 3 establishes the database models, connection management, and readiness probes only. The following features remain intentionally unbuilt and are deferred to their designated phases:
+- **No User Registration or Login APIs:** Scheduled for Phase 4.
+- **No JWT / Session Token Issuance or Handling:** Scheduled for Phase 4 & 6.
+- **No Password Hashing Business Logic (bcrypt / Argon2):** Scheduled for Phase 4.
+- **No Email Verification or Password Reset Controllers:** Scheduled for Phase 5.
+- **No SMTP / Nodemailer Transport:** Scheduled for Phase 5.
+- **No Role-Based Authorization Middleware:** Scheduled for Phase 6.
+- **No User Profile Mutation APIs:** Scheduled for Phase 7.
+- **No Post CRUD APIs:** Scheduled for Phase 8.
+- **No Feed Retrieval Endpoints:** Scheduled for Phase 9.
+- **No Like or Comment Mutation Controllers:** Scheduled for Phase 10.
+- **No Admin Moderation APIs:** Scheduled for Phase 11 & 12.
+- **No Real-Time Notification WebSockets / Socket.IO:** Scheduled for Phase 13.
+- **No AI Provider Calls or Mock Responses:** Scheduled for Phase 14 & 15.
 
 ---
 
-## 9. Phase 2 Corrections Log & Final Refinements
+## 9. Phase 3 Implementation Summary
 
-In response to the Phase 2 review feedback, the following refinements were executed, verified, and integrated:
+Phase 3 development established the scalable backend foundation and Mongoose database design:
 
-1. **Admin Mobile Navigation (`client/components/navigation/AdminSidebar.js` & `AdminHeader.js`)**:
-   - Added a compact, high-contrast mobile header (`md:hidden`, `h-14`) with admin brand mark and accessible hamburger toggle button (`aria-label`, `aria-expanded`).
-   - Implemented an accessible slide-over navigation drawer with backdrop overlay (`bg-black/60`).
-   - Implemented drawer closure upon route navigation (closing when clicking any navigation link or admin logo in the drawer) and upon pressing the `Escape` key.
-   - Preserved the existing desktop sidebar (`hidden md:flex md:w-64 md:fixed`) completely unchanged.
-   - Adjusted `AdminHeader` to `md:sticky md:top-0` preventing mobile header collision/overlap while maintaining sticky desktop header.
-   - Verified that no content overlaps on mobile viewports (360px, 390px) or desktop (1440px).
+1. **Centralized Database Connection (`server/src/config/database.js`)**:
+   - Integrated Mongoose v9.11.4 with duplicate connection prevention (`readyState` checking).
+   - Credential masking in all connection strings via `sanitizeMongoUri()`.
+   - Event-driven connection monitoring (`connected`, `error`, `disconnected`).
+   - Server startup sequence halts if database connection fails, ensuring no requests are accepted before readiness.
+   - Graceful termination closes HTTP connections then disconnects MongoDB cleanly.
 
-2. **Removal of Development Labels from UI**:
-   - Replaced internal development references across public, user, and admin views with professional product terminology:
-     - Assistant page: replaced `AI Preview` with `AI Assistant • Coming Soon` and removed internal preview claims.
-     - User sidebar: replaced `Preview Guest` with `Guest User`.
-     - Admin alert composer: changed `service • Ready` to `console • Inactive`.
-     - Admin moderation tabs: removed hardcoded `(0)` counts from post and comment tabs (`All Posts`, `Flagged`, `Under Review`, `Archived`; `All Comments`, `Reported`, `Hidden`).
-     - Route configuration: renamed comments to `User Experience Routes` and `Administrator Experience Routes`.
-     - Topic pills: `Phase 9 Preview` &rarr; `Trending`, `Active`, `Curated`.
-     - Search inputs: `Phase 9 Preview` &rarr; `Coming Soon`.
-     - Footer status: `Platform Status: All Systems Operational`.
-     - Footer copyright: `Looply`.
-     - Public navbar: `Live Preview` &rarr; `Feed`.
-     - Feed composer: `Publish` with `title="Publishing coming soon"`.
-     - Public creator profile: `Follow` with `title="Follow feature coming soon"`.
-     - Empty state badges: updated to professional domain terms (`Community Feed`, `Explore Topics`, `Member Profile`, `Public Profile`, `Audit Ledger`, `Moderation Queue`).
+2. **Mongoose Domain Models (`server/src/models/`)**:
+   - `User.js`: Schema with lowercase trimmed email, unique index, hidden password hash (`select: false`), role enum, and account status enum.
+   - `Post.js`: Schema with author reference, content boundaries, `{ createdAt: -1 }` and `{ author: 1, createdAt: -1 }` indexes.
+   - `Comment.js`: Schema with post and author references, length constraints, and `{ post: 1, createdAt: -1 }` index.
+   - `Like.js`: Schema with post and user references and unique compound index `{ post: 1, user: 1 }` preventing duplicate likes.
+   - `Notification.js`: Schema supporting login alerts, likes, comments, and system notices with `{ recipient: 1, createdAt: -1 }` and `{ recipient: 1, readAt: 1 }` indexes.
+   - `ActivityLog.js`: Schema for immutable security audit trail with programmatic credential rejection validator.
+   - `index.js`: Clean centralized barrel export.
 
-3. **Admin Dashboard Data Accuracy (`client/app/(admin)/admin/page.js`)**:
-   - Removed fabricated live system status claims (`Backend Ready`, `HTTP 200`, `Live connectivity status`).
-   - Replaced with neutral status placeholder: `Awaiting Telemetry Sync`.
-   - Replaced hardcoded zero metrics with neutral telemetry indicators (`—` with `Telemetry Pending Sync`) rather than claiming 0 as live platform counts.
-   - Used neutral status descriptions for backend API (`Health route: /api/health`), CORS whitelist (`Configured per environment`), and database layer (`Persistence integration pending`).
+3. **Readiness Probe (`server/src/controllers/health.controller.js` & `server/src/routes/health.routes.js`)**:
+   - `GET /api/health`: Existing liveness response contract strictly preserved (`{ success: true, message: 'Looply backend is running' }`).
+   - `GET /api/health/ready`: New readiness endpoint returning HTTP 200 when database is connected, or HTTP 503 when disconnected (never leaking credentials).
 
-4. **Route Documentation (`ROUTE_MAP.md`)**:
-   - Renamed Section 1.2 to `User Experience Routes` and Section 1.3 to `Administrator Experience Routes`.
-   - Explicitly documented:
-     - Routes are currently UI previews.
-     - Authentication is not implemented yet.
-     - User and admin route protection will be implemented through backend-authoritative authorization in Phase 6.
-     - Current frontend route groups are organizational only and do not provide security boundaries.
+4. **Comprehensive Documentation & ER Diagram**:
+   - `DATABASE_SCHEMA.md`: Complete collection and schema specification, types, indexes, cascade deletion strategy, and Atlas guide.
+   - `docs/ER_DIAGRAM.md`: Detailed Mermaid entity-relationship diagram matching all six models and relationships.
 
-5. **Project Status Alignment**:
-   - **Phase 1: APPROVED**
-   - **Phase 2: IMPLEMENTATION COMPLETED, AWAITING EXTERNAL REVIEW**
-   - **Phase 3: PENDING**
-
-6. **Validation & Verification**:
-   - Tested all 20 required routes via production server (`next start`) — 100% returned HTTP 200 OK.
-   - Verified ESLint 9 (`npm run lint`): 0 errors, 0 warnings.
-   - Verified production build (`npm run build`): Compiled cleanly with all 22 static and dynamic routes prerendered into production HTML bundles.
+5. **Automated Test Suite (`server/test/test-phase3.mjs`)**:
+   - 27 unit and integration test assertions covering Mongoose installation, model validations, index declarations, URI sanitization, health endpoints, and connection failure timeouts.
+   - 100% passing (`cd server; npm test`).
 
 ---
 
 ## 10. Next Permitted Development Phase
 
-- **Next Phase:** **PHASE 3: BACKEND FOUNDATION AND DATABASE DESIGN.**
-- **Current Directive:** **HALT**. Stop development. Phase 2 implementation is completed and awaiting external review and authorization before proceeding with Phase 3.
+- **Current Status:**
+  - **Phase 1: APPROVED**
+  - **Phase 2: APPROVED**
+  - **Phase 3: IMPLEMENTATION COMPLETED, AWAITING EXTERNAL REVIEW**
+  - **Phase 4: PENDING**
+- **Next Phase:** **PHASE 4: USER REGISTRATION AND LOGIN.**
+- **Current Directive:** **HALT**. Stop development. Phase 3 implementation is completed. Await external code review and approval before beginning Phase 4.

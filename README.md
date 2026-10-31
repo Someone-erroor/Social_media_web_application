@@ -31,8 +31,11 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **CORS:** Environment-governed origin restriction (no wildcards)
 - **Environment:** `dotenv` configuration management with strict validation
 
-### Database (Planned - Phase 3)
-- MongoDB & Mongoose (Deferred until subsequent phases as per phase boundaries)
+### Database
+- **Database Engine:** MongoDB (v6.0+)
+- **Object Data Modeling (ODM):** Mongoose (v9.11+)
+- **Connection Architecture:** Centralized connection manager (`server/src/config/database.js`) with duplicate connection protection, credential masking in logs, lifecycle monitoring, and graceful shutdown.
+- **Model Portfolio:** Normalized schemas for `User`, `Post`, `Comment`, `Like`, `Notification`, and `ActivityLog`.
 
 ---
 
@@ -45,6 +48,9 @@ c:/assestement_project/
 ├── ARCHITECTURE.md
 ├── ROUTE_MAP.md
 ├── PROJECT_STATUS.md
+├── DATABASE_SCHEMA.md
+├── docs/
+│   └── ER_DIAGRAM.md
 ├── client/
 │   ├── .env.example
 │   ├── .gitignore
@@ -123,21 +129,32 @@ c:/assestement_project/
     ├── .env.example
     ├── .gitignore
     ├── package.json
+    ├── test/
+    │   └── test-phase3.mjs
     └── src/
         ├── app.js
         ├── server.js
         ├── config/
         │   ├── env.js
-        │   └── cors.js
+        │   ├── cors.js
+        │   └── database.js
         ├── controllers/
         │   └── health.controller.js
         ├── middleware/
         │   └── error.middleware.js
         ├── models/
+        │   ├── User.js
+        │   ├── Post.js
+        │   ├── Comment.js
+        │   ├── Like.js
+        │   ├── Notification.js
+        │   ├── ActivityLog.js
+        │   └── index.js
         ├── routes/
         │   ├── index.js
         │   └── health.routes.js
         ├── services/
+        └── validators/
         └── validators/
 ```
 
@@ -194,13 +211,32 @@ c:/assestement_project/
 
 ## 5. Verification Commands
 
-### Test Backend Health Endpoint
+### Test Backend Health Endpoint (Process Liveness)
 ```bash
 curl http://localhost:5000/api/health
 ```
 Expected output:
 ```json
 {"success":true,"message":"Looply backend is running"}
+```
+
+### Test Backend Readiness Endpoint (Database Health)
+```bash
+curl http://localhost:5000/api/health/ready
+```
+Expected output (when connected):
+```json
+{"success":true,"status":"ready","database":"connected"}
+```
+Expected output (when disconnected):
+```json
+{"success":false,"status":"unready","database":"disconnected","message":"Database connection is not ready"}
+```
+
+### Run Backend Tests (Mongoose, Models & Foundation)
+```bash
+cd server
+npm test
 ```
 
 ### Test Client Production Build
@@ -222,8 +258,8 @@ npm run lint
 | Phase | Description | Status |
 | :--- | :--- | :--- |
 | **Phase 1** | **Project architecture and initial setup.** | **APPROVED** |
-| **Phase 2** | **UI foundation, routing and dashboard layouts.** | **IMPLEMENTATION COMPLETED (Awaiting Review)** |
-| Phase 3 | Backend foundation and database design. | Pending |
+| **Phase 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
+| **Phase 3** | **Backend foundation and database design.** | **IMPLEMENTATION COMPLETED (Awaiting External Review)** |
 | Phase 4 | User registration and login. | Pending |
 | Phase 5 | Email verification, forgot password and password reset. | Pending |
 | Phase 6 | Authentication security and role-based access control. | Pending |

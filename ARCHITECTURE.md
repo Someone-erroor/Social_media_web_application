@@ -124,12 +124,31 @@ client/components/
 ## 4. Backend Architecture (`server/`)
 
 ### 4.1 Modular Structure
-- Decoupled `app.js` (Express configuration, middleware, and routers) from `server.js` (HTTP process listening, shutdown handlers).
-- Robust environment validation (`config/env.js`) enforcing `NODE_ENV` (`development`, `production`, `test`), `PORT` (1–65535), and strict `CLIENT_ORIGIN` URL validation.
+- Decoupled `app.js` (Express configuration, middleware, and routers) from `server.js` (HTTP process listening, database connection orchestration, and shutdown handlers).
+- Robust environment validation (`config/env.js`) enforcing `NODE_ENV` (`development`, `production`, `test`), `PORT` (1–65535), `CLIENT_ORIGIN` URL validation, and `MONGODB_URI` handling.
 - Strict CORS policy (`config/cors.js`):
   - In `development` & `test`: Requests without `Origin` (curl, unit tests, scripts) are allowed.
   - In `production`: Requests without `Origin` are strictly rejected with HTTP 403 Forbidden.
   - Configured frontend origins are strictly whitelisted across all environments.
+
+### 4.2 Database Foundation & Mongoose Integration (Phase 3)
+- **Centralized Connection Manager (`config/database.js`):**
+  - Manages connection lifecycle with duplicate connection protection (`readyState` checks).
+  - Masks credentials in all logs (`sanitizeMongoUri`) preventing credential leakage.
+  - Monitors connection events (`connected`, `error`, `disconnected`).
+  - Ensures HTTP listener does not accept requests before database connection is established.
+  - Graceful shutdown handles SIGINT/SIGTERM by closing HTTP connections and disconnecting Mongoose cleanly.
+- **Health Probes:**
+  - `GET /api/health` — Process liveness probe (HTTP 200).
+  - `GET /api/health/ready` — Database readiness probe (HTTP 200 when connected, HTTP 503 when disconnected).
+- **Mongoose Data Models (`models/`):**
+  - `User`: Members and admins with lowercase unique email and hidden `passwordHash` (`select: false`).
+  - `Post`: Publications with content length boundaries and chronological/author compound indexes.
+  - `Comment`: Discussion replies tied to Post and User with `{ post: 1, createdAt: -1 }` index.
+  - `Like`: User reactions enforcing one like per user per post via `{ post: 1, user: 1 }` unique compound index.
+  - `Notification`: In-app alerts supporting login alerts, likes, comments, and broadcasts with unread compound index.
+  - `ActivityLog`: Immutable security audit ledger with automated credential leakage validation.
+- Complete documentation: [`DATABASE_SCHEMA.md`](./DATABASE_SCHEMA.md) and [`docs/ER_DIAGRAM.md`](./docs/ER_DIAGRAM.md).
 
 ---
 
