@@ -20,19 +20,19 @@ export default function AdminCommentsPage() {
           type="button"
           className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-xs"
         >
-          All Comments (0)
+          All Comments
         </button>
         <button
           type="button"
           className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
         >
-          Reported (0)
+          Reported
         </button>
         <button
           type="button"
           className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
         >
-          Hidden (0)
+          Hidden
         </button>
       </div>
 

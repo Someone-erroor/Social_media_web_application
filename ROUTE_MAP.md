@@ -22,7 +22,7 @@ These routes are accessible to unauthenticated visitors and prospective members.
 | `/forgot-password` | Auth | `client/app/(auth)/forgot-password/page.js`| `AuthLayout` (Centered Card) | Implemented (Phase 2) |
 | `/reset-password` | Auth | `client/app/(auth)/reset-password/page.js` | `AuthLayout` (Centered Card) | Implemented (Phase 2) |
 
-### 1.2 User Protected Routes
+### 1.2 User Experience Routes
 These routes render within the responsive `UserShell` (3-column layout on desktop, top `UserHeader` and bottom `UserBottomNav` on mobile). Inside the user experience, clicking the brand logo navigates to `/feed`.
 
 | Target URL | Experience Scope | Route Group File Path | Layout Shell | Status |
@@ -36,7 +36,7 @@ These routes render within the responsive `UserShell` (3-column layout on deskto
 | `/assistant` | User | `client/app/(user)/assistant/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
 | `/settings` | User | `client/app/(user)/settings/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
 
-### 1.3 Administrator Protected Routes
+### 1.3 Administrator Experience Routes
 These routes render within the distinct, high-contrast `AdminShell` (`AdminSidebar` + `AdminHeader`), completely isolated from the user application experience.
 
 | Target URL | Experience Scope | Route Group File Path | Layout Shell | Status |

@@ -223,7 +223,7 @@ npm run lint
 | :--- | :--- | :--- |
 | **Phase 1** | **Project architecture and initial setup.** | **APPROVED** |
 | **Phase 2** | **UI foundation, routing and dashboard layouts.** | **IMPLEMENTATION COMPLETED (Awaiting Review)** |
-| Phase 3 | Backend foundation and database design. | Pending External Approval |
+| Phase 3 | Backend foundation and database design. | Pending |
 | Phase 4 | User registration and login. | Pending |
 | Phase 5 | Email verification, forgot password and password reset. | Pending |
 | Phase 6 | Authentication security and role-based access control. | Pending |

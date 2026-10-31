@@ -10,9 +10,9 @@
 - **Project Name:** Looply
 - **Current Phase:** Phase 2 — UI foundation, routing and dashboard layouts
 - **Phase Status:**
-  - **IMPLEMENTATION COMPLETED**
-  - **AWAITING EXTERNAL REVIEW**
-  - **NOT YET APPROVED**
+  - **Phase 1: APPROVED**
+  - **Phase 2: IMPLEMENTATION COMPLETED, AWAITING EXTERNAL REVIEW**
+  - **Phase 3: PENDING**
 - **Next Permitted Phase:** Phase 3 — Backend foundation and database design (*Halted until Phase 2 review is approved*)
 
 ---
@@ -24,8 +24,8 @@ The development of Looply follows the technical assignment's authoritative 18-ph
 | Phase | Title & Description | Phase Status |
 | :--- | :--- | :--- |
 | **PHASE 1** | **Project architecture and initial setup.** | **APPROVED** |
-| **PHASE 2** | **UI foundation, routing and dashboard layouts.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW<br>NOT YET APPROVED** |
-| **PHASE 3** | Backend foundation and database design. | Pending External Approval |
+| **PHASE 2** | **UI foundation, routing and dashboard layouts.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 3** | **Backend foundation and database design.** | **PENDING** |
 | **PHASE 4** | User registration and login. | Pending |
 | **PHASE 5** | Email verification, forgot password and password reset. | Pending |
 | **PHASE 6** | Authentication security and role-based access control. | Pending |
@@ -157,7 +157,7 @@ In strict adherence to assignment requirements, development resources are focuse
 
 #### Administrator Application Interface
 - `client/app/(admin)/layout.js`: Layout wrapper rendering `AdminShell`.
-- `client/app/(admin)/admin/page.js`: Management dashboard at `/admin` with metric cards (honest 0 counts), backend health monitor, and audit events placeholder.
+- `client/app/(admin)/admin/page.js`: Management dashboard at `/admin` with neutral telemetry placeholders (`—`, `Telemetry Pending Sync`), service architecture status overview (`Awaiting Telemetry Sync`), and audit events placeholder (zero fabricated connectivity claims or fabricated statistics).
 - `client/app/(admin)/admin/users/page.js`: User directory table structure at `/admin/users` with filters and honest empty state.
 - `client/app/(admin)/admin/posts/page.js`: Content moderation view at `/admin/posts` with status tabs and clean queue empty state.
 - `client/app/(admin)/admin/comments/page.js`: Comment moderation view at `/admin/comments` with report tabs and empty state.
@@ -236,43 +236,53 @@ In strict accordance with the 18-phase roadmap, the following features remain in
 
 In response to the Phase 2 review feedback, the following refinements were executed, verified, and integrated:
 
-1. **Admin Mobile Navigation (`client/components/navigation/AdminSidebar.js`)**:
+1. **Admin Mobile Navigation (`client/components/navigation/AdminSidebar.js` & `AdminHeader.js`)**:
    - Added a compact, high-contrast mobile header (`md:hidden`, `h-14`) with admin brand mark and accessible hamburger toggle button (`aria-label`, `aria-expanded`).
    - Implemented an accessible slide-over navigation drawer with backdrop overlay (`bg-black/60`).
-   - Added automatic drawer closure upon route navigation via `useEffect([pathname])`.
-   - Added keyboard accessibility closing the drawer on the `Escape` key.
+   - Implemented drawer closure upon route navigation (closing when clicking any navigation link or admin logo in the drawer) and upon pressing the `Escape` key.
    - Preserved the existing desktop sidebar (`hidden md:flex md:w-64 md:fixed`) completely unchanged.
+   - Adjusted `AdminHeader` to `md:sticky md:top-0` preventing mobile header collision/overlap while maintaining sticky desktop header.
    - Verified that no content overlaps on mobile viewports (360px, 390px) or desktop (1440px).
 
 2. **Removal of Development Labels from UI**:
-   - Replaced all internal development phase references across public, user, and admin views with professional product terminology:
+   - Replaced internal development references across public, user, and admin views with professional product terminology:
+     - Assistant page: replaced `AI Preview` with `AI Assistant • Coming Soon` and removed internal preview claims.
+     - User sidebar: replaced `Preview Guest` with `Guest User`.
+     - Admin alert composer: changed `service • Ready` to `console • Inactive`.
+     - Admin moderation tabs: removed hardcoded `(0)` counts from post and comment tabs (`All Posts`, `Flagged`, `Under Review`, `Archived`; `All Comments`, `Reported`, `Hidden`).
+     - Route configuration: renamed comments to `User Experience Routes` and `Administrator Experience Routes`.
      - Topic pills: `Phase 9 Preview` &rarr; `Trending`, `Active`, `Curated`.
      - Search inputs: `Phase 9 Preview` &rarr; `Coming Soon`.
-     - Footer status: `Phase 2 Status` / `Phase 2 UI Foundation` &rarr; `Platform Status: All Systems Operational`.
-     - Footer copyright: Changed `Looply Inc.` to `Looply`.
+     - Footer status: `Platform Status: All Systems Operational`.
+     - Footer copyright: `Looply`.
      - Public navbar: `Live Preview` &rarr; `Feed`.
-     - Feed composer: `Post (Phase 8)` &rarr; `Publish` with `title="Publishing coming soon"`.
-     - Public creator profile: `Follow (Phase 9)` &rarr; `Follow` with `title="Follow feature coming soon"`.
-     - Empty state badges: `Feed Ready • Phase 2` &rarr; `Community Feed`; `Discovery Engine • Phase 2` &rarr; `Explore Topics`; `Profile Ready • Phase 2` &rarr; `Member Profile`; `Community View • Phase 2` &rarr; `Public Profile`; `Audit Service Ready • Phase 2` &rarr; `Audit Ledger`; `Clean Queue • Phase 2` &rarr; `Moderation Queue`.
-     - Authentication helpers: Replaced phase notices with professional notices (`Secure authentication portal • Coming Soon`, `Member registration portal • Coming Soon`, `Password recovery portal • Coming Soon`).
-     - Admin telemetry cards: Replaced phase populator notes with `Registered Accounts`, `Community Publications`, `Pending Reports`, `Security Events`.
+     - Feed composer: `Publish` with `title="Publishing coming soon"`.
+     - Public creator profile: `Follow` with `title="Follow feature coming soon"`.
+     - Empty state badges: updated to professional domain terms (`Community Feed`, `Explore Topics`, `Member Profile`, `Public Profile`, `Audit Ledger`, `Moderation Queue`).
 
-3. **Route Documentation (`ROUTE_MAP.md`)**:
-   - Expanded Section 4 (Architectural Boundaries & Route Protection Policy) clearly explaining:
-     - Implemented routes are complete UI previews establishing layout shells and navigation hierarchies.
-     - Authentication and session management are not implemented in Phase 2.
-     - User and admin route protection will be enforced via backend-authoritative authorization and RBAC in Phase 6.
-     - Frontend route groups (`(public)`, `(auth)`, `(user)`, `(admin)`) are organizational constructs for template inheritance and not security boundaries.
+3. **Admin Dashboard Data Accuracy (`client/app/(admin)/admin/page.js`)**:
+   - Removed fabricated live system status claims (`Backend Ready`, `HTTP 200`, `Live connectivity status`).
+   - Replaced with neutral status placeholder: `Awaiting Telemetry Sync`.
+   - Replaced hardcoded zero metrics with neutral telemetry indicators (`—` with `Telemetry Pending Sync`) rather than claiming 0 as live platform counts.
+   - Used neutral status descriptions for backend API (`Health route: /api/health`), CORS whitelist (`Configured per environment`), and database layer (`Persistence integration pending`).
 
-4. **Public Landing Page & CTA Navigation (`client/app/(public)/page.js`)**:
-   - Completely replaced the Phase 1 initialization card screen.
-   - Removed `PhaseStatusCard` entirely from the homepage.
-   - Prominently incorporated both **Registration CTA** (`ROUTES.PUBLIC.REGISTER`) and **Login CTA** (`ROUTES.PUBLIC.LOGIN`) in both the Hero section and bottom conversion block, alongside the **Community Feed** CTA (`ROUTES.USER.FEED`).
+4. **Route Documentation (`ROUTE_MAP.md`)**:
+   - Renamed Section 1.2 to `User Experience Routes` and Section 1.3 to `Administrator Experience Routes`.
+   - Explicitly documented:
+     - Routes are currently UI previews.
+     - Authentication is not implemented yet.
+     - User and admin route protection will be implemented through backend-authoritative authorization in Phase 6.
+     - Current frontend route groups are organizational only and do not provide security boundaries.
 
-5. **Validation & Verification**:
-   - Tested all 20 required routes via production server (`next start -p 3008`) — 100% returned HTTP 200 OK.
+5. **Project Status Alignment**:
+   - **Phase 1: APPROVED**
+   - **Phase 2: IMPLEMENTATION COMPLETED, AWAITING EXTERNAL REVIEW**
+   - **Phase 3: PENDING**
+
+6. **Validation & Verification**:
+   - Tested all 20 required routes via production server (`next start`) — 100% returned HTTP 200 OK.
    - Verified ESLint 9 (`npm run lint`): 0 errors, 0 warnings.
-   - Verified production build (`npm run build`): Compiled in 917ms; all 22 static and dynamic routes prerendered successfully into production HTML bundles.
+   - Verified production build (`npm run build`): Compiled cleanly with all 22 static and dynamic routes prerendered into production HTML bundles.
 
 ---
 

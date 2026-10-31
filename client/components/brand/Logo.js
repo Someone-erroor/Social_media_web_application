@@ -11,7 +11,8 @@ export default function Logo({
   size = 'default',
   href = ROUTES.PUBLIC.HOME,
   inverted = false,
-  badgeText
+  badgeText,
+  onClick
 }) {
   const isLarge = size === 'large';
   const isSmall = size === 'small';
@@ -94,6 +95,7 @@ export default function Logo({
     return (
       <Link
         href={href}
+        onClick={onClick}
         className="inline-flex focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-xl"
         aria-label="Looply Home"
       >

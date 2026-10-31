@@ -146,6 +146,7 @@ export default function AdminSidebar() {
                 href={ROUTES.ADMIN.DASHBOARD}
                 inverted={true}
                 badgeText="ADMIN"
+                onClick={() => setMobileDrawerOpen(false)}
               />
               <button
                 type="button"

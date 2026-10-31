@@ -24,7 +24,7 @@ export default function AssistantPage() {
         description="Brainstorm post ideas, refine writing tone, and synthesize discussions"
         badge={
           <Badge variant="primary" size="sm">
-            AI Preview &bull; Coming Soon
+            AI Assistant &bull; Coming Soon
           </Badge>
         }
       />
@@ -45,7 +45,7 @@ export default function AssistantPage() {
           </p>
 
           <div className="mt-4 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-mono border border-slate-200">
-            Intelligent discussion assistant &bull; Preview
+            Intelligent discussion assistant &bull; Coming Soon
           </div>
 
           {/* Starter Prompts */}
@@ -89,7 +89,7 @@ export default function AssistantPage() {
             </div>
           </div>
           <p className="text-[11px] text-center text-slate-400">
-            Conversational assistant preview. Intelligent generation services activating soon.
+            Conversational assistant. Intelligent generation services activating soon.
           </p>
         </div>
       </Card>

@@ -17,7 +17,7 @@ export const ROUTES = {
     RESET_PASSWORD: '/reset-password'
   },
 
-  // User Protected Routes (Phase 2+)
+  // User Experience Routes
   USER: {
     FEED: '/feed',
     EXPLORE: '/explore',
@@ -29,7 +29,7 @@ export const ROUTES = {
     SETTINGS: '/settings'
   },
 
-  // Admin Protected Routes (Phase 2+)
+  // Administrator Experience Routes
   ADMIN: {
     DASHBOARD: '/admin',
     USERS: '/admin/users',

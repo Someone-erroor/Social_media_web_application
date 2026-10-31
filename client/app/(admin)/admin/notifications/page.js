@@ -72,7 +72,7 @@ export default function AdminNotificationsPage() {
         </CardContent>
         <CardFooter className="justify-between">
           <span className="text-[11px] text-slate-400">
-            Broadcast dispatch service &bull; Ready
+            Broadcast dispatch console &bull; Inactive
           </span>
           <Button type="button" variant="primary" size="sm" disabled>
             Dispatch Broadcast
