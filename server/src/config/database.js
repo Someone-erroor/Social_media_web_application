@@ -1,5 +1,23 @@
+import dns from 'dns';
 import mongoose from 'mongoose';
 import { env } from './env.js';
+
+/**
+ * Configures reliable fallback DNS servers (8.8.8.8, 1.1.1.1) if the local environment
+ * only provides loopback addresses (common on Windows), ensuring SRV record resolution
+ * for mongodb+srv:// Atlas URIs functions reliably.
+ */
+const configureDnsServers = () => {
+  try {
+    const servers = dns.getServers();
+    const isOnlyLoopback = servers.every((s) => s === '127.0.0.1' || s === '::1');
+    if (isOnlyLoopback || servers.length === 0) {
+      dns.setServers(['8.8.8.8', '1.1.1.1']);
+    }
+  } catch {
+    // Non-blocking fallback
+  }
+};
 
 /**
  * Redacts username and password credentials from a MongoDB URI for safe logging.
@@ -87,6 +105,8 @@ export const connectDatabase = async (customUri, options = {}) => {
 
   const sanitized = sanitizeMongoUri(validatedUri);
   console.log(`[Database] Connecting to MongoDB: ${sanitized}`);
+
+  configureDnsServers();
 
   const defaultOptions = {
     serverSelectionTimeoutMS: 5000,

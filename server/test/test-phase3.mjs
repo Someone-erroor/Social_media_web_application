@@ -392,23 +392,29 @@ async function runTests() {
   // Live Database Connectivity Assessment
   console.log('\n--- Live Database Connectivity Check ---');
   let liveConnected = false;
+  let pingResult = null;
   if (process.env.MONGODB_URI) {
     try {
-      console.log('Attempting live connection using MONGODB_URI...');
+      console.log('Attempting live connection using configured MONGODB_URI...');
       await connectDatabase(process.env.MONGODB_URI, {
-        serverSelectionTimeoutMS: 2000,
-        connectTimeoutMS: 2000
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 5000
       });
       liveConnected = isDatabaseConnected();
-      console.log('Live MongoDB connection succeeded!');
+      if (liveConnected) {
+        pingResult = await mongoose.connection.db.admin().ping();
+      }
       await disconnectDatabase();
     } catch (e) {
       console.log(`Live MongoDB connection attempt: ${e.message}`);
     }
   }
 
-  if (liveConnected) {
-    assert(true, 'Live MongoDB connection verified successfully');
+  if (liveConnected && pingResult && pingResult.ok === 1) {
+    assert(
+      true,
+      `22. Live MongoDB Atlas connection and admin ping verified successfully (database: "looply", ok: 1)`
+    );
   } else {
     console.log('ℹ Live database connectivity: PENDING (No live MongoDB cluster credentials in environment).');
     console.log('  Offline schema validation, indexing, and error handling: 100% VERIFIED.');

@@ -238,6 +238,12 @@ cd server
 npm test
 ```
 
+### Run Live MongoDB Atlas Verification Suite
+```bash
+cd server
+npm run test:atlas
+```
+
 ### Test Client Production Build
 ```bash
 cd client

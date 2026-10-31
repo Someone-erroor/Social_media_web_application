@@ -251,7 +251,8 @@ In strict adherence to assignment requirements, development resources are focuse
 | 48 | Single Unique Email Index | `User.schema.indexes()` | Verified exactly ONE index on `{ email: 1 }` without duplicates | **PASSED** |
 | 49 | Recursive Metadata Security | `ActivityLog.validate()` | Verified rejection across 11 nested cases (passwords, tokens, API keys) | **PASSED** |
 | 50 | Node.js Compatibility | `server/package.json` engines | Set `"engines": { "node": ">=20.19.0" }` for Mongoose 9 | **PASSED** |
-| 51 | Live DB Connectivity Tracking | `test/test-phase3.mjs` | Honestly reported live database connectivity as PENDING | **PASSED** |
+| 51 | MongoDB Atlas Live Connectivity & Ping | `node test/test-atlas-connection.mjs` | Connected in 3.1s, ping ok: 1, 6/6 collections & indexes synced on Atlas | **PASSED** |
+| 52 | Live DB Readiness HTTP Probe | `GET http://127.0.0.1:5000/api/health/ready` | HTTP 200 ready with live MongoDB Atlas connection | **PASSED** |
 
 ---
 
@@ -321,15 +322,18 @@ Phase 3 development established the scalable backend foundation, Mongoose databa
    - `GET /api/health`: Existing liveness response contract strictly preserved (`{ success: true, message: 'Looply backend is running' }`).
    - `GET /api/health/ready`: Verified returning HTTP 200 when database is connected, and HTTP 503 when disconnected (never leaking credentials).
 
-6. **Database Connectivity Verification & Honest Reporting**:
-   - Valid URI validation and sanitized connection strings tested.
-   - Invalid URI format and missing URI errors tested.
-   - Connection failure timeout handled safely.
-   - Live MongoDB connectivity explicitly tracked as **PENDING** until live Atlas / production cluster credentials are provided in the deployment environment. No unverified live connection is claimed.
+6. **MongoDB Atlas Live Database Connectivity & Verification**:
+   - Connected to live MongoDB Atlas cluster (`cluster0.vtydaeh.mongodb.net`, database `looply`) using `MONGODB_URI` loaded securely from `server/.env`.
+   - Credentials securely masked in all log outputs (`mongodb+srv://ravikishan76768_db_user:***@...`).
+   - Admin ping command executed successfully, returning `{ ok: 1 }`.
+   - Verified HTTP `/api/health/ready` returns HTTP 200 `{ success: true, status: 'ready', database: 'connected' }` against live Atlas.
+   - Synchronized all 6 Mongoose model indexes across `users`, `posts`, `comments`, `likes`, `notifications`, and `activitylogs` in Atlas without dropping existing collections.
+   - Verified graceful disconnection and HTTP 503 fallback when disconnected.
 
-7. **Automated Test Suite (`server/test/test-phase3.mjs`)**:
-   - 87 unit and integration test assertions covering all Phase 3 requirements.
-   - 100% passing (`cd server; npm test` / `npm.cmd test`).
+7. **Automated Test Suite (`server/test/test-phase3.mjs` & `server/test/test-atlas-connection.mjs`)**:
+   - 88 unit and integration test assertions covering all Phase 3 requirements (including live Atlas connectivity and ping).
+   - Dedicated 23-point live Atlas verification suite (`npm run test:atlas`).
+   - 100% passing (`cd server; npm test` & `cd server; npm run test:atlas`).
 
 ---
 

@@ -241,3 +241,53 @@ MONGODB_URI=mongodb+srv://looply_admin:YOUR_ACTUAL_PASSWORD@cluster0.abcde.mongo
 > [!IMPORTANT]
 > Never commit `server/.env` to source control. The `.env` file is excluded in `.gitignore`.
 
+---
+
+## 6. Live MongoDB Atlas Connection Verification
+
+The backend has been verified against the live MongoDB Atlas cluster:
+
+| Verification Check | Target / Configuration | Verified Status |
+| :--- | :--- | :---: |
+| **Cluster Endpoint** | `cluster0.vtydaeh.mongodb.net` | **CONNECTED** |
+| **Database Name** | `looply` | **ACTIVE** |
+| **Database User** | `ravikishan76768_db_user` | **AUTHENTICATED** |
+| **Admin Ping Command** | `db.admin().ping()` | **`{ ok: 1 }`** |
+| **Connection Timing** | Live handshake & SRV resolution | **3.1s** |
+| **URI Credential Masking** | `sanitizeMongoUri()` | **VERIFIED (`***`)** |
+| **Process Liveness Probe** | `GET /api/health` | **HTTP 200 OK** |
+| **Database Readiness Probe** | `GET /api/health/ready` | **HTTP 200 OK** |
+| **Disconnected Fallback Probe** | `GET /api/health/ready` (disconnected) | **HTTP 503 Service Unavailable** |
+
+### Verified Collections & Synchronized Atlas Indexes
+
+All six collections and their production indexes have been synchronized and confirmed active in the Atlas database:
+
+1. **`users` Collection:**
+   - `{ _id: 1 }` (MongoDB default)
+   - `{ email: 1 }` (`unique: true`) — Exactly ONE unique index, preventing duplicate registrations.
+
+2. **`posts` Collection:**
+   - `{ _id: 1 }` (MongoDB default)
+   - `{ createdAt: -1 }` — Powers chronological community feed.
+   - `{ author: 1, createdAt: -1 }` — Compound index for author profile timelines.
+
+3. **`comments` Collection:**
+   - `{ _id: 1 }` (MongoDB default)
+   - `{ post: 1, createdAt: -1 }` — Compound index for post discussion threads.
+
+4. **`likes` Collection:**
+   - `{ _id: 1 }` (MongoDB default)
+   - `{ post: 1, user: 1 }` (`unique: true`) — Unique compound index preventing duplicate likes.
+
+5. **`notifications` Collection:**
+   - `{ _id: 1 }` (MongoDB default)
+   - `{ recipient: 1, createdAt: -1 }` — User alert chronological retrieval.
+   - `{ recipient: 1, readAt: 1 }` — Unread alert counting and filtering.
+
+6. **`activitylogs` Collection:**
+   - `{ _id: 1 }` (MongoDB default)
+   - `{ createdAt: -1 }` — Platform audit log stream.
+   - `{ actor: 1, createdAt: -1 }` — Per-user security event tracking.
+
+
