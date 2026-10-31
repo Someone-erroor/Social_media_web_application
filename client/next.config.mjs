@@ -5,6 +5,7 @@ const nextConfig = {
   partialPrefetching: true,
   experimental: {
     turbopackPluginRuntimeStrategy: "forceWorkerThreads",
+    cpus: 1,
   },
   turbopack: {
     rules: {

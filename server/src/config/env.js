@@ -12,21 +12,22 @@ const ALLOWED_NODE_ENVS = ['development', 'production', 'test'];
 
 /**
  * Validates the NODE_ENV environment variable.
- * Must be one of: 'development', 'production', 'test'.
- * Defaults to 'development' if omitted or empty.
+ * Allowed values: 'development', 'production', 'test'.
+ * Rejects all other values and stops startup.
+ * Defaults to 'development' only when process.env.NODE_ENV is undefined.
  *
  * @param {string|undefined} rawEnv - Value of process.env.NODE_ENV
  * @returns {string} Validated NODE_ENV string
  */
 const validateNodeEnv = (rawEnv) => {
-  if (rawEnv === undefined || rawEnv === null || String(rawEnv).trim() === '') {
+  if (rawEnv === undefined) {
     return 'development';
   }
 
   const trimmed = String(rawEnv).trim();
   if (!ALLOWED_NODE_ENVS.includes(trimmed)) {
     throw new Error(
-      `Configuration Error: Invalid NODE_ENV "${rawEnv}". Allowed values are: ${ALLOWED_NODE_ENVS.join(', ')}.`
+      `Configuration Error: Invalid NODE_ENV "${rawEnv}". Allowed values: ${ALLOWED_NODE_ENVS.join(', ')}.`
     );
   }
 
