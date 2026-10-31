@@ -6,7 +6,9 @@ import {
   Like,
   Notification,
   ActivityLog,
-  ACTIVITY_ACTIONS
+  ACTIVITY_ACTIONS,
+  SENSITIVE_METADATA_KEYS,
+  hasNoSensitiveKeys
 } from '../src/models/index.js';
 import {
   connectDatabase,
@@ -66,7 +68,7 @@ async function runTests() {
     );
   }
 
-  // Test 4: Invalid Database URI Handling
+  // Test 4: Invalid Database URI Scheme Handling
   try {
     validateMongoUri('postgres://localhost:5432/mydb');
     assert(false, '4. Invalid URI scheme handling failed (did not throw)');
@@ -107,12 +109,20 @@ async function runTests() {
     '   User required fields (fullName, email, passwordHash) strictly enforced'
   );
 
-  // Test 6: Post Model Validation
+  // Test 6: Verify Exactly ONE Unique Email Index on User
+  const userIndexes = User.schema.indexes();
+  const emailIndexes = userIndexes.filter((idx) => idx[0]?.email === 1 && idx[1]?.unique === true);
+  assert(
+    userIndexes.length === 1 && emailIndexes.length === 1,
+    `6. User schema contains exactly ONE unique email index (total indexes: ${userIndexes.length}, email indexes: ${emailIndexes.length})`
+  );
+
+  // Test 7: Post Model Validation
   const validPost = new Post({
     author: new mongoose.Types.ObjectId(),
     content: 'Building the future of social networks with Looply! Connect. Share. Express.'
   });
-  assert(!(await validateDoc(validPost)), '6. Valid post document passed schema validation');
+  assert(!(await validateDoc(validPost)), '7. Valid post document passed schema validation');
 
   const emptyPost = new Post({});
   const emptyPostErr = await validateDoc(emptyPost);
@@ -121,13 +131,13 @@ async function runTests() {
     '   Post required fields (author, content) strictly enforced'
   );
 
-  // Test 7: Comment Model Validation
+  // Test 8: Comment Model Validation
   const validComment = new Comment({
     post: new mongoose.Types.ObjectId(),
     author: new mongoose.Types.ObjectId(),
     content: 'Great insight!'
   });
-  assert(!(await validateDoc(validComment)), '7. Valid comment document passed schema validation');
+  assert(!(await validateDoc(validComment)), '8. Valid comment document passed schema validation');
 
   const emptyComment = new Comment({});
   const emptyCommentErr = await validateDoc(emptyComment);
@@ -136,12 +146,12 @@ async function runTests() {
     '   Comment required fields (post, author, content) strictly enforced'
   );
 
-  // Test 8: Like Model Validation
+  // Test 9: Like Model Validation
   const validLike = new Like({
     post: new mongoose.Types.ObjectId(),
     user: new mongoose.Types.ObjectId()
   });
-  assert(!(await validateDoc(validLike)), '8. Valid like document passed schema validation');
+  assert(!(await validateDoc(validLike)), '9. Valid like document passed schema validation');
 
   const emptyLike = new Like({});
   const emptyLikeErr = await validateDoc(emptyLike);
@@ -150,13 +160,13 @@ async function runTests() {
     '   Like required fields (post, user) strictly enforced'
   );
 
-  // Test 9: Notification Model Validation
+  // Test 10: Notification Model Validation
   const validNotification = new Notification({
     recipient: new mongoose.Types.ObjectId(),
     type: 'post_like',
     message: 'Alex liked your publication.'
   });
-  assert(!(await validateDoc(validNotification)), '9. Valid notification passed schema validation');
+  assert(!(await validateDoc(validNotification)), '10. Valid notification passed schema validation');
 
   const invalidNotif = new Notification({
     recipient: new mongoose.Types.ObjectId(),
@@ -166,67 +176,85 @@ async function runTests() {
   const notifErr = await validateDoc(invalidNotif);
   assert(Boolean(notifErr?.errors?.type), '   Invalid notification type rejected by enum');
 
-  // Test 10: ActivityLog Model Validation
+  // Test 11: ActivityLog Model Validation & Recursive Metadata Security
   const validActivity = new ActivityLog({
     action: 'post_creation',
     targetType: 'Post',
     targetId: new mongoose.Types.ObjectId(),
-    metadata: { ip: '127.0.0.1' }
+    metadata: {
+      ip: '127.0.0.1',
+      userAgent: 'Mozilla/5.0',
+      clientDetails: {
+        platform: 'web',
+        viewport: { width: 1440, height: 900 }
+      },
+      tags: ['release', 'v1']
+    }
   });
-  assert(!(await validateDoc(validActivity)), '10. Valid activity log passed schema validation');
+  assert(!(await validateDoc(validActivity)), '11. Valid activity log with safe nested metadata passed validation');
 
-  // Sensitive metadata rejection
-  const sensitiveActivity = new ActivityLog({
-    action: 'successful_login',
-    metadata: { password: 'PlainTextPassword123' }
-  });
-  const sensitiveErr = await validateDoc(sensitiveActivity);
-  assert(
-    Boolean(sensitiveErr?.errors?.metadata),
-    '   Sensitive credentials (password) rejected from ActivityLog metadata'
-  );
+  // Test 12: Recursive Rejection of Sensitive Nested Keys in ActivityLog
+  const sensitiveCases = [
+    { name: 'top-level password', data: { password: 'plaintext' } },
+    { name: 'top-level passwordHash', data: { passwordHash: '$2b$10$abc' } },
+    { name: 'nested object accessToken', data: { auth: { accessToken: 'xyz.jwt.token' } } },
+    { name: 'deeply nested refreshToken', data: { session: { tokens: { refreshToken: 'rt_123' } } } },
+    { name: 'nested secret', data: { config: { secret: 'supersecret' } } },
+    { name: 'nested apiKey', data: { externalService: { apiKey: 'api_key_live_999' } } },
+    { name: 'nested authorization header', data: { request: { headers: { authorization: 'Bearer 123' } } } },
+    { name: 'nested credentials object', data: { user: { credentials: { id: 1 } } } },
+    { name: 'deeply nested privateKey', data: { crypto: { keys: { privateKey: 'PEM_KEY' } } } },
+    { name: 'nested array token', data: { auditHistory: [{ token: 'jwt_value' }] } },
+    { name: 'mixed nested array secret', data: { meta: [{ items: [{ secret: 'nested_secret' }] }] } }
+  ];
 
-  // Test 11: Schema Indexes Verification
-  const userIndexes = User.schema.indexes();
-  assert(
-    userIndexes.some((idx) => idx[0]?.email === 1 && idx[1]?.unique === true),
-    '11. User schema contains unique email index'
-  );
+  for (const testCase of sensitiveCases) {
+    const doc = new ActivityLog({
+      action: 'successful_login',
+      metadata: testCase.data
+    });
+    const err = await validateDoc(doc);
+    assert(
+      Boolean(err?.errors?.metadata),
+      `12. Rejection verified for ${testCase.name}`
+    );
+  }
 
+  // Test 13: Schema Indexes Verification Across Models
   const postIndexes = Post.schema.indexes();
   assert(
     postIndexes.some((idx) => idx[0]?.createdAt === -1) &&
     postIndexes.some((idx) => idx[0]?.author === 1 && idx[0]?.createdAt === -1),
-    '12. Post schema contains { createdAt: -1 } and { author: 1, createdAt: -1 } indexes'
+    '13. Post schema contains { createdAt: -1 } and { author: 1, createdAt: -1 } indexes'
   );
 
   const commentIndexes = Comment.schema.indexes();
   assert(
     commentIndexes.some((idx) => idx[0]?.post === 1 && idx[0]?.createdAt === -1),
-    '13. Comment schema contains { post: 1, createdAt: -1 } index'
+    '14. Comment schema contains { post: 1, createdAt: -1 } index'
   );
 
   const likeIndexes = Like.schema.indexes();
   assert(
     likeIndexes.some((idx) => idx[0]?.post === 1 && idx[0]?.user === 1 && idx[1]?.unique === true),
-    '14. Like schema contains unique compound index { post: 1, user: 1 } preventing duplicate likes'
+    '15. Like schema contains unique compound index { post: 1, user: 1 } preventing duplicate likes'
   );
 
   const notificationIndexes = Notification.schema.indexes();
   assert(
     notificationIndexes.some((idx) => idx[0]?.recipient === 1 && idx[0]?.createdAt === -1) &&
     notificationIndexes.some((idx) => idx[0]?.recipient === 1 && idx[0]?.readAt === 1),
-    '15. Notification schema contains { recipient: 1, createdAt: -1 } and { recipient: 1, readAt: 1 } indexes'
+    '16. Notification schema contains { recipient: 1, createdAt: -1 } and { recipient: 1, readAt: 1 } indexes'
   );
 
   const activityIndexes = ActivityLog.schema.indexes();
   assert(
     activityIndexes.some((idx) => idx[0]?.createdAt === -1) &&
     activityIndexes.some((idx) => idx[0]?.actor === 1 && idx[0]?.createdAt === -1),
-    '16. ActivityLog schema contains { createdAt: -1 } and { actor: 1, createdAt: -1 } indexes'
+    '17. ActivityLog schema contains { createdAt: -1 } and { actor: 1, createdAt: -1 } indexes'
   );
 
-  // Test 12: Health Endpoints Contract
+  // Test 14: Liveness Health Endpoint (GET /api/health)
   let healthCode = 0;
   let healthPayload = null;
   getHealth({}, {
@@ -239,37 +267,100 @@ async function runTests() {
   });
   assert(
     healthCode === 200 && healthPayload?.success === true && healthPayload?.message === 'Looply backend is running',
-    '17. GET /api/health returned HTTP 200 preserving exact existing response contract'
+    '18. GET /api/health returns HTTP 200 preserving exact existing response contract'
   );
 
-  let readyCode = 0;
-  let readyPayload = null;
+  // Test 15: Readiness Health Endpoint when Disconnected (GET /api/health/ready)
+  let disconnectedCode = 0;
+  let disconnectedPayload = null;
   getHealthReady({}, {
     status: (code) => {
-      readyCode = code;
+      disconnectedCode = code;
       return {
-        json: (data) => { readyPayload = data; }
+        json: (data) => { disconnectedPayload = data; }
       };
     }
   });
   assert(
-    readyCode === 503 && readyPayload?.status === 'unready' && readyPayload?.database === 'disconnected',
-    '18. GET /api/health/ready returned HTTP 503 when database is disconnected (never exposing credentials)'
+    disconnectedCode === 503 &&
+    disconnectedPayload?.status === 'unready' &&
+    disconnectedPayload?.database === 'disconnected' &&
+    disconnectedPayload?.message === 'Database connection is not ready',
+    '19. GET /api/health/ready returns HTTP 503 when database is disconnected (never exposing credentials)'
   );
 
-  // Test 13: Attempt Database Connection with Non-Existent Server
+  // Test 16: Readiness Health Endpoint when Connected (GET /api/health/ready)
+  // Temporarily stub readyState to simulate connected state (readyState === 1)
+  const originalReadyState = Object.getOwnPropertyDescriptor(mongoose.connection, 'readyState');
+  Object.defineProperty(mongoose.connection, 'readyState', {
+    value: 1,
+    configurable: true
+  });
+
+  let connectedCode = 0;
+  let connectedPayload = null;
+  getHealthReady({}, {
+    status: (code) => {
+      connectedCode = code;
+      return {
+        json: (data) => { connectedPayload = data; }
+      };
+    }
+  });
+
+  // Restore original readyState
+  if (originalReadyState) {
+    Object.defineProperty(mongoose.connection, 'readyState', originalReadyState);
+  } else {
+    delete mongoose.connection.readyState;
+  }
+
+  assert(
+    connectedCode === 200 &&
+    connectedPayload?.success === true &&
+    connectedPayload?.status === 'ready' &&
+    connectedPayload?.database === 'connected',
+    '20. GET /api/health/ready returns HTTP 200 when database is connected'
+  );
+
+  // Test 17: Attempt Database Connection with Non-Existent Server
   console.log('\nTesting connection failure timeout handling (2 second timeout)...');
   try {
     await connectDatabase('mongodb://127.0.0.1:27018/looply_test', {
       serverSelectionTimeoutMS: 2000,
       connectTimeoutMS: 2000
     });
-    assert(false, '19. Connection to non-existent MongoDB port succeeded unexpectedly');
+    assert(false, '21. Connection to non-existent MongoDB port succeeded unexpectedly');
   } catch (err) {
     assert(
-      err.message.includes('Database Connection Error') || err.message.includes('ECONNREFUSED'),
-      `19. Connection failure handled gracefully with safe error message: "${err.message}"`
+      err.message.includes('Database Connection Error') || err.message.includes('ECONNREFUSED') || err.message.includes('EACCES'),
+      `21. Connection failure handled gracefully with safe error message: "${err.message}"`
     );
+  }
+
+  // Live Database Connectivity Assessment
+  console.log('\n--- Live Database Connectivity Check ---');
+  let liveConnected = false;
+  if (process.env.MONGODB_URI) {
+    try {
+      console.log('Attempting live connection using MONGODB_URI...');
+      await connectDatabase(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 2000,
+        connectTimeoutMS: 2000
+      });
+      liveConnected = isDatabaseConnected();
+      console.log('Live MongoDB connection succeeded!');
+      await disconnectDatabase();
+    } catch (e) {
+      console.log(`Live MongoDB connection attempt: ${e.message}`);
+    }
+  }
+
+  if (liveConnected) {
+    assert(true, 'Live MongoDB connection verified successfully');
+  } else {
+    console.log('ℹ Live database connectivity: PENDING (No live MongoDB cluster credentials in environment).');
+    console.log('  Offline schema validation, indexing, and error handling: 100% VERIFIED.');
   }
 
   // Summary

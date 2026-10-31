@@ -3,7 +3,7 @@ import Post from './Post.js';
 import Comment from './Comment.js';
 import Like from './Like.js';
 import Notification from './Notification.js';
-import ActivityLog, { ACTIVITY_ACTIONS } from './ActivityLog.js';
+import ActivityLog, { ACTIVITY_ACTIONS, SENSITIVE_METADATA_KEYS, hasNoSensitiveKeys } from './ActivityLog.js';
 
 export {
   User,
@@ -12,7 +12,9 @@ export {
   Like,
   Notification,
   ActivityLog,
-  ACTIVITY_ACTIONS
+  ACTIVITY_ACTIONS,
+  SENSITIVE_METADATA_KEYS,
+  hasNoSensitiveKeys
 };
 
 export default {
@@ -22,6 +24,8 @@ export default {
   Like,
   Notification,
   ActivityLog,
-  ACTIVITY_ACTIONS
+  ACTIVITY_ACTIONS,
+  SENSITIVE_METADATA_KEYS,
+  hasNoSensitiveKeys
 };
 

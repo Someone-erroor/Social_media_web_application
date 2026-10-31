@@ -17,9 +17,69 @@ export const ACTIVITY_ACTIONS = [
 ];
 
 /**
+ * Sensitive field keys strictly prohibited anywhere inside audit log metadata payloads.
+ * Checked case-insensitively across top-level keys and nested objects/arrays.
+ */
+export const SENSITIVE_METADATA_KEYS = [
+  'password',
+  'passwordhash',
+  'token',
+  'accesstoken',
+  'refreshtoken',
+  'jwt',
+  'secret',
+  'apikey',
+  'authorization',
+  'credentials',
+  'privatekey'
+];
+
+/**
+ * Recursively inspects metadata payloads to verify that no sensitive keys
+ * exist at any nesting depth within objects or arrays.
+ *
+ * @param {*} data - The metadata payload to inspect
+ * @param {WeakSet} [visited] - WeakSet of visited objects to prevent circular reference cycles
+ * @returns {boolean} True if payload is clean and contains no sensitive keys; false otherwise
+ */
+export const hasNoSensitiveKeys = (data, visited = new WeakSet()) => {
+  if (!data || typeof data !== 'object') {
+    return true;
+  }
+
+  if (visited.has(data)) {
+    return true;
+  }
+  visited.add(data);
+
+  if (Array.isArray(data)) {
+    for (const item of data) {
+      if (!hasNoSensitiveKeys(item, visited)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  for (const [key, value] of Object.entries(data)) {
+    const normalizedKey = String(key).toLowerCase().trim();
+    if (SENSITIVE_METADATA_KEYS.includes(normalizedKey)) {
+      return false;
+    }
+    if (typeof value === 'object' && value !== null) {
+      if (!hasNoSensitiveKeys(value, visited)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+};
+
+/**
  * ActivityLog Schema for Looply
  * Secure, immutable audit ledger tracking authentication, content mutations, and administrative events.
- * Strictly forbids storing passwords, tokens, or credentials in metadata.
+ * Strictly forbids storing passwords, tokens, API keys, or credentials anywhere in metadata.
  */
 const activityLogSchema = new Schema(
   {
@@ -49,14 +109,8 @@ const activityLogSchema = new Schema(
       type: Schema.Types.Mixed,
       default: {},
       validate: {
-        validator: (val) => {
-          if (!val || typeof val !== 'object') return true;
-          // Guard against storing sensitive information in audit logs
-          const disallowedKeys = ['password', 'passwordhash', 'token', 'jwt', 'secret', 'authtoken'];
-          const keys = Object.keys(val).map((k) => k.toLowerCase());
-          return !disallowedKeys.some((disallowed) => keys.includes(disallowed));
-        },
-        message: 'Security Violation: ActivityLog metadata must never contain passwords, tokens, or sensitive credentials.'
+        validator: (val) => hasNoSensitiveKeys(val),
+        message: 'Security Violation: ActivityLog metadata must never contain sensitive keys (passwords, tokens, secrets, or credentials).'
       }
     },
     createdAt: {
@@ -89,4 +143,3 @@ activityLogSchema.index({ actor: 1, createdAt: -1 });
 const ActivityLog = mongoose.models.ActivityLog || mongoose.model('ActivityLog', activityLogSchema);
 
 export default ActivityLog;
-

@@ -60,7 +60,7 @@ Represents registered platform members and administrative accounts.
 | `updatedAt` | `Date` | Auto | Timestamp | Managed by Mongoose `timestamps` | Last modification timestamp |
 
 #### Indexes on `users`:
-- `{ email: 1 }` (`unique: true`) — Enforces uniqueness of user emails across the platform; powers O(1) login lookup.
+- `{ email: 1 }` (`unique: true`) — Exactly one unique index declared via field-level definition, enforcing email uniqueness across the platform and powering O(1) sign-in lookups.
 
 ---
 
@@ -153,7 +153,7 @@ An immutable audit ledger tracking security checkpoints, content mutations, and 
 | `createdAt` | `Date` | No | `Date.now` | Default timestamp | Audit event occurrence timestamp |
 
 #### Security Validator on `metadata`:
-Rejects any payload containing keys matching `password`, `passwordhash`, `token`, `jwt`, `secret`, or `authtoken`.
+Programmatic recursive inspection: Traverses nested objects and arrays at all depths to strictly reject sensitive keys case-insensitively: `password`, `passwordHash`, `token`, `accessToken`, `refreshToken`, `jwt`, `secret`, `apiKey`, `authorization`, `credentials`, `privateKey`. Deeply nested credentials cannot bypass validation.
 
 #### Indexes on `activitylogs`:
 - `{ createdAt: -1 }` — Powers global chronological administrative audit feeds.

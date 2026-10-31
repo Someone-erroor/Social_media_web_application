@@ -26,7 +26,7 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **Font & Assets:** Optimized font stacks, custom vector SVG branding
 
 ### Backend
-- **Runtime:** Node.js (20.9+)
+- **Runtime:** Node.js (20.19+)
 - **Framework:** Express.js (Modular REST architecture)
 - **CORS:** Environment-governed origin restriction (no wildcards)
 - **Environment:** `dotenv` configuration management with strict validation
@@ -163,7 +163,7 @@ c:/assestement_project/
 ## 4. Getting Started
 
 ### Prerequisites
-- Node.js 20.9+ (tested with v24.16.0)
+- Node.js 20.19+ (required by Mongoose 9; tested with v24.16.0)
 - npm v9+ (tested with v11.13.0)
 
 ### Environment Files Notice
