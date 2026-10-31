@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Logo from '@/components/brand/Logo';
 import Icon from '@/components/ui/Icon';
+import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
@@ -14,6 +15,7 @@ import { ROUTES } from '@/lib/routes';
  */
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   // Close drawer on Escape key for keyboard accessibility
@@ -95,6 +97,17 @@ export default function AdminSidebar() {
         <Icon name="arrowLeft" className="w-4 h-4" />
         <span>Return to User Feed</span>
       </Link>
+
+      <button
+        onClick={() => {
+          if (isMobile) setMobileDrawerOpen(false);
+          logout();
+        }}
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
+      >
+        <Icon name="logout" className="w-4 h-4" />
+        <span>Sign Out</span>
+      </button>
     </div>
   );
 

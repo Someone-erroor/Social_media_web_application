@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Logo from '@/components/brand/Logo';
 import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
+import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
@@ -14,6 +15,7 @@ import { ROUTES } from '@/lib/routes';
  */
 export default function UserSidebar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { label: 'Feed', href: ROUTES.USER.FEED, icon: 'feed' },
@@ -80,13 +82,32 @@ export default function UserSidebar() {
           </span>
         </Link>
 
-        {/* User Card Placeholder */}
-        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
-          <Avatar name="Guest User" size="sm" status="online" />
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-slate-800 truncate">Guest User</p>
-            <p className="text-[11px] text-slate-500 truncate">Active Session</p>
-          </div>
+        {/* User Card & Logout */}
+        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
+          <Link
+            href={ROUTES.USER.PROFILE}
+            className="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-80 transition-opacity"
+          >
+            <Avatar name={user?.fullName || 'Guest User'} size="sm" status={user ? 'online' : 'offline'} />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-slate-800 truncate">
+                {user?.fullName || 'Guest User'}
+              </p>
+              <p className="text-[11px] text-slate-500 truncate">
+                {user ? `@${user.email?.split('@')[0]}` : 'Active Session'}
+              </p>
+            </div>
+          </Link>
+          {user && (
+            <button
+              onClick={logout}
+              title="Sign Out"
+              aria-label="Sign Out"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+            >
+              <Icon name="logout" className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </aside>

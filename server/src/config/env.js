@@ -117,10 +117,54 @@ const validateClientOrigins = (rawOrigins) => {
   });
 };
 
+/**
+ * Validates the JWT_SECRET environment variable.
+ * Must be at least 32 characters in production, and at least 16 in development/test.
+ *
+ * @param {string|undefined} rawSecret - process.env.JWT_SECRET
+ * @param {string} currentEnv - Current NODE_ENV
+ * @returns {string} Validated JWT secret
+ */
+const validateJwtSecret = (rawSecret, currentEnv) => {
+  const secret = rawSecret ? String(rawSecret).trim() : '';
+  const minLength = currentEnv === 'production' ? 32 : 16;
+
+  if (!secret) {
+    if (currentEnv === 'test') {
+      return 'test_jwt_secret_must_be_sufficiently_strong_32_chars';
+    }
+    throw new Error('Configuration Error: JWT_SECRET is required but was not provided.');
+  }
+
+  if (secret.length < minLength) {
+    throw new Error(
+      `Configuration Error: JWT_SECRET is too short. Minimum length is ${minLength} characters.`
+    );
+  }
+
+  return secret;
+};
+
+/**
+ * Validates JWT_EXPIRES_IN string (e.g. '7d', '24h', '3600s').
+ * Defaults to '7d' if not provided.
+ *
+ * @param {string|undefined} rawExpiresIn - process.env.JWT_EXPIRES_IN
+ * @returns {string} Validated expiration string
+ */
+const validateJwtExpiresIn = (rawExpiresIn) => {
+  if (!rawExpiresIn || String(rawExpiresIn).trim() === '') {
+    return '7d';
+  }
+  return String(rawExpiresIn).trim();
+};
+
 const nodeEnv = validateNodeEnv(process.env.NODE_ENV);
 const port = validatePort(process.env.PORT);
 const clientOrigins = validateClientOrigins(process.env.CLIENT_ORIGIN);
 const mongodbUri = process.env.MONGODB_URI ? String(process.env.MONGODB_URI).trim() : '';
+const jwtSecret = validateJwtSecret(process.env.JWT_SECRET, nodeEnv);
+const jwtExpiresIn = validateJwtExpiresIn(process.env.JWT_EXPIRES_IN);
 
 export const env = {
   NODE_ENV: nodeEnv,
@@ -128,6 +172,8 @@ export const env = {
   CLIENT_ORIGIN: clientOrigins.join(','),
   CLIENT_ORIGINS: clientOrigins,
   MONGODB_URI: mongodbUri,
+  JWT_SECRET: jwtSecret,
+  JWT_EXPIRES_IN: jwtExpiresIn,
   isDevelopment: nodeEnv === 'development',
   isProduction: nodeEnv === 'production',
   isTest: nodeEnv === 'test'

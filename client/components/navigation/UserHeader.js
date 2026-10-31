@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Logo from '@/components/brand/Logo';
 import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
+import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
@@ -11,6 +12,7 @@ import { ROUTES } from '@/lib/routes';
  * Provides mobile branding with direct link to feed, search bar, and user access.
  */
 export default function UserHeader() {
+  const { user } = useAuth();
   return (
     <header className="sticky top-0 z-20 w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80">
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
@@ -50,7 +52,7 @@ export default function UserHeader() {
             className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-indigo-500/30 transition-all"
             aria-label="View profile"
           >
-            <Avatar name="Guest User" size="sm" />
+            <Avatar name={user?.fullName || 'Guest User'} size="sm" />
           </Link>
         </div>
       </div>

@@ -14,6 +14,7 @@ export default function Input({
   required = false,
   error,
   icon,
+  action,
   className = '',
   ...props
 }) {
@@ -25,6 +26,7 @@ export default function Input({
     : 'border-slate-300 focus:border-indigo-600 focus:ring-indigo-500/20';
 
   const iconPadding = icon ? 'pl-10' : '';
+  const actionPadding = action ? 'pr-11' : '';
 
   return (
     <div className="relative w-full">
@@ -45,9 +47,14 @@ export default function Input({
         required={required}
         aria-invalid={error ? 'true' : 'false'}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={`${baseClasses} ${stateClasses} ${iconPadding} ${className}`}
+        className={`${baseClasses} ${stateClasses} ${iconPadding} ${actionPadding} ${className}`}
         {...props}
       />
+      {action && (
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+          {action}
+        </div>
+      )}
     </div>
   );
 }

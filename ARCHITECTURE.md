@@ -150,6 +150,30 @@ client/components/
   - `ActivityLog`: Immutable security audit ledger with automated credential leakage validation.
 - Complete documentation: [`DATABASE_SCHEMA.md`](./DATABASE_SCHEMA.md) and [`docs/ER_DIAGRAM.md`](./docs/ER_DIAGRAM.md).
 
+### 4.3 Authentication Architecture & Session Security (Phase 4)
+- **Centralized Auth Configuration (`config/jwt.js`):**
+  - High-entropy secret key validation (`JWT_SECRET` minimum 32 characters in production).
+  - Standardized expiration (`JWT_EXPIRES_IN`, default 7 days).
+  - HTTP-only cookie configuration: `httpOnly: true`, `secure: env.isProduction`, `sameSite: env.isProduction ? 'none' : 'lax'`, `path: '/'`.
+  - Cookie clearance on logout using identical path, sameSite, and security attributes.
+- **Password Security:**
+  - Salted hashing via `bcryptjs` (12 rounds).
+  - Plaintext passwords never stored or logged.
+  - `passwordHash` strictly excluded from Mongoose query projections (`select: false`) and filtered from all API responses.
+- **Role Escalation Protection:**
+  - Registration strictly assigns `role: 'user'`, ignoring or rejecting client-supplied role values.
+  - Administrative accounts are created solely through authorized database administration.
+- **Authentication Endpoints:**
+  - `POST /api/auth/register` — Validates inputs, checks duplicate email (HTTP 409), creates user with bcrypt hash, logs audit event, returns safe user (HTTP 201).
+  - `POST /api/auth/login` — Validates credentials, verifies account active status, issues JWT in HTTP-only cookie, logs audit event, returns safe user (HTTP 200).
+  - `GET /api/auth/me` — Protected by `authenticate` middleware, verifies JWT cookie, queries fresh user data from MongoDB, returns safe profile (HTTP 200).
+  - `POST /api/auth/logout` — Clears HTTP-only session cookie (HTTP 200).
+- **Frontend State Management (`client/context/AuthContext.js`):**
+  - Automatic session restoration on initial mount via `GET /api/auth/me`.
+  - Global `user`, `loading`, `isAuthenticated` state with `login`, `register`, `logout` actions.
+  - Reusable API client (`client/services/api.js`) sending `credentials: 'include'` on all requests.
+  - Post-login navigation: User role redirects to `/feed`; Admin role redirects to `/admin`.
+
 ---
 
 ## 5. Responsiveness & Accessibility Strategy

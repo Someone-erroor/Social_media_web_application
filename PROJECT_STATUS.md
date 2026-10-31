@@ -8,13 +8,15 @@
 
 ## 1. Project Information
 - **Project Name:** Looply
-- **Current Phase:** Phase 3 — Backend foundation and database design
+- **Current Phase:** Phase 4 — User registration and login
 - **Phase Status:**
   - **Phase 1: APPROVED**
   - **Phase 2: APPROVED**
-  - **Phase 3: AWAITING EXTERNAL REVIEW**
-  - **Phase 4: PENDING**
-- **Next Permitted Phase:** Phase 4 — User registration and login (*Halted until Phase 3 review is approved*)
+  - **Phase 3: APPROVED**
+  - **Phase 4: IMPLEMENTATION COMPLETED**
+  - **Phase 4: AWAITING EXTERNAL REVIEW**
+  - **Phase 5: PENDING**
+- **Next Permitted Phase:** Phase 5 — Email verification and password recovery (*Halted until Phase 4 review is approved*)
 
 ---
 
@@ -26,9 +28,9 @@ The development of Looply follows the technical assignment's authoritative 18-ph
 | :--- | :--- | :--- |
 | **PHASE 1** | **Project architecture and initial setup.** | **APPROVED** |
 | **PHASE 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
-| **PHASE 3** | **Backend foundation and database design.** | **AWAITING EXTERNAL REVIEW** |
-| **PHASE 4** | User registration and login. | **PENDING** |
-| **PHASE 5** | Email verification, forgot password and password reset. | Pending |
+| **PHASE 3** | **Backend foundation and database design.** | **APPROVED** |
+| **PHASE 4** | **User registration and login.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 5** | Email verification, forgot password and password reset. | **PENDING** |
 | **PHASE 6** | Authentication security and role-based access control. | Pending |
 | **PHASE 7** | User profile management. | Pending |
 | **PHASE 8** | Post creation, editing and deletion. | Pending |
@@ -62,9 +64,9 @@ The primary development specification is the original technical assignment. All 
 | **Admin Experience Shell & Routes** | Phase 2 | Dark `AdminShell`, `/admin`, `/users`, `/posts`, `/comments`, `/activity` | Completed (Phase 2) |
 | **Responsive Design & Accessibility**| Phase 2 | Mobile top/bottom nav, tablet overflow tables, desktop 3-column, WCAG a11y | Completed (Phase 2) |
 | **Database Schema & ER Diagram** | Phase 3 | MongoDB / Mongoose schema design, collections, relations, ER documentation | Completed (Phase 3) |
-| **Password Hashing** | Phase 4 | Secure bcrypt / Argon2 password hashing on registration | Scheduled for Phase 4 |
-| **Secure Authentication** | Phase 4 | User registration, authentication controllers, error handling | Scheduled for Phase 4 |
-| **Session / Token Management** | Phase 4 & 6 | JWT / secure session cookie issuance, verification, refresh & invalidation | Scheduled for Phase 4 & 6 |
+| **Password Hashing** | Phase 4 | Secure bcrypt password hashing (12 rounds) on registration | Completed (Phase 4) |
+| **Secure Authentication** | Phase 4 | User registration & login controllers, generic errors, role safety | Completed (Phase 4) |
+| **Session / Token Management** | Phase 4 & 6 | JWT in HTTP-only cookies, session restoration via /api/auth/me | Completed (Phase 4) |
 | **SMTP Integration** | Phase 5 | Nodemailer / SMTP transport for transactional email dispatch | Scheduled for Phase 5 |
 | **Email Verification** | Phase 5 | Verification tokens, confirmation links, account status activation | Scheduled for Phase 5 |
 | **Forgot & Reset Password** | Phase 5 | Expiring reset tokens, secure password recovery workflow | Scheduled for Phase 5 |
@@ -337,12 +339,58 @@ Phase 3 development established the scalable backend foundation, Mongoose databa
 
 ---
 
-## 10. Next Permitted Development Phase
+## 10. Phase 4 Implementation & Verification Summary
+
+Phase 4 development delivered real end-to-end user registration, authentication, session management, and frontend integration:
+
+1. **User Registration (`POST /api/auth/register`)**:
+   - Validates all required fields: `fullName` (trimmed, 2–70 chars), `email` (normalized, trimmed, lowercase regex validated), `password` (>=8 chars), and `confirmPassword` (matching).
+   - Prevents duplicate registrations with HTTP 409 Conflict.
+   - Strictly enforces `role: 'user'`, preventing privilege escalation.
+   - Hashes passwords using `bcryptjs` (12 salt rounds); never stores or returns plaintext passwords or `passwordHash`.
+   - Records audit event `user_registration` in `ActivityLog`.
+
+2. **User Login (`POST /api/auth/login`)**:
+   - Validates credentials against MongoDB with generic error messages on failure (HTTP 401).
+   - Enforces account active status; rejects suspended accounts with HTTP 403 Forbidden.
+   - Generates signed JWT (`userId`, `role`) with configurable expiration (`JWT_EXPIRES_IN`, default 7d).
+   - Sets secure HTTP-only cookie (`AUTH_COOKIE_NAME: 'looply_token'`) with `httpOnly: true`, `secure: env.isProduction`, `sameSite: env.isProduction ? 'none' : 'lax'`, `path: '/'`.
+   - Returns safe user response without exposing tokens or hashes.
+   - Records audit event `successful_login` in `ActivityLog`.
+
+3. **Session Verification & Profile (`GET /api/auth/me`)**:
+   - Protected by reusable `authenticate` middleware.
+   - Reads JWT from HTTP-only cookie (with Authorization Bearer fallback).
+   - Verifies signature, expiration, and user account status in MongoDB.
+   - Returns fresh safe user data (HTTP 200) or rejects unauthenticated requests (HTTP 401).
+
+4. **User Logout (`POST /api/auth/logout`)**:
+   - Clears the HTTP-only cookie using matching path and flags.
+   - Returns HTTP 200 `{ success: true, message: 'Logged out successfully.' }`.
+
+5. **Frontend State & UI Integration**:
+   - Centralized `AuthProvider` (`client/context/AuthContext.js`) with `useAuth` hook.
+   - Reusable API client (`client/services/api.js`) sending `credentials: 'include'`.
+   - Automatic session restoration on initial application load via `GET /api/auth/me`.
+   - Interactive `LoginForm` and `RegisterForm` with show/hide password toggles, field-level validation, loading states, error alerts, and post-login redirection based on authoritative role (`/feed` for users, `/admin` for admins).
+   - `UserSidebar` and `UserHeader` render authenticated user profile and working Sign Out action.
+   - `AdminSidebar` includes dedicated Sign Out action in the management footer.
+
+6. **Phase 4 Automated Test Suite (`server/test/test-phase4.mjs`)**:
+   - 33 unit and integration assertions covering registration validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
+   - 100% passing (`cd server; npm run test:auth`).
+   - Cleans up all created test users automatically, preserving database integrity.
+
+---
+
+## 11. Next Permitted Development Phase
 
 - **Current Status:**
   - **Phase 1: APPROVED**
   - **Phase 2: APPROVED**
-  - **Phase 3: AWAITING EXTERNAL REVIEW**
-  - **Phase 4: PENDING**
-- **Next Phase:** **PHASE 4: USER REGISTRATION AND LOGIN.**
-- **Current Directive:** **HALT**. Stop development. Phase 3 implementation is completed. Await external code review and approval before beginning Phase 4.
+  - **Phase 3: APPROVED**
+  - **Phase 4: IMPLEMENTATION COMPLETED**
+  - **Phase 4: AWAITING EXTERNAL REVIEW**
+  - **Phase 5: PENDING**
+- **Next Phase:** **PHASE 5: EMAIL VERIFICATION, FORGOT PASSWORD AND PASSWORD RESET.**
+- **Current Directive:** **HALT**. Stop development. Phase 4 implementation is completed. Await external code review and approval before beginning Phase 5.
