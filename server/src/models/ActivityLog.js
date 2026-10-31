@@ -134,6 +134,18 @@ const activityLogSchema = new Schema(
   }
 );
 
+// Pre-validation middleware explicitly enforcing recursive metadata security
+activityLogSchema.pre('validate', function () {
+  if (this.metadata && typeof this.metadata === 'object') {
+    if (!hasNoSensitiveKeys(this.metadata)) {
+      this.invalidate(
+        'metadata',
+        'Security Violation: ActivityLog metadata must never contain sensitive keys (passwords, tokens, secrets, or credentials).'
+      );
+    }
+  }
+});
+
 // Index 1: Global audit chronological retrieval
 activityLogSchema.index({ createdAt: -1 });
 

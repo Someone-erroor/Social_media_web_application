@@ -155,7 +155,6 @@ c:/assestement_project/
         │   └── health.routes.js
         ├── services/
         └── validators/
-        └── validators/
 ```
 
 ---

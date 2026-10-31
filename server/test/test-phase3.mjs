@@ -176,47 +176,98 @@ async function runTests() {
   const notifErr = await validateDoc(invalidNotif);
   assert(Boolean(notifErr?.errors?.type), '   Invalid notification type rejected by enum');
 
-  // Test 11: ActivityLog Model Validation & Recursive Metadata Security
-  const validActivity = new ActivityLog({
-    action: 'post_creation',
-    targetType: 'Post',
-    targetId: new mongoose.Types.ObjectId(),
-    metadata: {
-      ip: '127.0.0.1',
-      userAgent: 'Mozilla/5.0',
-      clientDetails: {
-        platform: 'web',
-        viewport: { width: 1440, height: 900 }
-      },
-      tags: ['release', 'v1']
-    }
-  });
-  assert(!(await validateDoc(validActivity)), '11. Valid activity log with safe nested metadata passed validation');
-
-  // Test 12: Recursive Rejection of Sensitive Nested Keys in ActivityLog
-  const sensitiveCases = [
-    { name: 'top-level password', data: { password: 'plaintext' } },
-    { name: 'top-level passwordHash', data: { passwordHash: '$2b$10$abc' } },
-    { name: 'nested object accessToken', data: { auth: { accessToken: 'xyz.jwt.token' } } },
-    { name: 'deeply nested refreshToken', data: { session: { tokens: { refreshToken: 'rt_123' } } } },
-    { name: 'nested secret', data: { config: { secret: 'supersecret' } } },
-    { name: 'nested apiKey', data: { externalService: { apiKey: 'api_key_live_999' } } },
-    { name: 'nested authorization header', data: { request: { headers: { authorization: 'Bearer 123' } } } },
-    { name: 'nested credentials object', data: { user: { credentials: { id: 1 } } } },
-    { name: 'deeply nested privateKey', data: { crypto: { keys: { privateKey: 'PEM_KEY' } } } },
-    { name: 'nested array token', data: { auditHistory: [{ token: 'jwt_value' }] } },
-    { name: 'mixed nested array secret', data: { meta: [{ items: [{ secret: 'nested_secret' }] }] } }
+  // Test 11: ActivityLog Model Validation - Valid Metadata Scenarios
+  const validMetadataCases = [
+    { name: 'empty metadata object', data: {} },
+    { name: 'safe top-level fields', data: { ip: '127.0.0.1', route: '/feed', status: 200 } },
+    { name: 'safe nested object', data: { client: { os: 'Windows', browser: 'Chrome', viewport: { width: 1440, height: 900 } } } },
+    { name: 'safe objects inside array', data: { auditEntries: [{ action: 'view' }, { action: 'filter' }] } },
+    { name: 'safe array inside object', data: { postDetails: { tags: ['technology', 'design'], categories: ['web'] } } },
+    { name: 'safe array of arrays', data: { matrix: [[{ step: 1 }], [{ step: 2 }]] } }
   ];
 
-  for (const testCase of sensitiveCases) {
+  for (const validCase of validMetadataCases) {
     const doc = new ActivityLog({
-      action: 'successful_login',
-      metadata: testCase.data
+      action: 'post_creation',
+      targetType: 'Post',
+      targetId: new mongoose.Types.ObjectId(),
+      metadata: validCase.data
     });
     const err = await validateDoc(doc);
+    assert(!err, `11. Valid metadata accepted: ${validCase.name}`);
+  }
+
+  // Test 12: ActivityLog Recursive Rejection of ALL 11 Required Sensitive Keys
+  const allRequiredSensitiveKeys = [
+    'password',
+    'passwordHash',
+    'token',
+    'accessToken',
+    'refreshToken',
+    'jwt',
+    'secret',
+    'apiKey',
+    'authorization',
+    'credentials',
+    'privateKey'
+  ];
+
+  console.log('\n--- Testing Rejection of All 11 Sensitive Keys (Top-level & Nested) ---');
+  for (const sensitiveKey of allRequiredSensitiveKeys) {
+    // A. Top-level object test
+    const docTop = new ActivityLog({
+      action: 'successful_login',
+      metadata: { [sensitiveKey]: 'sensitive_payload_123' }
+    });
+    const errTop = await validateDoc(docTop);
     assert(
-      Boolean(err?.errors?.metadata),
-      `12. Rejection verified for ${testCase.name}`
+      Boolean(errTop?.errors?.metadata),
+      `12. [Top-level] Rejection verified for "${sensitiveKey}"`
+    );
+
+    // B. Nested object test
+    const docNested = new ActivityLog({
+      action: 'successful_login',
+      metadata: { sessionInfo: { authentication: { [sensitiveKey]: 'nested_value_456' } } }
+    });
+    const errNested = await validateDoc(docNested);
+    assert(
+      Boolean(errNested?.errors?.metadata),
+      `12. [Nested Object] Rejection verified for "${sensitiveKey}"`
+    );
+
+    // C. Object inside array test
+    const docInArray = new ActivityLog({
+      action: 'successful_login',
+      metadata: { auditList: [{ event: 'login' }, { [sensitiveKey]: 'array_val' }] }
+    });
+    const errInArray = await validateDoc(docInArray);
+    assert(
+      Boolean(errInArray?.errors?.metadata),
+      `12. [Object in Array] Rejection verified for "${sensitiveKey}"`
+    );
+
+    // D. Array inside object inside array test
+    const docDeep = new ActivityLog({
+      action: 'successful_login',
+      metadata: { payload: [{ subCollection: [{ [sensitiveKey]: 'deep_val' }] }] }
+    });
+    const errDeep = await validateDoc(docDeep);
+    assert(
+      Boolean(errDeep?.errors?.metadata),
+      `12. [Deep Nested Array] Rejection verified for "${sensitiveKey}"`
+    );
+
+    // E. Case-insensitivity test (UPPERCASE)
+    const upperKey = sensitiveKey.toUpperCase();
+    const docUpper = new ActivityLog({
+      action: 'successful_login',
+      metadata: { wrapper: { [upperKey]: 'case_insensitive_val' } }
+    });
+    const errUpper = await validateDoc(docUpper);
+    assert(
+      Boolean(errUpper?.errors?.metadata),
+      `12. [Case-Insensitive ${upperKey}] Rejection verified for "${sensitiveKey}"`
     );
   }
 

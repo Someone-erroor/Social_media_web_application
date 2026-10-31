@@ -193,7 +193,7 @@ In strict adherence to assignment requirements, development resources are focuse
 #### Documentation & Test Suites
 - `DATABASE_SCHEMA.md`: Comprehensive database schema specification, types, indexes, cascade deletion strategy, and Atlas guide.
 - `docs/ER_DIAGRAM.md`: Visual Mermaid ER diagram matching all six schemas, fields, and relationships.
-- `server/test/test-phase3.mjs`: Automated Phase 3 test suite containing 27 unit and integration assertions runnable via `npm test`.
+- `server/test/test-phase3.mjs`: Automated Phase 3 test suite containing 87 unit and integration assertions runnable via `npm test` (or `npm.cmd test`).
 
 ---
 
@@ -305,9 +305,10 @@ Phase 3 development established the scalable backend foundation, Mongoose databa
    - Verified via `User.schema.indexes()` that exactly ONE unique email index exists (`[ [ { email: 1 }, { unique: true } ] ]`).
 
 3. **Activity Log Recursive Metadata Security (`server/src/models/ActivityLog.js`)**:
-   - Implemented `hasNoSensitiveKeys()` with deep recursive inspection across arbitrary object and array depths.
-   - Programmatically rejects: `password`, `passwordHash`, `token`, `accessToken`, `refreshToken`, `jwt`, `secret`, `apiKey`, `authorization`, `credentials`, `privateKey`.
-   - Added 11 automated test cases verifying that neither top-level nor nested/array credentials can bypass validation.
+   - Implemented `hasNoSensitiveKeys()` with deep recursive inspection across arbitrary object and array depths (including nested objects, arrays, objects inside arrays, and arrays inside objects).
+   - Programmatically rejects case-insensitively all 11 required sensitive keys: `password`, `passwordHash`, `token`, `accessToken`, `refreshToken`, `jwt`, `secret`, `apiKey`, `authorization`, `credentials`, `privateKey`.
+   - Wired to Mongoose schema through both path validator (`validate.validator`) and document lifecycle middleware (`pre('validate')`).
+   - Covered by 55 targeted security assertions verifying that neither top-level nor nested/array credentials can bypass validation.
 
 4. **Centralized Database Connection (`server/src/config/database.js`)**:
    - Integrated Mongoose v9.11.4 with duplicate connection prevention (`readyState` checking).
@@ -327,8 +328,8 @@ Phase 3 development established the scalable backend foundation, Mongoose databa
    - Live MongoDB connectivity explicitly tracked as **PENDING** until live Atlas / production cluster credentials are provided in the deployment environment. No unverified live connection is claimed.
 
 7. **Automated Test Suite (`server/test/test-phase3.mjs`)**:
-   - 38 unit and integration test assertions covering all Phase 3 requirements.
-   - 100% passing (`cd server; npm test`).
+   - 87 unit and integration test assertions covering all Phase 3 requirements.
+   - 100% passing (`cd server; npm test` / `npm.cmd test`).
 
 ---
 
