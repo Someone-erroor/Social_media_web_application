@@ -398,10 +398,10 @@ Phase 4 development delivered real end-to-end user registration, authentication,
      - Guaranteed cleanup of all owned resources even if MongoDB connection fails, port check fails, backend fails, build fails, startup fails, or assertions fail:
        - Created user document and audit logs cleaned up from `looply_test`.
        - Headless Chrome browser cleanly closed.
-       - Next.js test process tree terminated via targeted PID without touching unrelated processes.
+       - Next.js test process tree reliably terminated across Windows (taskkill /pid /T /F), macOS, and Linux (pkill -P and process group SIGKILL) without touching unrelated processes.
        - Express API test backend server cleanly closed.
        - Mongoose connection to `looply_test` cleanly disconnected.
-   - 29 browser assertions verified:
+   - 30 browser assertions verified:
      - Verified `mongoose.connection.name === "looply_test"` prior to creating or deleting any records.
      - Verified ports 5000 and 3000 are unoccupied before starting isolated backend and frontend instances.
      - Verified backend health contract (`{ success: true, message: "Looply backend is running" }`, strictly rejecting arbitrary 4xx codes).
@@ -424,8 +424,9 @@ Phase 4 development delivered real end-to-end user registration, authentication,
      - API requests verified sending `credentials: 'include'`.
      - User logged out through the real browser UI by clicking "Sign Out".
      - HTTP-only cookie verified cleared from browser cookie jar upon logout.
-     - Security assertion: 100% of intercepted browser API requests strictly targeted the test backend (`http://127.0.0.1:5000/api`).
-   - 100% passing (`npm run test:e2e`: 29 passed, 0 failed).
+     - Request interception security assertion: zero unexpected API request violations occurred (violations: 0).
+      - Target isolation assertion: 100% of intercepted browser API requests targeted test backend exclusively (`http://127.0.0.1:5000/api`).
+   - 100% passing (`npm run test:e2e`: 30 passed, 0 failed).
 
 9. **Automated Backend & Integration Test Suite (`server/test/test-phase4.mjs`)**:
    - 39 assertions testing test database safety, zero-fallback requirement, pre-creation and pre-deletion database name validation, input validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
