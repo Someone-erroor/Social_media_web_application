@@ -130,7 +130,6 @@ A security audit was conducted to verify that sensitive runtime environment file
 #### Client Application (`client/`)
 - `client/.gitignore`
 - `client/.env.example`
-- `client/.env.local`
 - `client/package.json`
 - `client/next.config.mjs`
 - `client/jsconfig.json`
@@ -156,7 +155,6 @@ A security audit was conducted to verify that sensitive runtime environment file
 #### Server Application (`server/`)
 - `server/.gitignore`
 - `server/.env.example`
-- `server/.env`
 - `server/package.json`
 - `server/src/app.js`
 - `server/src/server.js`
@@ -215,9 +213,13 @@ In response to Phase 1 review feedback, the following corrections were executed 
 
 2. **`server/src/config/env.js`**:
    - Added `NODE_ENV` validation allowing only `development`, `production`, and `test`. Any other value terminates startup immediately with an explicit configuration error.
+   - Set environment flags explicitly:
+     - `isDevelopment = NODE_ENV === 'development'`
+     - `isProduction = NODE_ENV === 'production'`
+     - `isTest = NODE_ENV === 'test'`
    - Added rigorous `PORT` validation: must be an integer between 1 and 65535.
    - Added `CLIENT_ORIGIN` validation: parses URLs, verifies `http:` or `https:` protocols, and rejects URLs with paths, queries, or hashes.
-   - Exports `isDevelopment` strictly as `nodeEnv === 'development'`, ensuring invalid or unexpected environments never activate development error handling or stack traces.
+   - Full support for multiple comma-separated allowed origins.
 
 3. **`server/src/middleware/error.middleware.js`**:
    - HTTP 500 responses in production, test, or non-development environments strictly return generic `"Internal Server Error"`, never exposing internal details.

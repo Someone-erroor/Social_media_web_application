@@ -13,8 +13,8 @@ const ALLOWED_NODE_ENVS = ['development', 'production', 'test'];
 /**
  * Validates the NODE_ENV environment variable.
  * Allowed values: 'development', 'production', 'test'.
- * Rejects all other values and stops startup.
- * Defaults to 'development' only when process.env.NODE_ENV is undefined.
+ * Rejects invalid values and stops startup.
+ * Defaults to 'development' if process.env.NODE_ENV is undefined.
  *
  * @param {string|undefined} rawEnv - Value of process.env.NODE_ENV
  * @returns {string} Validated NODE_ENV string
@@ -126,7 +126,7 @@ export const env = {
   PORT: port,
   CLIENT_ORIGIN: clientOrigins.join(','),
   CLIENT_ORIGINS: clientOrigins,
-  isProduction: nodeEnv === 'production',
   isDevelopment: nodeEnv === 'development',
+  isProduction: nodeEnv === 'production',
   isTest: nodeEnv === 'test'
 };
