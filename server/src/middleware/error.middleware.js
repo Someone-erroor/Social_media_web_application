@@ -14,10 +14,10 @@ export const notFoundHandler = (req, res, next) => {
 /**
  * Global Error Handling Middleware
  * Provides consistent error response payload.
- * - Prevents internal server error messages from being exposed in production.
- * - Returns a generic "Internal Server Error" message for HTTP 500 errors in production.
+ * - Prevents internal server error messages from being exposed in production or test.
+ * - Returns a generic "Internal Server Error" message for HTTP 500 errors unless explicitly development.
  * - Preserves appropriate client-facing 4xx messages.
- * - Keeps stack traces development-only.
+ * - Development stack traces are exposed ONLY when NODE_ENV is explicitly development.
  */
 export const errorHandler = (err, req, res, next) => {
   const statusCode =
@@ -30,8 +30,8 @@ export const errorHandler = (err, req, res, next) => {
   // Determine appropriate client-facing message
   let message;
   if (statusCode >= 500) {
-    // Expose internal details ONLY in development mode; hide in production and all other modes
-    message = env.isDevelopment ? (err.message || 'Internal Server Error') : 'Internal Server Error';
+    // Expose internal details ONLY when NODE_ENV is explicitly development
+    message = env.NODE_ENV === 'development' ? (err.message || 'Internal Server Error') : 'Internal Server Error';
   } else {
     // Preserve client-facing 4xx error messages across all environments
     message = err.message || 'An error occurred';
@@ -42,8 +42,8 @@ export const errorHandler = (err, req, res, next) => {
     message
   };
 
-  // Stack traces are strictly development-only
-  if (env.isDevelopment && err.stack) {
+  // Stack traces are exposed ONLY when NODE_ENV is explicitly development
+  if (env.NODE_ENV === 'development' && err.stack) {
     response.stack = err.stack;
   }
 

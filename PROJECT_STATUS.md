@@ -221,7 +221,7 @@ In response to Phase 1 review feedback, the following corrections were executed 
 
 3. **`server/src/middleware/error.middleware.js`**:
    - HTTP 500 responses in production, test, or non-development environments strictly return generic `"Internal Server Error"`, never exposing internal details.
-   - Detailed error messages and stack traces are strictly restricted to `env.isDevelopment`.
+   - Detailed error messages and stack traces are exposed ONLY when `NODE_ENV` is explicitly `'development'`.
    - Client-facing 4xx error messages (400, 401, 403, 404, 409) are preserved across all environments.
 
 4. **`README.md`**:
