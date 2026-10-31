@@ -378,34 +378,37 @@ Phase 4 development delivered real end-to-end user registration, authentication,
    - `AdminSidebar` includes dedicated Sign Out action in the management footer.
 
 6. **Dedicated Test Database Isolation (`looply_test`)**:
-   - Separate `MONGODB_TEST_URI` introduced and documented in `server/.env.example`.
-   - Automated safety checker (`validateTestDatabaseSafety`) strictly rejects production and primary application database URIs before any test connection or cleanup can execute.
+   - Separate `MONGODB_TEST_URI` strictly required; zero fallback to `MONGODB_URI` prevents any modification of the primary application database.
+   - Reusable test database utility (`server/test/test-helpers.mjs`) exports `validateTestDatabaseSafety`, `getTestMongoUri`, and `findChromeExecutable`.
+   - Automated safety checker strictly rejects production and primary application database URIs before any test connection or cleanup can execute.
    - Tests connect to dedicated `looply_test` database and verify `mongoose.connection.name === 'looply_test'` prior to test document creation or deletion.
-   - Test artifact cleanup operates strictly against `looply_test` and never modifies primary application data.
+   - Test artifact cleanup operates strictly against `looply_test` and deletes only the specific user IDs created during the test run.
 
 7. **Cryptographic JWT Secret Configuration**:
    - Predefined JWT secret removed from `server/.env.example` (`JWT_SECRET=`).
-   - Instructions added explaining how to generate cryptographically secure random secrets using Node.js crypto (`randomBytes(32).toString('hex')`) or OpenSSL (`openssl rand -hex 32`).
+   - Instructions added explaining how to generate cryptographically secure random secrets using Node.js crypto (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`) or OpenSSL (`openssl rand -hex 32`).
 
 8. **End-to-End Real Browser Testing (`server/test/test-e2e-browser.mjs`)**:
-   - Executed against a real running browser (Headless Chrome via Puppeteer-Core) connected to Next.js on port 3000, Express on port 5000, and MongoDB Atlas `looply_test`.
-   - 24 browser assertions verified:
+   - Executed against a real running browser (Headless Chrome via Puppeteer-Core with portable multi-platform binary discovery) connected to Next.js on port 3000, Express on port 5000, and MongoDB Atlas `looply_test`.
+   - 26 browser assertions verified:
+     - Verified `mongoose.connection.name === "looply_test"` prior to creating or deleting any records.
      - User registration completed through the real browser UI.
      - User record verified in MongoDB `looply_test`.
      - Password verified stored as bcrypt hash ($2a$/$2b$), never plaintext.
+     - Stored bcrypt hash verifies against original plaintext password.
      - User login completed through the real browser UI.
-     - HTTP-only cookie (`looply_token`) issued and verified in browser cookie jar.
+     - HTTP-only cookie (`looply_token`) issued and verified in browser cookie jar (`httpOnly: true`, `path: '/'`).
      - Authenticated user state rendered in `UserSidebar` ("Browser E2E User").
      - Browser reloaded and session restoration verified via `GET /api/auth/me`.
      - API requests verified sending `credentials: 'include'`.
      - User logged out through the real browser UI by clicking "Sign Out".
      - HTTP-only cookie verified cleared from browser cookie jar upon logout.
      - Role escalation attempt strictly prevented and assigned `role: "user"`.
-   - 100% passing (`npm run test:e2e`: 24 passed, 0 failed).
+   - 100% passing (`npm run test:e2e`: 26 passed, 0 failed).
 
 9. **Automated Backend & Integration Test Suite (`server/test/test-phase4.mjs`)**:
-   - 36 assertions testing test database safety, input validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
-   - 100% passing (`npm run test:auth`: 36 passed, 0 failed).
+   - 39 assertions testing test database safety, zero-fallback requirement, pre-creation and pre-deletion database name validation, input validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
+   - 100% passing (`npm run test:auth`: 39 passed, 0 failed).
 
 10. **Build & Lint Verification**:
     - `npm run lint` in `client`: Passed with 0 errors and 0 warnings.

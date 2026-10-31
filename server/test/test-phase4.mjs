@@ -7,6 +7,9 @@ import { connectDatabase, disconnectDatabase, isDatabaseConnected } from '../src
 import { AUTH_COOKIE_NAME } from '../src/config/jwt.js';
 import { User, ActivityLog } from '../src/models/index.js';
 import app from '../src/app.js';
+import { validateTestDatabaseSafety, getTestMongoUri } from './test-helpers.mjs';
+
+export { validateTestDatabaseSafety, getTestMongoUri };
 
 let passed = 0;
 let failed = 0;
@@ -19,43 +22,6 @@ function assert(condition, message) {
     console.error(`✗ FAIL: ${message}`);
     failed++;
   }
-}
-
-/**
- * Validates test database URI safety to prevent accidental operations
- * against production or regular application databases.
- *
- * @param {string} uri - MongoDB connection URI
- * @returns {string} Validated test database name
- * @throws {Error} If URI is unsafe or targets a non-test database
- */
-export function validateTestDatabaseSafety(uri) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('SAFETY CHECK REJECTED: Automated test suites cannot execute when NODE_ENV is set to production.');
-  }
-
-  if (!uri || typeof uri !== 'string' || uri.trim() === '') {
-    throw new Error('SAFETY CHECK REJECTED: MONGODB_TEST_URI is required for running automated tests.');
-  }
-
-  const cleanUri = uri.trim();
-
-  // Reject production identifiers
-  if (/(production|prod-db|looply-prod)/i.test(cleanUri)) {
-    throw new Error('SAFETY CHECK REJECTED: Production database URI indicator detected. Aborting test execution.');
-  }
-
-  // Extract database name from URI
-  const pathWithoutQuery = cleanUri.split('?')[0];
-  const dbName = pathWithoutQuery.split('/').pop();
-
-  if (!dbName || dbName !== 'looply_test') {
-    throw new Error(
-      `SAFETY CHECK REJECTED: Tests must connect strictly to dedicated "looply_test" database. Detected database: "${dbName}". Primary application database modification is strictly prohibited.`
-    );
-  }
-
-  return dbName;
 }
 
 async function runPhase4Tests() {
@@ -96,14 +62,9 @@ async function runPhase4Tests() {
   }
   assert(testDbAccepted, 'Safety check accepts dedicated "looply_test" database URI');
 
-  // Determine active test URI
-  const testUri =
-    process.env.MONGODB_TEST_URI ||
-    env.MONGODB_TEST_URI ||
-    (env.MONGODB_URI ? env.MONGODB_URI.replace('/looply', '/looply_test') : '');
-
-  // Validate configured test URI
-  validateTestDatabaseSafety(testUri);
+  // Retrieve strictly required MONGODB_TEST_URI (never falls back to MONGODB_URI)
+  const testUri = getTestMongoUri();
+  assert(Boolean(testUri), 'MONGODB_TEST_URI successfully retrieved without fallback to MONGODB_URI');
 
   // Establish Database Connection to dedicated test database
   await connectDatabase(testUri);
@@ -112,6 +73,14 @@ async function runPhase4Tests() {
     isDatabaseConnected() && activeDbName === 'looply_test',
     `1. Connected to dedicated test database: "${activeDbName}"`
   );
+
+  // Pre-test assertion: Verify database name before creating any records
+  if (activeDbName !== 'looply_test') {
+    throw new Error(
+      `CRITICAL SAFETY CHECK FAILED: Expected database "looply_test", but active database is "${activeDbName}". Halting test execution immediately.`
+    );
+  }
+  assert(true, 'Verified mongoose.connection.name === "looply_test" before creating any test records');
 
   // Start temporary HTTP test server
   const server = app.listen(0);
@@ -495,6 +464,11 @@ async function runPhase4Tests() {
     // Safety check before running cleanup: ensure we are strictly in looply_test
     console.log('\n--- Cleaning up Test Artifacts from Dedicated Test Database ---');
     const finalDbName = mongoose.connection.name || mongoose.connection.db?.databaseName;
+    assert(
+      finalDbName === 'looply_test',
+      'Verified mongoose.connection.name === "looply_test" before deleting any test records'
+    );
+
     if (finalDbName !== 'looply_test') {
       console.error(`CRITICAL SAFETY ABORT: Active database is "${finalDbName}". Cleanup cancelled to protect non-test data.`);
     } else if (createdUserIds.length > 0) {

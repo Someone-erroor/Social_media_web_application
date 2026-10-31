@@ -106,7 +106,9 @@ c:/assestement_project/
 │   │   │   ├── EmptyState.js
 │   │   │   └── PageHeader.js
 │   │   ├── forms/
-│   │   │   └── FormField.js
+│   │   │   ├── FormField.js
+│   │   │   ├── LoginForm.js
+│   │   │   └── RegisterForm.js
 │   │   ├── navigation/
 │   │   │   ├── PublicNavbar.js
 │   │   │   ├── PublicFooter.js
@@ -115,14 +117,22 @@ c:/assestement_project/
 │   │   │   ├── UserBottomNav.js
 │   │   │   ├── AdminSidebar.js
 │   │   │   └── AdminHeader.js
+│   │   ├── providers/
+│   │   │   ├── ClientProviders.js
+│   │   │   └── index.js
 │   │   └── layouts/
 │   │       ├── UserShell.js
 │   │       └── AdminShell.js
+│   ├── context/
+│   │   └── AuthContext.js
 │   ├── features/
 │   ├── hooks/
+│   │   └── useAuth.js
 │   ├── lib/
 │   │   └── routes.js
 │   ├── services/
+│   │   ├── api.js
+│   │   └── authService.js
 │   └── public/
 │       ├── favicon.svg
 │       └── logo.svg
@@ -131,18 +141,25 @@ c:/assestement_project/
     ├── .gitignore
     ├── package.json
     ├── test/
-    │   └── test-phase3.mjs
+    │   ├── test-phase3.mjs
+    │   ├── test-phase4.mjs
+    │   ├── test-e2e-browser.mjs
+    │   ├── test-helpers.mjs
+    │   └── test-atlas-connection.mjs
     └── src/
         ├── app.js
         ├── server.js
         ├── config/
         │   ├── env.js
         │   ├── cors.js
-        │   └── database.js
+        │   ├── database.js
+        │   └── jwt.js
         ├── controllers/
-        │   └── health.controller.js
+        │   ├── health.controller.js
+        │   └── auth.controller.js
         ├── middleware/
-        │   └── error.middleware.js
+        │   ├── error.middleware.js
+        │   └── auth.middleware.js
         ├── models/
         │   ├── User.js
         │   ├── Post.js
@@ -153,9 +170,12 @@ c:/assestement_project/
         │   └── index.js
         ├── routes/
         │   ├── index.js
-        │   └── health.routes.js
+        │   ├── health.routes.js
+        │   └── auth.routes.js
         ├── services/
+        │   └── auth.service.js
         └── validators/
+            └── auth.validator.js
 ```
 
 ---

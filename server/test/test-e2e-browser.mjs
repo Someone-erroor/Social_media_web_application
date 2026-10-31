@@ -9,7 +9,7 @@ import { connectDatabase, disconnectDatabase, isDatabaseConnected } from '../src
 import { AUTH_COOKIE_NAME } from '../src/config/jwt.js';
 import { User, ActivityLog } from '../src/models/index.js';
 import app from '../src/app.js';
-import { validateTestDatabaseSafety } from './test-phase4.mjs';
+import { validateTestDatabaseSafety, getTestMongoUri, findChromeExecutable } from './test-helpers.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,11 +52,7 @@ async function runE2EBrowserTests() {
   console.log('====================================================\n');
 
   // 1. Establish database connection to dedicated looply_test database
-  const testUri =
-    process.env.MONGODB_TEST_URI ||
-    env.MONGODB_TEST_URI ||
-    (env.MONGODB_URI ? env.MONGODB_URI.replace('/looply', '/looply_test') : '');
-
+  const testUri = getTestMongoUri();
   validateTestDatabaseSafety(testUri);
   await connectDatabase(testUri);
   const activeDb = mongoose.connection.name || mongoose.connection.db?.databaseName;
@@ -64,6 +60,14 @@ async function runE2EBrowserTests() {
     isDatabaseConnected() && activeDb === 'looply_test',
     `1. Connected to dedicated test database: "${activeDb}"`
   );
+
+  // Pre-test assertion: Verify database name before creating any records
+  if (activeDb !== 'looply_test') {
+    throw new Error(
+      `CRITICAL SAFETY CHECK: Expected database "looply_test", but active database is "${activeDb}". Halting E2E execution.`
+    );
+  }
+  assert(true, 'Verified mongoose.connection.name === "looply_test" before browser test actions');
 
   // 2. Start Express API Server on port 5000
   console.log('\n--- Starting Express API Server on port 5000 ---');
@@ -116,9 +120,11 @@ async function runE2EBrowserTests() {
   await waitForServer('http://127.0.0.1:3000', 30000);
   assert(true, '3. Next.js frontend listening and responsive on port 3000');
 
-  // 4. Launch Headless Chrome via puppeteer-core
-  console.log('\n--- Launching Real Headless Chrome Browser ---');
-  const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+  // 4. Launch Headless Chrome via puppeteer-core using portable executable finder
+  console.log('\n--- Launching Portable Headless Chrome Browser ---');
+  const chromePath = findChromeExecutable();
+  console.log(`Discovered portable Chrome binary: ${chromePath}`);
+
   const browser = await puppeteer.launch({
     executablePath: chromePath,
     headless: true,
@@ -130,7 +136,7 @@ async function runE2EBrowserTests() {
       '--window-size=1280,800'
     ]
   });
-  assert(Boolean(browser), '4. Headless Chrome browser launched successfully');
+  assert(Boolean(browser), '4. Portable Headless Chrome browser launched successfully');
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 800 });
@@ -167,7 +173,7 @@ async function runE2EBrowserTests() {
     await page.click('button[type="submit"]');
 
     // Wait for redirect to login page
-    await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 10000 });
+    await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
     assert(true, '6. Browser automatically navigated to /login after successful registration');
 
     // 6. Confirm user is created in MongoDB test database
@@ -216,8 +222,8 @@ async function runE2EBrowserTests() {
 
     // 9. Login through the Browser
     console.log('\n--- Step 4: Login Authentication via Real Browser UI ---');
-    await page.waitForSelector('#login-email');
-    await page.waitForSelector('#login-password');
+    await page.waitForSelector('#login-email', { timeout: 10000 });
+    await page.waitForSelector('#login-password', { timeout: 10000 });
 
     await page.type('#login-email', testUserEmail);
     await page.type('#login-password', testUserPassword);
@@ -226,7 +232,7 @@ async function runE2EBrowserTests() {
     await page.click('button[type="submit"]');
 
     // Wait for redirect to /feed
-    await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 10000 });
+    await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 15000 });
     assert(true, '14. Browser redirected to /feed after successful login');
 
     // 10. Confirm HTTP-only cookie is issued in browser
@@ -241,7 +247,7 @@ async function runE2EBrowserTests() {
     assert(authCookie?.path === '/', '17. Cookie has Path=/ set');
 
     // 11. Confirm UI displays authenticated user
-    await page.waitForSelector('aside[aria-label="User Sidebar"]');
+    await page.waitForSelector('aside[aria-label="User Sidebar"]', { timeout: 10000 });
     const pageText = await page.evaluate(() => document.body.innerText);
     assert(
       pageText.includes('Browser E2E User'),
@@ -254,9 +260,15 @@ async function runE2EBrowserTests() {
     const currentPath = await page.evaluate(() => window.location.pathname);
     assert(currentPath === '/feed', '19. Path remains /feed after full browser reload');
 
+    // Wait for client-side AuthProvider useEffect(getMe) to complete and render user name
+    await page.waitForFunction(
+      (name) => document.body.innerText.includes(name),
+      { timeout: 10000 },
+      testUserFullName
+    );
     const refreshedText = await page.evaluate(() => document.body.innerText);
     assert(
-      refreshedText.includes('Browser E2E User'),
+      refreshedText.includes(testUserFullName),
       '20. Session restored automatically from HTTP-only cookie via GET /api/auth/me'
     );
 
@@ -276,11 +288,11 @@ async function runE2EBrowserTests() {
 
     // 14. Logout through the Browser
     console.log('\n--- Step 8: User Logout via Real Browser UI ---');
-    const logoutBtn = await page.waitForSelector('button[aria-label="Sign Out"]');
+    const logoutBtn = await page.waitForSelector('button[aria-label="Sign Out"]', { timeout: 10000 });
     assert(Boolean(logoutBtn), '22. "Sign Out" button found in UserSidebar');
 
     await logoutBtn.click();
-    await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 10000 });
+    await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
     assert(true, '23. Browser navigated to /login after clicking Sign Out');
 
     // 15. Confirm Cookie Removal
@@ -298,6 +310,11 @@ async function runE2EBrowserTests() {
     // Clean up created user from MongoDB test database
     console.log('\n--- Cleaning up Test Artifacts from Dedicated Test Database ---');
     const finalDb = mongoose.connection.name || mongoose.connection.db?.databaseName;
+    assert(
+      finalDb === 'looply_test',
+      'Verified mongoose.connection.name === "looply_test" before deleting any E2E test records'
+    );
+
     if (finalDb !== 'looply_test') {
       console.error(`SAFETY ABORT: Current database is "${finalDb}". Cleanup prevented.`);
     } else if (createdUserId) {
@@ -332,4 +349,3 @@ runE2EBrowserTests().catch((err) => {
   console.error('[Fatal Error in E2E Browser Tests]', err);
   process.exit(1);
 });
-
