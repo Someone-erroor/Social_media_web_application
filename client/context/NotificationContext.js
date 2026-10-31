@@ -16,6 +16,12 @@ export function NotificationProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef(null);
 
+  // Keep ref synchronized with notifications state outside render
+  const notificationsRef = useRef(notifications);
+  useEffect(() => {
+    notificationsRef.current = notifications;
+  }, [notifications]);
+
   // Fetch initial or refreshed notifications from database
   const refreshNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -131,18 +137,25 @@ export function NotificationProvider({ children }) {
         });
     });
 
-    // Handle real-time incoming notification with strict duplicate prevention
+    // Handle real-time incoming notification with duplicate prevention
+    // Avoids calling setUnreadCount inside the setNotifications state updater
     const handleIncomingNotification = (item) => {
-      if (!item) return;
+      if (!item || !item._id) return;
+
+      // Prevent duplicate insertion if already present in state
+      if (notificationsRef.current.some((n) => n._id === item._id)) {
+        return;
+      }
+
       setNotifications((prev) => {
-        // Prevent duplicate insertion if already present in state
-        if (item._id && prev.some((n) => n._id === item._id)) {
+        if (prev.some((n) => n._id === item._id)) {
           return prev;
         }
-        // Increment unread count strictly for new notifications
-        setUnreadCount((c) => c + 1);
         return [item, ...prev];
       });
+
+      // Increment unreadCount strictly outside the setNotifications updater
+      setUnreadCount((c) => c + 1);
     };
 
     socket.on('notification', handleIncomingNotification);
@@ -162,24 +175,67 @@ export function NotificationProvider({ children }) {
     };
   }, [isAuthenticated, user]);
 
+  /**
+   * Idempotent markAsRead handler:
+   * - Only decrements unreadCount if notification was previously unread
+   * - Returns early if notification is already read (no duplicate state updates)
+   * - Avoids calling setUnreadCount inside the setNotifications state updater
+   */
   const markAsRead = async (notificationId) => {
+    if (!notificationId) return;
+
+    // Check existing notification state to ensure idempotency
+    const existing = notificationsRef.current.find((n) => n._id === notificationId);
+    if (existing && existing.readAt) {
+      return; // Already marked as read; idempotent no-op
+    }
+
+    const wasUnread = existing ? !existing.readAt : true;
+
     try {
       await notificationService.markAsRead(notificationId);
-      setNotifications((prev) =>
-        prev.map((n) => (n._id === notificationId ? { ...n, readAt: new Date().toISOString() } : n))
-      );
-      setUnreadCount((c) => Math.max(0, c - 1));
+
+      // Prevent duplicate state updates by returning same prev reference if already read
+      setNotifications((prev) => {
+        const item = prev.find((n) => n._id === notificationId);
+        if (!item || item.readAt) {
+          return prev;
+        }
+        return prev.map((n) =>
+          n._id === notificationId ? { ...n, readAt: new Date().toISOString() } : n
+        );
+      });
+
+      // Only decrement unreadCount when previously unread, strictly outside the updater
+      if (wasUnread) {
+        setUnreadCount((c) => Math.max(0, c - 1));
+      }
     } catch (err) {
       console.error('Failed to mark notification as read:', err);
     }
   };
 
+  /**
+   * Idempotent markAllAsRead handler:
+   * - No-op if already all read
+   * - Updates unreadCount strictly outside setNotifications updater
+   */
   const markAllAsRead = async () => {
+    const hasUnread = notificationsRef.current.some((n) => !n.readAt);
+    if (!hasUnread && unreadCount === 0) {
+      return; // Already all read; idempotent no-op
+    }
+
     try {
       await notificationService.markAllAsRead();
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, readAt: n.readAt || new Date().toISOString() }))
-      );
+
+      setNotifications((prev) => {
+        if (!prev.some((n) => !n.readAt)) {
+          return prev;
+        }
+        return prev.map((n) => ({ ...n, readAt: n.readAt || new Date().toISOString() }));
+      });
+
       setUnreadCount(0);
     } catch (err) {
       console.error('Failed to mark all notifications as read:', err);

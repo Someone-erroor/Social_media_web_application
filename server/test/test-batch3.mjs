@@ -723,8 +723,12 @@ async function runBatch3Tests() {
     // Reset AI failure state
     setSimulateAiFailure(false);
 
-    // Test 7: Mock fallback strictly rejected in development environment (returns HTTP 503)
+    // Test 7: Mock fallback strictly rejected in development environment when key is missing (returns HTTP 503)
     const originalNodeEnv = process.env.NODE_ENV;
+    const savedGeminiKey = env.GEMINI_API_KEY;
+    const savedProcessKey = process.env.GEMINI_API_KEY;
+    env.GEMINI_API_KEY = '';
+    delete process.env.GEMINI_API_KEY;
     process.env.NODE_ENV = 'development';
     setForceAiMock(true); // Attempt to force mock in development
     const devMockRes = await apiRequest('/ai/posts/generate', {
@@ -737,7 +741,7 @@ async function runBatch3Tests() {
     assert.strictEqual(devMockRes.body.message, 'AI service is not configured. Please contact the administrator.');
     recordPass('Mock mode strictly blocked in development environment (HTTP 503 Service Unavailable)');
 
-    // Test 8: Mock fallback strictly rejected in production environment (returns HTTP 503)
+    // Test 8: Mock fallback strictly rejected in production environment when key is missing (returns HTTP 503)
     process.env.NODE_ENV = 'production';
     setForceAiMock(true); // Attempt to force mock in production
     const prodMockRes = await apiRequest('/ai/posts/generate', {
@@ -753,8 +757,6 @@ async function runBatch3Tests() {
 
     // Test 9: AI Service rejects with 503 when forceMockMode is false and GEMINI_API_KEY is not configured
     setForceAiMock(false);
-    const savedGeminiKey = env.GEMINI_API_KEY;
-    env.GEMINI_API_KEY = '';
     const noKeyAiRes = await apiRequest('/ai/posts/generate', {
       method: 'POST',
       token: tokenA,
@@ -765,8 +767,11 @@ async function runBatch3Tests() {
     assert.strictEqual(noKeyAiRes.body.message, 'AI service is not configured. Please contact the administrator.');
     recordPass('AI service returns 503 Service Configuration Error with canonical guidance message');
 
-    // Restore env.GEMINI_API_KEY
+    // Restore env.GEMINI_API_KEY and process.env.GEMINI_API_KEY
     env.GEMINI_API_KEY = savedGeminiKey;
+    if (savedProcessKey !== undefined) {
+      process.env.GEMINI_API_KEY = savedProcessKey;
+    }
 
     // Reset AI mock state
     setSimulateAiFailure(false);

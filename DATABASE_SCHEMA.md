@@ -3,7 +3,7 @@
 > **Project:** Looply ("Connect. Share. Express.")  
 > **Target Database:** MongoDB (v6.0+) via Mongoose ODM (v9.x)  
 > **Phase Milestone:** Batch 3 (Phases 10 to 14) — Likes, Comments, Admin Dashboard, Moderation, Real-Time Notifications & Gemini AI  
-> **Phase Status:** Phases 1–9: APPROVED | Batch 3 (Phases 10–14): IMPLEMENTATION COMPLETED (AWAITING REVIEW) | Phase 15: PENDING (DO NOT START)  
+> **Phase Status:** Phases 1–14 (Batch 1, Batch 2 & Batch 3): APPROVED | Next Development Batch: Phases 15–18 (Pending Authorization)  
 > **Architecture:** Decoupled Express.js REST API (`server/`) with Mongoose Schemas  
 
 ---

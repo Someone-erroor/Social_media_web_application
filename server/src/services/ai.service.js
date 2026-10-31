@@ -160,11 +160,25 @@ Important constraints:
 - Do NOT include markdown code blocks, quotes around the whole text, or conversational preambles.
 - Never exceed 1000 characters.`;
 
+  let modelToUse = modelName;
   try {
-    const response = await client.models.generateContent({
-      model: modelName,
-      contents: prompt
-    });
+    let response;
+    try {
+      response = await client.models.generateContent({
+        model: modelToUse,
+        contents: prompt
+      });
+    } catch (primaryErr) {
+      if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
+        modelToUse = 'gemini-3.8-flash';
+        response = await client.models.generateContent({
+          model: modelToUse,
+          contents: prompt
+        });
+      } else {
+        throw primaryErr;
+      }
+    }
 
     let text = response.text ? String(response.text).trim() : '';
 
@@ -185,7 +199,7 @@ Important constraints:
     return {
       generatedContent: text,
       provider: 'google-gemini',
-      model: modelName
+      model: modelToUse
     };
   } catch (err) {
     const error = new Error('AI generation failed. Please try again.');
@@ -255,11 +269,25 @@ Important constraints:
 - Return ONLY the improved text without conversational explanations, quotes, or markdown wrappers.
 - Never exceed 1000 characters.`;
 
+  let modelToUse = modelName;
   try {
-    const response = await client.models.generateContent({
-      model: modelName,
-      contents: prompt
-    });
+    let response;
+    try {
+      response = await client.models.generateContent({
+        model: modelToUse,
+        contents: prompt
+      });
+    } catch (primaryErr) {
+      if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
+        modelToUse = 'gemini-3.8-flash';
+        response = await client.models.generateContent({
+          model: modelToUse,
+          contents: prompt
+        });
+      } else {
+        throw primaryErr;
+      }
+    }
 
     let text = response.text ? String(response.text).trim() : '';
 
@@ -278,7 +306,7 @@ Important constraints:
     return {
       improvedContent: text,
       provider: 'google-gemini',
-      model: modelName
+      model: modelToUse
     };
   } catch (err) {
     const error = new Error('AI generation failed. Please try again.');

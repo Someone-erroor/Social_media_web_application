@@ -45,8 +45,7 @@ function checkPortAvailable(port) {
     tester.once('listening', () => {
       tester.close(() => resolve(true));
     });
-    // Listen without host so Node tests across all interfaces (IPv4 and IPv6 dual-stack)
-    tester.listen(port);
+    tester.listen(port, '127.0.0.1');
   });
 }
 
@@ -219,6 +218,15 @@ async function runE2EBrowserTests() {
     console.log('\n--- Step 4: Building Frontend Specifically for E2E Testing ---');
     console.log('Setting NEXT_PUBLIC_API_URL=http://127.0.0.1:5000/api before executing next build...');
     const clientDir = path.resolve(__dirname, '../../client');
+
+    // Clean any prior build or dev artifacts in .next to prevent dev/prod mixups
+    const nextDir = path.join(clientDir, '.next');
+    if (fs.existsSync(nextDir)) {
+      try {
+        fs.rmSync(nextDir, { recursive: true, force: true });
+      } catch {}
+    }
+
     const buildCmd = process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npx';
     const buildArgs = process.platform === 'win32' ? ['/c', 'npx', 'next', 'build'] : ['next', 'build'];
 
@@ -273,6 +281,14 @@ async function runE2EBrowserTests() {
     }
     assert(buildExitCode === 0, '5. Frontend built specifically for E2E testing with NEXT_PUBLIC_API_URL=http://127.0.0.1:5000/api');
 
+    // Remove any .next/dev created during build
+    const devDir = path.join(clientDir, '.next', 'dev');
+    if (fs.existsSync(devDir)) {
+      try {
+        fs.rmSync(devDir, { recursive: true, force: true });
+      } catch {}
+    }
+
     // Verify generated frontend build uses the test backend
     const isBuildVerified = verifyFrontendBuildApiUrl(clientDir, 'http://127.0.0.1:5000/api');
     assert(isBuildVerified, '6. Verified generated frontend build inlined test backend URL (http://127.0.0.1:5000/api)');
@@ -280,7 +296,7 @@ async function runE2EBrowserTests() {
     // 5. Start Dedicated Next.js Production Frontend on port 3000
     console.log('\n--- Step 5: Starting Dedicated Next.js Production Frontend on port 3000 ---');
     const startCmd = process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npx';
-    const startArgs = process.platform === 'win32' ? ['/c', 'npx', 'next', 'start', '-p', '3000'] : ['next', 'start', '-p', '3000'];
+    const startArgs = process.platform === 'win32' ? ['/c', 'npx', 'next', 'start', '-H', '127.0.0.1', '-p', '3000'] : ['next', 'start', '-H', '127.0.0.1', '-p', '3000'];
 
     nextProcess = spawn(
       startCmd,
@@ -338,13 +354,17 @@ async function runE2EBrowserTests() {
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
-        '--window-size=1280,800'
+        '--window-size=1280,800',
+        '--disable-cache',
+        '--disk-cache-size=0',
+        '--media-cache-size=0'
       ]
     });
     assert(Boolean(browser), '8. Portable Headless Chrome browser launched successfully');
 
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
+    await page.setCacheEnabled(false);
 
     // Enable Puppeteer request interception to validate and restrict all browser requests
     await page.setRequestInterception(true);
@@ -394,6 +414,9 @@ async function runE2EBrowserTests() {
     await page.waitForSelector('#register-password');
     await page.waitForSelector('#register-confirm-password');
     await page.waitForSelector('#terms');
+
+    // Allow client scripts to settle
+    await new Promise((r) => setTimeout(r, 1500));
 
     // Fill registration form
     await page.type('#register-name', testUserFullName);
@@ -471,6 +494,9 @@ async function runE2EBrowserTests() {
     console.log('\n--- Step 10: Login Authentication via Real Browser UI ---');
     await page.waitForSelector('#login-email', { timeout: 10000 });
     await page.waitForSelector('#login-password', { timeout: 10000 });
+
+    // Allow client scripts to settle
+    await new Promise((r) => setTimeout(r, 1500));
 
     await page.type('#login-email', testUserEmail);
     await page.type('#login-password', testUserPassword);
