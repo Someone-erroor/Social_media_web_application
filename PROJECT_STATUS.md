@@ -187,16 +187,17 @@ A security audit was conducted to verify that sensitive runtime environment file
 | # | Test Description | Command Executed | Exit Code | Result Summary |
 | :-: | :--- | :--- | :-: | :--- |
 | 1 | Server Startup Verification | `node src/server.js` | 0 | Server successfully booted on port 5000 in development mode |
-| 2 | Backend Health Endpoint Test | `GET /api/health` | 0 | Returned HTTP 200 with `{"success": true, "message": "Looply backend is running"}` |
-| 3 | Authorized CORS Origin Test | `Origin: http://localhost:3000` | 0 | Returned HTTP 200 with `Access-Control-Allow-Origin: http://localhost:3000` |
-| 4 | Unauthorized CORS Origin Test | `Origin: http://malicious-site.com` | 0 | Returned HTTP 403 Forbidden with CORS policy violation error |
-| 5 | Client Lint Verification | `npm run lint` (ESLint 9) | 0 | Checked client workspace with Next.js core web vitals; 0 errors or warnings |
-| 6 | Client Production Build | `npm run build` (Turbopack) | 0 | Compiled client production bundle in 2.4s; all static routes prerendered |
-| 7 | Client Startup & Serving Test | `npm run start` | 0 | Successfully booted Next.js production server on `http://localhost:3000` |
-| 8 | Client HTML Output Test | `curl -s http://localhost:3000/` | 0 | HTTP 200 response with metadata, responsive viewport, and rendered UI |
-| 9 | Git Security Audit | `git check-ignore -v client/.env.local server/.env` | 0 | Confirmed sensitive env files are ignored by git rules |
-| 10 | Configuration & CORS Validation | `node test_server_direct.js` | 0 | PORT (1–65535), comma-separated origins, and CORS security checks passed |
-| 11 | Production Error Masking Test | `node test_corrections.js` | 0 | Confirmed 500 errors masked to "Internal Server Error" and zero stacks in prod |
+| 2 | Development CORS (No-Origin) | `GET /api/health` | 0 | Allowed (HTTP 200) with `{"success": true, "message": "Looply backend is running"}` |
+| 3 | Test Environment CORS (No-Origin)| `NODE_ENV=test GET /api/health` | 0 | Allowed (HTTP 200) for test runners and internal integration testing |
+| 4 | Production CORS (No-Origin) | `NODE_ENV=production GET /api/health` | 0 | Rejected (HTTP 403 Forbidden) with CORS policy violation error and zero stack |
+| 5 | Authorized CORS Origin Test | `Origin: http://localhost:3000` | 0 | Allowed (HTTP 200) with `Access-Control-Allow-Origin: http://localhost:3000` |
+| 6 | Unauthorized CORS Origin Test | `Origin: http://malicious-site.com` | 0 | Rejected (HTTP 403 Forbidden) with CORS policy violation error |
+| 7 | NODE_ENV Validation Test | `NODE_ENV=staging node env.js` | 1 | Successfully blocked startup with clear error for invalid NODE_ENV values |
+| 8 | Production Error Response Test | Subprocess 500 in prod mode | 0 | Verified 500 errors return generic `"Internal Server Error"` with zero stack |
+| 9 | Client Lint Verification | `npm run lint` (ESLint 9) | 0 | Checked client workspace with Next.js core web vitals; 0 errors or warnings |
+| 10 | Client Production Build | `npm run build` (Turbopack) | 0 | Compiled client production bundle in 4.1s; all static routes prerendered |
+| 11 | Client Startup & Serving Test | `npm run start` | 0 | Successfully booted Next.js production server on `http://localhost:3000` |
+| 12 | Git Security Audit | `git check-ignore -v client/.env.local server/.env` | 0 | Confirmed sensitive env files are ignored by git rules |
 
 ---
 
@@ -204,31 +205,35 @@ A security audit was conducted to verify that sensitive runtime environment file
 
 In response to Phase 1 review feedback, the following corrections were executed and verified:
 
-1. **`README.md`**:
-   - Updated minimum Node.js requirement to **20.9+** (documented in Technology Stack and Prerequisites).
-   - Corrected MongoDB implementation phase from Phase 4+ to **Phase 3** (aligning with Roadmap section).
-   - Added explicit notices in Backend Setup and Frontend Setup sections clarifying that `.env` and `.env.local` are strictly local-only files ignored by Git and **never committed to GitHub**.
+1. **`server/src/config/cors.js`**:
+   - Enforced strict environment-specific no-Origin handling:
+     - **Development:** Requests without an `Origin` header (curl, tools, same-origin) are allowed (`callback(null, true)`).
+     - **Test:** Requests without an `Origin` header are allowed for automated testing suites (`callback(null, true)`).
+     - **Production:** Requests without an `Origin` header are strictly rejected with HTTP `403 Forbidden` (`CORS policy violation: Requests without an Origin header are not allowed in production.`).
+   - Preserves all explicitly allowed frontend origins configured via `CLIENT_ORIGIN` / `CLIENT_ORIGINS`.
+   - Full support for multiple comma-separated allowed origins.
 
-2. **`server/src/middleware/error.middleware.js`**:
-   - Internal server error messages (5xx) are masked in production, returning generic `"Internal Server Error"`.
-   - Client-facing 4xx error messages (e.g. 400 Bad Request, 403 Forbidden, 404 Not Found) are strictly preserved across all environments.
-   - Stack traces are strictly development-only (`env.isDevelopment && err.stack`).
-
-3. **`server/src/config/env.js`**:
+2. **`server/src/config/env.js`**:
+   - Added `NODE_ENV` validation allowing only `development`, `production`, and `test`. Any other value terminates startup immediately with an explicit configuration error.
    - Added rigorous `PORT` validation: must be an integer between 1 and 65535.
    - Added `CLIENT_ORIGIN` validation: parses URLs, verifies `http:` or `https:` protocols, and rejects URLs with paths, queries, or hashes.
-   - Added support for multiple comma-separated allowed origins (e.g. `http://localhost:3000,http://127.0.0.1:3000`).
-   - Generates clear, informative configuration errors on malformed environment variables.
-   - Updated `server/src/config/cors.js` to utilize validated origin arrays.
+   - Exports `isDevelopment` strictly as `nodeEnv === 'development'`, ensuring invalid or unexpected environments never activate development error handling or stack traces.
 
-4. **`client/app/globals.css`**:
+3. **`server/src/middleware/error.middleware.js`**:
+   - HTTP 500 responses in production, test, or non-development environments strictly return generic `"Internal Server Error"`, never exposing internal details.
+   - Detailed error messages and stack traces are strictly restricted to `env.isDevelopment`.
+   - Client-facing 4xx error messages (400, 401, 403, 404, 409) are preserved across all environments.
+
+4. **`README.md`**:
+   - Removed `.env` and `.env.local` from the displayed GitHub repository directory tree diagram (confirming they are local-only files).
+   - Preserved all existing local environment setup instructions using `.env.example`.
+   - Updated minimum Node.js requirement to **20.9+**.
+   - Corrected MongoDB implementation milestone to **Phase 3**.
+
+5. **`client/app/globals.css`**:
    - Corrected undefined Geist font variables by defining complete, robust font stacks in `:root` (`--font-geist-sans`, `--font-geist-mono`, `--font-sans`, `--font-mono`).
    - Integrated defined font stacks into `@theme inline` and `body` to establish a consistent font configuration across the application.
    - Preserved all existing Tailwind CSS functionality and utility mappings.
-
-5. **`server/src/config/cors.js`**:
-   - Enforced consistent no-Origin request handling aligned with documented policy: requests without an `Origin` header (such as curl, mobile clients, or internal tools) are allowed in development only and strictly rejected in production with HTTP 403 Forbidden.
-   - Preserved all explicitly allowed frontend origins from environment configuration (`CLIENT_ORIGINS`).
 
 ---
 

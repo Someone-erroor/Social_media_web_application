@@ -46,7 +46,6 @@ c:/assestement_project/
 ├── PROJECT_STATUS.md
 ├── client/
 │   ├── .env.example
-│   ├── .env.local
 │   ├── .gitignore
 │   ├── package.json
 │   ├── next.config.mjs
@@ -81,7 +80,6 @@ c:/assestement_project/
 │       └── logo.svg
 └── server/
     ├── .env.example
-    ├── .env
     ├── .gitignore
     ├── package.json
     └── src/

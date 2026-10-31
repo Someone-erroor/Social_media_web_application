@@ -7,9 +7,11 @@ const allowedOrigins = env.CLIENT_ORIGINS || (env.CLIENT_ORIGIN
 
 export const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (such as mobile apps, curl, or same-origin) in development only
+    // Requests without an Origin header (e.g. curl, test runners, mobile apps)
+    // are allowed only in development and test environments.
+    // In production, they are strictly rejected with HTTP 403 Forbidden.
     if (!origin) {
-      if (env.isDevelopment) {
+      if (env.isDevelopment || env.isTest) {
         return callback(null, true);
       }
       const error = new Error('CORS policy violation: Requests without an Origin header are not allowed in production.');

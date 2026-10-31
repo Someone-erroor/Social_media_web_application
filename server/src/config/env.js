@@ -8,6 +8,31 @@ const __dirname = path.dirname(__filename);
 // Load environment variables from server root .env
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+const ALLOWED_NODE_ENVS = ['development', 'production', 'test'];
+
+/**
+ * Validates the NODE_ENV environment variable.
+ * Must be one of: 'development', 'production', 'test'.
+ * Defaults to 'development' if omitted or empty.
+ *
+ * @param {string|undefined} rawEnv - Value of process.env.NODE_ENV
+ * @returns {string} Validated NODE_ENV string
+ */
+const validateNodeEnv = (rawEnv) => {
+  if (rawEnv === undefined || rawEnv === null || String(rawEnv).trim() === '') {
+    return 'development';
+  }
+
+  const trimmed = String(rawEnv).trim();
+  if (!ALLOWED_NODE_ENVS.includes(trimmed)) {
+    throw new Error(
+      `Configuration Error: Invalid NODE_ENV "${rawEnv}". Allowed values are: ${ALLOWED_NODE_ENVS.join(', ')}.`
+    );
+  }
+
+  return trimmed;
+};
+
 /**
  * Validates the PORT environment variable.
  * Must be an integer between 1 and 65535.
@@ -91,9 +116,9 @@ const validateClientOrigins = (rawOrigins) => {
   });
 };
 
+const nodeEnv = validateNodeEnv(process.env.NODE_ENV);
 const port = validatePort(process.env.PORT);
 const clientOrigins = validateClientOrigins(process.env.CLIENT_ORIGIN);
-const nodeEnv = process.env.NODE_ENV || 'development';
 
 export const env = {
   NODE_ENV: nodeEnv,
@@ -101,5 +126,6 @@ export const env = {
   CLIENT_ORIGIN: clientOrigins.join(','),
   CLIENT_ORIGINS: clientOrigins,
   isProduction: nodeEnv === 'production',
-  isDevelopment: nodeEnv !== 'production'
+  isDevelopment: nodeEnv === 'development',
+  isTest: nodeEnv === 'test'
 };

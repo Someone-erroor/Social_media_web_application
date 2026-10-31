@@ -30,8 +30,8 @@ export const errorHandler = (err, req, res, next) => {
   // Determine appropriate client-facing message
   let message;
   if (statusCode >= 500) {
-    // Hide internal details in production; show real error in development
-    message = env.isProduction ? 'Internal Server Error' : (err.message || 'Internal Server Error');
+    // Expose internal details ONLY in development mode; hide in production and all other modes
+    message = env.isDevelopment ? (err.message || 'Internal Server Error') : 'Internal Server Error';
   } else {
     // Preserve client-facing 4xx error messages across all environments
     message = err.message || 'An error occurred';
