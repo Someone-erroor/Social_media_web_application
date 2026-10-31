@@ -3,6 +3,9 @@ const nextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    turbopackPluginRuntimeStrategy: "forceWorkerThreads",
+  },
   turbopack: {
     rules: {
       "*.css": {

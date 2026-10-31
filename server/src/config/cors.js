@@ -1,13 +1,13 @@
 import { env } from './env.js';
 
-// Parse allowed origins from comma-separated list or single URL
-const allowedOrigins = env.CLIENT_ORIGIN
+// Parse allowed origins from validated environment configuration
+const allowedOrigins = env.CLIENT_ORIGINS || (env.CLIENT_ORIGIN
   ? env.CLIENT_ORIGIN.split(',').map((origin) => origin.trim())
-  : ['http://localhost:3000'];
+  : ['http://localhost:3000']);
 
 export const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (such as mobile apps, curl, or same-origin) in development
+    // Allow requests with no origin (such as mobile apps, curl, or same-origin)
     if (!origin) {
       return callback(null, true);
     }

@@ -187,24 +187,55 @@ A security audit was conducted to verify that sensitive runtime environment file
 | # | Test Description | Command Executed | Exit Code | Result Summary |
 | :-: | :--- | :--- | :-: | :--- |
 | 1 | Server Startup Verification | `node src/server.js` | 0 | Server successfully booted on port 5000 in development mode |
-| 2 | Backend Health Endpoint Test | `Invoke-RestMethod http://localhost:5000/api/health` | 0 | Returned HTTP 200 with `{"success": true, "message": "Looply backend is running"}` |
-| 3 | Authorized CORS Origin Test | `curl -i -H "Origin: http://localhost:3000" http://localhost:5000/api/health` | 0 | Returned HTTP 200 with `Access-Control-Allow-Origin: http://localhost:3000` |
-| 4 | Unauthorized CORS Origin Test | `curl -i -H "Origin: http://malicious-site.com" http://localhost:5000/api/health` | 0 | Returned HTTP 403 Forbidden with CORS policy violation error |
-| 5 | Client Build Verification | `npm run build` (Next.js Turbopack) | 0 | Compiled client production bundle in 1.46s; routes statically prerendered |
-| 6 | Client Startup & Serving Test | `npm run start` | 0 | Successfully booted Next.js production server on `http://localhost:3000` |
-| 7 | Client HTML Output Test | `curl -s http://localhost:3000/` | 0 | HTTP 200 response with metadata, responsive viewport, and rendered UI |
-| 8 | Git Security Audit | `git check-ignore -v client/.env.local server/.env` | 0 | Confirmed sensitive env files are ignored by git rules |
+| 2 | Backend Health Endpoint Test | `GET /api/health` | 0 | Returned HTTP 200 with `{"success": true, "message": "Looply backend is running"}` |
+| 3 | Authorized CORS Origin Test | `Origin: http://localhost:3000` | 0 | Returned HTTP 200 with `Access-Control-Allow-Origin: http://localhost:3000` |
+| 4 | Unauthorized CORS Origin Test | `Origin: http://malicious-site.com` | 0 | Returned HTTP 403 Forbidden with CORS policy violation error |
+| 5 | Client Lint Verification | `npm run lint` (ESLint 9) | 0 | Checked client workspace with Next.js core web vitals; 0 errors or warnings |
+| 6 | Client Production Build | `npm run build` (Turbopack) | 0 | Compiled client production bundle in 2.4s; all static routes prerendered |
+| 7 | Client Startup & Serving Test | `npm run start` | 0 | Successfully booted Next.js production server on `http://localhost:3000` |
+| 8 | Client HTML Output Test | `curl -s http://localhost:3000/` | 0 | HTTP 200 response with metadata, responsive viewport, and rendered UI |
+| 9 | Git Security Audit | `git check-ignore -v client/.env.local server/.env` | 0 | Confirmed sensitive env files are ignored by git rules |
+| 10 | Configuration & CORS Validation | `node test_server_direct.js` | 0 | PORT (1–65535), comma-separated origins, and CORS security checks passed |
+| 11 | Production Error Masking Test | `node test_corrections.js` | 0 | Confirmed 500 errors masked to "Internal Server Error" and zero stacks in prod |
 
 ---
 
-## 8. Known Issues & Environmental Constraints
+## 8. Phase 1 Corrections Log (Review Feedback Addressed)
+
+In response to Phase 1 review feedback, the following corrections were executed and verified:
+
+1. **`README.md`**:
+   - Updated minimum Node.js requirement to **20.9+** (documented in Technology Stack and Prerequisites).
+   - Corrected MongoDB implementation phase from Phase 4+ to **Phase 3** (aligning with Roadmap section).
+   - Added explicit notices in Backend Setup and Frontend Setup sections clarifying that `.env` and `.env.local` are strictly local-only files ignored by Git and **never committed to GitHub**.
+
+2. **`server/src/middleware/error.middleware.js`**:
+   - Internal server error messages (5xx) are masked in production, returning generic `"Internal Server Error"`.
+   - Client-facing 4xx error messages (e.g. 400 Bad Request, 403 Forbidden, 404 Not Found) are strictly preserved across all environments.
+   - Stack traces are strictly development-only (`env.isDevelopment && err.stack`).
+
+3. **`server/src/config/env.js`**:
+   - Added rigorous `PORT` validation: must be an integer between 1 and 65535.
+   - Added `CLIENT_ORIGIN` validation: parses URLs, verifies `http:` or `https:` protocols, and rejects URLs with paths, queries, or hashes.
+   - Added support for multiple comma-separated allowed origins (e.g. `http://localhost:3000,http://127.0.0.1:3000`).
+   - Generates clear, informative configuration errors on malformed environment variables.
+   - Updated `server/src/config/cors.js` to utilize validated origin arrays.
+
+4. **`client/app/globals.css`**:
+   - Corrected undefined Geist font variables by defining complete, robust font stacks in `:root` (`--font-geist-sans`, `--font-geist-mono`).
+   - Integrated defined font stacks into `@theme inline` and `body`.
+   - Preserved all existing Tailwind CSS functionality and utility mappings.
+
+---
+
+## 9. Known Issues & Environmental Constraints
 
 1. **Browser Subagent Playwright CDN:** In this testing environment, automated browser driver downloads encountered an external CDN 404 response (`playwright.azureedge.net`), preventing automated headless Chromium launch. The application itself was independently verified via direct HTTP requests, Next.js build compilation (`npm run build`), server health queries, and curl response checks.
 2. **Phase Boundary Adherence:** Authentic database access (MongoDB) and authentication are intentionally deferred to subsequent phases as mandated by the Phase 1 specifications.
 
 ---
 
-## 9. Next Permitted Development Phase
+## 10. Next Permitted Development Phase
 
 - **Next Phase:** **PHASE 2: UI foundation, routing and dashboard layouts.**
-- **Current Directive:** **HALT**. Stop development. Await external code review and authorization before proceeding with Phase 2.
+- **Current Directive:** **HALT**. Stop development. Keep Phase 1 awaiting external review and authorization before proceeding with Phase 2.

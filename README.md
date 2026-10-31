@@ -25,12 +25,12 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **Font & Assets:** Next.js font optimization, custom SVG vector branding
 
 ### Backend
-- **Runtime:** Node.js (v24+)
+- **Runtime:** Node.js (20.9+)
 - **Framework:** Express.js (Modular REST architecture)
 - **CORS:** Environment-governed origin restriction (no wildcards)
 - **Environment:** `dotenv` configuration management
 
-### Database (Planned - Phase 4+)
+### Database (Planned - Phase 3)
 - MongoDB & Mongoose (Deferred until subsequent phases as per phase boundaries)
 
 ---
@@ -107,8 +107,11 @@ c:/assestement_project/
 ## 4. Getting Started
 
 ### Prerequisites
-- Node.js v18+ (tested with v24.16.0)
+- Node.js 20.9+ (tested with v24.16.0)
 - npm v9+ (tested with v11.13.0)
+
+### Environment Files Notice
+> **Important:** `.env` and `.env.local` are strictly local-only configuration files and are **never committed to GitHub** (enforced by `.gitignore`). Always use the provided `.env.example` templates to set up your local environment files.
 
 ### Backend Setup
 1. Navigate to the server directory:
@@ -119,7 +122,7 @@ c:/assestement_project/
    ```bash
    npm install
    ```
-3. Initialize environment variables:
+3. Initialize environment variables (`.env` is a local-only file and not committed to GitHub):
    ```bash
    cp .env.example .env
    ```
@@ -138,7 +141,7 @@ c:/assestement_project/
    ```bash
    npm install
    ```
-3. Initialize environment variables:
+3. Initialize environment variables (`.env.local` is a local-only file and not committed to GitHub):
    ```bash
    cp .env.example .env.local
    ```
