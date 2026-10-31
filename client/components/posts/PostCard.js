@@ -8,6 +8,8 @@ import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
 import { postService } from '@/services/postService';
+import { aiService } from '@/services/aiService';
+import DiscussionSummaryPanel from '@/components/ai/DiscussionSummaryPanel';
 import { ROUTES } from '@/lib/routes';
 
 function formatTimestamp(dateString) {
@@ -58,6 +60,43 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [submittingEditComment, setSubmittingEditComment] = useState(false);
   const [commentErrorMessage, setCommentErrorMessage] = useState('');
+
+  // AI Discussion Summary state (Phase 15)
+  const [showSummary, setShowSummary] = useState(false);
+  const [summary, setSummary] = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState('');
+  const [summaryMetadata, setSummaryMetadata] = useState(null);
+
+  // AI Discussion Summarization (Phase 15)
+  const handleSummarizeDiscussion = async () => {
+    if (!user) {
+      setErrorMessage('Please sign in to summarize discussions.');
+      return;
+    }
+    if (!user.isEmailVerified) {
+      setErrorMessage('Please verify your email address to use AI summarization.');
+      return;
+    }
+
+    setShowSummary(true);
+    setSummaryLoading(true);
+    setSummaryError('');
+
+    try {
+      const res = await aiService.summarizeDiscussion(post._id);
+      if (res?.success) {
+        setSummary(res.summary);
+        setSummaryMetadata(res.metadata);
+      } else {
+        setSummaryError(res?.message || 'Failed to summarize discussion.');
+      }
+    } catch (err) {
+      setSummaryError(err.message || 'Error occurred while contacting Gemini AI.');
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
 
   // Fetch like status if not provided by backend projection
   useEffect(() => {
@@ -413,8 +452,40 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               <Icon name="comments" className="w-4 h-4" />
               <span>{commentsCount}</span>
             </button>
+
+            {/* AI Discussion Summarize Button (Phase 15) */}
+            <button
+              type="button"
+              onClick={handleSummarizeDiscussion}
+              disabled={summaryLoading}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors text-xs ${
+                showSummary
+                  ? 'text-purple-600 bg-purple-50 font-semibold'
+                  : 'text-slate-500 hover:text-purple-600 hover:bg-slate-50'
+              }`}
+              title="Summarize discussion with Gemini AI"
+              aria-label="Summarize discussion"
+            >
+              <Icon
+                name="sparkles"
+                className={`w-4 h-4 text-purple-600 ${summaryLoading ? 'animate-spin' : ''}`}
+              />
+              <span className="hidden sm:inline">Summarize</span>
+            </button>
           </div>
         </div>
+
+        {/* Discussion Summary Panel (Phase 15) */}
+        {showSummary && (
+          <DiscussionSummaryPanel
+            summary={summary}
+            loading={summaryLoading}
+            error={summaryError}
+            metadata={summaryMetadata}
+            onClose={() => setShowSummary(false)}
+            onRetry={handleSummarizeDiscussion}
+          />
+        )}
 
         {/* Expandable Comments Section (Phase 10) */}
         {showComments && (

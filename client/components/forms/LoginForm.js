@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import FormField from '@/components/forms/FormField';
@@ -10,7 +10,14 @@ import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/lib/routes';
 
+const emptySubscribe = () => () => { };
+
 export default function LoginForm() {
+  const isHydrated = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -87,7 +94,7 @@ export default function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <form onSubmit={handleSubmit} data-hydrated={isHydrated ? 'true' : 'false'} className="space-y-4" noValidate>
           <FormField
             id="login-email"
             label="Email address"
@@ -146,16 +153,20 @@ export default function LoginForm() {
           </FormField>
 
           <div className="flex items-center justify-between text-xs">
-            <label className="flex items-center gap-2 cursor-pointer select-none text-slate-600">
+            <div className="flex items-center gap-2 text-slate-600">
               <input
+                id="login-remember-me"
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
                 disabled={loading}
-                className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                aria-label="Remember me on this device"
+                className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
               />
-              <span>Remember me</span>
-            </label>
+              <label htmlFor="login-remember-me" className="cursor-pointer select-none">
+                Remember me
+              </label>
+            </div>
 
             <Link
               href={ROUTES.PUBLIC.FORGOT_PASSWORD}

@@ -25,6 +25,18 @@ export const aiService = {
       method: 'POST',
       body: JSON.stringify(data)
     });
+  },
+
+  /**
+   * Summarizes an existing post and its discussion comments using Gemini AI.
+   *
+   * @param {string} postId
+   * @returns {Promise<{ success: boolean, message: string, hasComments: boolean, summary: object, metadata: object }>}
+   */
+  async summarizeDiscussion(postId) {
+    return apiClient(`/ai/posts/${postId}/summarize`, {
+      method: 'POST'
+    });
   }
 };
 

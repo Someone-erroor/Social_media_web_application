@@ -84,3 +84,28 @@ export const validateImprovePostInput = (body = {}) => {
     }
   };
 };
+
+/**
+ * Validates post ID parameter for discussion summarization.
+ *
+ * @param {object} params
+ * @returns {{ isValid: boolean, errors: string[], sanitized: object }}
+ */
+export const validateSummarizePostInput = (params = {}) => {
+  const errors = [];
+  const rawPostId = params?.postId !== undefined ? String(params.postId).trim() : '';
+
+  if (!rawPostId) {
+    errors.push('Post ID is required for discussion summarization.');
+  } else if (!/^[0-9a-fA-F]{24}$/.test(rawPostId)) {
+    errors.push('Invalid Post ID format. Must be a 24-character hexadecimal MongoDB ObjectId.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized: {
+      postId: rawPostId
+    }
+  };
+};

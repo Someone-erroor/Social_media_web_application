@@ -10,16 +10,17 @@ import {
   logout
 } from '../controllers/auth.controller.js';
 import { authenticate } from '../middleware/auth.middleware.js';
+import { authRateLimiter } from '../middleware/rateLimit.middleware.js';
 
 const router = Router();
 
 // Public Authentication & Registration Endpoints
-router.post('/register', register);
+router.post('/register', authRateLimiter, register);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verification', resendVerification);
-router.post('/login', login);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+router.post('/login', authRateLimiter, login);
+router.post('/forgot-password', authRateLimiter, forgotPassword);
+router.post('/reset-password', authRateLimiter, resetPassword);
 router.post('/logout', logout);
 
 // Authenticated Session Verification Endpoint

@@ -15,7 +15,7 @@ export default function AssistantPage() {
         description="Brainstorm post ideas, draft engaging updates, and refine your writing with Google Gemini 2.5 Flash"
         badge={
           <Badge variant="primary" size="sm">
-            Phase 14 &bull; Gemini 2.5 Flash Active
+            Google Gemini Active
           </Badge>
         }
       />

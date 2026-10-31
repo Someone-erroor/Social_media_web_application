@@ -273,6 +273,70 @@ client/components/
   - `/feed`: Infinite or paginated stream with `PostComposer`, `PostCard` list, loading skeletons, and empty state.
   - `/explore`: Discovery view with topic tags and recent creator discussions.
 
+### 4.9 Interaction Engine: Likes & Comments (Phase 10)
+- **Likes System (`services/like.service.js`):**
+  - `POST /api/posts/:postId/like` & `DELETE /api/posts/:postId/like`
+  - Enforces duplicate prevention via database compound unique index `{ post: 1, user: 1 }`.
+  - Maintains synchronized `likesCount` on Post documents.
+  - Triggers real-time notification to post author when recipient !== actor.
+- **Comments System (`services/comment.service.js`):**
+  - `POST /api/posts/:postId/comments`: Validates length (1–500 chars), sanitizes content, populates author.
+  - `PATCH /api/comments/:commentId`: Author-only inline editing.
+  - `DELETE /api/comments/:commentId`: Author-only deletion, atomically updating post's `commentsCount`.
+  - Triggers real-time notification to post author when recipient !== actor.
+
+### 4.10 Platform Telemetry & Administrator Governance (Phases 11 & 12)
+- **Real Database Telemetry (`services/admin.service.js`):**
+  - `GET /api/admin/stats`: Computes genuine counts from MongoDB collections (`users`, `posts`, `comments`, `likes`, `newRegistrations`). Zero fabricated numbers.
+  - `GET /api/admin/activity`: System-wide immutable activity trail.
+- **Administrative Moderation (`services/admin.service.js`):**
+  - `GET /api/admin/users`: Searchable and filterable user directory.
+  - `PATCH /api/admin/users/:userId/status`: Suspends/reactivates accounts. Suspending increments `tokenVersion` to immediately invalidate all active sessions. Self-suspension guard prevents lockout.
+  - `DELETE /api/admin/posts/:postId`: Cascading deletion purging post, comments, likes, and notifications.
+  - `DELETE /api/admin/comments/:commentId`: Moderates inappropriate comments.
+
+### 4.11 Real-Time Notifications & Socket.IO (Phase 13)
+- **Socket.IO Transport (`services/socket.service.js`):**
+  - Bound directly to root Node HTTP server (`http.createServer(app)`) on port 5000.
+  - Authentication handshake verifies JWT and `tokenVersion`.
+  - Channels: User-specific private rooms (`user_${userId}`) and administrative room (`admin_room`).
+  - Broadcasts live login alerts to `admin_room` whenever a regular user logs in.
+  - Persistent MongoDB `Notification` collection with unread counters and read-all synchronization.
+
+### 4.12 AI Content Generation & Discussion Summarization (Phases 14 & 15)
+- **Google Gemini Engine (`services/ai.service.js`, `@google/genai`):**
+  - Official SDK integration with model `gemini-2.5-flash` and adaptive fallback to `gemini-3.8-flash`.
+  - `POST /api/ai/posts/generate`: Generates content drafts by topic, tone, and length.
+  - `POST /api/ai/posts/improve`: Polishes clarity, tone, and grammar.
+  - `POST /api/ai/posts/:postId/summarize`: Analyzes discussion thread (bounded to 30 comments, 300 chars each). Returns structured key points, viewpoints, open questions, and conclusion.
+  - Anti-injection safeguards: All user content treated as untrusted text within strict delimiters.
+  - Empty discussion safety: Returns `hasComments: false` without hallucinating opinions.
+  - Security & Cost Control: Rate limited via `aiRateLimiter` (20 req/min). Mock mode restricted strictly to automated test suites (`NODE_ENV=test`). Development and production return HTTP 503 when API key is unconfigured.
+
+### 4.13 Security Architecture & Rate Limiting (Phase 18)
+- **Defense in Depth (`app.js`, `rateLimit.middleware.js`):**
+  - **Helmet Middleware:** Standard HTTP security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Strict-Transport-Security`, `X-XSS-Protection`).
+  - **Sliding-Window Rate Limiting:**
+    - `authRateLimiter`: 30 requests/minute on sensitive auth endpoints (`/register`, `/login`, `/forgot-password`, `/reset-password`).
+    - `aiRateLimiter`: 20 requests/minute on AI endpoints (`/generate`, `/improve`, `/summarize`).
+    - Automatically bypassed in test environment for deterministic CI/CD execution.
+  - **Session Isolation:** `HttpOnly`, `SameSite=Lax`, `Path=/`, and conditional `Secure` cookie flags.
+  - **Role Escalation Protection:** Request payloads attempting to inject `role: 'admin'` are strictly sanitized to `'user'`.
+
+### 4.14 Production Deployment Architecture (Phase 18)
+- **Frontend Hosting (Vercel):**
+  - Next.js App Router deployed natively to Vercel edge/serverless infrastructure.
+  - Configured with `NEXT_PUBLIC_API_URL` pointing to the production backend.
+- **Backend Hosting (Render / Railway):**
+  - Express.js application deployed as a persistent Web Service.
+  - Environment variables configured via provider dashboard: `PORT`, `NODE_ENV=production`, `CLIENT_ORIGIN`, `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `GEMINI_API_KEY`, `GEMINI_MODEL`.
+- **Database (MongoDB Atlas):**
+  - Dedicated production M0/M10 replica set cluster with automated backups, network peering / IP access lists, and encrypted connections (`mongodb+srv://...`).
+- **AI Infrastructure (Google AI Studio):**
+  - Production Gemini API key with strict quotas, accessed exclusively through backend server-side environment variables (never client-side).
+- **Email Infrastructure (Production SMTP):**
+  - SMTP relay (e.g. SendGrid, Amazon SES, Mailgun, Postmark) configured via `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`.
+
 ---
 
 ## 5. Responsiveness & Accessibility Strategy
