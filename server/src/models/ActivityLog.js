@@ -7,7 +7,11 @@ const { Schema } = mongoose;
  */
 export const ACTIVITY_ACTIONS = [
   'user_registration',
+  'email_verification',
   'successful_login',
+  'password_reset_request',
+  'password_reset',
+  'profile_update',
   'post_creation',
   'post_update',
   'post_deletion',

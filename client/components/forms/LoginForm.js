@@ -74,7 +74,16 @@ export default function LoginForm() {
             className="flex items-start gap-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"
           >
             <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
-            <div className="flex-1 font-medium">{errorMessage}</div>
+            <div className="flex-1 font-medium">
+              {errorMessage}
+              {errorMessage.toLowerCase().includes('verify') && (
+                <div className="mt-1.5">
+                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="underline font-semibold hover:text-rose-900">
+                    Go to email verification &rarr;
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

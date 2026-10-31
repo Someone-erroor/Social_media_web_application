@@ -1,17 +1,46 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 import UserSidebar from '@/components/navigation/UserSidebar';
 import UserHeader from '@/components/navigation/UserHeader';
 import UserBottomNav from '@/components/navigation/UserBottomNav';
 import Card, { CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
 import Icon from '@/components/ui/Icon';
 import { ROUTES } from '@/lib/routes';
 
 /**
  * UserShell Layout Component for Looply
  * Modern 3-column layout on desktop, responsive top header and bottom nav on mobile.
+ * Protects user routes: unauthenticated users redirect to /login without flashing protected content.
  */
 export default function UserShell({ children, showSidePanel = true }) {
+  const { user, loading, isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.replace(ROUTES.PUBLIC.LOGIN);
+    }
+  }, [loading, isAuthenticated, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+          <p className="text-xs text-slate-500 font-medium">Loading Looply...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col antialiased">
       {/* Desktop Left Sidebar Navigation */}
@@ -99,23 +128,27 @@ export default function UserShell({ children, showSidePanel = true }) {
                     <Link href={ROUTES.PUBLIC.HOME} className="hover:underline">
                       About Looply
                     </Link>
-                    <Link href={ROUTES.USER.SETTINGS} className="hover:underline">
-                      Settings
-                    </Link>
-                    <Link href={ROUTES.ADMIN.DASHBOARD} className="hover:underline">
-                      Admin Portal
-                    </Link>
+                    <span>&bull;</span>
+                    <a href="#privacy" className="hover:underline">
+                      Privacy
+                    </a>
+                    <span>&bull;</span>
+                    <a href="#terms" className="hover:underline">
+                      Terms
+                    </a>
                   </div>
-                  <p>&copy; 2026 Looply. Connect. Share. Express.</p>
+                  <p className="text-[11px] text-slate-400">
+                    &copy; {new Date().getFullYear()} Looply. Connect. Share. Express.
+                  </p>
                 </div>
               </aside>
             )}
           </div>
         </main>
-
-        {/* Mobile Fixed Bottom Navigation */}
-        <UserBottomNav />
       </div>
+
+      {/* Mobile Sticky Bottom Navigation */}
+      <UserBottomNav />
     </div>
   );
 }

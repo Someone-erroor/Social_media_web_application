@@ -1,16 +1,102 @@
-import PageHeader from '@/components/ui/PageHeader';
-import Card, { CardContent } from '@/components/ui/Card';
-import Avatar from '@/components/ui/Avatar';
-import Button from '@/components/ui/Button';
-import Icon from '@/components/ui/Icon';
-import EmptyState from '@/components/ui/EmptyState';
+'use client';
 
-export const metadata = {
-  title: 'Home Feed',
-  description: 'View recent updates and community posts'
-};
+import { useState, useEffect } from 'react';
+import PageHeader from '@/components/ui/PageHeader';
+import Button from '@/components/ui/Button';
+import EmptyState from '@/components/ui/EmptyState';
+import PostComposer from '@/components/posts/PostComposer';
+import PostCard from '@/components/posts/PostCard';
+import { postService } from '@/services/postService';
 
 export default function FeedPage() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+
+  useEffect(() => {
+    let ignore = false;
+    postService
+      .getFeed({ page: 1, limit: 10 })
+      .then((res) => {
+        if (!ignore && res?.success) {
+          setPosts(res.posts || []);
+          setPagination(res.pagination || { page: 1, totalPages: 1, total: 0 });
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setErrorMessage(err.message || 'Unable to load feed. Please try again.');
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handlePostCreated = (newPost) => {
+    setPosts((prev) => [newPost, ...prev]);
+    setPagination((prev) => ({ ...prev, total: (prev.total || 0) + 1 }));
+  };
+
+  const handlePostUpdated = (updatedPost) => {
+    setPosts((prev) =>
+      prev.map((p) => (p._id === updatedPost._id ? updatedPost : p))
+    );
+  };
+
+  const handlePostDeleted = (postId) => {
+    setPosts((prev) => prev.filter((p) => p._id !== postId));
+    setPagination((prev) => ({ ...prev, total: Math.max(0, (prev.total || 1) - 1) }));
+  };
+
+  const handleLoadMore = () => {
+    if (pagination.page >= pagination.totalPages) return;
+    setLoadingMore(true);
+    const nextPage = pagination.page + 1;
+
+    postService
+      .getFeed({ page: nextPage, limit: 10 })
+      .then((res) => {
+        if (res?.success) {
+          setPosts((prev) => [...prev, ...(res.posts || [])]);
+          setPagination(res.pagination || { page: nextPage, totalPages: 1, total: 0 });
+        }
+      })
+      .catch((err) => {
+        setErrorMessage(err.message || 'Failed to load more posts.');
+      })
+      .finally(() => {
+        setLoadingMore(false);
+      });
+  };
+
+  const handleRetry = () => {
+    setLoading(true);
+    setErrorMessage('');
+    postService
+      .getFeed({ page: 1, limit: 10 })
+      .then((res) => {
+        if (res?.success) {
+          setPosts(res.posts || []);
+          setPagination(res.pagination || { page: 1, totalPages: 1, total: 0 });
+        }
+      })
+      .catch((err) => {
+        setErrorMessage(err.message || 'Unable to load feed. Please try again.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -18,81 +104,81 @@ export default function FeedPage() {
         description="The latest thoughts and discussions from creators across Looply"
       />
 
-      {/* Post Composer Teaser */}
-      <Card className="border-slate-200 shadow-xs">
-        <CardContent className="p-4 sm:p-5 space-y-4">
-          <div className="flex items-start gap-3">
-            <Avatar name="Guest User" size="md" status="online" />
-            <div className="flex-1 min-w-0">
-              <textarea
-                placeholder="What is happening? Share your thoughts..."
-                rows={3}
-                disabled
-                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none disabled:cursor-not-allowed"
-              />
-            </div>
-          </div>
+      {/* Real Post Composer */}
+      <PostComposer onPostCreated={handlePostCreated} />
 
-          <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-            <div className="flex items-center gap-2 text-slate-400">
-              <button
-                type="button"
-                disabled
-                className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-50"
-                title="Add media (Coming Soon)"
-              >
-                <Icon name="posts" className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                disabled
-                className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-50"
-                title="AI Assist (Coming Soon)"
-              >
-                <Icon name="sparkles" className="w-4 h-4" />
-              </button>
-              <span className="text-[11px] text-slate-400 italic">
-                Post composer &bull; Coming Soon
-              </span>
-            </div>
+      {/* Error state */}
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between">
+          <span>{errorMessage}</span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleRetry}
+          >
+            Retry
+          </Button>
+        </div>
+      )}
 
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              disabled
-              title="Publishing coming soon"
+      {/* Posts Stream */}
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3 animate-pulse"
             >
-              Publish
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-200" />
+                <div className="space-y-1.5 flex-1">
+                  <div className="w-28 h-3.5 bg-slate-200 rounded" />
+                  <div className="w-16 h-2.5 bg-slate-200 rounded" />
+                </div>
+              </div>
+              <div className="space-y-2 pt-1">
+                <div className="w-full h-3 bg-slate-200 rounded" />
+                <div className="w-4/5 h-3 bg-slate-200 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : posts.length === 0 ? (
+        <EmptyState
+          icon="feed"
+          title="Your Feed is Empty"
+          description="No posts have been published yet. Be the first to share your thoughts using the composer above!"
+          badgeText="Community Feed"
+        />
+      ) : (
+        <div className="space-y-4">
+          {posts.map((post) => (
+            <PostCard
+              key={post._id}
+              post={post}
+              onPostUpdated={handlePostUpdated}
+              onPostDeleted={handlePostDeleted}
+            />
+          ))}
 
-      {/* Feed Filter Navigation */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-xs"
-        >
-          For You
-        </button>
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-        >
-          Following
-        </button>
-      </div>
-
-      {/* Honest Empty Feed State */}
-      <EmptyState
-        icon="feed"
-        title="Your Feed is Empty"
-        description="No posts have been published yet. The latest community updates and discussion loops will appear here in chronological order."
-        badgeText="Community Feed"
-      />
+          {/* Pagination: Load More Button */}
+          {pagination.page < pagination.totalPages && (
+            <div className="pt-2 text-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="md"
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="w-full sm:w-auto"
+              >
+                {loadingMore ? 'Loading More Posts...' : 'Load More Posts'}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
-

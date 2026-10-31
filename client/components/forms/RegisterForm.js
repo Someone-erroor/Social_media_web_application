@@ -84,10 +84,10 @@ export default function RegisterForm() {
         confirmPassword
       });
 
-      setSuccessMessage(result.message || 'Account created successfully! Redirecting to sign in...');
+      setSuccessMessage(result.message || 'Account created successfully! Please check your email to verify your account.');
       setTimeout(() => {
-        router.push(ROUTES.PUBLIC.LOGIN);
-      }, 1500);
+        router.push(ROUTES.PUBLIC.VERIFY_EMAIL);
+      }, 2000);
     } catch (err) {
       setErrorMessage(err.message || 'Registration failed. Please review your details.');
     } finally {

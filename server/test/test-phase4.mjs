@@ -321,6 +321,9 @@ async function runPhase4Tests() {
     );
 
     // Test 12: Successful Login & HTTP-only Cookie
+    // In Phase 5+, unverified users cannot login; verify email in test database for login verification
+    await User.updateOne({ email: validEmail }, { isEmailVerified: true });
+
     const resLogin = await fetch(`${baseUrl}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -18,48 +18,67 @@ These routes are accessible to unauthenticated visitors and prospective members.
 | `/` | Public | `client/app/(public)/page.js` | `PublicNavbar` + `PublicFooter` | Implemented (Phase 2) |
 | `/login` | Auth | `client/app/(auth)/login/page.js` | `AuthLayout` (Centered Card) | **Active (Phase 4)** &bull; Real API Connected |
 | `/register` | Auth | `client/app/(auth)/register/page.js` | `AuthLayout` (Centered Card) | **Active (Phase 4)** &bull; Real API Connected |
-| `/verify-email` | Auth | `client/app/(auth)/verify-email/page.js` | `AuthLayout` (Centered Card) | UI Preview (Scheduled for Phase 5) |
-| `/forgot-password` | Auth | `client/app/(auth)/forgot-password/page.js`| `AuthLayout` (Centered Card) | UI Preview (Scheduled for Phase 5) |
-| `/reset-password` | Auth | `client/app/(auth)/reset-password/page.js` | `AuthLayout` (Centered Card) | UI Preview (Scheduled for Phase 5) |
+| `/verify-email` | Auth | `client/app/(auth)/verify-email/page.js` | `AuthLayout` (Centered Card) | **Active (Phase 5)** &bull; Real Verification & Resend Connected |
+| `/forgot-password` | Auth | `client/app/(auth)/forgot-password/page.js`| `AuthLayout` (Centered Card) | **Active (Phase 5)** &bull; Real Password Recovery Connected |
+| `/reset-password` | Auth | `client/app/(auth)/reset-password/page.js` | `AuthLayout` (Centered Card) | **Active (Phase 5)** &bull; Real Reset Execution Connected |
 
 ### 1.2 User Experience Routes
-These routes render within the responsive `UserShell` (3-column layout on desktop, top `UserHeader` and bottom `UserBottomNav` on mobile). Inside the user experience, clicking the brand logo navigates to `/feed`.
+These routes render within the responsive `UserShell` (3-column layout on desktop, top `UserHeader` and bottom `UserBottomNav` on mobile). Protected by client-side session guard (unauthenticated requests redirect to `/login`). Inside the user experience, clicking the brand logo navigates to `/feed`.
 
 | Target URL | Experience Scope | Route Group File Path | Layout Shell | Status |
 | :--- | :---: | :--- | :--- | :---: |
-| `/feed` | User | `client/app/(user)/feed/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
-| `/explore` | User | `client/app/(user)/explore/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
-| `/profile` | User | `client/app/(user)/profile/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
-| `/profile/edit` | User | `client/app/(user)/profile/edit/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
-| `/profile/[userId]`| User | `client/app/(user)/profile/[userId]/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
+| `/feed` | User | `client/app/(user)/feed/page.js` | `UserShell` (3-Column) | **Active (Phase 8–9)** &bull; Real Feed & Composer Connected |
+| `/explore` | User | `client/app/(user)/explore/page.js` | `UserShell` (3-Column) | **Active (Phase 9)** &bull; Real Discovery Posts Connected |
+| `/profile` | User | `client/app/(user)/profile/page.js` | `UserShell` (3-Column) | **Active (Phase 7)** &bull; Real Profile & Post List Connected |
+| `/profile/edit` | User | `client/app/(user)/profile/edit/page.js` | `UserShell` (3-Column) | **Active (Phase 7)** &bull; Real Profile Editor Connected |
+| `/profile/[userId]`| User | `client/app/(user)/profile/[userId]/page.js` | `UserShell` (3-Column) | **Active (Phase 7 & 9)** &bull; Real Public Profile & Timeline |
 | `/notifications` | User | `client/app/(user)/notifications/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
 | `/assistant` | User | `client/app/(user)/assistant/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
-| `/settings` | User | `client/app/(user)/settings/page.js` | `UserShell` (3-Column) | Implemented (Phase 2) |
+| `/settings` | User | `client/app/(user)/settings/page.js` | `UserShell` (3-Column) | **Active (Phase 7)** &bull; Real Account Settings Connected |
 
 ### 1.3 Administrator Experience Routes
-These routes render within the distinct, high-contrast `AdminShell` (`AdminSidebar` + `AdminHeader`), completely isolated from the user application experience.
+These routes render within the distinct, high-contrast `AdminShell` (`AdminSidebar` + `AdminHeader`), completely isolated from the user application experience. Protected by client-side RBAC guard (unauthenticated users redirect to `/login`, non-admin users redirect to `/feed`).
 
 | Target URL | Experience Scope | Route Group File Path | Layout Shell | Status |
 | :--- | :---: | :--- | :--- | :---: |
-| `/admin` | Admin | `client/app/(admin)/admin/page.js` | `AdminShell` (Management) | Implemented (Phase 2) |
-| `/admin/users` | Admin | `client/app/(admin)/admin/users/page.js` | `AdminShell` (Management) | Implemented (Phase 2) |
-| `/admin/posts` | Admin | `client/app/(admin)/admin/posts/page.js` | `AdminShell` (Management) | Implemented (Phase 2) |
-| `/admin/comments` | Admin | `client/app/(admin)/admin/comments/page.js`| `AdminShell` (Management) | Implemented (Phase 2) |
-| `/admin/activity` | Admin | `client/app/(admin)/admin/activity/page.js`| `AdminShell` (Management) | Implemented (Phase 2) |
-| `/admin/notifications` | Admin | `client/app/(admin)/admin/notifications/page.js` | `AdminShell` (Management) | Implemented (Phase 2) |
+| `/admin` | Admin | `client/app/(admin)/admin/page.js` | `AdminShell` (Management) | **Protected (Phase 6)** &bull; Admin Clearance Enforced |
+| `/admin/users` | Admin | `client/app/(admin)/admin/users/page.js` | `AdminShell` (Management) | **Protected (Phase 6)** &bull; Admin Clearance Enforced |
+| `/admin/posts` | Admin | `client/app/(admin)/admin/posts/page.js` | `AdminShell` (Management) | **Protected (Phase 6)** &bull; Admin Clearance Enforced |
+| `/admin/comments` | Admin | `client/app/(admin)/admin/comments/page.js`| `AdminShell` (Management) | **Protected (Phase 6)** &bull; Admin Clearance Enforced |
+| `/admin/activity` | Admin | `client/app/(admin)/admin/activity/page.js`| `AdminShell` (Management) | **Protected (Phase 6)** &bull; Admin Clearance Enforced |
+| `/admin/notifications` | Admin | `client/app/(admin)/admin/notifications/page.js` | `AdminShell` (Management) | **Protected (Phase 6)** &bull; Admin Clearance Enforced |
 
 ### 1.4 Custom Error Routes
 | Target URL | Route File Path | Purpose | Status |
 | :--- | :--- | :--- | :---: |
 | `/_not-found` (404) | `client/app/not-found.js` | Custom, accessible 404 error page | Implemented (Phase 2) |
 
-### 1.5 Backend Authentication API Endpoints (Phase 4)
-| Method | Endpoint | Access | Purpose | Status |
+### 1.5 Backend API Endpoint Inventory (Phases 1–9)
+| Method | Endpoint | Access Level | Purpose | Phase |
 | :--- | :--- | :---: | :--- | :---: |
-| `POST` | `/api/auth/register` | Public | Registers member with bcrypt hash, assigns `role: 'user'` | **Active (Phase 4)** |
-| `POST` | `/api/auth/login` | Public | Validates credentials, sets HTTP-only cookie, returns safe user | **Active (Phase 4)** |
-| `GET` | `/api/auth/me` | Authenticated | Verifies HTTP-only JWT cookie, returns current user profile | **Active (Phase 4)** |
-| `POST` | `/api/auth/logout` | Authenticated/Public | Clears HTTP-only authentication cookie with matching flags | **Active (Phase 4)** |
+| `GET` | `/api/health` | Public | Liveness probe returning backend operational status | Phase 1 |
+| `GET` | `/api/health/ready` | Public | Readiness probe checking MongoDB Atlas connectivity | Phase 3 |
+| `POST` | `/api/auth/register` | Public | Registers member with bcrypt hash, generates verification token | Phase 4 & 5 |
+| `POST` | `/api/auth/verify-email` | Public | Validates verification token, activates account | Phase 5 |
+| `POST` | `/api/auth/resend-verification` | Public | Re-dispatches verification email safely | Phase 5 |
+| `POST` | `/api/auth/login` | Public | Authenticates credentials, verifies active & email status | Phase 4 & 5 |
+| `POST` | `/api/auth/forgot-password` | Public | Initiates password recovery email safely | Phase 5 |
+| `POST` | `/api/auth/reset-password` | Public | Validates reset token, updates password, invalidates sessions | Phase 5 & 6 |
+| `GET` | `/api/auth/me` | Authenticated | Validates session via `requireAuth`, returns safe user | Phase 4 & 6 |
+| `POST` | `/api/auth/logout` | Authenticated/Public | Clears HTTP-only authentication cookie | Phase 4 |
+| `GET` | `/api/admin/status` | Admin (`requireRole`) | Administrative security status endpoint | Phase 6 |
+| `GET` | `/api/profile/me` | Authenticated | Retrieves current authenticated member profile | Phase 7 |
+| `PATCH` | `/api/profile/me` | Authenticated | Updates display name, bio, and avatar URL | Phase 7 |
+| `GET` | `/api/profiles/:userId` | Public | Retrieves public member profile | Phase 7 |
+| `GET` | `/api/profiles/:userId/posts`| Public | Retrieves posts authored by specific user | Phase 9 |
+| `POST` | `/api/posts` | Authenticated (Verified) | Publishes new post with automatic author binding | Phase 8 |
+| `GET` | `/api/posts/mine` | Authenticated | Retrieves posts authored by current user | Phase 8 |
+| `GET` | `/api/posts/:postId` | Public | Retrieves single post with author information | Phase 8 |
+| `PATCH` | `/api/posts/:postId` | Authenticated (Author) | Updates post content (ownership strictly verified) | Phase 8 |
+| `DELETE` | `/api/posts/:postId` | Authenticated (Author) | Deletes post and cascades comment/like cleanup | Phase 8 |
+| `GET` | `/api/feed` | Authenticated | Chronological community feed (newest first) | Phase 9 |
+| `GET` | `/api/feed/explore` | Public | Discovery stream for popular/recent posts | Phase 9 |
+| `GET` | `/api/explore` | Public | Direct explore endpoint alias | Phase 9 |
 
 ---
 

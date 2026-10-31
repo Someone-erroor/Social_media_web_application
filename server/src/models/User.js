@@ -60,6 +60,26 @@ const userSchema = new Schema(
         message: 'Account status must be either "active" or "suspended"'
       },
       default: 'active'
+    },
+    verificationTokenHash: {
+      type: String,
+      select: false
+    },
+    verificationTokenExpiresAt: {
+      type: Date,
+      select: false
+    },
+    resetPasswordTokenHash: {
+      type: String,
+      select: false
+    },
+    resetPasswordTokenExpiresAt: {
+      type: Date,
+      select: false
+    },
+    tokenVersion: {
+      type: Number,
+      default: 0
     }
   },
   {
@@ -68,6 +88,8 @@ const userSchema = new Schema(
       transform: (doc, ret) => {
         delete ret.__v;
         delete ret.passwordHash;
+        delete ret.verificationTokenHash;
+        delete ret.resetPasswordTokenHash;
         return ret;
       }
     },
@@ -75,6 +97,8 @@ const userSchema = new Schema(
       transform: (doc, ret) => {
         delete ret.__v;
         delete ret.passwordHash;
+        delete ret.verificationTokenHash;
+        delete ret.resetPasswordTokenHash;
         return ret;
       }
     }

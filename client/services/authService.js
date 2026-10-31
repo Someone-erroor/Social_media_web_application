@@ -1,7 +1,7 @@
 import { apiClient } from './api';
 
 /**
- * Authentication service handling registration, login, session checks, and logout.
+ * Authentication service handling registration, verification, login, password recovery, session checks, and logout.
  */
 export const authService = {
   /**
@@ -18,6 +18,32 @@ export const authService = {
   },
 
   /**
+   * Confirms email address with verification token.
+   *
+   * @param {{ token: string }} data
+   * @returns {Promise<{ success: boolean, message: string, user: object }>}
+   */
+  async verifyEmail(data) {
+    return apiClient('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
+   * Requests a new email verification message.
+   *
+   * @param {{ email: string }} data
+   * @returns {Promise<{ success: boolean, message: string }>}
+   */
+  async resendVerification(data) {
+    return apiClient('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
    * Authenticates user with credentials and establishes HTTP-only cookie session.
    *
    * @param {{ email: string, password: string }} credentials
@@ -27,6 +53,32 @@ export const authService = {
     return apiClient('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials)
+    });
+  },
+
+  /**
+   * Requests password reset instructions.
+   *
+   * @param {{ email: string }} data
+   * @returns {Promise<{ success: boolean, message: string }>}
+   */
+  async forgotPassword(data) {
+    return apiClient('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
+   * Resets password with valid reset token.
+   *
+   * @param {{ token: string, password: string, confirmPassword: string }} data
+   * @returns {Promise<{ success: boolean, message: string }>}
+   */
+  async resetPassword(data) {
+    return apiClient('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data)
     });
   },
 
@@ -54,4 +106,3 @@ export const authService = {
 };
 
 export default authService;
-

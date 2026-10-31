@@ -8,15 +8,20 @@
 
 ## 1. Project Information
 - **Project Name:** Looply
-- **Current Phase:** Phase 4 — User registration and login
+- **Current Phase:** Batch 2 (Phases 5 to 9) — Implementation Completed
 - **Phase Status:**
   - **Phase 1: APPROVED**
   - **Phase 2: APPROVED**
   - **Phase 3: APPROVED**
-  - **Phase 4: IMPLEMENTATION COMPLETED**
-  - **Phase 4: AWAITING EXTERNAL REVIEW**
-  - **Phase 5: PENDING**
-- **Next Permitted Phase:** Phase 5 — Email verification and password recovery (*Halted until Phase 4 review is approved*)
+  - **Phase 4: APPROVED**
+  - **Phase 5: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 6: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 7: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 8: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 9: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Status: AWAITING EXTERNAL BATCH REVIEW**
+  - **Phase 10: PENDING**
+- **Next Permitted Phase:** Phase 10 — Likes and comments (*Halted until Batch 2 review is approved*)
 
 ---
 
@@ -29,13 +34,13 @@ The development of Looply follows the technical assignment's authoritative 18-ph
 | **PHASE 1** | **Project architecture and initial setup.** | **APPROVED** |
 | **PHASE 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
 | **PHASE 3** | **Backend foundation and database design.** | **APPROVED** |
-| **PHASE 4** | **User registration and login.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| **PHASE 5** | Email verification, forgot password and password reset. | **PENDING** |
-| **PHASE 6** | Authentication security and role-based access control. | Pending |
-| **PHASE 7** | User profile management. | Pending |
-| **PHASE 8** | Post creation, editing and deletion. | Pending |
-| **PHASE 9** | Social media feed and viewing other users' posts. | Pending |
-| **PHASE 10** | Likes and comments. | Pending |
+| **PHASE 4** | **User registration and login.** | **APPROVED** |
+| **PHASE 5** | **Email verification, forgot password and password reset.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 6** | **Authentication security and role-based access control.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 7** | **User profile management.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 8** | **Post creation, editing and deletion.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 9** | **Social media feed and viewing other users' posts.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **PHASE 10** | Likes and comments. | **PENDING** |
 | **PHASE 11** | Admin dashboard and platform statistics. | Pending |
 | **PHASE 12** | Admin user, post and comment management. | Pending |
 | **PHASE 13** | Real-time notifications and login activity tracking. | Pending |
@@ -66,14 +71,14 @@ The primary development specification is the original technical assignment. All 
 | **Database Schema & ER Diagram** | Phase 3 | MongoDB / Mongoose schema design, collections, relations, ER documentation | Completed (Phase 3) |
 | **Password Hashing** | Phase 4 | Secure bcrypt password hashing (12 rounds) on registration | Completed (Phase 4) |
 | **Secure Authentication** | Phase 4 | User registration & login controllers, generic errors, role safety | Completed (Phase 4) |
-| **Session / Token Management** | Phase 4 & 6 | JWT in HTTP-only cookies, session restoration via /api/auth/me | Completed (Phase 4) |
-| **SMTP Integration** | Phase 5 | Nodemailer / SMTP transport for transactional email dispatch | Scheduled for Phase 5 |
-| **Email Verification** | Phase 5 | Verification tokens, confirmation links, account status activation | Scheduled for Phase 5 |
-| **Forgot & Reset Password** | Phase 5 | Expiring reset tokens, secure password recovery workflow | Scheduled for Phase 5 |
-| **Admin & User Roles (RBAC)** | Phase 6 | Authoritative backend role validation (`user`, `admin`), route authorization | Scheduled for Phase 6 |
-| **User Profile Management** | Phase 7 | Profile view, profile edit, bio, avatar, user account settings | Scheduled for Phase 7 |
-| **Post CRUD** | Phase 8 | Create, Read, Update, Delete posts with backend validation | Scheduled for Phase 8 |
-| **Social Feed** | Phase 9 | Chronological post feed, viewing other users' posts, profile post grids | Scheduled for Phase 9 |
+| **Session / Token Management** | Phase 4 & 6 | JWT in HTTP-only cookies, session restoration via /api/auth/me, tokenVersion revocation | Completed (Phase 4 & 6) |
+| **SMTP Integration** | Phase 5 | Nodemailer / SMTP transport for transactional email dispatch with test outbox | Completed (Phase 5) |
+| **Email Verification** | Phase 5 | Verification tokens, confirmation links, account status activation | Completed (Phase 5) |
+| **Forgot & Reset Password** | Phase 5 | Expiring reset tokens, secure password recovery workflow, tokenVersion invalidation | Completed (Phase 5) |
+| **Admin & User Roles (RBAC)** | Phase 6 | Authoritative backend role validation (`user`, `admin`), route authorization | Completed (Phase 6) |
+| **User Profile Management** | Phase 7 | Profile view, profile edit, bio, avatar, user account settings | Completed (Phase 7) |
+| **Post CRUD** | Phase 8 | Create, Read, Update, Delete posts with backend validation & ownership enforcement | Completed (Phase 8) |
+| **Social Feed** | Phase 9 | Chronological post feed, viewing other users' posts, profile post grids, pagination | Completed (Phase 9) |
 | **Likes & Comments** | Phase 10 | Post interaction engine: like toggling, comment creation and listing | Scheduled for Phase 10 |
 | **Admin Dashboard & Statistics** | Phase 11 | Platform KPI metrics, user counts, post volume, activity aggregates | Scheduled for Phase 11 |
 | **Admin User, Post & Comment Mgmt** | Phase 12 | Administrative oversight: user suspension, post deletion, comment moderation | Scheduled for Phase 12 |
@@ -276,18 +281,14 @@ In strict adherence to assignment requirements, development resources are focuse
 
 ## 8. Strict Phase Boundaries & Intentionally Deferred Scope
 
-In strict accordance with the 18-phase roadmap, Phases 1–4 are completed (establishing system architecture, UI foundation, database models/connections, and user registration/login). The following features remain intentionally unbuilt and are deferred to their designated future phases:
-- **No Email Verification or Confirmation Links:** Scheduled for Phase 5.
-- **No Forgot Password or Password Reset Endpoints:** Scheduled for Phase 5.
-- **No SMTP / Nodemailer Transport:** Scheduled for Phase 5.
-- **No Role-Based Authorization Middleware:** Scheduled for Phase 6.
-- **No User Profile Mutation APIs:** Scheduled for Phase 7.
-- **No Post CRUD APIs:** Scheduled for Phase 8.
-- **No Feed Retrieval Endpoints:** Scheduled for Phase 9.
+In strict accordance with the 18-phase roadmap, Phases 1–9 are completed (establishing system architecture, UI foundation, database models/connections, user registration/login, email verification, password recovery, RBAC, user profile management, post creation/management, and social media feeds). The following features remain intentionally unbuilt and are deferred to their designated future phases:
 - **No Like or Comment Mutation Controllers:** Scheduled for Phase 10.
-- **No Admin Moderation APIs:** Scheduled for Phase 11 & 12.
+- **No Admin Platform Statistics Dashboard:** Scheduled for Phase 11.
+- **No Admin User, Post, or Comment Moderation APIs:** Scheduled for Phase 12.
 - **No Real-Time Notification WebSockets / Socket.IO:** Scheduled for Phase 13.
-- **No AI Provider Calls or Mock Responses:** Scheduled for Phase 14 & 15.
+- **No AI Post Generation or Improvement Providers:** Scheduled for Phase 14.
+- **No AI Discussion Summarization Models:** Scheduled for Phase 15.
+- **No Non-Mandatory Features (Explicitly Out of Scope):** Follow graphs, 1-on-1 direct messaging, post bookmarks/collections, multi-criteria search engines, real-time presence indicators, and stories/reels remain strictly excluded per the technical specification.
 
 ---
 
@@ -431,7 +432,7 @@ Phase 4 development delivered real end-to-end user registration, authentication,
      - HTTP-only cookie verified cleared from browser cookie jar upon logout.
      - Request interception security assertion: zero unexpected API request violations occurred (violations: 0).
      - Target isolation assertion: 100% of intercepted browser API requests targeted test backend exclusively (`http://127.0.0.1:5000/api`).
-   - 100% passing (`npm run test:e2e`: 30 passed, 0 failed).
+   - 100% passing (`npm run test:e2e`: 31 passed, 0 failed).
 
 9. **Automated Backend & Integration Test Suite (`server/test/test-phase4.mjs`)**:
    - 39 assertions testing test database safety, zero-fallback requirement, pre-creation and pre-deletion database name validation, input validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
@@ -444,14 +445,153 @@ Phase 4 development delivered real end-to-end user registration, authentication,
 
 ---
 
-## 11. Next Permitted Development Phase
+## 11. Phase 5 Implementation & Verification Summary: Email Verification & Password Recovery
+
+Phase 5 delivered the complete email verification and password recovery lifecycle, integrating transactional email delivery, cryptographic token hashing, and strict account status guards:
+
+1. **Transactional Email Architecture (`nodemailer`)**:
+   - Installed `nodemailer` (`v10.3.1`) in `server/package.json`.
+   - Built dynamic transport manager (`server/src/services/email.service.js`) with responsive, accessible HTML and plaintext email template generation (`server/src/services/email-template.service.js`).
+   - Supports SMTP credentials via `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, and `CLIENT_URL`.
+   - Incorporates non-blocking error handling to ensure transactional email failures do not crash registration or password reset workflows.
+   - Built-in in-memory test mail outbox (`getTestOutbox`, `getLastTestEmail`, `clearTestOutbox`, `setForceTestOutbox`) enables 100% deterministic, end-to-end testing without external email infrastructure dependencies.
+
+2. **Cryptographic Token Security**:
+   - Generates raw 32-byte cryptographically secure random tokens using Node.js `crypto.randomBytes(32).toString('hex')`.
+   - Tokens transmitted via email link (`/verify-email?token=...` or `/reset-password?token=...`).
+   - Persisted in MongoDB strictly as 64-character SHA-256 hash digests (`crypto.createHash('sha256').update(rawToken).digest('hex')`).
+   - Stored in `User` model with `select: false` on `verificationTokenHash` and `resetPasswordTokenHash` to prevent unintended leakage during query serialization.
+   - Strict expiration windows: 24 hours for email verification, 30 minutes for password reset.
+   - Single-use policy: token hashes and expiry timestamps are cleared (`undefined`) immediately upon successful consumption to prevent replay attacks.
+
+3. **Email Verification Lifecycle**:
+   - `POST /api/auth/register` creates user with `isEmailVerified: false` and dispatches verification link.
+   - `POST /api/auth/verify-email` consumes raw token, hashes it, matches against database, marks `isEmailVerified: true`, clears token fields, and logs audit event `email_verification`.
+   - `POST /api/auth/resend-verification` validates email, generates new verification token, and returns a safe generic message to eliminate user enumeration vectors.
+   - `POST /api/auth/login` strictly enforces `isEmailVerified: true`; unverified users are rejected with HTTP 403 Forbidden (`Please verify your email address before signing in.`).
+
+4. **Password Recovery Lifecycle**:
+   - `POST /api/auth/forgot-password` accepts user email, generates a 30-minute reset token, and always returns HTTP 200 with generic confirmation message (`If an account exists with this email address, password reset instructions have been sent.`) preventing account enumeration.
+   - `POST /api/auth/reset-password` accepts raw reset token, validates minimum 8-character password length and matching confirmation, updates password with bcrypt hash (12 salt rounds), increments `tokenVersion` by 1 to invalidate all existing sessions, and logs audit event `password_reset`.
+
+5. **Frontend Client Integration**:
+   - Dedicated interactive pages: `client/app/(auth)/verify-email/page.js`, `forgot-password/page.js`, and `reset-password/page.js`.
+   - Wrapped inside React `<Suspense>` boundaries to ensure safe client-side search parameter parsing (`token` query param).
+   - `LoginForm` displays an actionable alert banner for unverified accounts linking directly to `/verify-email`.
+   - `RegisterForm` presents post-registration email confirmation instructions.
+
+---
+
+## 12. Phase 6 Implementation & Verification Summary: Authentication Security & RBAC
+
+Phase 6 enforced authoritative server-side role-based access control, session invalidation, and client route boundaries:
+
+1. **Dual-Layer Middleware Architecture (`server/src/middleware/auth.middleware.js`)**:
+   - `requireAuth`: Reads JWT from HTTP-only cookie or Bearer header, validates token signature and expiration, looks up user in database, checks that JWT `tokenVersion` matches the authoritative database `tokenVersion`, and verifies account status (`isActive !== false`). Returns HTTP 401 for invalid/missing tokens or expired sessions, and HTTP 403 for suspended users.
+   - `requireRole(...allowedRoles)`: Authoritatively checks `req.user.role` against permitted roles; returns HTTP 403 Forbidden with `{ success: false, message: 'Access denied. Insufficient permissions.' }` if role requirements are not met.
+
+2. **Instantaneous Global Session Invalidation (`tokenVersion`)**:
+   - `User` schema contains `tokenVersion: { type: Number, default: 0 }`.
+   - `auth.service.js` generates JWT tokens including `tokenVersion: user.tokenVersion || 0`.
+   - Upon password reset or security-critical account updates, `tokenVersion` increments monotonically (`$inc: { tokenVersion: 1 }`).
+   - All previously issued JWTs across all browsers, mobile devices, and sessions are immediately rejected on the very next authenticated request without needing Redis or stateful session stores.
+
+3. **Administrative Access Gate (`server/src/routes/admin.routes.js`)**:
+   - Dedicated `GET /api/admin/status` endpoint protected by `requireAuth, requireRole('admin')`.
+   - Normal users (`role: 'user'`) are strictly blocked with HTTP 403 Forbidden.
+   - Admin users (`role: 'admin'`) receive platform health and administrative metadata with HTTP 200.
+
+4. **Client Route Guards & Shell Integration**:
+   - `UserShell` (`client/components/layouts/UserShell.js`): Enforces client-side authentication checks; redirects unauthenticated users to `/login?redirect=...` with full loading skeletons during session restoration.
+   - `AdminShell` (`client/components/layouts/AdminShell.js`): Enforces `role === 'admin'`; redirects non-admin authenticated users to `/feed` and unauthenticated users to `/login`.
+
+---
+
+## 13. Phase 7 Implementation & Verification Summary: User Profile Management
+
+Phase 7 delivered profile inspection, customization, and public exposure endpoints:
+
+1. **Profile Endpoints**:
+   - `GET /api/profile/me`: Retrieves current authenticated user's profile with safe projections excluding `passwordHash`, `verificationTokenHash`, and `resetPasswordTokenHash`.
+   - `PATCH /api/profile/me`: Allows authenticated user to update `fullName`, `bio` (max 300 chars), `avatar` (valid http/https URL scheme required), and `location` (max 100 chars).
+   - `GET /api/profiles/:userId`: Public profile endpoint returning user's public identity (`_id`, `fullName`, `bio`, `avatar`, `location`, `role`, `createdAt`), strictly stripping private data (`email`, verification tokens, activity logs). Validates MongoDB ObjectId format with HTTP 400 on malformed IDs and HTTP 404 on missing users.
+
+2. **Privilege Escalation & Field Protection**:
+   - `PATCH /api/profile/me` validator strictly strips and ignores protected fields (`role`, `email`, `isEmailVerified`, `isActive`, `tokenVersion`, `passwordHash`).
+   - Users cannot elevate their permissions, bypass email verification, or reactivate suspended accounts through profile updates.
+   - Updates record audit event `profile_update` in `ActivityLog`.
+
+3. **Frontend Integration**:
+   - `client/services/profileService.js`: Reusable service wrappers (`getMyProfile`, `updateMyProfile`, `getPublicProfile`).
+   - Profile pages:
+     - `/profile`: Shows current user details, bio, member badge, and recent activity.
+     - `/profile/edit`: Interactive form for updating full name, bio, location, and avatar with live preview and error handling.
+     - `/profile/[userId]`: Dynamic public profile view with user avatar, join date, and published posts.
+     - `/settings`: Account overview and preferences interface.
+
+---
+
+## 14. Phase 8 Implementation & Verification Summary: Post Creation & Management
+
+Phase 8 delivered full CRUD capabilities for user posts with strict author ownership enforcement:
+
+1. **Post Endpoints (`server/src/routes/post.routes.js`)**:
+   - `POST /api/posts`: Creates a new post. Validates content (1–1000 characters). Automatically assigns `author: req.user._id`. Returns HTTP 201 with populated author details.
+   - `GET /api/posts/mine`: Retrieves authenticated user's posts in reverse chronological order (`createdAt: -1`) with pagination metadata (`page`, `limit`, `totalPages`, `totalCount`).
+   - `GET /api/posts/:postId`: Retrieves a specific post by ID with populated author details (`_id`, `fullName`, `avatar`). Returns HTTP 400 for malformed IDs and HTTP 404 for non-existent posts.
+   - `PATCH /api/posts/:postId`: Allows author to update post content (1–1000 characters). Strictly validates ownership (`post.author.toString() === req.user._id.toString()`); non-authors receive HTTP 403 Forbidden.
+   - `DELETE /api/posts/:postId`: Allows author to delete post. Strictly validates ownership; non-authors receive HTTP 403 Forbidden. Successfully deletes post and logs audit event `post_deletion`.
+
+2. **Frontend Components & Post Composer**:
+   - `client/services/postService.js`: Reusable post API service (`createPost`, `getMyPosts`, `getPostById`, `updatePost`, `deletePost`, `getFeed`, `getExplorePosts`, `getUserPosts`).
+   - `PostComposer` (`client/components/posts/PostComposer.js`): Interactive composer with character countdown (0 / 1000), error banners, loading states, and instant parent feed updates.
+   - `PostCard` (`client/components/posts/PostCard.js`): Modular post display card supporting author actions (inline editing, delete confirmation dialog), relative time display, and navigation to public author profiles.
+
+---
+
+## 15. Phase 9 Implementation & Verification Summary: Social Media Feed & Explore
+
+Phase 9 established the community content discovery timelines:
+
+1. **Feed & Discovery Endpoints (`server/src/routes/feed.routes.js` & `server/src/routes/profile.routes.js`)**:
+   - `GET /api/feed`: Authenticated timeline returning community posts sorted in strict reverse-chronological order (`createdAt: -1`). Populates safe author fields (`fullName`, `avatar`, `role`), excluding sensitive hashes. Includes standard pagination metadata (`page`, `limit`, `totalPages`, `totalCount`).
+   - `GET /api/explore`: Discovery endpoint providing public post discovery sorted in reverse-chronological order, accessible with pagination for search and topic exploration.
+   - `GET /api/profiles/:userId/posts`: Retrieves posts published strictly by the specified author in reverse-chronological order.
+
+2. **Frontend Timelines**:
+   - `/feed` (`client/app/(user)/feed/page.js`): Main authenticated feed integrating `PostComposer`, empty states, loading skeletons, and real-time post deletion/editing.
+   - `/explore` (`client/app/(user)/explore/page.js`): Discovery view with category pills, post cards, and refresh triggers.
+
+---
+
+## 16. Comprehensive Test Verification Summary
+
+Across the entire codebase, 100% of all automated test suites pass without errors:
+
+| Test Suite | Execution Command | Target Database | Assertions Passed | Failed | Status |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Batch 2 Comprehensive Suite (Phases 5–9)** | `npm run test:batch2` in `server` | `looply_test` | **47** | 0 | **PASSED** |
+| **Phase 4 Authentication Suite** | `npm run test:auth` in `server` | `looply_test` | **39** | 0 | **PASSED** |
+| **Phase 4 E2E Real Browser Suite** | `npm run test:e2e` in `server` | `looply_test` | **31** | 0 | **PASSED** |
+| **Phase 3 Database & Models Regression** | `npm test` in `server` | `looply` / Atlas | **90** | 0 | **PASSED** |
+| **Frontend Production Build** | `npm run build` in `client` | N/A | **22/22 routes** | 0 | **PASSED** |
+| **Frontend Code Quality & Linting** | `npm run lint` in `client` | N/A | **0 errors, 0 warnings** | 0 | **PASSED** |
+
+---
+
+## 17. Next Permitted Development Phase
 
 - **Current Status:**
   - **Phase 1: APPROVED**
   - **Phase 2: APPROVED**
   - **Phase 3: APPROVED**
-  - **Phase 4: IMPLEMENTATION COMPLETED**
-  - **Phase 4: AWAITING EXTERNAL REVIEW**
-  - **Phase 5: PENDING**
-- **Next Phase:** **PHASE 5: EMAIL VERIFICATION, FORGOT PASSWORD AND PASSWORD RESET.**
-- **Current Directive:** **HALT**. Stop development. Phase 4 implementation is completed. Await external code review and approval before beginning Phase 5.
+  - **Phase 4: APPROVED**
+  - **Phase 5: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 6: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 7: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 8: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Phase 9: IMPLEMENTATION COMPLETED (Batch 2)**
+  - **Batch 2 Status: AWAITING EXTERNAL REVIEW**
+  - **Phase 10: PENDING**
+- **Next Phase:** **PHASE 10: LIKES AND COMMENTS.**
+- **Current Directive:** **HALT**. Stop development. Batch 2 (Phases 5 through 9) implementation and internal testing are completely finished. Await external code review and authorization before proceeding to Phase 10.

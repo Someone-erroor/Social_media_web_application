@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import Card, { CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import FormField from '@/components/forms/FormField';
@@ -6,14 +9,88 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
+import { useAuth } from '@/context/AuthContext';
+import { profileService } from '@/services/profileService';
 import { ROUTES } from '@/lib/routes';
 
-export const metadata = {
-  title: 'Edit Profile',
-  description: 'Update your Looply profile details'
-};
-
 export default function ProfileEditPage() {
+  const { user, updateUser } = useAuth();
+  const router = useRouter();
+
+  const [fullName, setFullName] = useState(user?.fullName || '');
+  const [bio, setBio] = useState(user?.profile?.bio || '');
+  const [avatarUrl, setAvatarUrl] = useState(user?.profile?.avatarUrl || '');
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  useEffect(() => {
+    let ignore = false;
+    profileService
+      .getMyProfile()
+      .then((res) => {
+        if (!ignore && res?.user) {
+          setFullName(res.user.fullName || '');
+          setBio(res.user.profile?.bio || '');
+          setAvatarUrl(res.user.profile?.avatarUrl || '');
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    const trimmedName = fullName.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      setErrorMessage('Full name must be at least 2 characters.');
+      return;
+    }
+    if (trimmedName.length > 70) {
+      setErrorMessage('Full name cannot exceed 70 characters.');
+      return;
+    }
+
+    if (bio.trim().length > 250) {
+      setErrorMessage('Bio cannot exceed 250 characters.');
+      return;
+    }
+
+    if (avatarUrl.trim() && !/^https?:\/\/.+/i.test(avatarUrl.trim())) {
+      setErrorMessage('Avatar URL must start with http:// or https://.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await profileService.updateMyProfile({
+        fullName: trimmedName,
+        bio: bio.trim(),
+        avatarUrl: avatarUrl.trim()
+      });
+
+      if (res?.user) {
+        updateUser(res.user);
+        setSuccessMessage('Profile updated successfully!');
+        setTimeout(() => {
+          router.push(ROUTES.USER.PROFILE);
+        }, 1200);
+      }
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to update profile.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -39,96 +116,116 @@ export default function ProfileEditPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6">
-          {/* Avatar Change Area */}
-          <div className="flex items-center gap-5">
-            <Avatar name="Alex Morgan" size="xl" />
-            <div className="space-y-1.5">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled
-                title="Photo uploads coming soon"
-              >
-                Change Photo
-              </Button>
-              <p className="text-[11px] text-slate-400">
-                JPG, GIF or PNG. 1MB max. Uploads coming soon.
-              </p>
-            </div>
-          </div>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-6">
+            {errorMessage && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
+                {errorMessage}
+              </div>
+            )}
 
-          <form className="space-y-4">
-            <FormField id="edit-name" label="Full Name" required>
+            {successMessage && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800">
+                {successMessage}
+              </div>
+            )}
+
+            {/* Avatar Preview */}
+            <div className="flex items-center gap-5">
+              <Avatar
+                name={fullName || 'User'}
+                src={avatarUrl.trim()}
+                size="xl"
+              />
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-slate-800">Avatar Preview</p>
+                <p className="text-[11px] text-slate-400">
+                  Provide a direct image URL (JPEG, PNG, or WebP) below.
+                </p>
+              </div>
+            </div>
+
+            {/* Avatar URL Field */}
+            <FormField
+              id="avatar-url"
+              label="Avatar Image URL"
+              helperText="Optional link to a public image URL starting with http:// or https://"
+            >
+              <Input
+                id="avatar-url"
+                type="url"
+                placeholder="https://example.com/avatar.jpg"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                disabled={loading}
+              />
+            </FormField>
+
+            {/* Display Name Field */}
+            <FormField id="edit-name" label="Display Name" required>
               <Input
                 id="edit-name"
-                defaultValue="Alex Morgan"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Your full name"
+                disabled={loading}
+                required
               />
             </FormField>
 
-            <FormField id="edit-handle" label="Handle" required helperText="Your unique public @handle">
+            {/* Email Field (Read-only) */}
+            <FormField
+              id="edit-email"
+              label="Email Address"
+              helperText="Your email cannot be edited from this form."
+            >
               <Input
-                id="edit-handle"
-                defaultValue="alexmorgan"
-                placeholder="handle"
+                id="edit-email"
+                type="email"
+                value={user?.email || ''}
+                disabled
+                className="bg-slate-50 cursor-not-allowed"
               />
             </FormField>
 
-            <FormField id="edit-bio" label="Bio" helperText="Brief description for your profile (max 160 characters)">
+            {/* Biography Field */}
+            <FormField
+              id="edit-bio"
+              label="Biography"
+              helperText={`${bio.length}/250 characters`}
+            >
               <textarea
                 id="edit-bio"
-                defaultValue="Exploring modern interface engineering, distributed systems, and creative expression. Building with Next.js, React, and Tailwind CSS."
                 rows={3}
-                className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Tell the community about yourself, your interests, or what you're working on..."
+                disabled={loading}
+                className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
               />
             </FormField>
+          </CardContent>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField id="edit-location" label="Location">
-                <Input
-                  id="edit-location"
-                  defaultValue="San Francisco, CA"
-                  placeholder="City, Country"
-                />
-              </FormField>
-
-              <FormField id="edit-website" label="Website">
-                <Input
-                  id="edit-website"
-                  defaultValue="https://example.com"
-                  placeholder="https://yourwebsite.com"
-                />
-              </FormField>
-            </div>
-          </form>
-        </CardContent>
-
-        <CardFooter className="flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <p className="text-[11px] text-slate-400">
-            Profile updates &bull; Coming Soon
-          </p>
-
-          <div className="flex items-center gap-2 justify-end">
+          <CardFooter className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
             <Button
               href={ROUTES.USER.PROFILE}
               variant="outline"
-              size="sm"
+              size="md"
+              disabled={loading}
             >
               Cancel
             </Button>
             <Button
-              type="button"
+              type="submit"
               variant="primary"
-              size="sm"
-              disabled
-              title="Profile updates coming soon"
+              size="md"
+              disabled={loading}
             >
-              Save Changes
+              {loading ? 'Saving Changes...' : 'Save Changes'}
             </Button>
-          </div>
-        </CardFooter>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );

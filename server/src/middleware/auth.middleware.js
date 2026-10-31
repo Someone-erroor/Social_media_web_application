@@ -1,17 +1,18 @@
 import { AUTH_COOKIE_NAME, verifyToken } from '../config/jwt.js';
-import { getUserById } from '../services/auth.service.js';
+import { User } from '../models/index.js';
+import { toSafeUser } from '../services/auth.service.js';
 
 /**
- * Reusable authentication middleware.
- * Verifies the JWT from the HTTP-only cookie (or Authorization header),
- * validates the user from the database, ensures the account is active,
- * and attaches the authenticated user to the request.
+ * Reusable authentication middleware (requireAuth).
+ * Verifies JWT signature and expiration, retrieves fresh user from MongoDB,
+ * checks accountStatus (rejecting suspended users), validates tokenVersion
+ * to enforce session invalidation, and attaches the authoritative safe user to req.user.
  *
  * @param {import('express').Request} req - Express request
  * @param {import('express').Response} res - Express response
  * @param {import('express').NextFunction} next - Express next handler
  */
-export const authenticate = async (req, res, next) => {
+export const requireAuth = async (req, res, next) => {
   try {
     // 1. Extract token from HTTP-only cookie or Authorization header fallback
     let token = null;
@@ -54,7 +55,7 @@ export const authenticate = async (req, res, next) => {
     }
 
     // 3. Retrieve user from MongoDB to guarantee account is valid and active
-    const user = await getUserById(decoded.userId);
+    const user = await User.findById(decoded.userId).select('+tokenVersion');
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -62,8 +63,26 @@ export const authenticate = async (req, res, next) => {
       });
     }
 
-    // 4. Attach safe user to request
-    req.user = user;
+    // Reject suspended accounts immediately
+    if (user.accountStatus === 'suspended') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been suspended. Please contact platform support.'
+      });
+    }
+
+    // 4. Verify tokenVersion (Session Invalidation check)
+    if (decoded.tokenVersion !== undefined && user.tokenVersion !== undefined) {
+      if (decoded.tokenVersion !== user.tokenVersion) {
+        return res.status(401).json({
+          success: false,
+          message: 'Your session has been invalidated. Please sign in again.'
+        });
+      }
+    }
+
+    // 5. Attach authoritative user from database to request
+    req.user = toSafeUser(user);
     next();
   } catch (error) {
     if (error.status === 403) {
@@ -76,7 +95,43 @@ export const authenticate = async (req, res, next) => {
   }
 };
 
-export default {
-  authenticate
+/**
+ * Backward compatibility alias for requireAuth.
+ */
+export const authenticate = requireAuth;
+
+/**
+ * Reusable role-based authorization middleware (requireRole).
+ * Enforces authoritative database role checks on protected endpoints.
+ * Never trusts role claims supplied by client headers or body.
+ *
+ * @param {...string|string[]} allowedRoles - Role or array of roles permitted to access the route
+ * @returns {import('express').RequestHandler}
+ */
+export const requireRole = (...allowedRoles) => {
+  const roles = allowedRoles.flat();
+
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required. Please sign in to continue.'
+      });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Administrator privileges required.'
+      });
+    }
+
+    next();
+  };
 };
 
+export default {
+  requireAuth,
+  authenticate,
+  requireRole
+};

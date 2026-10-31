@@ -93,6 +93,10 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const updateUser = useCallback((updatedUser) => {
+    setUser((prev) => (prev ? { ...prev, ...updatedUser } : updatedUser));
+  }, []);
+
   /**
    * Logs out user, invalidates session cookie, and navigates to login.
    */
@@ -116,7 +120,8 @@ export function AuthProvider({ children }) {
         login,
         register,
         logout,
-        refreshUser
+        refreshUser,
+        updateUser
       }}
     >
       {children}

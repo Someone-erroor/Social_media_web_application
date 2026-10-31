@@ -1,6 +1,8 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { User, ActivityLog } from '../models/index.js';
 import { generateToken } from '../config/jwt.js';
+import { sendVerificationEmail, sendPasswordResetEmail } from './email.service.js';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -15,6 +17,10 @@ export const toSafeUser = (user) => {
   if (!user) return null;
   const obj = typeof user.toObject === 'function' ? user.toObject() : { ...user };
   delete obj.passwordHash;
+  delete obj.verificationTokenHash;
+  delete obj.verificationTokenExpiresAt;
+  delete obj.resetPasswordTokenHash;
+  delete obj.resetPasswordTokenExpiresAt;
   delete obj.__v;
   return obj;
 };
@@ -22,6 +28,7 @@ export const toSafeUser = (user) => {
 /**
  * Registers a new user account with secure password hashing.
  * Strictly prevents role escalation by assigning role: 'user'.
+ * Generates a SHA-256 hashed email verification token and dispatches a verification email.
  *
  * @param {object} sanitizedInput - Validated input containing fullName, email, password
  * @returns {Promise<{ user: object }>} Created user safe representation
@@ -38,13 +45,21 @@ export const registerUser = async ({ fullName, email, password }) => {
   // 2. Hash password with bcrypt
   const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
-  // 3. Create user with strictly enforced default role and status
+  // 3. Generate cryptographically secure email verification token (SHA-256 hashed in database)
+  const rawVerificationToken = crypto.randomBytes(32).toString('hex');
+  const verificationTokenHash = crypto.createHash('sha256').update(rawVerificationToken).digest('hex');
+  const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+  // 4. Create user with strictly enforced default role and status
   const user = new User({
     fullName,
     email,
     passwordHash,
     role: 'user', // Public registration is strictly role: 'user'
     isEmailVerified: false,
+    verificationTokenHash,
+    verificationTokenExpiresAt,
+    tokenVersion: 0,
     accountStatus: 'active',
     profile: {
       bio: '',
@@ -54,7 +69,18 @@ export const registerUser = async ({ fullName, email, password }) => {
 
   await user.save();
 
-  // 4. Log security audit entry (never storing sensitive information in metadata)
+  // 5. Send verification email via email service
+  try {
+    await sendVerificationEmail({
+      to: user.email,
+      name: user.fullName,
+      token: rawVerificationToken
+    });
+  } catch (emailErr) {
+    console.error(`[Email Service Notice] Could not dispatch registration email: ${emailErr.message}`);
+  }
+
+  // 6. Log security audit entry (never storing sensitive information in metadata)
   try {
     const auditLog = new ActivityLog({
       actor: user._id,
@@ -68,7 +94,6 @@ export const registerUser = async ({ fullName, email, password }) => {
     });
     await auditLog.save();
   } catch (auditErr) {
-    // Non-blocking audit failure
     console.error(`[ActivityLog] Failed to record registration audit: ${auditErr.message}`);
   }
 
@@ -76,7 +101,93 @@ export const registerUser = async ({ fullName, email, password }) => {
 };
 
 /**
- * Authenticates user credentials, verifies account status, and generates a JWT.
+ * Validates a raw email verification token, updates user status, and clears token records.
+ *
+ * @param {string} rawToken - Unhashed verification token from URL
+ * @returns {Promise<{ user: object }>} Updated user safe representation
+ */
+export const verifyEmail = async (rawToken) => {
+  if (!rawToken || typeof rawToken !== 'string') {
+    const error = new Error('Verification token is required.');
+    error.status = 400;
+    throw error;
+  }
+
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+  const user = await User.findOne({
+    verificationTokenHash: tokenHash,
+    verificationTokenExpiresAt: { $gt: new Date() }
+  }).select('+verificationTokenHash +verificationTokenExpiresAt');
+
+  if (!user) {
+    const error = new Error('Invalid or expired verification token.');
+    error.status = 400;
+    throw error;
+  }
+
+  // Prevent duplicate verification actions if already marked verified
+  if (user.isEmailVerified) {
+    return { user: toSafeUser(user) };
+  }
+
+  user.isEmailVerified = true;
+  user.verificationTokenHash = undefined;
+  user.verificationTokenExpiresAt = undefined;
+  await user.save();
+
+  try {
+    const auditLog = new ActivityLog({
+      actor: user._id,
+      action: 'email_verification',
+      targetType: 'User',
+      targetId: user._id,
+      metadata: {
+        verifiedAt: new Date().toISOString()
+      }
+    });
+    await auditLog.save();
+  } catch (auditErr) {
+    console.error(`[ActivityLog] Failed to record verification audit: ${auditErr.message}`);
+  }
+
+  return { user: toSafeUser(user) };
+};
+
+/**
+ * Resends an email verification message without exposing account existence.
+ *
+ * @param {string} email - Normalized email
+ * @returns {Promise<{ message: string }>} Generic response message
+ */
+export const resendVerificationEmail = async (email) => {
+  const genericMessage = 'If an account exists with this email, a verification link has been sent.';
+
+  const user = await User.findOne({ email }).select('+verificationTokenHash +verificationTokenExpiresAt');
+  if (!user || user.isEmailVerified || user.accountStatus === 'suspended') {
+    return { message: genericMessage };
+  }
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  user.verificationTokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  user.verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  await user.save();
+
+  try {
+    await sendVerificationEmail({
+      to: user.email,
+      name: user.fullName,
+      token: rawToken
+    });
+  } catch (emailErr) {
+    console.error(`[Email Service Notice] Could not dispatch resend email: ${emailErr.message}`);
+  }
+
+  return { message: genericMessage };
+};
+
+/**
+ * Authenticates user credentials, verifies email verification status, and generates a JWT.
  *
  * @param {object} sanitizedInput - Validated input containing email, password
  * @returns {Promise<{ user: object, token: string }>} Safe user and signed JWT
@@ -105,13 +216,21 @@ export const loginUser = async ({ email, password }) => {
     throw error;
   }
 
-  // 4. Generate JWT
+  // 4. Verify email ownership has been confirmed (Phase 5 requirement)
+  if (!user.isEmailVerified) {
+    const error = new Error('Please verify your email address before signing in.');
+    error.status = 403;
+    throw error;
+  }
+
+  // 5. Generate JWT with tokenVersion claim for session invalidation (Phase 6)
   const token = generateToken({
     userId: user._id.toString(),
-    role: user.role
+    role: user.role,
+    tokenVersion: user.tokenVersion || 0
   });
 
-  // 5. Record successful login in audit log
+  // 6. Record successful login in audit log
   try {
     const auditLog = new ActivityLog({
       actor: user._id,
@@ -131,6 +250,116 @@ export const loginUser = async ({ email, password }) => {
   return {
     user: toSafeUser(user),
     token
+  };
+};
+
+/**
+ * Initiates forgot-password workflow.
+ * Uses a generic response regardless of whether the email exists to avoid enumeration.
+ *
+ * @param {string} email - Normalized user email
+ * @returns {Promise<{ message: string }>} Safe generic message
+ */
+export const forgotPassword = async (email) => {
+  const genericMessage = 'If an account exists with this email, password reset instructions have been sent.';
+
+  const user = await User.findOne({ email });
+  if (!user || user.accountStatus === 'suspended') {
+    return { message: genericMessage };
+  }
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  const tokenExpiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes expiration
+
+  user.resetPasswordTokenHash = tokenHash;
+  user.resetPasswordTokenExpiresAt = tokenExpiresAt;
+  await user.save();
+
+  try {
+    await sendPasswordResetEmail({
+      to: user.email,
+      name: user.fullName,
+      token: rawToken
+    });
+  } catch (emailErr) {
+    console.error(`[Email Service Notice] Could not dispatch reset email: ${emailErr.message}`);
+  }
+
+  try {
+    const auditLog = new ActivityLog({
+      actor: user._id,
+      action: 'password_reset_request',
+      targetType: 'User',
+      targetId: user._id,
+      metadata: {
+        requestedAt: new Date().toISOString()
+      }
+    });
+    await auditLog.save();
+  } catch (auditErr) {
+    console.error(`[ActivityLog] Failed to record reset request audit: ${auditErr.message}`);
+  }
+
+  return { message: genericMessage };
+};
+
+/**
+ * Resets user password using a valid SHA-256 hashed reset token.
+ * Clears token and increments tokenVersion to invalidate existing sessions.
+ *
+ * @param {object} params
+ * @param {string} params.token - Raw reset token
+ * @param {string} params.password - New plain text password
+ * @returns {Promise<{ message: string }>} Success message
+ */
+export const resetPassword = async ({ token: rawToken, password }) => {
+  if (!rawToken || typeof rawToken !== 'string') {
+    const error = new Error('Password reset token is required.');
+    error.status = 400;
+    throw error;
+  }
+
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordTokenHash: tokenHash,
+    resetPasswordTokenExpiresAt: { $gt: new Date() }
+  }).select('+passwordHash +resetPasswordTokenHash +resetPasswordTokenExpiresAt +tokenVersion');
+
+  if (!user) {
+    const error = new Error('Invalid or expired password reset token.');
+    error.status = 400;
+    throw error;
+  }
+
+  // Hash new password
+  const newPasswordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+
+  // Update credentials, clear token, and invalidate existing JWT sessions via tokenVersion
+  user.passwordHash = newPasswordHash;
+  user.resetPasswordTokenHash = undefined;
+  user.resetPasswordTokenExpiresAt = undefined;
+  user.tokenVersion = (user.tokenVersion || 0) + 1;
+  await user.save();
+
+  try {
+    const auditLog = new ActivityLog({
+      actor: user._id,
+      action: 'password_reset_success',
+      targetType: 'User',
+      targetId: user._id,
+      metadata: {
+        resetAt: new Date().toISOString()
+      }
+    });
+    await auditLog.save();
+  } catch (auditErr) {
+    console.error(`[ActivityLog] Failed to record password reset audit: ${auditErr.message}`);
+  }
+
+  return {
+    message: 'Password has been reset successfully. You can now sign in with your new password.'
   };
 };
 
@@ -160,7 +389,10 @@ export const getUserById = async (userId) => {
 export default {
   toSafeUser,
   registerUser,
+  verifyEmail,
+  resendVerificationEmail,
   loginUser,
+  forgotPassword,
+  resetPassword,
   getUserById
 };
-

@@ -174,6 +174,73 @@ client/components/
   - Reusable API client (`client/services/api.js`) sending `credentials: 'include'` on all requests.
   - Post-login navigation: User role redirects to `/feed`; Admin role redirects to `/admin`.
 
+### 4.4 Email Verification & Password Recovery (Phase 5)
+- **SMTP Transport & Templating (`services/email.service.js`, `services/email-template.service.js`):**
+  - Modular Nodemailer integration configured via `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`.
+  - Professional, responsive HTML templates with inline styles and plain-text fallback alternatives.
+  - Application starts safely without SMTP credentials in development/test.
+  - Test-only in-memory mail outbox (`testMailOutbox`) captures messages during automated testing without external network delivery.
+  - Never logs or exposes raw verification or reset tokens in logs or responses.
+- **Email Verification Workflow:**
+  - Registration generates high-entropy random token (`crypto.randomBytes(32)`).
+  - Only the 64-character SHA-256 token digest is stored in MongoDB (`select: false`).
+  - Raw token sent via email with 24-hour expiration.
+  - `POST /api/auth/verify-email` validates token, marks `isEmailVerified: true`, and clears token records.
+  - Single-use guarantee: token cannot be reused after verification.
+  - Resend verification endpoint (`POST /api/auth/resend-verification`) uses generic response avoiding user enumeration.
+  - Unverified users are strictly blocked from logging in (HTTP 403 Forbidden).
+- **Password Recovery Workflow:**
+  - `POST /api/auth/forgot-password` generates SHA-256 hashed reset token with 30-minute expiration.
+  - Always returns generic success response regardless of email existence to prevent user enumeration.
+  - `POST /api/auth/reset-password` validates token, verifies expiration, hashes new password with bcrypt (12 rounds), clears token, and increments `tokenVersion` to invalidate active sessions.
+
+### 4.5 Authorization Security & RBAC (Phase 6)
+- **Authoritative Middleware (`middleware/auth.middleware.js`):**
+  - `requireAuth`: Verifies JWT signature and expiration, retrieves user from MongoDB, verifies `accountStatus !== 'suspended'`, validates `tokenVersion` matches database, and attaches authoritative user to `req.user`.
+  - `requireRole`: Parameterized middleware enforcing required role clearance (e.g. `requireRole('admin')`). Database role is authoritative; client-supplied role parameters are rejected.
+- **Session Invalidation (`tokenVersion`):**
+  - JWT payload encodes `tokenVersion`.
+  - Password reset increments `tokenVersion` in database, causing prior JWTs to be immediately rejected on subsequent requests (HTTP 401).
+- **Route Protection Architecture:**
+  - Backend: Admin routes (`/api/admin/*`) require `requireAuth` + `requireRole('admin')`.
+  - Frontend: `UserShell` redirects unauthenticated users to `/login`. `AdminShell` redirects unauthenticated users to `/login` and non-admin users to `/feed`, displaying loading states without content flashing.
+- **Initial Administrator Provisioning:**
+  - No public administrator registration endpoint exists.
+  - An authorized database operator promotes an existing verified user using:
+    `db.users.updateOne({ email: "admin@example.com" }, { $set: { role: "admin" } })`.
+
+### 4.6 User Profile Architecture (Phase 7)
+- **Endpoints:**
+  - `GET /api/profile/me`: Private endpoint returning full authenticated user profile.
+  - `PATCH /api/profile/me`: Validates and updates `fullName` (2–70 chars), `bio` (max 250 chars), and `avatarUrl` (valid HTTP/HTTPS URL). Rejects modification of `role`, `email`, `passwordHash`, or account status.
+  - `GET /api/profiles/:userId`: Public profile endpoint returning `fullName`, `profile: { bio, avatarUrl }`, and `createdAt`. Strictly excludes email and credentials.
+- **Frontend Integration:**
+  - Dedicated pages: `/profile` (overview and personal posts), `/profile/edit` (form editor), `/profile/[userId]` (public creator view), `/settings` (account credentials and preferences).
+
+### 4.7 Post Management Architecture (Phase 8)
+- **Domain Modeling & Referential Integrity (`models/Post.js`):**
+  - Schema defines `author` (`ObjectId` ref to `User`), `content` (1–1000 characters), and timestamps.
+  - Global feed index: `{ createdAt: -1 }`.
+  - Creator timeline index: `{ author: 1, createdAt: -1 }`.
+- **Endpoints & Access Controls:**
+  - `POST /api/posts`: Requires authentication and verified email. Automatically binds `req.user._id` as author.
+  - `GET /api/posts/mine`: Paginated list of current user's posts.
+  - `GET /api/posts/:postId`: Single post lookup with author population.
+  - `PATCH /api/posts/:postId`: Content update. Author ownership strictly verified; unauthorized attempts return HTTP 403 Forbidden.
+  - `DELETE /api/posts/:postId`: Deletion with cascading cleanup of associated comments and likes. Author ownership strictly verified.
+- **Frontend Components:**
+  - `PostComposer`: Client component with character counter, validation, and optimistic feed update callback.
+  - `PostCard`: Responsive publication card with inline author-only editing, delete confirmation dialog, and relative timestamp formatting.
+
+### 4.8 Social Media Feed & Explore Architecture (Phase 9)
+- **Feed Engine (`services/post.service.js`):**
+  - `GET /api/feed?page=1&limit=10`: Returns global feed ordered chronologically (`createdAt: -1`). Populates safe author fields (`fullName`, `profile.avatarUrl`). Includes pagination metadata (`total`, `page`, `limit`, `totalPages`).
+  - `GET /api/profiles/:userId/posts`: Timeline endpoint retrieving posts authored by a specific user.
+  - `GET /api/explore`: Discovery stream for recent public discussions.
+- **Frontend UI:**
+  - `/feed`: Infinite or paginated stream with `PostComposer`, `PostCard` list, loading skeletons, and empty state.
+  - `/explore`: Discovery view with topic tags and recent creator discussions.
+
 ---
 
 ## 5. Responsiveness & Accessibility Strategy

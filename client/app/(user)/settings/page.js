@@ -1,136 +1,139 @@
-import PageHeader from '@/components/ui/PageHeader';
-import Card, { CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
-import FormField from '@/components/forms/FormField';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+'use client';
 
-export const metadata = {
-  title: 'Settings',
-  description: 'Manage account preferences and security'
-};
+import Link from 'next/link';
+import PageHeader from '@/components/ui/PageHeader';
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
+import { useAuth } from '@/context/AuthContext';
+import { ROUTES } from '@/lib/routes';
 
 export default function SettingsPage() {
+  const { user, logout } = useAuth();
+
+  const memberSince = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString(undefined, {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      })
+    : 'Active';
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Settings"
-        description="Configure your account preferences, security options, and platform experience"
+        description="Configure your account preferences, security options, and platform details"
       />
 
-      {/* Account Preferences Card */}
+      {/* Account Overview Card */}
       <Card className="border-slate-200">
         <CardHeader>
-          <CardTitle>Account Preferences</CardTitle>
-          <CardDescription>
-            Manage your personal contact details and display preferences
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Account Overview</CardTitle>
+              <CardDescription>
+                Primary account credentials and security clearance
+              </CardDescription>
+            </div>
+            <Badge variant={user?.role === 'admin' ? 'danger' : 'primary'}>
+              {user?.role === 'admin' ? 'Administrator' : 'Standard Member'}
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <FormField id="settings-email" label="Account Email" helperText="Used for authentication and notifications">
-            <Input
-              id="settings-email"
-              type="email"
-              defaultValue="alex@example.com"
-              disabled
-            />
-          </FormField>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-400 font-medium">Display Name</span>
+              <p className="text-sm font-semibold text-slate-800">{user?.fullName || 'User'}</p>
+            </div>
 
-          <FormField id="settings-language" label="Interface Language">
-            <select
-              id="settings-language"
-              defaultValue="en"
-              disabled
-              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none disabled:cursor-not-allowed"
-            >
-              <option value="en">English (United States)</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
-              <option value="de">Deutsch</option>
-            </select>
-          </FormField>
-        </CardContent>
-        <CardFooter className="justify-between">
-          <span className="text-[11px] text-slate-400">Account preferences &bull; Coming Soon</span>
-          <Button type="button" variant="primary" size="sm" disabled>
-            Save Preferences
-          </Button>
-        </CardFooter>
-      </Card>
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-400 font-medium">Email Address</span>
+              <p className="text-sm font-semibold text-slate-800">{user?.email || '—'}</p>
+            </div>
 
-      {/* Account Security Card */}
-      <Card className="border-slate-200">
-        <CardHeader>
-          <CardTitle>Security &amp; Password</CardTitle>
-          <CardDescription>
-            Ensure your account stays protected with strong passwords and authentication security
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <FormField id="current-pass" label="Current Password">
-            <Input
-              id="current-pass"
-              type="password"
-              placeholder="••••••••"
-              disabled
-            />
-          </FormField>
-
-          <FormField id="new-pass" label="New Password">
-            <Input
-              id="new-pass"
-              type="password"
-              placeholder="••••••••"
-              disabled
-            />
-          </FormField>
-        </CardContent>
-        <CardFooter className="justify-between">
-          <span className="text-[11px] text-slate-400">Security preferences &bull; Coming Soon</span>
-          <Button type="button" variant="primary" size="sm" disabled>
-            Update Password
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {/* Notification Preferences Card */}
-      <Card className="border-slate-200">
-        <CardHeader>
-          <CardTitle>Notification Preferences</CardTitle>
-          <CardDescription>
-            Select which community notifications and summaries you want to receive
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {[
-            { id: 'notify-mentions', label: 'Mentions and replies', desc: 'Notify when someone mentions you or replies to your post' },
-            { id: 'notify-likes', label: 'Likes and reactions', desc: 'Notify when someone likes your published content' },
-            { id: 'notify-digest', label: 'Weekly email digest', desc: 'Summary of top community discussions and discussions' }
-          ].map((item) => (
-            <label
-              key={item.id}
-              className="flex items-start gap-3 p-2 rounded-xl hover:bg-slate-50 cursor-pointer select-none"
-            >
-              <input
-                type="checkbox"
-                defaultChecked
-                disabled
-                className="mt-1 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-60"
-              />
-              <div className="text-xs">
-                <p className="font-semibold text-slate-800">{item.label}</p>
-                <p className="text-slate-500">{item.desc}</p>
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-400 font-medium">Email Verification</span>
+              <div className="flex items-center gap-2 pt-0.5">
+                {user?.isEmailVerified ? (
+                  <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold text-xs">
+                    <Icon name="check" className="w-3.5 h-3.5" /> Verified
+                  </span>
+                ) : (
+                  <Link
+                    href={ROUTES.PUBLIC.VERIFY_EMAIL}
+                    className="inline-flex items-center gap-1 text-amber-600 font-semibold text-xs hover:underline"
+                  >
+                    <Icon name="alertCircle" className="w-3.5 h-3.5" /> Unverified (Click to verify)
+                  </Link>
+                )}
               </div>
-            </label>
-          ))}
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-400 font-medium">Member Since</span>
+              <p className="text-sm font-semibold text-slate-800">{memberSince}</p>
+            </div>
+          </div>
+
+          <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+            <Button
+              href={ROUTES.USER.PROFILE_EDIT}
+              variant="outline"
+              size="sm"
+            >
+              Edit Profile Details
+            </Button>
+          </div>
         </CardContent>
-        <CardFooter className="justify-between">
-          <span className="text-[11px] text-slate-400">Notification preferences &bull; Coming Soon</span>
-          <Button type="button" variant="primary" size="sm" disabled>
-            Save Notification Rules
-          </Button>
-        </CardFooter>
+      </Card>
+
+      {/* Security & Password Card */}
+      <Card className="border-slate-200">
+        <CardHeader>
+          <CardTitle>Security & Password</CardTitle>
+          <CardDescription>
+            Manage password recovery and active credentials
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div>
+              <p className="text-xs font-semibold text-slate-800">Password Recovery</p>
+              <p className="text-[11px] text-slate-500">
+                Send instructions to reset your password via your verified email address.
+              </p>
+            </div>
+            <Button
+              href={ROUTES.PUBLIC.FORGOT_PASSWORD}
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+            >
+              Reset Password
+            </Button>
+          </div>
+
+          <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+            <div>
+              <p className="text-xs font-semibold text-red-600">Active Session</p>
+              <p className="text-[11px] text-slate-400">
+                Sign out of Looply on this browser.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              onClick={logout}
+            >
+              Sign Out
+            </Button>
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
 }
-

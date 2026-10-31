@@ -105,8 +105,129 @@ export const validateLoginInput = (input = {}) => {
   };
 };
 
+/**
+ * Validates email verification token payload.
+ *
+ * @param {object} input
+ * @returns {{ isValid: boolean, errors: string[], sanitized: object }}
+ */
+export const validateVerifyEmailInput = (input = {}) => {
+  const errors = [];
+  const { token } = input;
+
+  if (!token || typeof token !== 'string' || token.trim() === '') {
+    errors.push('Verification token is required.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized: {
+      token: token ? token.trim() : ''
+    }
+  };
+};
+
+/**
+ * Validates resend verification email payload.
+ *
+ * @param {object} input
+ * @returns {{ isValid: boolean, errors: string[], sanitized: object }}
+ */
+export const validateResendVerificationInput = (input = {}) => {
+  const errors = [];
+  const { email } = input;
+
+  if (!email || typeof email !== 'string' || email.trim() === '') {
+    errors.push('Email address is required.');
+  }
+
+  const normalizedEmail = email ? email.trim().toLowerCase() : '';
+  if (normalizedEmail && !EMAIL_REGEX.test(normalizedEmail)) {
+    errors.push('Please provide a valid email address.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized: {
+      email: normalizedEmail
+    }
+  };
+};
+
+/**
+ * Validates forgot password request payload.
+ *
+ * @param {object} input
+ * @returns {{ isValid: boolean, errors: string[], sanitized: object }}
+ */
+export const validateForgotPasswordInput = (input = {}) => {
+  const errors = [];
+  const { email } = input;
+
+  if (!email || typeof email !== 'string' || email.trim() === '') {
+    errors.push('Email address is required.');
+  }
+
+  const normalizedEmail = email ? email.trim().toLowerCase() : '';
+  if (normalizedEmail && !EMAIL_REGEX.test(normalizedEmail)) {
+    errors.push('Please provide a valid email address.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized: {
+      email: normalizedEmail
+    }
+  };
+};
+
+/**
+ * Validates reset password payload.
+ *
+ * @param {object} input
+ * @returns {{ isValid: boolean, errors: string[], sanitized: object }}
+ */
+export const validateResetPasswordInput = (input = {}) => {
+  const errors = [];
+  const { token, password, confirmPassword } = input;
+
+  if (!token || typeof token !== 'string' || token.trim() === '') {
+    errors.push('Password reset token is required.');
+  }
+
+  if (!password || typeof password !== 'string') {
+    errors.push('New password is required.');
+  } else if (password.length < 8) {
+    errors.push('Password must be at least 8 characters long.');
+  } else if (password.length > 128) {
+    errors.push('Password cannot exceed 128 characters.');
+  }
+
+  if (!confirmPassword || typeof confirmPassword !== 'string') {
+    errors.push('Password confirmation is required.');
+  } else if (password !== confirmPassword) {
+    errors.push('Passwords do not match.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized: {
+      token: token ? token.trim() : '',
+      password
+    }
+  };
+};
+
 export default {
   validateRegisterInput,
-  validateLoginInput
+  validateLoginInput,
+  validateVerifyEmailInput,
+  validateResendVerificationInput,
+  validateForgotPasswordInput,
+  validateResetPasswordInput
 };
 

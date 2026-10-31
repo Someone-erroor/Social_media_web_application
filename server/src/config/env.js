@@ -167,15 +167,32 @@ const mongodbTestUri = process.env.MONGODB_TEST_URI ? String(process.env.MONGODB
 const jwtSecret = validateJwtSecret(process.env.JWT_SECRET, nodeEnv);
 const jwtExpiresIn = validateJwtExpiresIn(process.env.JWT_EXPIRES_IN);
 
+// SMTP and Client URL Configuration (Phase 5)
+const smtpHost = process.env.SMTP_HOST ? String(process.env.SMTP_HOST).trim() : '';
+const smtpPort = process.env.SMTP_PORT ? Number.parseInt(String(process.env.SMTP_PORT).trim(), 10) : 587;
+const smtpSecure = process.env.SMTP_SECURE === 'true' || process.env.SMTP_SECURE === '1';
+const smtpUser = process.env.SMTP_USER ? String(process.env.SMTP_USER).trim() : '';
+const smtpPass = process.env.SMTP_PASS ? String(process.env.SMTP_PASS).trim() : '';
+const smtpFrom = process.env.SMTP_FROM ? String(process.env.SMTP_FROM).trim() : 'Looply <noreply@looply.net>';
+const clientUrl = process.env.CLIENT_URL ? String(process.env.CLIENT_URL).trim() : (clientOrigins[0] || 'http://localhost:3000');
+
 export const env = {
   NODE_ENV: nodeEnv,
   PORT: port,
   CLIENT_ORIGIN: clientOrigins.join(','),
   CLIENT_ORIGINS: clientOrigins,
+  CLIENT_URL: clientUrl,
   MONGODB_URI: mongodbUri,
   MONGODB_TEST_URI: mongodbTestUri,
   JWT_SECRET: jwtSecret,
   JWT_EXPIRES_IN: jwtExpiresIn,
+  SMTP_HOST: smtpHost,
+  SMTP_PORT: smtpPort,
+  SMTP_SECURE: smtpSecure,
+  SMTP_USER: smtpUser,
+  SMTP_PASS: smtpPass,
+  SMTP_FROM: smtpFrom,
+  isSmtpConfigured: Boolean(smtpHost && smtpUser && smtpPass),
   isDevelopment: nodeEnv === 'development',
   isProduction: nodeEnv === 'production',
   isTest: nodeEnv === 'test'

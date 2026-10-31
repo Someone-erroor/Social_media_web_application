@@ -2,8 +2,8 @@
 
 > **Project:** Looply ("Connect. Share. Express.")  
 > **Target Database:** MongoDB (v6.0+) via Mongoose ODM (v9.x)  
-> **Phase Milestone:** Phase 4 — User Registration and Login  
-> **Phase Status:** Phase 1: APPROVED | Phase 2: APPROVED | Phase 3: APPROVED | Phase 4: IMPLEMENTATION COMPLETED (AWAITING EXTERNAL REVIEW) | Phase 5: PENDING  
+> **Phase Milestone:** Batch 2 (Phases 5 to 9) — Verification, Security & RBAC, Profiles, Posts & Feed  
+> **Phase Status:** Phase 1: APPROVED | Phase 2: APPROVED | Phase 3: APPROVED | Phase 4: APPROVED | Phase 5: IMPLEMENTATION COMPLETED | Phase 6: IMPLEMENTATION COMPLETED | Phase 7: IMPLEMENTATION COMPLETED | Phase 8: IMPLEMENTATION COMPLETED | Phase 9: IMPLEMENTATION COMPLETED (AWAITING EXTERNAL BATCH REVIEW) | Phase 10: PENDING  
 > **Architecture:** Decoupled Express.js REST API (`server/`) with Mongoose Schemas  
 
 ---
@@ -57,6 +57,11 @@ Represents registered platform members and administrative accounts.
 | `profile.bio` | `String` | No | `''` | `trim`, max: 250 chars | Public member biographical summary |
 | `profile.avatarUrl`| `String` | No | `''` | `trim` | Public avatar image asset URL |
 | `accountStatus`| `String` | **Yes** | `'active'`| Enum: `['active', 'suspended']` | Account operational status |
+| `verificationTokenHash` | `String` | No | — | `select: false` | SHA-256 hash of email verification token |
+| `verificationTokenExpiresAt` | `Date` | No | — | `select: false` | Verification token expiration timestamp (24h) |
+| `resetPasswordTokenHash` | `String` | No | — | `select: false` | SHA-256 hash of password reset token |
+| `resetPasswordTokenExpiresAt` | `Date` | No | — | `select: false` | Password reset token expiration timestamp (30m) |
+| `tokenVersion` | `Number` | No | `0` | Default: 0 | Session version counter for token invalidation |
 | `createdAt` | `Date` | Auto | Timestamp | Managed by Mongoose `timestamps` | Account creation timestamp |
 | `updatedAt` | `Date` | Auto | Timestamp | Managed by Mongoose `timestamps` | Last modification timestamp |
 

@@ -45,7 +45,27 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **Session Transport:** HTTP-only cookies (`looply_token`) with SameSite and Secure flags (never exposed to JavaScript)
 - **State Management:** Centralized `ClientProviders` and `AuthProvider` with automatic session restoration via `GET /api/auth/me`
 - **Testing:** Isolated dedicated test database (`looply_test`) with strict zero-fallback policy and real browser E2E automation (Headless Chrome via `puppeteer-core`)
-- **Status:** Phase 4 completed and verified with 39 backend tests and 30 real browser E2E tests.
+- **Status:** Phase 4 completed and verified with 39 backend tests and 31 real browser E2E tests.
+
+### Email Verification & Password Recovery (Phase 5 Completed)
+- **Transport Architecture:** `nodemailer` with dynamic SMTP configuration (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) and graceful mock/fallback handling.
+- **Cryptographic Security:** High-entropy random tokens (`crypto.randomBytes(32)`), stored strictly as 64-character SHA-256 digests (`select: false`), never plaintext.
+- **Expiration Policies:** 24-hour verification token lifespan; 30-minute password reset token lifespan.
+- **Protection:** Prevents user enumeration by responding with generic success messages on unknown emails.
+- **Status:** Phase 5 completed and verified.
+
+### Security, Roles & Session Invalidation (Phase 6 Completed)
+- **Role-Based Access Control:** Dual-layer `requireAuth` and `requireRole` middleware with authoritative database role verification (`user`, `admin`).
+- **Instantaneous Session Invalidation:** User model `tokenVersion` incremented upon password reset, revoking all active sessions across all devices instantly.
+- **Lifecycle Guards:** Suspended or deleted user accounts immediately rejected on all protected routes.
+- **Client Route Guards:** `UserShell` and `AdminShell` enforce authentication and role boundaries before rendering protected content.
+- **Status:** Phase 6 completed and verified.
+
+### Profiles, Content & Social Feed (Phases 7, 8, 9 Completed)
+- **User Profiles (Phase 7):** Profile view (`GET /api/profile/me`), profile update (`PATCH /api/profile/me`), and public profile endpoint (`GET /api/profiles/:userId`) with sensitive data sanitization and strict schema validation.
+- **Post Management (Phase 8):** Full post CRUD (`POST /api/posts`, `GET /api/posts/mine`, `GET /api/posts/:postId`, `PATCH /api/posts/:postId`, `DELETE /api/posts/:postId`) with author ownership enforcement (non-author edits/deletes strictly blocked with HTTP 403).
+- **Social Feed & Explore (Phase 9):** Reverse-chronological timeline (`GET /api/feed`), discovery explore endpoint (`GET /api/explore`), and user post grid (`GET /api/profiles/:userId/posts`) with complete pagination metadata.
+- **Status:** Phases 7, 8, and 9 completed and verified.
 
 ---
 
@@ -118,6 +138,9 @@ c:/assestement_project/
 │   │   │   ├── FormField.js
 │   │   │   ├── LoginForm.js
 │   │   │   └── RegisterForm.js
+│   │   ├── posts/
+│   │   │   ├── PostCard.js
+│   │   │   └── PostComposer.js
 │   │   ├── navigation/
 │   │   │   ├── PublicNavbar.js
 │   │   │   ├── PublicFooter.js
@@ -141,7 +164,9 @@ c:/assestement_project/
 │   │   └── routes.js
 │   ├── services/
 │   │   ├── api.js
-│   │   └── authService.js
+│   │   ├── authService.js
+│   │   ├── postService.js
+│   │   └── profileService.js
 │   └── public/
 │       ├── favicon.svg
 │       └── logo.svg
@@ -152,6 +177,7 @@ c:/assestement_project/
     ├── test/
     │   ├── test-phase3.mjs
     │   ├── test-phase4.mjs
+    │   ├── test-batch2.mjs
     │   ├── test-e2e-browser.mjs
     │   ├── test-helpers.mjs
     │   └── test-atlas-connection.mjs
@@ -165,7 +191,9 @@ c:/assestement_project/
         │   └── jwt.js
         ├── controllers/
         │   ├── health.controller.js
-        │   └── auth.controller.js
+        │   ├── auth.controller.js
+        │   ├── profile.controller.js
+        │   └── post.controller.js
         ├── middleware/
         │   ├── error.middleware.js
         │   └── auth.middleware.js
@@ -180,11 +208,21 @@ c:/assestement_project/
         ├── routes/
         │   ├── index.js
         │   ├── health.routes.js
-        │   └── auth.routes.js
+        │   ├── auth.routes.js
+        │   ├── admin.routes.js
+        │   ├── profile.routes.js
+        │   ├── post.routes.js
+        │   └── feed.routes.js
         ├── services/
-        │   └── auth.service.js
+        │   ├── auth.service.js
+        │   ├── email.service.js
+        │   ├── email-template.service.js
+        │   ├── profile.service.js
+        │   └── post.service.js
         └── validators/
-            └── auth.validator.js
+            ├── auth.validator.js
+            ├── profile.validator.js
+            └── post.validator.js
 ```
 
 ---
@@ -274,6 +312,12 @@ cd server
 npm run test:auth
 ```
 
+### Run Batch 2 Test Suite (Phases 5 to 9: Email, RBAC, Profiles, Posts, Feed)
+```bash
+cd server
+npm run test:batch2
+```
+
 ### Run Phase 4 End-to-End Real Browser Test Suite (Headless Chrome)
 ```bash
 cd server
@@ -307,12 +351,12 @@ npm run lint
 | **Phase 1** | **Project architecture and initial setup.** | **APPROVED** |
 | **Phase 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
 | **Phase 3** | **Backend foundation and database design.** | **APPROVED** |
-| **Phase 4** | **User registration and login.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| Phase 5 | Email verification, forgot password and password reset. | Pending |
-| Phase 6 | Authentication security and role-based access control. | Pending |
-| Phase 7 | User profile management. | Pending |
-| Phase 8 | Post creation, editing and deletion. | Pending |
-| Phase 9 | Social media feed and viewing other users' posts. | Pending |
+| **Phase 4** | **User registration and login.** | **APPROVED** |
+| **Phase 5** | **Email verification, forgot password and password reset.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **Phase 6** | **Authentication security and role-based access control.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **Phase 7** | **User profile management.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **Phase 8** | **Post creation, editing and deletion.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
+| **Phase 9** | **Social media feed and viewing other users' posts.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
 | Phase 10 | Likes and comments. | Pending |
 | Phase 11 | Admin dashboard and platform statistics. | Pending |
 | Phase 12 | Admin user, post and comment management. | Pending |

@@ -1,17 +1,75 @@
+'use client';
+
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import FormField from '@/components/forms/FormField';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
+import { authService } from '@/services/authService';
 import { ROUTES } from '@/lib/routes';
 
-export const metadata = {
-  title: 'Set New Password',
-  description: 'Set a new password for your Looply account'
-};
+function ResetPasswordContent() {
+  const searchParams = useSearchParams();
+  const urlToken = searchParams.get('token') || '';
 
-export default function ResetPasswordPage() {
+  const [token, setToken] = useState(urlToken);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    if (!token.trim()) {
+      setErrorMessage('Password reset token is required. Please use the link sent to your email.');
+      return;
+    }
+
+    if (!password) {
+      setErrorMessage('New password is required.');
+      return;
+    }
+
+    if (password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await authService.resetPassword({
+        token: token.trim(),
+        password,
+        confirmPassword
+      });
+      setSubmitted(true);
+      setSuccessMessage(
+        res.message || 'Password has been reset successfully. You can now sign in with your new password.'
+      );
+    } catch (err) {
+      setErrorMessage(err.message || 'Invalid or expired password reset token.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card className="shadow-md border-slate-200">
       <CardHeader className="text-center pb-2">
@@ -20,58 +78,119 @@ export default function ResetPasswordPage() {
         </div>
         <CardTitle className="text-xl font-bold">Set new password</CardTitle>
         <CardDescription>
-          Your new password must be different from previously used passwords.
+          Your new password must be at least 8 characters long and different from previous passwords.
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4 pt-4">
-        <form className="space-y-4">
-          <FormField
-            id="reset-password"
-            label="New password"
-            required
-            helperText="Minimum 8 characters with at least one number or symbol"
-          >
-            <Input
+        {errorMessage && (
+          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
+            {errorMessage}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-3">
+            <p className="font-semibold">Password Reset Successful</p>
+            <p>{successMessage}</p>
+            <Button
+              href={ROUTES.PUBLIC.LOGIN}
+              variant="primary"
+              size="lg"
+              className="w-full"
+            >
+              Sign In with New Password
+            </Button>
+          </div>
+        )}
+
+        {!submitted && (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!urlToken && (
+              <FormField
+                id="reset-token"
+                label="Reset Token"
+                required
+                helperText="Paste the security token provided in your reset email"
+              >
+                <Input
+                  id="reset-token"
+                  type="text"
+                  placeholder="Paste reset token here"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                  required
+                />
+              </FormField>
+            )}
+
+            <FormField
               id="reset-password"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              icon={<Icon name="lock" className="w-4 h-4" />}
-            />
-          </FormField>
+              label="New password"
+              required
+              helperText="Minimum 8 characters"
+            >
+              <div className="relative">
+                <Input
+                  id="reset-password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  icon={<Icon name="lock" className="w-4 h-4" />}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </FormField>
 
-          <FormField
-            id="reset-confirm"
-            label="Confirm new password"
-            required
-          >
-            <Input
+            <FormField
               id="reset-confirm"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              icon={<Icon name="lock" className="w-4 h-4" />}
-            />
-          </FormField>
+              label="Confirm new password"
+              required
+            >
+              <div className="relative">
+                <Input
+                  id="reset-confirm"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  icon={<Icon name="lock" className="w-4 h-4" />}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                >
+                  {showConfirmPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </FormField>
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full"
-            disabled
-          >
-            Update Password
-          </Button>
-
-          <p className="text-[11px] text-center text-slate-400">
-            Password update portal &bull; Coming Soon
-          </p>
-        </form>
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? 'Updating Password...' : 'Update Password'}
+            </Button>
+          </form>
+        )}
 
         <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
-          Already know your credentials?{' '}
+          Remember your credentials?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
             className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
@@ -81,5 +200,22 @@ export default function ResetPasswordPage() {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <Card className="shadow-md border-slate-200 text-center p-8">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+            <p className="text-xs text-slate-500">Loading password reset portal...</p>
+          </div>
+        </Card>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

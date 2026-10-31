@@ -454,6 +454,19 @@ async function runE2EBrowserTests() {
       await User.findByIdAndDelete(escalationRes.user._id);
     }
 
+    // 9b. Verify user email before login (Phase 5 requirement: unverified users cannot login)
+    console.log('\n--- Step 9b: Email Verification Before Login ---');
+    await User.updateOne(
+      { _id: createdUserId },
+      {
+        isEmailVerified: true,
+        verificationTokenHash: undefined,
+        verificationTokenExpiresAt: undefined
+      }
+    );
+    const verifiedUserInDb = await User.findById(createdUserId);
+    assert(verifiedUserInDb?.isEmailVerified === true, '18. User email verified in database prior to login');
+
     // 10. Login through the Browser
     console.log('\n--- Step 10: Login Authentication via Real Browser UI ---');
     await page.waitForSelector('#login-email', { timeout: 10000 });
@@ -467,7 +480,7 @@ async function runE2EBrowserTests() {
 
     // Wait for redirect to /feed
     await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 15000 });
-    assert(true, '18. Browser redirected to /feed after successful login');
+    assert(true, '19. Browser redirected to /feed after successful login');
 
     // 11. Confirm HTTP-only cookie is issued in browser
     console.log('\n--- Step 11: Cookie Inspection in Browser Client ---');
@@ -475,23 +488,23 @@ async function runE2EBrowserTests() {
     const { cookies } = await client.send('Network.getAllCookies');
     const authCookie = cookies.find((c) => c.name === AUTH_COOKIE_NAME);
 
-    assert(Boolean(authCookie), `19. "${AUTH_COOKIE_NAME}" authentication cookie exists in browser cookie jar`);
-    assert(authCookie?.httpOnly === true, '20. Cookie has HttpOnly flag set (inaccessible to malicious scripts)');
-    assert(authCookie?.path === '/', '21. Cookie has Path=/ set');
+    assert(Boolean(authCookie), `20. "${AUTH_COOKIE_NAME}" authentication cookie exists in browser cookie jar`);
+    assert(authCookie?.httpOnly === true, '21. Cookie has HttpOnly flag set (inaccessible to malicious scripts)');
+    assert(authCookie?.path === '/', '22. Cookie has Path=/ set');
 
     // 12. Confirm UI displays authenticated user
     await page.waitForSelector('aside[aria-label="User Sidebar"]', { timeout: 10000 });
     const pageText = await page.evaluate(() => document.body.innerText);
     assert(
       pageText.includes('Browser E2E User'),
-      '22. UI reflects active authenticated session (displays user full name in UserSidebar)'
+      '23. UI reflects active authenticated session (displays user full name in UserSidebar)'
     );
 
     // 13. Refresh the browser and confirm session restoration
     console.log('\n--- Step 12: Session Restoration upon Page Refresh ---');
     await page.reload({ waitUntil: 'networkidle2' });
     const currentPath = await page.evaluate(() => window.location.pathname);
-    assert(currentPath === '/feed', '23. Path remains /feed after full browser reload');
+    assert(currentPath === '/feed', '24. Path remains /feed after full browser reload');
 
     // Wait for client-side AuthProvider useEffect(getMe) to complete and render user name
     await page.waitForFunction(
@@ -502,7 +515,7 @@ async function runE2EBrowserTests() {
     const refreshedText = await page.evaluate(() => document.body.innerText);
     assert(
       refreshedText.includes(testUserFullName),
-      '24. Session restored automatically from HTTP-only cookie via GET /api/auth/me'
+      '25. Session restored automatically from HTTP-only cookie via GET /api/auth/me'
     );
 
     // 14. Verify API calls use credentials: 'include'
@@ -515,17 +528,17 @@ async function runE2EBrowserTests() {
     });
     assert(
       meResult.status === 200 && meResult.data?.success === true && meResult.data?.user?.email === testUserEmail,
-      '25. Authenticated session verified with credentials: "include" fetch call'
+      '26. Authenticated session verified with credentials: "include" fetch call'
     );
 
     // 15. Logout through the Browser
     console.log('\n--- Step 14: User Logout via Real Browser UI ---');
     const logoutBtn = await page.waitForSelector('button[aria-label="Sign Out"]', { timeout: 10000 });
-    assert(Boolean(logoutBtn), '26. "Sign Out" button found in UserSidebar');
+    assert(Boolean(logoutBtn), '27. "Sign Out" button found in UserSidebar');
 
     await logoutBtn.click();
     await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
-    assert(true, '27. Browser navigated to /login after clicking Sign Out');
+    assert(true, '28. Browser navigated to /login after clicking Sign Out');
 
     // 16. Confirm Cookie Removal
     console.log('\n--- Step 15: Verify Cookie Cleared after Logout ---');
@@ -535,19 +548,19 @@ async function runE2EBrowserTests() {
     );
     assert(
       !postLogoutAuthCookie,
-      '28. Authentication cookie is cleared / expired from browser cookie jar upon logout'
+      '29. Authentication cookie is cleared / expired from browser cookie jar upon logout'
     );
 
     // 17. Security Assertions: Validate request interception & isolation
     console.log('\n--- Step 16: Request Interception & API Security Assertions ---');
     assert(
       requestViolations.length === 0,
-      `29. Verified zero unexpected API request violations occurred (violations: ${requestViolations.length})`
+      `30. Verified zero unexpected API request violations occurred (violations: ${requestViolations.length})`
     );
     assert(
       interceptedApiRequests.length > 0 &&
       interceptedApiRequests.every((u) => u.startsWith('http://127.0.0.1:5000/api')),
-      `30. Verified all intercepted browser API requests (${interceptedApiRequests.length}) targeted test backend exclusively (http://127.0.0.1:5000/api)`
+      `31. Verified all intercepted browser API requests (${interceptedApiRequests.length}) targeted test backend exclusively (http://127.0.0.1:5000/api)`
     );
 
     // After browser tests, fail if violations exist
