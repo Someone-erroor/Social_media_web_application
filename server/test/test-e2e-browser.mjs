@@ -88,60 +88,48 @@ function verifyFrontendBuildApiUrl(clientDir, expectedApiUrl) {
 }
 
 /**
- * Reliably terminates a spawned child process and all its child/descendant processes
- * across Windows, macOS, and Linux without killing any unrelated external processes.
+ * Reliably terminates the Next.js process and its child processes across platforms.
  *
- * @param {import('child_process').ChildProcess} childProc - Target child process to terminate
+ * Windows:
+ * Uses taskkill with /T (/F /PID <pid>) to terminate the process tree.
+ *
+ * Linux/macOS:
+ * Uses a dedicated process group (-pid) to terminate only the process group created by this test.
+ *
+ * Never kills unrelated external processes.
+ *
+ * @param {import('child_process').ChildProcess} childProc - Target process to terminate
  */
-function terminateProcessTree(childProc) {
+function terminateNextJsProcess(childProc) {
   if (!childProc || !childProc.pid) return;
 
   const pid = childProc.pid;
 
   if (process.platform === 'win32') {
-    // Windows: taskkill /pid <PID> /T /F targets only this process and its child tree
+    // Windows: taskkill with /T terminates the process and all child processes
     try {
       execSync(`taskkill /pid ${pid} /T /F`, { stdio: 'ignore' });
     } catch {
       // Process or process tree may have already exited
     }
   } else {
-    // Unix (macOS & Linux): terminate the child process and its descendants
+    // Linux/macOS: terminate only the dedicated process group created by this test
     try {
-      // 1. Terminate descendant processes by parent PID
-      try {
-        const descendantPids = execSync(`pgrep -P ${pid}`, { stdio: ['ignore', 'pipe', 'ignore'] })
-          .toString()
-          .trim()
-          .split(/\s+/)
-          .filter(Boolean);
-
-        for (const childPid of descendantPids) {
-          try {
-            process.kill(Number(childPid), 'SIGKILL');
-          } catch {}
-        }
-      } catch {
-        // No descendants or pgrep exited with non-zero
-      }
-
-      // 2. Terminate the process group if spawned detached
-      try {
-        process.kill(-pid, 'SIGKILL');
-      } catch {
-        // Not a process group leader or already exited
-      }
-
-      // 3. Terminate the target process itself
-      try {
-        childProc.kill('SIGKILL');
-      } catch {}
-      try {
-        process.kill(pid, 'SIGKILL');
-      } catch {}
+      // Send SIGTERM to the process group (-pid)
+      process.kill(-pid, 'SIGTERM');
     } catch {
-      // Process already terminated
+      // Process group already exited
     }
+    try {
+      // Force kill the dedicated process group if still running
+      process.kill(-pid, 'SIGKILL');
+    } catch {
+      // Already exited
+    }
+    try {
+      // Ensure target process itself is killed
+      childProc.kill('SIGKILL');
+    } catch {}
   }
 }
 
@@ -253,6 +241,7 @@ async function runE2EBrowserTests() {
         {
           cwd: clientDir,
           stdio: ['ignore', 'pipe', 'pipe'],
+          detached: process.platform !== 'win32',
           env: {
             ...process.env,
             NODE_ENV: 'production',
@@ -299,7 +288,7 @@ async function runE2EBrowserTests() {
       {
         cwd: clientDir,
         stdio: 'pipe',
-        detached: process.platform !== 'win32', // Allows clean process group termination on Unix
+        detached: process.platform !== 'win32', // Creates dedicated process group on Linux/macOS
         env: {
           ...process.env,
           NODE_ENV: 'production',
@@ -365,16 +354,23 @@ async function runE2EBrowserTests() {
     page.on('request', (interceptedReq) => {
       const url = interceptedReq.url();
       try {
+        // Inspect all API requests
         if (url.includes('/api/')) {
           interceptedApiRequests.push(url);
           const isAllowedTestBackend = url.startsWith('http://127.0.0.1:5000/api');
-          if (!isAllowedTestBackend) {
+          if (isAllowedTestBackend) {
+            // Continue allowed test backend requests
+            interceptedReq.continue();
+          } else {
+            // Abort unexpected API requests and record security violations without throwing inside callback
             requestViolations.push(url);
             console.error(`[Security Interception] Aborting unexpected API request: ${url}`);
             interceptedReq.abort('blockedbyclient');
-            return;
           }
+          return;
         }
+
+        // Allow frontend application assets (HTML, scripts, styles) on test frontend
         interceptedReq.continue();
       } catch {
         // Prevent unhandled rejection if request was already resolved/aborted
@@ -554,7 +550,7 @@ async function runE2EBrowserTests() {
       `30. Verified all intercepted browser API requests (${interceptedApiRequests.length}) targeted test backend exclusively (http://127.0.0.1:5000/api)`
     );
 
-    // Fail the test after collecting violations if any occurred
+    // After browser tests, fail if violations exist
     if (requestViolations.length > 0) {
       throw new Error(
         `E2E SECURITY FAILURE: Detected ${requestViolations.length} unauthorized API requests: ${requestViolations.join(', ')}`
@@ -596,7 +592,7 @@ async function runE2EBrowserTests() {
     if (nextProcess && nextProcess.pid) {
       try {
         console.log(`Terminating Next.js test process tree (PID ${nextProcess.pid})...`);
-        terminateProcessTree(nextProcess);
+        terminateNextJsProcess(nextProcess);
         console.log('✓ Next.js test process tree terminated.');
       } catch (procErr) {
         console.error('[Cleanup Warning: Next.js process termination]', procErr.message);
@@ -606,7 +602,7 @@ async function runE2EBrowserTests() {
     // Clean up build process if interrupted midway
     if (buildProcess && buildProcess.pid) {
       try {
-        terminateProcessTree(buildProcess);
+        terminateNextJsProcess(buildProcess);
       } catch {
         // ignore
       }
