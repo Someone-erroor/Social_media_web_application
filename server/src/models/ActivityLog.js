@@ -11,6 +11,7 @@ export const ACTIVITY_ACTIONS = [
   'successful_login',
   'password_reset_request',
   'password_reset',
+  'password_reset_success',
   'profile_update',
   'post_creation',
   'post_update',

@@ -425,7 +425,7 @@ async function runPhase4Tests() {
 
     // Test 17: Suspended user attempting session access
     const suspendedToken = jwt.sign(
-      { userId: suspendedUser._id.toString(), role: 'user' },
+      { userId: suspendedUser._id.toString(), role: 'user', tokenVersion: 0 },
       env.JWT_SECRET,
       { expiresIn: '1h' }
     );

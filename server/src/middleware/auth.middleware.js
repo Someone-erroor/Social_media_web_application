@@ -63,7 +63,24 @@ export const requireAuth = async (req, res, next) => {
       });
     }
 
-    // Reject suspended accounts immediately
+    // 4. Strict tokenVersion verification (Session Invalidation check)
+    // Never silently accept a token with a missing or non-integer tokenVersion claim
+    if (typeof decoded.tokenVersion !== 'number' || !Number.isInteger(decoded.tokenVersion)) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid session token version. Please sign in again.'
+      });
+    }
+
+    const dbTokenVersion = typeof user.tokenVersion === 'number' ? user.tokenVersion : 0;
+    if (decoded.tokenVersion !== dbTokenVersion) {
+      return res.status(401).json({
+        success: false,
+        message: 'Your session has been invalidated. Please sign in again.'
+      });
+    }
+
+    // 5. Reject suspended accounts immediately
     if (user.accountStatus === 'suspended') {
       return res.status(403).json({
         success: false,
@@ -71,17 +88,7 @@ export const requireAuth = async (req, res, next) => {
       });
     }
 
-    // 4. Verify tokenVersion (Session Invalidation check)
-    if (decoded.tokenVersion !== undefined && user.tokenVersion !== undefined) {
-      if (decoded.tokenVersion !== user.tokenVersion) {
-        return res.status(401).json({
-          success: false,
-          message: 'Your session has been invalidated. Please sign in again.'
-        });
-      }
-    }
-
-    // 5. Attach authoritative user from database to request
+    // 6. Attach authoritative user from database to request
     req.user = toSafeUser(user);
     next();
   } catch (error) {

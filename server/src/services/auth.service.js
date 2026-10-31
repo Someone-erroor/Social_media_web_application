@@ -21,6 +21,7 @@ export const toSafeUser = (user) => {
   delete obj.verificationTokenExpiresAt;
   delete obj.resetPasswordTokenHash;
   delete obj.resetPasswordTokenExpiresAt;
+  delete obj.tokenVersion;
   delete obj.__v;
   return obj;
 };
@@ -70,14 +71,17 @@ export const registerUser = async ({ fullName, email, password }) => {
   await user.save();
 
   // 5. Send verification email via email service
+  let emailDispatched = false;
   try {
-    await sendVerificationEmail({
+    const sendResult = await sendVerificationEmail({
       to: user.email,
       name: user.fullName,
       token: rawVerificationToken
     });
+    emailDispatched = Boolean(sendResult?.success);
   } catch (emailErr) {
     console.error(`[Email Service Notice] Could not dispatch registration email: ${emailErr.message}`);
+    emailDispatched = false;
   }
 
   // 6. Log security audit entry (never storing sensitive information in metadata)
@@ -97,7 +101,7 @@ export const registerUser = async ({ fullName, email, password }) => {
     console.error(`[ActivityLog] Failed to record registration audit: ${auditErr.message}`);
   }
 
-  return { user: toSafeUser(user) };
+  return { user: toSafeUser(user), emailDispatched };
 };
 
 /**
@@ -346,7 +350,7 @@ export const resetPassword = async ({ token: rawToken, password }) => {
   try {
     const auditLog = new ActivityLog({
       actor: user._id,
-      action: 'password_reset_success',
+      action: 'password_reset',
       targetType: 'User',
       targetId: user._id,
       metadata: {

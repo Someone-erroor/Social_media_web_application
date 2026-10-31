@@ -86,8 +86,8 @@ export default function RegisterForm() {
 
       setSuccessMessage(result.message || 'Account created successfully! Please check your email to verify your account.');
       setTimeout(() => {
-        router.push(ROUTES.PUBLIC.VERIFY_EMAIL);
-      }, 2000);
+        router.push(ROUTES.PUBLIC.LOGIN);
+      }, 1200);
     } catch (err) {
       setErrorMessage(err.message || 'Registration failed. Please review your details.');
     } finally {

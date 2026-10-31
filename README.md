@@ -62,10 +62,10 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **Status:** Phase 6 completed and verified.
 
 ### Profiles, Content & Social Feed (Phases 7, 8, 9 Completed)
-- **User Profiles (Phase 7):** Profile view (`GET /api/profile/me`), profile update (`PATCH /api/profile/me`), and public profile endpoint (`GET /api/profiles/:userId`) with sensitive data sanitization and strict schema validation.
-- **Post Management (Phase 8):** Full post CRUD (`POST /api/posts`, `GET /api/posts/mine`, `GET /api/posts/:postId`, `PATCH /api/posts/:postId`, `DELETE /api/posts/:postId`) with author ownership enforcement (non-author edits/deletes strictly blocked with HTTP 403).
-- **Social Feed & Explore (Phase 9):** Reverse-chronological timeline (`GET /api/feed`), discovery explore endpoint (`GET /api/explore`), and user post grid (`GET /api/profiles/:userId/posts`) with complete pagination metadata.
-- **Status:** Phases 7, 8, and 9 completed and verified.
+- **User Profiles (Phase 7):** Profile view (`GET /api/profile/me`), profile update (`PATCH /api/profile/me`), and public profile endpoint (`GET /api/profiles/:userId`) strictly adhering to Mongoose schema: `fullName`, `profile.bio` (maximum 250 characters), and `profile.avatarUrl`. Private email, `passwordHash`, verification tokens, and `tokenVersion` are never exposed publicly.
+- **Post Management (Phase 8):** Full post CRUD (`POST /api/posts`, `GET /api/posts/mine`, `GET /api/posts/:postId`, `PATCH /api/posts/:postId`, `DELETE /api/posts/:postId`) with author ownership enforcement (non-author edits/deletes strictly blocked with HTTP 403) and atomic deletion using MongoDB transactions across post, comments, and likes.
+- **Social Feed & Explore (Phase 9):** Reverse-chronological timeline (`GET /api/feed`), discovery explore endpoint (`GET /api/explore`), and user post grid (`GET /api/profiles/:userId/posts`) with complete pagination metadata and automatic filtering excluding posts from suspended accounts or deleted authors.
+- **Status:** Phases 7, 8, and 9 completed, verified, and final corrections applied.
 
 ---
 
@@ -352,12 +352,13 @@ npm run lint
 | **Phase 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
 | **Phase 3** | **Backend foundation and database design.** | **APPROVED** |
 | **Phase 4** | **User registration and login.** | **APPROVED** |
-| **Phase 5** | **Email verification, forgot password and password reset.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| **Phase 6** | **Authentication security and role-based access control.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| **Phase 7** | **User profile management.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| **Phase 8** | **Post creation, editing and deletion.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| **Phase 9** | **Social media feed and viewing other users' posts.** | **IMPLEMENTATION COMPLETED<br>AWAITING EXTERNAL REVIEW** |
-| Phase 10 | Likes and comments. | Pending |
+| **Phase 5** | **Email verification, forgot password and password reset.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 6** | **Authentication security and role-based access control.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 7** | **User profile management.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 8** | **Post creation, editing and deletion.** | **IMPLEMENTATION COMPLETED** |
+| **Phase 9** | **Social media feed and viewing other users' posts.** | **IMPLEMENTATION COMPLETED** |
+| **Batch 2** | **Phases 5–9 Integrated Batch Delivery** | **IMPLEMENTATION COMPLETED<br>FINAL CORRECTIONS APPLIED<br>AWAITING EXTERNAL REVIEW** |
+| **Phase 10** | Likes and comments. | **PENDING** |
 | Phase 11 | Admin dashboard and platform statistics. | Pending |
 | Phase 12 | Admin user, post and comment management. | Pending |
 | Phase 13 | Real-time notifications and login activity tracking. | Pending |

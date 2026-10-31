@@ -21,12 +21,16 @@ export default function ProfileEditPage() {
   const [bio, setBio] = useState(user?.profile?.bio || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.profile?.avatarUrl || '');
 
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   useEffect(() => {
     let ignore = false;
+
     profileService
       .getMyProfile()
       .then((res) => {
@@ -34,14 +38,24 @@ export default function ProfileEditPage() {
           setFullName(res.user.fullName || '');
           setBio(res.user.profile?.bio || '');
           setAvatarUrl(res.user.profile?.avatarUrl || '');
+          setFetchError('');
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        if (!ignore) {
+          setFetchError(err.message || 'Failed to load profile details.');
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setFetchLoading(false);
+        }
+      });
 
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [reloadTrigger]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -108,15 +122,53 @@ export default function ProfileEditPage() {
         }
       />
 
-      <Card className="border-slate-200">
-        <CardHeader>
-          <CardTitle>Profile Details</CardTitle>
-          <CardDescription>
-            This information will be displayed publicly on your Looply profile
-          </CardDescription>
-        </CardHeader>
+      {fetchError && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between gap-3">
+          <span>{fetchError}</span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setFetchLoading(true);
+              setFetchError('');
+              setReloadTrigger((n) => n + 1);
+            }}
+            className="text-xs text-red-800 hover:bg-red-100"
+          >
+            Retry
+          </Button>
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit}>
+      {fetchLoading ? (
+        <Card className="border-slate-200 animate-pulse">
+          <CardHeader className="space-y-2">
+            <div className="h-5 w-40 bg-slate-200 rounded" />
+            <div className="h-3 w-64 bg-slate-100 rounded" />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-full bg-slate-200" />
+              <div className="space-y-1.5 flex-1">
+                <div className="h-3.5 w-28 bg-slate-200 rounded" />
+                <div className="h-2.5 w-48 bg-slate-100 rounded" />
+              </div>
+            </div>
+            <div className="h-10 bg-slate-100 rounded-xl" />
+            <div className="h-10 bg-slate-100 rounded-xl" />
+            <div className="h-24 bg-slate-100 rounded-xl" />
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="border-slate-200">
+          <CardHeader>
+            <CardTitle>Profile Details</CardTitle>
+            <CardDescription>
+              This information will be displayed publicly on your Looply profile
+            </CardDescription>
+          </CardHeader>
+
+          <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
             {errorMessage && (
               <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
@@ -227,6 +279,7 @@ export default function ProfileEditPage() {
           </CardFooter>
         </form>
       </Card>
+      )}
     </div>
   );
 }

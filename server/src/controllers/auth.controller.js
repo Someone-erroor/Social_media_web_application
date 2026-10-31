@@ -33,11 +33,14 @@ export const register = async (req, res, next) => {
       });
     }
 
-    const { user } = await registerUser(sanitized);
+    const { user, emailDispatched } = await registerUser(sanitized);
 
     return res.status(201).json({
       success: true,
-      message: 'Account created successfully. Please check your email to verify your account.',
+      message: emailDispatched
+        ? 'Account created successfully. Please check your email to verify your account.'
+        : 'Account created successfully. Verification email could not be dispatched immediately; please use resend verification.',
+      emailDispatched,
       user
     });
   } catch (error) {

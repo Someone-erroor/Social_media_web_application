@@ -21,39 +21,51 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(authUser || null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [profileError, setProfileError] = useState('');
+  const [postsError, setPostsError] = useState('');
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   useEffect(() => {
     let ignore = false;
-    Promise.all([
-      profileService.getMyProfile().catch(() => null),
-      postService.getMyPosts({ page: 1, limit: 20 }).catch(() => ({ posts: [] }))
-    ])
-      .then(([profileRes, postsRes]) => {
-        if (!ignore) {
-          if (profileRes?.user) {
-            setProfile(profileRes.user);
-          } else if (authUser) {
-            setProfile(authUser);
-          }
-          setPosts(postsRes?.posts || []);
+
+    const profilePromise = profileService
+      .getMyProfile()
+      .then((res) => {
+        if (!ignore && res?.user) {
+          setProfile(res.user);
+          setProfileError('');
         }
       })
       .catch((err) => {
         if (!ignore) {
-          setErrorMessage(err.message || 'Failed to load profile.');
-        }
-      })
-      .finally(() => {
-        if (!ignore) {
-          setLoading(false);
+          setProfileError(err.message || 'Failed to load fresh profile details.');
         }
       });
+
+    const postsPromise = postService
+      .getMyPosts({ page: 1, limit: 20 })
+      .then((res) => {
+        if (!ignore) {
+          setPosts(res?.posts || []);
+          setPostsError('');
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setPostsError(err.message || 'Failed to load publications.');
+        }
+      });
+
+    Promise.allSettled([profilePromise, postsPromise]).finally(() => {
+      if (!ignore) {
+        setLoading(false);
+      }
+    });
 
     return () => {
       ignore = true;
     };
-  }, [authUser]);
+  }, [authUser, reloadTrigger]);
 
   const handlePostUpdated = (updatedPost) => {
     setPosts((prev) =>
@@ -89,9 +101,21 @@ export default function ProfilePage() {
         }
       />
 
-      {errorMessage && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
-          {errorMessage}
+      {profileError && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between gap-3">
+          <span>{profileError}</span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setLoading(true);
+              setProfileError('');
+              setReloadTrigger((n) => n + 1);
+            }}
+            className="text-xs text-red-800 hover:bg-red-100"
+          >
+            Retry
+          </Button>
         </div>
       )}
 
@@ -192,6 +216,21 @@ export default function ProfilePage() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : postsError ? (
+          <div className="p-5 rounded-2xl bg-red-50 border border-red-200 text-center space-y-3">
+            <p className="text-sm text-red-700">{postsError}</p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setLoading(true);
+                setPostsError('');
+                setReloadTrigger((n) => n + 1);
+              }}
+            >
+              Retry Loading Publications
+            </Button>
           </div>
         ) : posts.length === 0 ? (
           <EmptyState

@@ -23,40 +23,53 @@ export default function UserProfilePage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [postsError, setPostsError] = useState('');
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const isOwnProfile = currentUser && (currentUser._id === userId || currentUser.id === userId);
 
   useEffect(() => {
     let ignore = false;
     if (userId) {
-      Promise.all([
-        profileService.getPublicProfile(userId).catch((err) => {
-          throw new Error(err.message || 'User not found.');
-        }),
-        postService.getUserPosts(userId, { page: 1, limit: 20 }).catch(() => ({ posts: [] }))
-      ])
-        .then(([profileRes, postsRes]) => {
+      const profilePromise = profileService
+        .getPublicProfile(userId)
+        .then((profileRes) => {
           if (!ignore) {
             setProfile(profileRes?.profile || null);
-            setPosts(postsRes?.posts || []);
+            setErrorMessage('');
           }
         })
         .catch((err) => {
           if (!ignore) {
-            setErrorMessage(err.message || 'Unable to load profile.');
-          }
-        })
-        .finally(() => {
-          if (!ignore) {
-            setLoading(false);
+            setErrorMessage(err.message || 'User profile not found.');
           }
         });
+
+      const postsPromise = postService
+        .getUserPosts(userId, { page: 1, limit: 20 })
+        .then((postsRes) => {
+          if (!ignore) {
+            setPosts(postsRes?.posts || []);
+            setPostsError('');
+          }
+        })
+        .catch((err) => {
+          if (!ignore) {
+            setPostsError(err.message || 'Failed to load posts published by this member.');
+          }
+        });
+
+      Promise.allSettled([profilePromise, postsPromise]).finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
     }
 
     return () => {
       ignore = true;
     };
-  }, [userId]);
+  }, [userId, reloadTrigger]);
 
   const handlePostUpdated = (updatedPost) => {
     setPosts((prev) =>
@@ -109,9 +122,22 @@ export default function UserProfilePage() {
           title="Profile Not Found"
           description={errorMessage || 'The requested user profile does not exist or is no longer active on Looply.'}
           action={
-            <Button href={ROUTES.USER.FEED} variant="primary" size="sm">
-              Return to Feed
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setLoading(true);
+                  setErrorMessage('');
+                  setReloadTrigger((n) => n + 1);
+                }}
+              >
+                Retry
+              </Button>
+              <Button href={ROUTES.USER.FEED} variant="primary" size="sm">
+                Return to Feed
+              </Button>
+            </div>
           }
         />
       ) : (
@@ -171,7 +197,21 @@ export default function UserProfilePage() {
               Posts by {profile.fullName} ({posts.length})
             </h2>
 
-            {posts.length === 0 ? (
+            {postsError ? (
+              <div className="p-5 rounded-2xl bg-red-50 border border-red-200 text-center space-y-3">
+                <p className="text-sm text-red-700">{postsError}</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setPostsError('');
+                    setReloadTrigger((n) => n + 1);
+                  }}
+                >
+                  Retry Loading Posts
+                </Button>
+              </div>
+            ) : posts.length === 0 ? (
               <EmptyState
                 icon="posts"
                 title="No Posts Yet"
