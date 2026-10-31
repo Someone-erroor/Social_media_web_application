@@ -139,13 +139,13 @@ In strict adherence to assignment requirements, development resources are focuse
 - `client/app/(public)/layout.js`: Public route layout wrapper.
 - `client/app/(public)/page.js`: Modern product landing page at `/` (Hero, feature cards, how it works, CTA banner, footer; old `PhaseStatusCard` removed).
 
-#### Authentication Interfaces (UI Only, Submissions Disabled)
+#### Authentication Interfaces
 - `client/app/(auth)/layout.js`: Centered card layout with Looply branding.
-- `client/app/(auth)/login/page.js`: Sign-in form at `/login` with email, password, remember me, forgot password link, disabled submit.
-- `client/app/(auth)/register/page.js`: Registration form at `/register` with name, email, password, confirm password, terms checkbox, disabled submit.
-- `client/app/(auth)/verify-email/page.js`: Email verification state at `/verify-email` with instructions and link to login.
-- `client/app/(auth)/forgot-password/page.js`: Password reset request form at `/forgot-password` with email field, disabled submit, and return link.
-- `client/app/(auth)/reset-password/page.js`: New password form at `/reset-password` with password fields, disabled submit, and return link.
+- `client/app/(auth)/login/page.js`: Sign-in form at `/login` rendering interactive `LoginForm` with validation, show/hide password, loading state, error alert, and role-based redirect (`/feed` or `/admin`).
+- `client/app/(auth)/register/page.js`: Registration form at `/register` rendering interactive `RegisterForm` with validation, confirm password, terms agreement, loading state, duplicate email alert, and redirect to login.
+- `client/app/(auth)/verify-email/page.js`: Email verification state at `/verify-email` with instructions and link to login (scheduled for Phase 5).
+- `client/app/(auth)/forgot-password/page.js`: Password reset request form at `/forgot-password` with email field and return link (scheduled for Phase 5).
+- `client/app/(auth)/reset-password/page.js`: New password form at `/reset-password` with password fields and return link (scheduled for Phase 5).
 
 #### User Application Interface
 - `client/app/(user)/layout.js`: Layout wrapper rendering `UserShell`.
@@ -276,11 +276,9 @@ In strict adherence to assignment requirements, development resources are focuse
 
 ## 8. Strict Phase Boundaries & Intentionally Deferred Scope
 
-In strict accordance with the 18-phase roadmap, Phase 3 establishes the database models, connection management, and readiness probes only. The following features remain intentionally unbuilt and are deferred to their designated phases:
-- **No User Registration or Login APIs:** Scheduled for Phase 4.
-- **No JWT / Session Token Issuance or Handling:** Scheduled for Phase 4 & 6.
-- **No Password Hashing Business Logic (bcrypt / Argon2):** Scheduled for Phase 4.
-- **No Email Verification or Password Reset Controllers:** Scheduled for Phase 5.
+In strict accordance with the 18-phase roadmap, Phases 1–4 are completed (establishing system architecture, UI foundation, database models/connections, and user registration/login). The following features remain intentionally unbuilt and are deferred to their designated future phases:
+- **No Email Verification or Confirmation Links:** Scheduled for Phase 5.
+- **No Forgot Password or Password Reset Endpoints:** Scheduled for Phase 5.
 - **No SMTP / Nodemailer Transport:** Scheduled for Phase 5.
 - **No Role-Based Authorization Middleware:** Scheduled for Phase 6.
 - **No User Profile Mutation APIs:** Scheduled for Phase 7.
@@ -390,8 +388,11 @@ Phase 4 development delivered real end-to-end user registration, authentication,
 
 8. **End-to-End Real Browser Testing (`server/test/test-e2e-browser.mjs`)**:
    - Executed against a real running browser (Headless Chrome via Puppeteer-Core with portable multi-platform binary discovery) connected to Next.js on port 3000, Express on port 5000, and MongoDB Atlas `looply_test`.
-   - 26 browser assertions verified:
+   - 27 browser assertions verified:
      - Verified `mongoose.connection.name === "looply_test"` prior to creating or deleting any records.
+     - Verified ports 5000 and 3000 are unoccupied before starting isolated backend and frontend instances.
+     - Verified backend health contract (`{ success: true, message: "Looply backend is running" }`, strictly rejecting arbitrary 4xx codes).
+     - Verified frontend returned HTTP 200 with `NEXT_PUBLIC_API_URL` pointing to test backend.
      - User registration completed through the real browser UI.
      - User record verified in MongoDB `looply_test`.
      - Password verified stored as bcrypt hash ($2a$/$2b$), never plaintext.
@@ -404,7 +405,7 @@ Phase 4 development delivered real end-to-end user registration, authentication,
      - User logged out through the real browser UI by clicking "Sign Out".
      - HTTP-only cookie verified cleared from browser cookie jar upon logout.
      - Role escalation attempt strictly prevented and assigned `role: "user"`.
-   - 100% passing (`npm run test:e2e`: 26 passed, 0 failed).
+   - 100% passing (`npm run test:e2e`: 27 passed, 0 failed).
 
 9. **Automated Backend & Integration Test Suite (`server/test/test-phase4.mjs`)**:
    - 39 assertions testing test database safety, zero-fallback requirement, pre-creation and pre-deletion database name validation, input validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.

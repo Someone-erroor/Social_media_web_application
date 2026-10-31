@@ -1,6 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
+import net from 'net';
 import puppeteer from 'puppeteer-core';
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
@@ -28,22 +29,27 @@ function assert(condition, message) {
 }
 
 /**
- * Polls a URL until it returns a successful HTTP response or times out.
+ * Checks if a specific network port on localhost is available.
+ * Resolves true if available, false if already bound/occupied.
+ *
+ * @param {number} port
+ * @returns {Promise<boolean>}
  */
-async function waitForServer(url, timeoutMs = 30000) {
-  const startTime = Date.now();
-  while (Date.now() - startTime < timeoutMs) {
-    try {
-      const res = await fetch(url);
-      if (res.ok || res.status < 500) {
-        return true;
+function checkPortAvailable(port) {
+  return new Promise((resolve) => {
+    const tester = net.createServer();
+    tester.once('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        resolve(false);
+      } else {
+        resolve(false);
       }
-    } catch {
-      // Server not yet listening
-    }
-    await new Promise((r) => setTimeout(r, 500));
-  }
-  throw new Error(`Timeout waiting for server at ${url} after ${timeoutMs}ms`);
+    });
+    tester.once('listening', () => {
+      tester.close(() => resolve(true));
+    });
+    tester.listen(port, '127.0.0.1');
+  });
 }
 
 async function runE2EBrowserTests() {
@@ -52,6 +58,7 @@ async function runE2EBrowserTests() {
   console.log('====================================================\n');
 
   // 1. Establish database connection to dedicated looply_test database
+  // Uses getTestMongoUri() exclusively — never falls back to MONGODB_URI
   const testUri = getTestMongoUri();
   validateTestDatabaseSafety(testUri);
   await connectDatabase(testUri);
@@ -69,58 +76,102 @@ async function runE2EBrowserTests() {
   }
   assert(true, 'Verified mongoose.connection.name === "looply_test" before browser test actions');
 
-  // 2. Start Express API Server on port 5000
-  console.log('\n--- Starting Express API Server on port 5000 ---');
-  let expressServer;
-  try {
-    expressServer = app.listen(5000);
-    await new Promise((resolve, reject) => {
-      expressServer.on('listening', resolve);
-      expressServer.on('error', reject);
-    });
-  } catch (err) {
-    if (err.code === 'EADDRINUSE') {
-      console.log('Port 5000 already in use, testing connectivity...');
-    } else {
-      throw err;
-    }
+  // 2. Port Isolation Check: Abort if required ports are already occupied
+  console.log('\n--- Verifying Port Availability & Strict Process Isolation ---');
+  const isPort5000Available = await checkPortAvailable(5000);
+  if (!isPort5000Available) {
+    throw new Error(
+      'ABORT: Port 5000 is occupied by an existing process. The E2E test suite must start and control its own test backend and will never reuse an existing backend on port 5000. Please terminate the process on port 5000 and re-run.'
+    );
   }
-  await waitForServer('http://127.0.0.1:5000/api/health', 10000);
-  assert(true, '2. Express backend listening and healthy on port 5000');
 
-  // 3. Start Next.js frontend server on port 3000
-  console.log('\n--- Starting Next.js Production Frontend on port 3000 ---');
-  const clientDir = path.resolve(__dirname, '../../client');
-  let nextProcess;
-  try {
-    const isPort3000Alive = await fetch('http://127.0.0.1:3000')
-      .then(() => true)
-      .catch(() => false);
+  const isPort3000Available = await checkPortAvailable(3000);
+  if (!isPort3000Available) {
+    throw new Error(
+      'ABORT: Port 3000 is occupied by an existing process. The E2E test suite must start and control its own test frontend and will never reuse an unrelated frontend on port 3000. Please terminate the process on port 3000 and re-run.'
+    );
+  }
+  assert(true, 'Verified ports 5000 and 3000 are unoccupied. Test will start and control isolated instances.');
 
-    if (!isPort3000Alive) {
-      nextProcess = spawn(
-        process.platform === 'win32' ? 'npx.cmd' : 'npx',
-        ['next', 'start', '-p', '3000'],
-        {
-          cwd: clientDir,
-          stdio: 'pipe',
-          shell: true
+  // 3. Start Dedicated Express API Server on port 5000
+  console.log('\n--- Starting Dedicated Express Test Backend on port 5000 ---');
+  let expressServer = app.listen(5000, '127.0.0.1');
+  await new Promise((resolve, reject) => {
+    expressServer.on('listening', resolve);
+    expressServer.on('error', reject);
+  });
+
+  // Verify actual health endpoint response (never accept arbitrary 4xx responses as healthy)
+  const healthUrl = 'http://127.0.0.1:5000/api/health';
+  const healthStartTime = Date.now();
+  let backendHealthy = false;
+  while (Date.now() - healthStartTime < 10000) {
+    try {
+      const res = await fetch(healthUrl);
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data && data.success === true && data.message === 'Looply backend is running') {
+          backendHealthy = true;
+          break;
         }
-      );
-
-      nextProcess.stderr.on('data', (d) => {
-        const text = d.toString();
-        if (text.includes('Error')) console.error(`[Next.js Error] ${text}`);
-      });
+      }
+    } catch {
+      // Retry until listening
     }
-  } catch (e) {
-    console.warn('Next.js process spawn notice:', e.message);
+    await new Promise((r) => setTimeout(r, 300));
   }
 
-  await waitForServer('http://127.0.0.1:3000', 30000);
-  assert(true, '3. Next.js frontend listening and responsive on port 3000');
+  if (!backendHealthy) {
+    throw new Error('ABORT: Test backend on port 5000 failed health contract verification.');
+  }
+  assert(true, '2. Dedicated Express test backend started on port 5000 and verified healthy ({ success: true, message: "Looply backend is running" })');
 
-  // 4. Launch Headless Chrome via puppeteer-core using portable executable finder
+  // 4. Start Dedicated Next.js Production Frontend on port 3000
+  console.log('\n--- Starting Dedicated Next.js Production Frontend on port 3000 ---');
+  const clientDir = path.resolve(__dirname, '../../client');
+  const nextProcess = spawn(
+    process.platform === 'win32' ? 'npx.cmd' : 'npx',
+    ['next', 'start', '-p', '3000'],
+    {
+      cwd: clientDir,
+      stdio: 'pipe',
+      shell: true,
+      env: {
+        ...process.env,
+        PORT: '3000',
+        NEXT_PUBLIC_API_URL: 'http://localhost:5000/api'
+      }
+    }
+  );
+
+  nextProcess.stderr.on('data', (d) => {
+    const text = d.toString();
+    if (text.includes('Error')) console.error(`[Next.js Error] ${text}`);
+  });
+
+  // Wait for frontend to return strictly HTTP 200 (never accept 4xx as healthy)
+  const frontendUrl = 'http://127.0.0.1:3000';
+  const frontendStartTime = Date.now();
+  let frontendHealthy = false;
+  while (Date.now() - frontendStartTime < 35000) {
+    try {
+      const res = await fetch(frontendUrl);
+      if (res.status === 200) {
+        frontendHealthy = true;
+        break;
+      }
+    } catch {
+      // Retry
+    }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+
+  if (!frontendHealthy) {
+    throw new Error('ABORT: Test frontend failed to start and return HTTP 200 on port 3000.');
+  }
+  assert(true, '3. Next.js test frontend started on port 3000 with NEXT_PUBLIC_API_URL pointing to test backend');
+
+  // 5. Launch Headless Chrome via puppeteer-core using portable executable finder
   console.log('\n--- Launching Portable Headless Chrome Browser ---');
   const chromePath = findChromeExecutable();
   console.log(`Discovered portable Chrome binary: ${chromePath}`);
@@ -148,7 +199,7 @@ async function runE2EBrowserTests() {
   let createdUserId = null;
 
   try {
-    // 5. Navigate to Register Page in Browser
+    // 6. Navigate to Register Page in Browser
     console.log('\n--- Step 1: User Registration via Real Browser UI ---');
     await page.goto('http://localhost:3000/register', { waitUntil: 'networkidle2' });
     const pageTitle = await page.title();
@@ -176,7 +227,7 @@ async function runE2EBrowserTests() {
     await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
     assert(true, '6. Browser automatically navigated to /login after successful registration');
 
-    // 6. Confirm user is created in MongoDB test database
+    // 7. Confirm user is created in MongoDB test database
     console.log('\n--- Step 2: Database Verification for Created User ---');
     const createdUser = await User.findOne({ email: testUserEmail }).select('+passwordHash');
     assert(Boolean(createdUser), '7. User document verified in dedicated "looply_test" MongoDB database');
@@ -186,7 +237,7 @@ async function runE2EBrowserTests() {
       assert(createdUser.role === 'user', `9. Authoritative database role is strictly "user" (role escalation blocked)`);
       assert(createdUser.isEmailVerified === false, '10. Initial email verification status is false');
 
-      // 7. Confirm password is encrypted with bcrypt
+      // 8. Confirm password is encrypted with bcrypt
       assert(
         Boolean(createdUser.passwordHash && createdUser.passwordHash.startsWith('$2')),
         '11. Password stored as high-entropy bcrypt hash ($2a$/$2b$), never plaintext'
@@ -195,7 +246,7 @@ async function runE2EBrowserTests() {
       assert(isPasswordValid, '12. Stored bcrypt hash successfully verifies against original plaintext password');
     }
 
-    // 8. Role Escalation Prevention Verification via direct API injection
+    // 9. Role Escalation Prevention Verification via direct API injection
     console.log('\n--- Step 3: Direct API Role Escalation Prevention Check ---');
     const escalationRes = await page.evaluate(async (email) => {
       const res = await fetch('http://localhost:5000/api/auth/register', {
@@ -220,7 +271,7 @@ async function runE2EBrowserTests() {
       await User.findByIdAndDelete(escalationRes.user._id);
     }
 
-    // 9. Login through the Browser
+    // 10. Login through the Browser
     console.log('\n--- Step 4: Login Authentication via Real Browser UI ---');
     await page.waitForSelector('#login-email', { timeout: 10000 });
     await page.waitForSelector('#login-password', { timeout: 10000 });
@@ -235,9 +286,8 @@ async function runE2EBrowserTests() {
     await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 15000 });
     assert(true, '14. Browser redirected to /feed after successful login');
 
-    // 10. Confirm HTTP-only cookie is issued in browser
+    // 11. Confirm HTTP-only cookie is issued in browser
     console.log('\n--- Step 5: Cookie Inspection in Browser Client ---');
-    // Inspect cookies via CDP Network domain to capture all attributes
     const client = await page.createCDPSession();
     const { cookies } = await client.send('Network.getAllCookies');
     const authCookie = cookies.find((c) => c.name === AUTH_COOKIE_NAME);
@@ -246,7 +296,7 @@ async function runE2EBrowserTests() {
     assert(authCookie?.httpOnly === true, '16. Cookie has HttpOnly flag set (inaccessible to malicious scripts)');
     assert(authCookie?.path === '/', '17. Cookie has Path=/ set');
 
-    // 11. Confirm UI displays authenticated user
+    // 12. Confirm UI displays authenticated user
     await page.waitForSelector('aside[aria-label="User Sidebar"]', { timeout: 10000 });
     const pageText = await page.evaluate(() => document.body.innerText);
     assert(
@@ -254,7 +304,7 @@ async function runE2EBrowserTests() {
       '18. UI reflects active authenticated session (displays user full name in UserSidebar)'
     );
 
-    // 12. Refresh the browser and confirm session restoration
+    // 13. Refresh the browser and confirm session restoration
     console.log('\n--- Step 6: Session Restoration upon Page Refresh ---');
     await page.reload({ waitUntil: 'networkidle2' });
     const currentPath = await page.evaluate(() => window.location.pathname);
@@ -272,10 +322,9 @@ async function runE2EBrowserTests() {
       '20. Session restored automatically from HTTP-only cookie via GET /api/auth/me'
     );
 
-    // 13. Verify API calls use credentials: 'include'
+    // 14. Verify API calls use credentials: 'include'
     console.log('\n--- Step 7: Verify Client API credentials: include ---');
     const meResult = await page.evaluate(async () => {
-      // apiClient in window context
       const res = await fetch('http://localhost:5000/api/auth/me', {
         credentials: 'include'
       });
@@ -286,7 +335,7 @@ async function runE2EBrowserTests() {
       '21. Authenticated session verified with credentials: "include" fetch call'
     );
 
-    // 14. Logout through the Browser
+    // 15. Logout through the Browser
     console.log('\n--- Step 8: User Logout via Real Browser UI ---');
     const logoutBtn = await page.waitForSelector('button[aria-label="Sign Out"]', { timeout: 10000 });
     assert(Boolean(logoutBtn), '22. "Sign Out" button found in UserSidebar');
@@ -295,7 +344,7 @@ async function runE2EBrowserTests() {
     await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
     assert(true, '23. Browser navigated to /login after clicking Sign Out');
 
-    // 15. Confirm Cookie Removal
+    // 16. Confirm Cookie Removal
     console.log('\n--- Step 9: Verify Cookie Cleared after Logout ---');
     const { cookies: postLogoutCookies } = await client.send('Network.getAllCookies');
     const postLogoutAuthCookie = postLogoutCookies.find(
@@ -324,7 +373,7 @@ async function runE2EBrowserTests() {
     }
 
     // Clean up browser and servers
-    await browser.close();
+    if (browser) await browser.close();
     if (expressServer) {
       await new Promise((r) => expressServer.close(r));
     }
