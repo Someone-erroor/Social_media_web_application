@@ -1,9 +1,10 @@
+import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { env } from '../src/config/env.js';
 import { connectDatabase, disconnectDatabase, isDatabaseConnected } from '../src/config/database.js';
-import { AUTH_COOKIE_NAME, generateToken, getCookieOptions } from '../src/config/jwt.js';
+import { AUTH_COOKIE_NAME } from '../src/config/jwt.js';
 import { User, ActivityLog } from '../src/models/index.js';
 import app from '../src/app.js';
 
@@ -20,14 +21,97 @@ function assert(condition, message) {
   }
 }
 
+/**
+ * Validates test database URI safety to prevent accidental operations
+ * against production or regular application databases.
+ *
+ * @param {string} uri - MongoDB connection URI
+ * @returns {string} Validated test database name
+ * @throws {Error} If URI is unsafe or targets a non-test database
+ */
+export function validateTestDatabaseSafety(uri) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('SAFETY CHECK REJECTED: Automated test suites cannot execute when NODE_ENV is set to production.');
+  }
+
+  if (!uri || typeof uri !== 'string' || uri.trim() === '') {
+    throw new Error('SAFETY CHECK REJECTED: MONGODB_TEST_URI is required for running automated tests.');
+  }
+
+  const cleanUri = uri.trim();
+
+  // Reject production identifiers
+  if (/(production|prod-db|looply-prod)/i.test(cleanUri)) {
+    throw new Error('SAFETY CHECK REJECTED: Production database URI indicator detected. Aborting test execution.');
+  }
+
+  // Extract database name from URI
+  const pathWithoutQuery = cleanUri.split('?')[0];
+  const dbName = pathWithoutQuery.split('/').pop();
+
+  if (!dbName || dbName !== 'looply_test') {
+    throw new Error(
+      `SAFETY CHECK REJECTED: Tests must connect strictly to dedicated "looply_test" database. Detected database: "${dbName}". Primary application database modification is strictly prohibited.`
+    );
+  }
+
+  return dbName;
+}
+
 async function runPhase4Tests() {
   console.log('====================================================');
   console.log('LOOPLY — PHASE 4 AUTHENTICATION & LOGIN TEST SUITE');
   console.log('====================================================\n');
 
-  // Establish Database Connection
-  await connectDatabase();
-  assert(isDatabaseConnected(), '1. Connected to MongoDB database');
+  // ====================================================
+  // 0. TEST DATABASE CONFIGURATION & SAFETY CHECKS
+  // ====================================================
+  console.log('--- Section 0: Test Database Safety & Isolation ---');
+
+  // Verify safety check rejects primary application database
+  let primaryDbRejected = false;
+  try {
+    validateTestDatabaseSafety('mongodb+srv://user:pass@cluster0.mongodb.net/looply?retryWrites=true');
+  } catch (err) {
+    if (err.message.includes('SAFETY CHECK REJECTED')) primaryDbRejected = true;
+  }
+  assert(primaryDbRejected, 'Safety check rejects primary application database URI (looply)');
+
+  // Verify safety check rejects production database URI
+  let prodDbRejected = false;
+  try {
+    validateTestDatabaseSafety('mongodb+srv://user:pass@cluster0.mongodb.net/looply_production');
+  } catch (err) {
+    if (err.message.includes('SAFETY CHECK REJECTED')) prodDbRejected = true;
+  }
+  assert(prodDbRejected, 'Safety check rejects production database URI (looply_production)');
+
+  // Verify safety check accepts dedicated test database
+  let testDbAccepted = false;
+  try {
+    const verifiedName = validateTestDatabaseSafety('mongodb://localhost:27017/looply_test');
+    testDbAccepted = verifiedName === 'looply_test';
+  } catch {
+    testDbAccepted = false;
+  }
+  assert(testDbAccepted, 'Safety check accepts dedicated "looply_test" database URI');
+
+  // Determine active test URI
+  const testUri =
+    process.env.MONGODB_TEST_URI ||
+    env.MONGODB_TEST_URI ||
+    (env.MONGODB_URI ? env.MONGODB_URI.replace('/looply', '/looply_test') : '');
+
+  // Validate configured test URI
+  validateTestDatabaseSafety(testUri);
+
+  // Establish Database Connection to dedicated test database
+  await connectDatabase(testUri);
+  const activeDbName = mongoose.connection.name || mongoose.connection.db?.databaseName;
+  assert(
+    isDatabaseConnected() && activeDbName === 'looply_test',
+    `1. Connected to dedicated test database: "${activeDbName}"`
+  );
 
   // Start temporary HTTP test server
   const server = app.listen(0);
@@ -167,7 +251,7 @@ async function runPhase4Tests() {
       '11. Password hash is strictly excluded from API registration response'
     );
 
-    // Verify Password Hashing in MongoDB
+    // Verify Password Hashing in MongoDB test database
     const dbUser = await User.findOne({ email: validEmail.toLowerCase() }).select('+passwordHash');
     assert(
       Boolean(dbUser && dbUser.passwordHash && dbUser.passwordHash.startsWith('$2')),
@@ -408,12 +492,15 @@ async function runPhase4Tests() {
     );
 
   } finally {
-    // Clean up all created test users from MongoDB to maintain clean database state
-    console.log('\n--- Cleaning up Test Artifacts from MongoDB ---');
-    if (createdUserIds.length > 0) {
+    // Safety check before running cleanup: ensure we are strictly in looply_test
+    console.log('\n--- Cleaning up Test Artifacts from Dedicated Test Database ---');
+    const finalDbName = mongoose.connection.name || mongoose.connection.db?.databaseName;
+    if (finalDbName !== 'looply_test') {
+      console.error(`CRITICAL SAFETY ABORT: Active database is "${finalDbName}". Cleanup cancelled to protect non-test data.`);
+    } else if (createdUserIds.length > 0) {
       await User.deleteMany({ _id: { $in: createdUserIds } });
       await ActivityLog.deleteMany({ actor: { $in: createdUserIds } });
-      console.log(`Cleaned up ${createdUserIds.length} test users from database.`);
+      console.log(`Cleaned up ${createdUserIds.length} test users from test database "${finalDbName}".`);
     }
 
     server.close();
@@ -431,8 +518,17 @@ async function runPhase4Tests() {
   }
 }
 
-runPhase4Tests().catch((err) => {
-  console.error('[Fatal Error in Phase 4 Tests]', err);
-  process.exit(1);
-});
+const isDirectEntrypoint =
+  process.argv[1] &&
+  (process.argv[1].endsWith('test-phase4.mjs') ||
+    process.argv[1].endsWith('test-phase4') ||
+    process.argv[1] === fileURLToPath(import.meta.url));
 
+if (isDirectEntrypoint) {
+  runPhase4Tests().catch((err) => {
+    console.error('[Fatal Error in Phase 4 Tests]', err);
+    process.exit(1);
+  });
+}
+
+export { runPhase4Tests };

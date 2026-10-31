@@ -1,3 +1,7 @@
-export { useAuth } from '@/context/AuthContext';
-export { default } from '@/context/AuthContext';
+'use client';
+
+import { useAuth } from '@/context/AuthContext';
+
+export { useAuth };
+export default useAuth;
 

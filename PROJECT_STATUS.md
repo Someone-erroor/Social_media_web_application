@@ -368,18 +368,49 @@ Phase 4 development delivered real end-to-end user registration, authentication,
    - Clears the HTTP-only cookie using matching path and flags.
    - Returns HTTP 200 `{ success: true, message: 'Logged out successfully.' }`.
 
-5. **Frontend State & UI Integration**:
-   - Centralized `AuthProvider` (`client/context/AuthContext.js`) with `useAuth` hook.
-   - Reusable API client (`client/services/api.js`) sending `credentials: 'include'`.
-   - Automatic session restoration on initial application load via `GET /api/auth/me`.
+5. **Client Architecture & Authentication Provider Integration**:
+   - Modular `ClientProviders` component (`client/components/providers/ClientProviders.js`) wraps the application with `AuthProvider` in `client/app/layout.js`, strictly preserving Next.js Server Component boundaries for metadata and viewport exports.
+   - Silent no-op default functions eliminated (`createContext(null)`).
+   - `useAuth` hook (`client/hooks/useAuth.js` & `client/context/AuthContext.js`) throws an explicit runtime error (`useAuth must be used within an AuthProvider.`) if called outside `AuthProvider`.
+   - Reusable API client (`client/services/api.js`) sends `credentials: 'include'` on all network requests to preserve HTTP-only cookie sessions across routes.
    - Interactive `LoginForm` and `RegisterForm` with show/hide password toggles, field-level validation, loading states, error alerts, and post-login redirection based on authoritative role (`/feed` for users, `/admin` for admins).
    - `UserSidebar` and `UserHeader` render authenticated user profile and working Sign Out action.
    - `AdminSidebar` includes dedicated Sign Out action in the management footer.
 
-6. **Phase 4 Automated Test Suite (`server/test/test-phase4.mjs`)**:
-   - 33 unit and integration assertions covering registration validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
-   - 100% passing (`cd server; npm run test:auth`).
-   - Cleans up all created test users automatically, preserving database integrity.
+6. **Dedicated Test Database Isolation (`looply_test`)**:
+   - Separate `MONGODB_TEST_URI` introduced and documented in `server/.env.example`.
+   - Automated safety checker (`validateTestDatabaseSafety`) strictly rejects production and primary application database URIs before any test connection or cleanup can execute.
+   - Tests connect to dedicated `looply_test` database and verify `mongoose.connection.name === 'looply_test'` prior to test document creation or deletion.
+   - Test artifact cleanup operates strictly against `looply_test` and never modifies primary application data.
+
+7. **Cryptographic JWT Secret Configuration**:
+   - Predefined JWT secret removed from `server/.env.example` (`JWT_SECRET=`).
+   - Instructions added explaining how to generate cryptographically secure random secrets using Node.js crypto (`randomBytes(32).toString('hex')`) or OpenSSL (`openssl rand -hex 32`).
+
+8. **End-to-End Real Browser Testing (`server/test/test-e2e-browser.mjs`)**:
+   - Executed against a real running browser (Headless Chrome via Puppeteer-Core) connected to Next.js on port 3000, Express on port 5000, and MongoDB Atlas `looply_test`.
+   - 24 browser assertions verified:
+     - User registration completed through the real browser UI.
+     - User record verified in MongoDB `looply_test`.
+     - Password verified stored as bcrypt hash ($2a$/$2b$), never plaintext.
+     - User login completed through the real browser UI.
+     - HTTP-only cookie (`looply_token`) issued and verified in browser cookie jar.
+     - Authenticated user state rendered in `UserSidebar` ("Browser E2E User").
+     - Browser reloaded and session restoration verified via `GET /api/auth/me`.
+     - API requests verified sending `credentials: 'include'`.
+     - User logged out through the real browser UI by clicking "Sign Out".
+     - HTTP-only cookie verified cleared from browser cookie jar upon logout.
+     - Role escalation attempt strictly prevented and assigned `role: "user"`.
+   - 100% passing (`npm run test:e2e`: 24 passed, 0 failed).
+
+9. **Automated Backend & Integration Test Suite (`server/test/test-phase4.mjs`)**:
+   - 36 assertions testing test database safety, input validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
+   - 100% passing (`npm run test:auth`: 36 passed, 0 failed).
+
+10. **Build & Lint Verification**:
+    - `npm run lint` in `client`: Passed with 0 errors and 0 warnings.
+    - `npm run build` in `client`: Passed with 22/22 routes prerendered.
+    - `npm test` in `server` (Phase 3 regression): Passed with 89 passed, 0 failed.
 
 ---
 

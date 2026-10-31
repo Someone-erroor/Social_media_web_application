@@ -1,5 +1,5 @@
 import './globals.css';
-import { AuthProvider } from '@/context/AuthContext';
+import { ClientProviders } from '@/components/providers/ClientProviders';
 
 export const metadata = {
   title: {
@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full bg-slate-50 antialiased selection:bg-indigo-500 selection:text-white">
       <body className="min-h-full flex flex-col text-slate-900 bg-slate-50 font-sans">
-        <AuthProvider>{children}</AuthProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

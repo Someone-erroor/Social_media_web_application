@@ -5,15 +5,9 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
 import { ROUTES } from '@/lib/routes';
 
-const AuthContext = createContext({
-  user: null,
-  loading: true,
-  isAuthenticated: false,
-  login: async () => {},
-  register: async () => {},
-  logout: async () => {},
-  refreshUser: async () => {}
-});
+// Default context value is strictly null so that any component consuming useAuth
+// outside AuthProvider immediately throws an error instead of silently failing.
+const AuthContext = createContext(null);
 
 /**
  * Global authentication state provider for Looply.
@@ -130,6 +124,16 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+/**
+ * Custom hook to consume the authentication context.
+ * Throws an explicit error if accessed outside an AuthProvider.
+ */
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider.');
+  }
+  return context;
+};
 
 export default AuthContext;

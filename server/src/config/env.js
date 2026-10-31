@@ -163,6 +163,7 @@ const nodeEnv = validateNodeEnv(process.env.NODE_ENV);
 const port = validatePort(process.env.PORT);
 const clientOrigins = validateClientOrigins(process.env.CLIENT_ORIGIN);
 const mongodbUri = process.env.MONGODB_URI ? String(process.env.MONGODB_URI).trim() : '';
+const mongodbTestUri = process.env.MONGODB_TEST_URI ? String(process.env.MONGODB_TEST_URI).trim() : '';
 const jwtSecret = validateJwtSecret(process.env.JWT_SECRET, nodeEnv);
 const jwtExpiresIn = validateJwtExpiresIn(process.env.JWT_EXPIRES_IN);
 
@@ -172,6 +173,7 @@ export const env = {
   CLIENT_ORIGIN: clientOrigins.join(','),
   CLIENT_ORIGINS: clientOrigins,
   MONGODB_URI: mongodbUri,
+  MONGODB_TEST_URI: mongodbTestUri,
   JWT_SECRET: jwtSecret,
   JWT_EXPIRES_IN: jwtExpiresIn,
   isDevelopment: nodeEnv === 'development',

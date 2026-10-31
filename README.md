@@ -239,10 +239,16 @@ cd server
 npm test
 ```
 
-### Run Phase 4 Authentication Test Suite
+### Run Phase 4 Authentication Test Suite (Isolated Test Database)
 ```bash
 cd server
 npm run test:auth
+```
+
+### Run Phase 4 End-to-End Real Browser Test Suite (Headless Chrome)
+```bash
+cd server
+npm run test:e2e
 ```
 
 ### Run Live MongoDB Atlas Verification Suite
