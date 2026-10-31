@@ -12,6 +12,7 @@ export function NotificationProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef(null);
 
@@ -19,14 +20,15 @@ export function NotificationProvider({ children }) {
   const refreshNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
     setLoading(true);
+    setError(null);
     try {
       const res = await notificationService.getNotifications({ page: 1, limit: 20 });
       setNotifications(res.notifications || []);
-      if (typeof res.unreadCount === 'number') {
+      if (typeof res?.unreadCount === 'number') {
         setUnreadCount(res.unreadCount);
       }
     } catch (err) {
-      // Fallback silently if offline or initial load
+      setError(err.message || 'Failed to fetch notifications.');
     } finally {
       setLoading(false);
     }
@@ -39,26 +41,43 @@ export function NotificationProvider({ children }) {
         socketRef.current.disconnect();
         socketRef.current = null;
       }
-      setIsConnected(false);
-      setNotifications([]);
-      setUnreadCount(0);
+      Promise.resolve().then(() => {
+        setIsConnected(false);
+        setNotifications([]);
+        setUnreadCount(0);
+        setError(null);
+      });
       return;
     }
 
     let ignore = false;
 
-    // Fetch initial notifications
-    notificationService
-      .getNotifications({ page: 1, limit: 20 })
+    // Fetch initial notifications with loading and error state
+    Promise.resolve()
+      .then(() => {
+        if (ignore) return;
+        setLoading(true);
+        setError(null);
+        return notificationService.getNotifications({ page: 1, limit: 20 });
+      })
       .then((res) => {
-        if (!ignore) {
+        if (!ignore && res) {
           setNotifications(res.notifications || []);
-          if (typeof res?.unreadCount === 'number') {
+          if (typeof res.unreadCount === 'number') {
             setUnreadCount(res.unreadCount);
           }
         }
       })
-      .catch(() => { });
+      .catch((err) => {
+        if (!ignore) {
+          setError(err.message || 'Failed to load notifications.');
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
 
     // If an existing socket is already connected, don't create duplicate
     if (socketRef.current?.connected) {
@@ -98,26 +117,32 @@ export function NotificationProvider({ children }) {
       notificationService
         .getNotifications({ page: 1, limit: 20 })
         .then((res) => {
-          if (!ignore) {
+          if (!ignore && res) {
             setNotifications(res.notifications || []);
-            if (typeof res?.unreadCount === 'number') {
+            if (typeof res.unreadCount === 'number') {
               setUnreadCount(res.unreadCount);
             }
           }
         })
-        .catch(() => { });
+        .catch((err) => {
+          if (!ignore) {
+            setError(err.message || 'Failed to sync notifications on reconnect.');
+          }
+        });
     });
 
-    // Handle real-time incoming notification (deduplicating by _id)
+    // Handle real-time incoming notification with strict duplicate prevention
     const handleIncomingNotification = (item) => {
       if (!item) return;
       setNotifications((prev) => {
+        // Prevent duplicate insertion if already present in state
         if (item._id && prev.some((n) => n._id === item._id)) {
-          return prev; // already present
+          return prev;
         }
+        // Increment unread count strictly for new notifications
+        setUnreadCount((c) => c + 1);
         return [item, ...prev];
       });
-      setUnreadCount((c) => c + 1);
     };
 
     socket.on('notification', handleIncomingNotification);
@@ -167,6 +192,7 @@ export function NotificationProvider({ children }) {
         notifications,
         unreadCount,
         loading,
+        error,
         isConnected,
         markAsRead,
         markAllAsRead,
@@ -181,15 +207,7 @@ export function NotificationProvider({ children }) {
 export function useNotifications() {
   const context = useContext(NotificationContext);
   if (!context) {
-    return {
-      notifications: [],
-      unreadCount: 0,
-      loading: false,
-      isConnected: false,
-      markAsRead: async () => { },
-      markAllAsRead: async () => { },
-      refreshNotifications: async () => { }
-    };
+    throw new Error('useNotifications must be used within a NotificationProvider.');
   }
   return context;
 }

@@ -516,10 +516,22 @@ async function runBatch3Tests() {
     // Test 3: Admin receives real-time login alert when normal user logs in
     let adminReceivedLoginAlert = false;
     let loginAlertEventData = null;
+    let adminReceivedDuplicateGeneric = false;
+    let userAReceivedAlert = false;
 
     socketClientAdmin.on('admin_login_alert', (data) => {
       adminReceivedLoginAlert = true;
       loginAlertEventData = data;
+    });
+
+    socketClientAdmin.on('notification', (data) => {
+      if (data?.type === 'login_alert') {
+        adminReceivedDuplicateGeneric = true;
+      }
+    });
+
+    socketClientUserA.on('admin_login_alert', () => {
+      userAReceivedAlert = true;
     });
 
     // Simulate User B logging in via auth API
@@ -536,8 +548,11 @@ async function runBatch3Tests() {
     await new Promise((r) => setTimeout(r, 600));
 
     assert.ok(adminReceivedLoginAlert, 'Admin socket received admin_login_alert event');
+    assert.strictEqual(adminReceivedDuplicateGeneric, false, 'No duplicate generic notification event delivered for login');
+    assert.strictEqual(userAReceivedAlert, false, 'Non-admin user A strictly isolated from admin login alerts');
     assert.ok(loginAlertEventData?.message?.includes('Bob Commenter'), 'Alert includes user fullName');
-    recordPass('Admin received real-time socket alert upon regular user login');
+    assert.ok(loginAlertEventData?._id, 'Event payload includes genuine MongoDB _id');
+    recordPass('Admin received real-time socket alert upon regular user login with single canonical delivery');
 
     // Test 4: Verify persistent Notification created in database for Admin
     const adminDbNotification = await Notification.findOne({
@@ -545,8 +560,18 @@ async function runBatch3Tests() {
       type: 'login_alert'
     });
     assert.ok(adminDbNotification, 'Persistent login_alert Notification created in DB');
+    assert.strictEqual(loginAlertEventData._id, adminDbNotification._id.toString(), 'Real-time alert _id matches stored document');
     createdNotificationIds.push(adminDbNotification._id);
     recordPass('Persistent login_alert Notification stored in MongoDB for administrator');
+
+    // Test 4b: Mark-as-read succeeds on the received real-time notification _id
+    const markRealtimeNotifRes = await apiRequest(`/notifications/${loginAlertEventData._id}/read`, {
+      method: 'PATCH',
+      token: adminToken
+    });
+    assert.strictEqual(markRealtimeNotifRes.status, 200, 'Mark as read returns 200 on real-time notification ID');
+    assert.ok(markRealtimeNotifRes.body.notification.readAt, 'Notification marked as read');
+    recordPass('Mark-as-read successfully executed on newly received real-time notification _id');
 
     // Test 5: Notification REST APIs (read, unread count, read-all)
     // Create another notification for User A
@@ -698,21 +723,35 @@ async function runBatch3Tests() {
     // Reset AI failure state
     setSimulateAiFailure(false);
 
-    // Test 7: Mock fallback strictly rejected in non-test mode (e.g. NODE_ENV === 'development')
+    // Test 7: Mock fallback strictly rejected in development environment (returns HTTP 503)
     const originalNodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
-    setForceAiMock(true); // Attempt to force mock in non-test environment
+    setForceAiMock(true); // Attempt to force mock in development
     const devMockRes = await apiRequest('/ai/posts/generate', {
       method: 'POST',
       token: tokenA,
       body: { topic: 'Testing dev rejection' }
     });
-    assert.strictEqual(devMockRes.status, 503, 'AI service returns 503 in development even if mock flag was set');
+    assert.strictEqual(devMockRes.status, 503, 'AI service returns 503 in development');
     assert.strictEqual(devMockRes.body.success, false);
-    recordPass('Mock mode strictly blocked in non-test environment (HTTP 503 Service Configuration Error)');
+    assert.strictEqual(devMockRes.body.message, 'AI service is not configured. Please contact the administrator.');
+    recordPass('Mock mode strictly blocked in development environment (HTTP 503 Service Unavailable)');
+
+    // Test 8: Mock fallback strictly rejected in production environment (returns HTTP 503)
+    process.env.NODE_ENV = 'production';
+    setForceAiMock(true); // Attempt to force mock in production
+    const prodMockRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing prod rejection' }
+    });
+    assert.strictEqual(prodMockRes.status, 503, 'AI service returns 503 in production');
+    assert.strictEqual(prodMockRes.body.success, false);
+    assert.strictEqual(prodMockRes.body.message, 'AI service is not configured. Please contact the administrator.');
+    recordPass('Mock mode strictly blocked in production environment (HTTP 503 Service Unavailable)');
     process.env.NODE_ENV = originalNodeEnv;
 
-    // Test 8: AI Service rejects with 503 when forceMockMode is false and GEMINI_API_KEY is not configured
+    // Test 9: AI Service rejects with 503 when forceMockMode is false and GEMINI_API_KEY is not configured
     setForceAiMock(false);
     const savedGeminiKey = env.GEMINI_API_KEY;
     env.GEMINI_API_KEY = '';
@@ -723,8 +762,8 @@ async function runBatch3Tests() {
     });
     assert.strictEqual(noKeyAiRes.status, 503, 'AI service returns 503 when not configured outside mock mode');
     assert.strictEqual(noKeyAiRes.body.success, false, 'Response indicates failure');
-    assert.ok((noKeyAiRes.body.message || noKeyAiRes.body.error || '').includes('not configured'), 'Error message states service is not configured');
-    recordPass('AI service returns 503 Service Configuration Error when forceMockMode is false and API key is unconfigured');
+    assert.strictEqual(noKeyAiRes.body.message, 'AI service is not configured. Please contact the administrator.');
+    recordPass('AI service returns 503 Service Configuration Error with canonical guidance message');
 
     // Restore env.GEMINI_API_KEY
     env.GEMINI_API_KEY = savedGeminiKey;

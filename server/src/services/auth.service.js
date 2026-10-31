@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { User, ActivityLog, Notification } from '../models/index.js';
 import { generateToken } from '../config/jwt.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from './email.service.js';
-import { sendAdminNotification } from './socket.service.js';
+import { sendAdminNotification, sendNotificationToUser } from './socket.service.js';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -256,8 +256,17 @@ export const loginUser = async ({ email, password }) => {
   if (user.role === 'user') {
     try {
       const admins = await User.find({ role: 'admin' }).select('_id');
+      const safeActor = {
+        _id: user._id.toString(),
+        fullName: user.fullName,
+        email: user.email,
+        profile: {
+          avatarUrl: user.profile?.avatarUrl || ''
+        }
+      };
+
       for (const admin of admins) {
-        await Notification.create({
+        const notifDoc = await Notification.create({
           recipient: admin._id,
           actor: user._id,
           type: 'login_alert',
@@ -265,19 +274,23 @@ export const loginUser = async ({ email, password }) => {
           resourceType: 'User',
           resourceId: user._id
         });
-      }
 
-      sendAdminNotification({
-        type: 'login_alert',
-        message: `${user.fullName} (${user.email}) successfully logged in.`,
-        actor: {
-          _id: user._id.toString(),
-          fullName: user.fullName,
-          email: user.email,
-          avatarUrl: user.profile?.avatarUrl || ''
-        },
-        createdAt: new Date().toISOString()
-      }, 'admin_login_alert');
+        // Canonical real-time notification payload including genuine document _id
+        const populatedNotification = {
+          _id: notifDoc._id.toString(),
+          recipient: admin._id.toString(),
+          actor: safeActor,
+          type: 'login_alert',
+          message: notifDoc.message,
+          resourceType: 'User',
+          resourceId: user._id.toString(),
+          readAt: null,
+          createdAt: notifDoc.createdAt ? notifDoc.createdAt.toISOString() : new Date().toISOString()
+        };
+
+        // Dispatch single canonical event to this administrator's authenticated room
+        sendNotificationToUser(admin._id, populatedNotification, 'admin_login_alert');
+      }
     } catch (notifErr) {
       console.error(`[Notification] Failed to create admin login alert: ${notifErr.message}`);
     }

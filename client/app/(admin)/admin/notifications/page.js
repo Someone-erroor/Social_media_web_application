@@ -34,6 +34,7 @@ export default function AdminNotificationsPage() {
     notifications,
     unreadCount,
     loading,
+    error: contextError,
     isConnected,
     markAsRead,
     markAllAsRead,
@@ -104,19 +105,28 @@ export default function AdminNotificationsPage() {
         </div>
       </div>
 
-      {actionError && (
+      {(contextError || actionError) && (
         <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icon name="alertCircle" className="w-4 h-4 text-red-600 shrink-0" />
-            <span>{actionError}</span>
+            <span>{contextError || actionError}</span>
           </div>
-          <button
-            type="button"
-            onClick={() => setActionError('')}
-            className="text-red-500 hover:text-red-700 font-bold"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleRefresh}
+              className="font-medium underline hover:text-red-900"
+            >
+              Retry
+            </button>
+            <button
+              type="button"
+              onClick={() => setActionError('')}
+              className="text-red-500 hover:text-red-700 font-bold"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
 

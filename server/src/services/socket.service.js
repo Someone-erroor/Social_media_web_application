@@ -182,25 +182,25 @@ export const closeSocketServer = async () => {
  *
  * @param {string|object} userId - Recipient ObjectId
  * @param {object} notification - Notification payload
+ * @param {string} [eventName='notification'] - Canonical event name
  */
-export const sendNotificationToUser = (userId, notification) => {
+export const sendNotificationToUser = (userId, notification, eventName = 'notification') => {
   if (!ioInstance) return;
   const targetId = userId && userId._id ? userId._id.toString() : userId ? userId.toString() : '';
   if (!targetId) return;
 
-  ioInstance.to(`user_${targetId}`).emit('notification', notification);
+  ioInstance.to(`user_${targetId}`).emit(eventName, notification);
 };
 
 /**
  * Emits a real-time notification to the administrator room.
+ * Uses a single canonical event delivery and strictly avoids duplicate generic event emission.
  *
  * @param {object} notification - Admin notification payload
- * @param {string} [eventName='admin_notification'] - Event name
+ * @param {string} [eventName='admin_login_alert'] - Event name
  */
-export const sendAdminNotification = (notification, eventName = 'admin_notification') => {
+export const sendAdminNotification = (notification, eventName = 'admin_login_alert') => {
   if (!ioInstance) return;
   ioInstance.to('admin_room').emit(eventName, notification);
-  // Also emit standard notification event to admin room for unified handlers
-  ioInstance.to('admin_room').emit('notification', notification);
 };
 

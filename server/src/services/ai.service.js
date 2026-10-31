@@ -40,8 +40,8 @@ export const setSimulateAiTimeout = (val) => {
  * @returns {boolean}
  */
 export const isAiMockMode = () => {
-  const isTestEnvironment = process.env.NODE_ENV === 'test' || env.isTest;
-  return Boolean(isTestEnvironment && forceMockMode);
+  const isTest = (process.env.NODE_ENV === 'test' || env.isTest);
+  return Boolean(isTest && forceMockMode);
 };
 
 /**
@@ -132,14 +132,15 @@ export const generatePost = async ({ topic, context = '', tone = 'casual', lengt
   }
 
   // Reject when GEMINI_API_KEY is missing outside test mock mode (HTTP 503)
-  if (!env.GEMINI_API_KEY) {
-    const error = new Error('Gemini AI service is not configured. Please configure GEMINI_API_KEY in server environment.');
+  const apiKey = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    const error = new Error('AI service is not configured. Please contact the administrator.');
     error.status = 503;
     throw error;
   }
 
   // Live Google Gemini API Integration
-  const client = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+  const client = new GoogleGenAI({ apiKey });
   const modelName = env.GEMINI_MODEL || 'gemini-2.5-flash';
 
   const lengthInstructions = {
@@ -187,7 +188,7 @@ Important constraints:
       model: modelName
     };
   } catch (err) {
-    const error = new Error(`AI Generation Failed: ${err.message}`);
+    const error = new Error('AI generation failed. Please try again.');
     error.status = 502;
     throw error;
   }
@@ -227,14 +228,15 @@ export const improvePost = async ({ content, tone = 'casual', instructions = '' 
   }
 
   // Reject when GEMINI_API_KEY is missing outside test mock mode (HTTP 503)
-  if (!env.GEMINI_API_KEY) {
-    const error = new Error('Gemini AI service is not configured. Please configure GEMINI_API_KEY in server environment.');
+  const apiKey = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    const error = new Error('AI service is not configured. Please contact the administrator.');
     error.status = 503;
     throw error;
   }
 
   // Live Google Gemini API Integration
-  const client = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+  const client = new GoogleGenAI({ apiKey });
   const modelName = env.GEMINI_MODEL || 'gemini-2.5-flash';
 
   const prompt = `You are an AI assistant improving a user's social media post on Looply.
@@ -279,7 +281,7 @@ Important constraints:
       model: modelName
     };
   } catch (err) {
-    const error = new Error(`AI Improvement Failed: ${err.message}`);
+    const error = new Error('AI generation failed. Please try again.');
     error.status = 502;
     throw error;
   }
