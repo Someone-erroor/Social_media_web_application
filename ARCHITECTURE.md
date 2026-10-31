@@ -2,12 +2,13 @@
 
 ## 1. Architectural Philosophy
 
-Looply is engineered as an enterprise-grade social media platform emphasizing:
+Looply is engineered as an enterprise-grade social media platform ("Connect. Share. Express.") emphasizing:
 1. **Decoupled Architecture:** Strict separation between the client presentation layer (`client/`) and the authoritative API backend (`server/`).
 2. **Predictable Routing:** Centralized route definition (`client/lib/routes.js`) preventing hardcoded strings, broken references, or mismatched routes.
-3. **Experience Isolation:** Clear structural boundaries between **Public/Auth**, **User Experience**, and **Admin Experience** via Next.js route groups and backend route trees.
+3. **Experience Isolation:** Clear structural boundaries between **Public/Auth**, **User Experience**, and **Admin Experience** via Next.js route groups and layout shells.
 4. **Authoritative Backend Security:** The backend is the sole authority for authentication, authorization, and data validation. Client-side state is treated strictly as an ephemeral projection.
-5. **No Premature Complexity:** Development strictly honors the designated phase boundaries without speculative implementations or faux mocks.
+5. **No Premature Complexity:** Development strictly honors designated phase boundaries without speculative implementations or faux mocks.
+6. **Component Reusability:** Small, modular, composable UI building blocks with clear single responsibilities.
 
 ---
 
@@ -21,6 +22,8 @@ Looply is engineered as an enterprise-grade social media platform emphasizing:
 |  |  (public)/(auth) |  |       (user)      |  |     (admin)     |  |
 |  |   Route Group    |  |    Route Group    |  |   Route Group   |  |
 |  +------------------+  +-------------------+  +-----------------+  |
+|           |                      |                      |          |
+|      [PublicShell]          [UserShell]           [AdminShell]     |
 |           |                      |                      |          |
 |           +----------------------+----------------------+          |
 |                                  |                                 |
@@ -56,80 +59,92 @@ Looply is engineered as an enterprise-grade social media platform emphasizing:
 ## 3. Frontend Architecture (`client/`)
 
 ### 3.1 Technology Stack
-- **Framework:** Next.js (App Router)
+- **Framework:** Next.js (App Router, Turbopack)
 - **Language:** JavaScript (ES6+, JSX) - TypeScript is intentionally excluded.
-- **Styling:** Tailwind CSS with CSS custom variables and theme tokens.
+- **Styling:** Tailwind CSS v4 with modern token-driven styling and consistent font stacks.
+- **Brand System:** Modular SVG brand mark (`Logo.js`), custom vector iconography (`Icon.js`).
 
-### 3.2 Directory Hierarchy
+### 3.2 Design System Tokens & Brand Identity
+- **Tagline:** Connect. Share. Express.
+- **Color Palette:**
+  - **Primary:** Indigo (`indigo-600`, `indigo-700`, `indigo-500`) and Violet accents.
+  - **Neutrals:** Soft neutral canvas (`bg-slate-50`, `bg-slate-100`), crisp white card containers (`bg-white`).
+  - **Typography:** Dark slate (`text-slate-900`) for primary headings, muted slate (`text-slate-500`) for body/secondary text.
+  - **Borders & Elevation:** Subtle borders (`border-slate-200/80`), gentle elevation (`shadow-xs`, `shadow-sm`).
+  - **Admin Canvas:** Deep slate navigation (`bg-slate-900`, `text-slate-200`) providing high contrast and visual distinction from user spaces.
+
+### 3.3 Reusable Component Architecture (`client/components/`)
 ```text
-client/
-├── app/                  # Next.js App Router root
-│   ├── (public)/         # Public experience route group (/, landing)
-│   ├── (auth)/           # Authentication route group (/login, /register, etc.)
-│   ├── (user)/           # User social experience route group (/feed, /profile, etc.)
-│   ├── (admin)/          # Administrative oversight route group (/admin, etc.)
-│   ├── layout.js         # Root HTML layout and viewport definition
-│   └── globals.css       # Tailwind CSS import and global styles
-├── components/           # Reusable UI component library
-│   ├── brand/            # Brand marks, SVG logos, taglines
-│   ├── layout/           # Shared layout components (Navbar, Footer, Shells)
-│   └── status/           # System status cards and indicators
-├── features/             # Domain-specific feature modules (deferred to future phases)
-├── hooks/                # Custom reusable React hooks (deferred to future phases)
-├── lib/                  # Shared utilities and configurations
-│   └── routes.js         # Single source of truth for application URLs
-├── services/             # Backend API client adapters (deferred to future phases)
-└── public/               # Static assets (custom SVG favicon, brand logo)
+client/components/
+├── brand/
+│   └── Logo.js            # Modular brand mark, tagline, size variants, dark/light variants
+├── ui/
+│   ├── Button.js          # Button & Next.js Link variants (primary, secondary, outline, ghost, danger)
+│   ├── Input.js           # Styled form inputs with focus rings, icons, and error boundaries
+│   ├── Card.js            # Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
+│   ├── Avatar.js          # Neutral fallback avatar with initials or silhouette icon
+│   ├── Badge.js           # Status and category badges (neutral, primary, success, warning, danger)
+│   ├── Icon.js            # Standardized 24x24 SVG iconography library
+│   ├── EmptyState.js      # Honest, authentic empty states with icons, descriptions, and action slots
+│   └── PageHeader.js      # Standardized title, description, badge, and action bar
+├── forms/
+│   └── FormField.js       # Accessible labeled form input wrapper with error and helper messaging
+├── navigation/
+│   ├── PublicNavbar.js    # Responsive top header with desktop links and mobile drawer
+│   ├── PublicFooter.js    # Semantic footer with brand links, status pill, and copyright
+│   ├── UserSidebar.js     # Desktop user navigation sidebar (logo links strictly to /feed)
+│   ├── UserHeader.js      # Top header with search placeholder, notifications, and profile teaser
+│   ├── UserBottomNav.js   # Mobile fixed bottom navigation bar (<768px)
+│   ├── AdminSidebar.js    # Dark management sidebar with admin branding (links to /admin)
+│   └── AdminHeader.js     # Admin workspace header with breadcrumb and clearance status
+└── layouts/
+    ├── UserShell.js       # Desktop 3-column layout (sidebar, main content, right context panel) + mobile nav
+    └── AdminShell.js      # Distinct high-contrast administrative workspace
 ```
 
-### 3.3 Next.js App Router Grouping Strategy
-Next.js route groups (`(...)`) allow modular layout inheritance without polluting URL paths:
-- `(public)`: Provides landing page layouts. Accessible without authentication.
-- `(auth)`: Provides centered, distraction-free layouts for login, registration, password recovery, and email verification.
-- `(user)`: Encloses social feed, user profile, notifications, and AI assistant.
-- `(admin)`: Completely segregated administrative layout with dark control panels, separate navigation hierarchy, and zero leakage into user views.
-
-### 3.4 Route Management Policy
-- **Rule:** Direct hardcoding of URLs within UI anchors or router pushes is prohibited.
-- **Enforcement:** Every navigation destination must reference `ROUTES` from `@/lib/routes`.
-- **Navigation:** All internal links use `next/link`. No dead buttons or actionless elements are allowed.
+### 3.4 Experience Segregation & Layout Shells
+1. **Public Experience:**
+   - Pure product landing page at `/` featuring responsive navigation (`PublicNavbar`), Hero, feature highlights, workflow walkthrough, CTA banners, and footer (`PublicFooter`).
+   - The old development `PhaseStatusCard` is completely removed.
+2. **Authentication Experience:**
+   - Dedicated centered layout (`app/(auth)/layout.js`) wrapping `/login`, `/register`, `/verify-email`, `/forgot-password`, and `/reset-password`.
+   - Submissions are disabled with informative phase badges.
+3. **User Social Experience:**
+   - Rendered within `UserShell` (`app/(user)/layout.js`).
+   - Desktop: 3-column architecture (Left navigation rail, center feed/content column `max-w-2xl`, right contextual panel `w-80` with topic discovery and guidelines).
+   - Mobile: Top `UserHeader`, responsive single column, bottom fixed `UserBottomNav`.
+   - Inside user experience, clicking the brand mark navigates to `/feed`.
+4. **Administrator Experience:**
+   - Rendered within `AdminShell` (`app/(admin)/layout.js`).
+   - Completely isolated navigation hierarchy with dark sidebar (`AdminSidebar`), top status bar (`AdminHeader`), and management content area.
+   - Clicking admin brand mark navigates to `/admin`.
 
 ---
 
 ## 4. Backend Architecture (`server/`)
 
-### 4.1 Technology Stack
-- **Runtime:** Node.js (20.9+)
-- **Module System:** ES Modules (`"type": "module"`)
-- **Framework:** Express.js
-- **CORS:** `cors` middleware with environment-governed origin validation
-- **Environment:** `dotenv` with path resolution
-
-### 4.2 Separation of Concerns
-1. **Server Startup vs Application Initialization:**
-   - `src/app.js` is pure application configuration: middleware setup, router mounting, and error handling. It does not call `app.listen()`, allowing unit and integration test runners (e.g., Supertest) to test endpoints without port binding conflicts.
-   - `src/server.js` imports `app` and `env`, binds to `PORT`, logs runtime metadata, and registers OS termination signals (`SIGTERM`, `SIGINT`) for graceful shutdown.
-2. **Environment Configuration (`src/config/env.js`):**
-   - Centralizes all environment reading with fallback values.
-   - Prevents unvalidated runtime accesses to `process.env`.
-3. **Restricted CORS Policy (`src/config/cors.js`):**
-   - Wildcard origins (`*`) are disallowed.
-   - Origins are checked against `env.CLIENT_ORIGINS` / `env.CLIENT_ORIGIN` (supports single origin or comma-delimited list).
-   - Requests without an Origin header (such as curl, mobile clients, or internal tools) are allowed in development only and strictly blocked in production with HTTP 403 Forbidden.
-   - Unauthorized origins receive an explicit `403 Forbidden` response.
-4. **Foundation Error Handling (`src/middleware/error.middleware.js`):**
-   - `notFoundHandler`: Catches unhandled routes and returns standard JSON:
-     ```json
-     { "success": false, "message": "Resource not found: GET /unknown" }
-     ```
-   - `errorHandler`: Global Express 4-parameter error handler. Returns sanitized JSON error objects and includes stack traces only in development environments.
+### 4.1 Modular Structure
+- Decoupled `app.js` (Express configuration, middleware, and routers) from `server.js` (HTTP process listening, shutdown handlers).
+- Robust environment validation (`config/env.js`) enforcing `NODE_ENV` (`development`, `production`, `test`), `PORT` (1–65535), and strict `CLIENT_ORIGIN` URL validation.
+- Strict CORS policy (`config/cors.js`):
+  - In `development` & `test`: Requests without `Origin` (curl, unit tests, scripts) are allowed.
+  - In `production`: Requests without `Origin` are strictly rejected with HTTP 403 Forbidden.
+  - Configured frontend origins are strictly whitelisted across all environments.
 
 ---
 
-## 5. Security & Isolation Principles
+## 5. Responsiveness & Accessibility Strategy
 
-1. **Authoritative Authorization:** Frontend guards and route groups provide UX guidance only. All security enforcement resides in backend middleware.
-2. **Role Segregation:** Administrative endpoints will be gated behind verified token claims and database role checks. User and Admin routes share no common API controllers.
-3. **Zero Secret Leakage:**
-   - `.env` files containing credentials are excluded from version control via `.gitignore`.
-   - `.env.example` templates document variable keys without exposing live secrets.
+### Responsiveness
+All layouts and components are verified across target viewport widths:
+- **360px & 390px (Mobile):** Single column, touch-friendly targets (min 44px), top header, fixed bottom navigation, collapsible mobile menu drawers.
+- **768px (Tablet):** Compact sidebar, responsive tables with horizontal overflow handling, responsive grids.
+- **1024px (Laptop):** Full sidebar, multi-column cards, flexible content width.
+- **1440px (Desktop):** Complete 3-column user layout including right-hand contextual exploration panel.
+
+### Accessibility (a11y)
+- Semantic HTML tags: `<header>`, `<nav>`, `<aside>`, `<main>`, `<footer>`, `<form>`, `<label>`, `<button>`, `<table>`.
+- Accessible form fields using `htmlFor` and `id` bindings with `aria-describedby` and `aria-invalid`.
+- Keyboard navigation supported with visible focus rings (`focus:ring-2 focus:ring-indigo-500`).
+- No actionless clickable divs; semantic anchors (`<Link>`) or `<button>` elements are used throughout.
+- Color contrast compliant with WCAG standards on both light and dark surfaces.

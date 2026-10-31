@@ -2,31 +2,41 @@ import Link from 'next/link';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * Modular Logo Brand Component
- * Renders the unique Looply icon and brand typography
+ * Modular Logo Brand Component for Looply
+ * Renders the unique Looply mark and brand typography.
+ * Supports public, user, and admin colorways.
  */
-export default function Logo({ showTagline = true, size = 'default', href = ROUTES.PUBLIC.HOME }) {
+export default function Logo({
+  showTagline = true,
+  size = 'default',
+  href = ROUTES.PUBLIC.HOME,
+  inverted = false,
+  badgeText
+}) {
   const isLarge = size === 'large';
+  const isSmall = size === 'small';
 
   const content = (
     <div className="flex items-center gap-3 select-none group">
       {/* Brand Mark Icon */}
       <div
-        className={`flex items-center justify-center bg-slate-900 rounded-2xl shadow-sm transition-transform group-hover:scale-105 ${
-          isLarge ? 'w-14 h-14' : 'w-10 h-10'
+        className={`flex items-center justify-center rounded-2xl shadow-sm transition-transform group-hover:scale-105 shrink-0 ${
+          inverted ? 'bg-indigo-600 text-white' : 'bg-slate-900'
+        } ${
+          isLarge ? 'w-14 h-14' : isSmall ? 'w-8 h-8 rounded-xl' : 'w-10 h-10'
         }`}
       >
         <svg
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={isLarge ? 'w-9 h-9' : 'w-6 h-6'}
+          className={isLarge ? 'w-9 h-9' : isSmall ? 'w-5 h-5' : 'w-6 h-6'}
         >
           <defs>
             <linearGradient id="logo-grad" x1="8" y1="12" x2="56" y2="52" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#4F46E5" />
-              <stop offset="50%" stopColor="#7C3AED" />
-              <stop offset="100%" stopColor="#DB2777" />
+              <stop offset="0%" stopColor="#818CF8" />
+              <stop offset="50%" stopColor="#C084FC" />
+              <stop offset="100%" stopColor="#F472B6" />
             </linearGradient>
           </defs>
           <path
@@ -43,16 +53,33 @@ export default function Logo({ showTagline = true, size = 'default', href = ROUT
 
       {/* Brand Wordmark and Tagline */}
       <div className="flex flex-col">
-        <span
-          className={`font-black tracking-tight text-slate-900 dark:text-white leading-none ${
-            isLarge ? 'text-3xl' : 'text-xl'
-          }`}
-        >
-          Loop<span className="text-indigo-600 dark:text-indigo-400">ly</span>
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`font-black tracking-tight leading-none ${
+              inverted ? 'text-white' : 'text-slate-900'
+            } ${
+              isLarge ? 'text-3xl' : isSmall ? 'text-lg' : 'text-xl'
+            }`}
+          >
+            Loop<span className="text-indigo-500">ly</span>
+          </span>
+          {badgeText && (
+            <span
+              className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
+                inverted
+                  ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-400/30'
+                  : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+              }`}
+            >
+              {badgeText}
+            </span>
+          )}
+        </div>
         {showTagline && (
           <span
-            className={`font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider mt-1 ${
+            className={`font-semibold uppercase tracking-wider mt-1 ${
+              inverted ? 'text-slate-400' : 'text-slate-500'
+            } ${
               isLarge ? 'text-xs' : 'text-[10px]'
             }`}
           >
@@ -65,7 +92,11 @@ export default function Logo({ showTagline = true, size = 'default', href = ROUT
 
   if (href) {
     return (
-      <Link href={href} className="inline-flex focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-lg">
+      <Link
+        href={href}
+        className="inline-flex focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-xl"
+        aria-label="Looply Home"
+      >
         {content}
       </Link>
     );

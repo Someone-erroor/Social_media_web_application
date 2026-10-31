@@ -9,7 +9,7 @@ Looply is a professional, full-stack, AI-powered social media platform built for
 ## 1. System Overview
 
 Looply is architected as two decoupled applications within a unified workspace:
-- **`client/`**: Modern Next.js application leveraging the App Router, JavaScript, and Tailwind CSS.
+- **`client/`**: Modern Next.js application leveraging the App Router, JavaScript, and Tailwind CSS v4.
 - **`server/`**: Modular Node.js / Express.js REST API providing authoritative business logic, structured routing, and environment-governed security controls.
 
 Development follows a strict **18-phase implementation lifecycle**. Each phase is verified independently before proceeding to subsequent milestones.
@@ -19,16 +19,17 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 ## 2. Technology Stack
 
 ### Frontend
-- **Framework:** Next.js (App Router)
-- **Language:** JavaScript (ES6+, JSX)
-- **Styling:** Tailwind CSS (Modern token-driven styling)
-- **Font & Assets:** Next.js font optimization, custom SVG vector branding
+- **Framework:** Next.js (App Router, Turbopack)
+- **Language:** JavaScript (ES6+, JSX) - Strictly no TypeScript
+- **Styling:** Tailwind CSS v4 (Modern token-driven styling)
+- **Component Architecture:** Modular UI library (`client/components/`)
+- **Font & Assets:** Optimized font stacks, custom vector SVG branding
 
 ### Backend
 - **Runtime:** Node.js (20.9+)
 - **Framework:** Express.js (Modular REST architecture)
 - **CORS:** Environment-governed origin restriction (no wildcards)
-- **Environment:** `dotenv` configuration management
+- **Environment:** `dotenv` configuration management with strict validation
 
 ### Database (Planned - Phase 3)
 - MongoDB & Mongoose (Deferred until subsequent phases as per phase boundaries)
@@ -50,26 +51,66 @@ c:/assestement_project/
 │   ├── package.json
 │   ├── next.config.mjs
 │   ├── jsconfig.json
+│   ├── eslint.config.mjs
 │   ├── app/
 │   │   ├── (public)/
 │   │   │   ├── layout.js
 │   │   │   └── page.js
 │   │   ├── (auth)/
-│   │   │   └── layout.js
+│   │   │   ├── layout.js
+│   │   │   ├── login/page.js
+│   │   │   ├── register/page.js
+│   │   │   ├── verify-email/page.js
+│   │   │   ├── forgot-password/page.js
+│   │   │   └── reset-password/page.js
 │   │   ├── (user)/
-│   │   │   └── layout.js
+│   │   │   ├── layout.js
+│   │   │   ├── feed/page.js
+│   │   │   ├── explore/page.js
+│   │   │   ├── profile/
+│   │   │   │   ├── page.js
+│   │   │   │   ├── edit/page.js
+│   │   │   │   └── [userId]/page.js
+│   │   │   ├── notifications/page.js
+│   │   │   ├── assistant/page.js
+│   │   │   └── settings/page.js
 │   │   ├── (admin)/
-│   │   │   └── layout.js
+│   │   │   ├── layout.js
+│   │   │   └── admin/
+│   │   │       ├── page.js
+│   │   │       ├── users/page.js
+│   │   │       ├── posts/page.js
+│   │   │       ├── comments/page.js
+│   │   │       ├── activity/page.js
+│   │   │       └── notifications/page.js
+│   │   ├── not-found.js
 │   │   ├── layout.js
 │   │   └── globals.css
 │   ├── components/
 │   │   ├── brand/
 │   │   │   └── Logo.js
-│   │   ├── layout/
-│   │   │   ├── Navbar.js
-│   │   │   └── Footer.js
-│   │   └── status/
-│   │       └── PhaseStatusCard.js
+│   │   ├── ui/
+│   │   │   ├── Button.js
+│   │   │   ├── Input.js
+│   │   │   ├── Card.js
+│   │   │   ├── Avatar.js
+│   │   │   ├── Badge.js
+│   │   │   ├── Icon.js
+│   │   │   ├── EmptyState.js
+│   │   │   └── PageHeader.js
+│   │   ├── forms/
+│   │   │   └── FormField.js
+│   │   ├── navigation/
+│   │   │   ├── PublicNavbar.js
+│   │   │   ├── PublicFooter.js
+│   │   │   ├── UserSidebar.js
+│   │   │   ├── UserHeader.js
+│   │   │   ├── UserBottomNav.js
+│   │   │   ├── AdminSidebar.js
+│   │   │   └── AdminHeader.js
+│   │   └── layouts/
+│   │       ├── UserShell.js
+│   │       └── AdminShell.js
 │   ├── features/
 │   ├── hooks/
 │   ├── lib/
@@ -168,15 +209,21 @@ cd client
 npm run build
 ```
 
+### Test Client Linting
+```bash
+cd client
+npm run lint
+```
+
 ---
 
 ## 6. Phase Roadmap Summary
 
 | Phase | Description | Status |
 | :--- | :--- | :--- |
-| **Phase 1** | **Project architecture and initial setup.** | **IMPLEMENTATION COMPLETED (Awaiting Review)** |
-| Phase 2 | UI foundation, routing and dashboard layouts. | Pending |
-| Phase 3 | Backend foundation and database design. | Pending |
+| **Phase 1** | **Project architecture and initial setup.** | **APPROVED** |
+| **Phase 2** | **UI foundation, routing and dashboard layouts.** | **IMPLEMENTATION COMPLETED (Awaiting Review)** |
+| Phase 3 | Backend foundation and database design. | Pending External Approval |
 | Phase 4 | User registration and login. | Pending |
 | Phase 5 | Email verification, forgot password and password reset. | Pending |
 | Phase 6 | Authentication security and role-based access control. | Pending |
@@ -195,4 +242,3 @@ npm run build
 
 ### Scope Control & Exclusions
 In accordance with technical assignment requirements, non-mandatory features such as direct messaging, follow graphs, bookmarks, advanced search engines, real-time presence indicators, and stories/reels are explicitly excluded from the assessment scope.
-
