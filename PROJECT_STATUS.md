@@ -388,15 +388,35 @@ Phase 4 development delivered real end-to-end user registration, authentication,
 
 8. **End-to-End Real Browser Testing (`server/test/test-e2e-browser.mjs`)**:
    - Executed against a real running browser (Headless Chrome via Puppeteer-Core with portable multi-platform binary discovery) connected to Next.js on port 3000, Express on port 5000, and MongoDB Atlas `looply_test`.
-   - 27 browser assertions verified:
+   - **Frontend Test Build Isolation**:
+     - Frontend is built specifically for E2E testing prior to `next start`, with `NEXT_PUBLIC_API_URL=http://127.0.0.1:5000/api` configured at build time.
+     - Build completion and exit code are verified before starting `next start`.
+     - Static `.next` chunk bundles are scanned and verified to confirm `http://127.0.0.1:5000/api` is inlined.
+     - Runtime network interception monitors all browser HTTP requests and strictly enforces that 100% of API requests target `http://127.0.0.1:5000/api` exclusively (never production or primary application backend).
+   - **Comprehensive Single try/finally Resource Lifecycle**:
+     - All setup (test DB connection, port checks, backend startup, frontend build, frontend startup, browser launch) and test interactions run inside a unified `try / finally` lifecycle.
+     - Guaranteed cleanup of all owned resources even if MongoDB connection fails, port check fails, backend fails, build fails, startup fails, or assertions fail:
+       - Created user document and audit logs cleaned up from `looply_test`.
+       - Headless Chrome browser cleanly closed.
+       - Next.js test process tree terminated via targeted PID without touching unrelated processes.
+       - Express API test backend server cleanly closed.
+       - Mongoose connection to `looply_test` cleanly disconnected.
+   - 29 browser assertions verified:
      - Verified `mongoose.connection.name === "looply_test"` prior to creating or deleting any records.
      - Verified ports 5000 and 3000 are unoccupied before starting isolated backend and frontend instances.
      - Verified backend health contract (`{ success: true, message: "Looply backend is running" }`, strictly rejecting arbitrary 4xx codes).
-     - Verified frontend returned HTTP 200 with `NEXT_PUBLIC_API_URL` pointing to test backend.
+     - Verified frontend built specifically for E2E testing with `NEXT_PUBLIC_API_URL=http://127.0.0.1:5000/api`.
+     - Verified generated frontend build inlined test backend URL (`http://127.0.0.1:5000/api`).
+     - Verified frontend returned HTTP 200 on port 3000.
+     - Portable Headless Chrome browser launched successfully.
      - User registration completed through the real browser UI.
      - User record verified in MongoDB `looply_test`.
-     - Password verified stored as bcrypt hash ($2a$/$2b$), never plaintext.
+     - Stored full name matches ("Browser E2E User").
+     - Authoritative database role is strictly "user".
+     - Initial email verification status is false.
+     - Password verified stored as high-entropy bcrypt hash ($2a$/$2b$), never plaintext.
      - Stored bcrypt hash verifies against original plaintext password.
+     - Role escalation attempt strictly prevented and assigned `role: "user"`.
      - User login completed through the real browser UI.
      - HTTP-only cookie (`looply_token`) issued and verified in browser cookie jar (`httpOnly: true`, `path: '/'`).
      - Authenticated user state rendered in `UserSidebar` ("Browser E2E User").
@@ -404,8 +424,8 @@ Phase 4 development delivered real end-to-end user registration, authentication,
      - API requests verified sending `credentials: 'include'`.
      - User logged out through the real browser UI by clicking "Sign Out".
      - HTTP-only cookie verified cleared from browser cookie jar upon logout.
-     - Role escalation attempt strictly prevented and assigned `role: "user"`.
-   - 100% passing (`npm run test:e2e`: 27 passed, 0 failed).
+     - Security assertion: 100% of intercepted browser API requests strictly targeted the test backend (`http://127.0.0.1:5000/api`).
+   - 100% passing (`npm run test:e2e`: 29 passed, 0 failed).
 
 9. **Automated Backend & Integration Test Suite (`server/test/test-phase4.mjs`)**:
    - 39 assertions testing test database safety, zero-fallback requirement, pre-creation and pre-deletion database name validation, input validation, duplicate email prevention, role escalation prevention, bcrypt hash verification, login authentication, HTTP-only cookie flags, JWT decoding, session verification, suspended account rejection, and cookie clearance on logout.
@@ -414,7 +434,7 @@ Phase 4 development delivered real end-to-end user registration, authentication,
 10. **Build & Lint Verification**:
     - `npm run lint` in `client`: Passed with 0 errors and 0 warnings.
     - `npm run build` in `client`: Passed with 22/22 routes prerendered.
-    - `npm test` in `server` (Phase 3 regression): Passed with 89 passed, 0 failed.
+    - `npm test` in `server` (Phase 3 regression): Passed with 90 passed, 0 failed.
 
 ---
 
