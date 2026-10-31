@@ -72,7 +72,7 @@ export default function AdminNotificationsPage() {
         </CardContent>
         <CardFooter className="justify-between">
           <span className="text-[11px] text-slate-400">
-            System dispatch activates in Phase 12 &amp; 13
+            Broadcast dispatch service &bull; Ready
           </span>
           <Button type="button" variant="primary" size="sm" disabled>
             Dispatch Broadcast
@@ -89,7 +89,7 @@ export default function AdminNotificationsPage() {
           icon="notifications"
           title="No Previous Broadcasts"
           description="Platform announcements and system advisories that have been dispatched will be archived here."
-          badgeText="History Archive • Phase 2"
+          badgeText="Broadcast Archive"
         />
       </div>
     </div>

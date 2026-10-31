@@ -66,8 +66,8 @@ export default function AdminUsersPage() {
                   <EmptyState
                     icon="users"
                     title="No Registered Users Found"
-                    description="Registered user accounts will populate this administrative ledger once user authentication and registration workflows begin in Phase 4."
-                    badgeText="User Directory Ready • Phase 2"
+                    description="Registered user accounts will appear in this administrative directory as members join."
+                    badgeText="Directory Service"
                     className="border-none rounded-none bg-white py-12"
                   />
                 </td>

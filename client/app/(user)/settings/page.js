@@ -50,7 +50,7 @@ export default function SettingsPage() {
           </FormField>
         </CardContent>
         <CardFooter className="justify-between">
-          <span className="text-[11px] text-slate-400">Settings persistence activates in Phase 7</span>
+          <span className="text-[11px] text-slate-400">Account preferences &bull; Coming Soon</span>
           <Button type="button" variant="primary" size="sm" disabled>
             Save Preferences
           </Button>
@@ -85,7 +85,7 @@ export default function SettingsPage() {
           </FormField>
         </CardContent>
         <CardFooter className="justify-between">
-          <span className="text-[11px] text-slate-400">Security controllers activate in Phase 6</span>
+          <span className="text-[11px] text-slate-400">Security preferences &bull; Coming Soon</span>
           <Button type="button" variant="primary" size="sm" disabled>
             Update Password
           </Button>
@@ -124,7 +124,7 @@ export default function SettingsPage() {
           ))}
         </CardContent>
         <CardFooter className="justify-between">
-          <span className="text-[11px] text-slate-400">Notification toggles activate in Phase 13</span>
+          <span className="text-[11px] text-slate-400">Notification preferences &bull; Coming Soon</span>
           <Button type="button" variant="primary" size="sm" disabled>
             Save Notification Rules
           </Button>

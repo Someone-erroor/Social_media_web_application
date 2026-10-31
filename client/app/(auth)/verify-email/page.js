@@ -49,7 +49,7 @@ export default function VerifyEmailPage() {
             className="w-full"
             disabled
           >
-            Resend Email (Activates in Phase 5)
+            Resend Email (Coming Soon)
           </Button>
         </div>
 

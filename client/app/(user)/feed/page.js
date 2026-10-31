@@ -39,7 +39,7 @@ export default function FeedPage() {
                 type="button"
                 disabled
                 className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-50"
-                title="Add media (Phase 8)"
+                title="Add media (Coming Soon)"
               >
                 <Icon name="posts" className="w-4 h-4" />
               </button>
@@ -47,12 +47,12 @@ export default function FeedPage() {
                 type="button"
                 disabled
                 className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-50"
-                title="AI Assist (Phase 14)"
+                title="AI Assist (Coming Soon)"
               >
                 <Icon name="sparkles" className="w-4 h-4" />
               </button>
               <span className="text-[11px] text-slate-400 italic">
-                Composer disabled in Phase 2
+                Post composer &bull; Coming Soon
               </span>
             </div>
 
@@ -61,9 +61,9 @@ export default function FeedPage() {
               variant="primary"
               size="sm"
               disabled
-              title="Post creation activates in Phase 8"
+              title="Publishing coming soon"
             >
-              Post (Phase 8)
+              Publish
             </Button>
           </div>
         </CardContent>
@@ -89,8 +89,8 @@ export default function FeedPage() {
       <EmptyState
         icon="feed"
         title="Your Feed is Empty"
-        description="No posts have been published yet. Once the community begins sharing content in Phase 8, posts and discussion loops will populate here in chronological order."
-        badgeText="Feed Ready • Phase 2"
+        description="No posts have been published yet. The latest community updates and discussion loops will appear here in chronological order."
+        badgeText="Community Feed"
       />
     </div>
   );

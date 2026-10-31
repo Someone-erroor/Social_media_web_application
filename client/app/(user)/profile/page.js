@@ -121,8 +121,8 @@ export default function ProfilePage() {
       <EmptyState
         icon="posts"
         title="No Posts Published Yet"
-        description="When you publish thoughts, updates, and articles in Phase 8, they will appear here on your public profile."
-        badgeText="Profile Ready • Phase 2"
+        description="When you publish thoughts, updates, and articles, they will appear here on your public profile."
+        badgeText="Member Profile"
       />
     </div>
   );

@@ -49,12 +49,12 @@ export default function ProfileEditPage() {
                 variant="outline"
                 size="sm"
                 disabled
-                title="Photo uploads activate in Phase 7"
+                title="Photo uploads coming soon"
               >
                 Change Photo
               </Button>
               <p className="text-[11px] text-slate-400">
-                JPG, GIF or PNG. 1MB max. Uploads activate in Phase 7.
+                JPG, GIF or PNG. 1MB max. Uploads coming soon.
               </p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function ProfileEditPage() {
 
         <CardFooter className="flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <p className="text-[11px] text-slate-400">
-            Phase 2 UI Interface • Profile update persistence activates in Phase 7
+            Profile updates &bull; Coming Soon
           </p>
 
           <div className="flex items-center gap-2 justify-end">
@@ -123,7 +123,7 @@ export default function ProfileEditPage() {
               variant="primary"
               size="sm"
               disabled
-              title="Profile updates activate in Phase 7"
+              title="Profile updates coming soon"
             >
               Save Changes
             </Button>

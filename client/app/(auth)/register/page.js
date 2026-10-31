@@ -86,7 +86,7 @@ export default function RegisterPage() {
           </Button>
 
           <p className="text-[11px] text-center text-slate-400">
-            Phase 2 UI Interface • Registration backend activates in Phase 4
+            Member registration portal &bull; Coming Soon
           </p>
         </form>
 

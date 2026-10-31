@@ -133,11 +133,24 @@ import Link from 'next/link';
 
 ---
 
-## 4. Intentionally Deferred Functionality (Strict Phase Boundaries)
+## 4. Architectural Boundaries & Route Protection Policy
 
-To ensure zero premature complexity and strict adherence to the 18-phase roadmap, the following features remain intentionally deferred:
+In strict adherence to the project roadmap and architecture principles, the routing security model is governed by the following specifications:
 
-1. **Authentication State & Guards:** Auth guards (redirecting unauthenticated users) belong to Phase 6. In Phase 2, direct URL navigation to all UI layouts is accessible for visual testing and pair review.
-2. **Form Submissions:** All submit buttons on authentication and edit forms are visibly disabled with descriptive phase tooltips.
-3. **Database & API Integration:** No MongoDB connection (Phase 3) or custom backend endpoints beyond Phase 1 `/api/health` are executed in Phase 2.
-4. **Mock Data Prohibition:** All feeds, lists, tables, and statistics display authentic, professional empty states. No fake users, counts, or statistics are fabricated.
+1. **Routes are Currently UI Previews:**
+   All routes implemented in Phase 2 are complete frontend user interface previews. They establish visual hierarchy, responsiveness, layout shells, and navigation structures across public, user, and administrative experiences.
+
+2. **Authentication is Not Implemented Yet:**
+   Authentic user registration, login controllers, password hashing, and token issuance belong to Phase 4 (User Registration and Login) and Phase 5 (Email Verification & Password Reset). No authentication logic or token verification is simulated or executed in Phase 2.
+
+3. **Backend-Authoritative Route Protection (Phase 6):**
+   User and admin route protection will be implemented through authoritative backend session/JWT validation and Role-Based Access Control (RBAC) in **Phase 6: Authentication security and role-based access control**. Unauthenticated or unauthorized access attempts will be rejected by backend middleware and client auth interceptors once Phase 6 is implemented.
+
+4. **Frontend Route Groups are Organizational, Not Security Boundaries:**
+   Next.js App Router route groups (`(public)`, `(auth)`, `(user)`, `(admin)`) are purely organizational constructs used for layout composition, template inheritance, and clean code partitioning. They **do not constitute security boundaries**. In Phase 2, direct URL navigation and browser back/forward across all routes are intentionally accessible to enable visual verification and design review without blocking on unbuilt authentication dependencies.
+
+5. **Form Submissions & Mutating Operations:**
+   All submission controls (login, registration, password recovery, profile editing, post publishing, and broadcast dispatch) are visibly disabled with clear indicator notes until their corresponding backend phases.
+
+6. **Authentic Empty States:**
+   No mock data, fake post streams, dummy followers, or fabricated admin metrics are rendered. All views display authentic empty states.

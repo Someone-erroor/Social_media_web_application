@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
           </Button>
 
           <p className="text-[11px] text-center text-slate-400">
-            Phase 2 UI Interface • Password recovery workflow activates in Phase 5
+            Password recovery portal &bull; Coming Soon
           </p>
         </form>
 

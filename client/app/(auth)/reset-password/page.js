@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
           </Button>
 
           <p className="text-[11px] text-center text-slate-400">
-            Phase 2 UI Interface • Password update backend activates in Phase 5
+            Password update portal &bull; Coming Soon
           </p>
         </form>
 

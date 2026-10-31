@@ -71,7 +71,7 @@ export default function LoginPage() {
           </Button>
 
           <p className="text-[11px] text-center text-slate-400">
-            Phase 2 UI Interface • Secure authentication activates in Phase 4
+            Secure authentication portal &bull; Coming Soon
           </p>
         </form>
 

@@ -69,7 +69,7 @@ export default function HomePage() {
                   size="lg"
                   className="w-full sm:w-auto"
                 >
-                  Explore Feed Preview &rarr;
+                  Explore Community Feed &rarr;
                 </Button>
               </div>
 
@@ -119,7 +119,7 @@ export default function HomePage() {
                         <span>Share</span>
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400">Live Architecture Preview</span>
+                    <span className="text-[11px] font-mono text-slate-400">Community Highlight</span>
                   </div>
                 </div>
               </div>

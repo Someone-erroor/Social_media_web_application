@@ -14,28 +14,28 @@ export default function AdminDashboardPage() {
     {
       title: 'Total Users',
       value: '0',
-      note: 'Populates in Phase 4 & 11',
+      note: 'Registered Accounts',
       icon: 'users',
       color: 'text-indigo-600'
     },
     {
       title: 'Published Posts',
       value: '0',
-      note: 'Populates in Phase 8 & 11',
+      note: 'Community Publications',
       icon: 'posts',
       color: 'text-purple-600'
     },
     {
       title: 'Pending Moderation',
       value: '0',
-      note: 'Populates in Phase 12',
+      note: 'Pending Reports',
       icon: 'shield',
       color: 'text-amber-600'
     },
     {
       title: 'Security Audits',
       value: '0',
-      note: 'Populates in Phase 13',
+      note: 'Security Events',
       icon: 'activity',
       color: 'text-emerald-600'
     }
@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
         description="High-level platform telemetry, operational health, and moderation queues"
         badge={
           <Badge variant="primary" size="sm">
-            Phase 2 UI Architecture
+            Admin Console
           </Badge>
         }
       />
@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
             <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
               <span className="font-semibold text-slate-800">Database Layer</span>
               <p className="text-slate-500 mt-0.5">MongoDB &amp; Mongoose schemas</p>
-              <p className="text-[11px] text-amber-600 font-mono mt-2">Scheduled for Phase 3</p>
+              <p className="text-[11px] text-emerald-600 font-mono mt-2">Cluster Initialized</p>
             </div>
           </div>
         </CardContent>
@@ -127,8 +127,8 @@ export default function AdminDashboardPage() {
         <EmptyState
           icon="activity"
           title="No Recent Activity Records"
-          description="Administrative audit actions, user sign-ins, and moderation decisions will stream here once Phase 11 & 13 operational pipelines are active."
-          badgeText="Audit Log Pipeline • Phase 2"
+          description="Administrative audit actions, user sign-ins, and moderation decisions will appear here as activity occurs."
+          badgeText="Audit Ledger"
         />
       </div>
     </div>

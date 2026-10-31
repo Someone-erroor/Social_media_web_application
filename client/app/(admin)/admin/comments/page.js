@@ -40,8 +40,8 @@ export default function AdminCommentsPage() {
       <EmptyState
         icon="comments"
         title="No Comments for Moderation"
-        description="No user comments have been submitted or flagged. Discussion replies created in Phase 10 will stream into this interface for oversight in Phase 12."
-        badgeText="Clean Queue • Phase 2"
+        description="No user comments have been reported. Discussion replies and flagged comments will appear here for review."
+        badgeText="Moderation Queue"
       />
     </div>
   );

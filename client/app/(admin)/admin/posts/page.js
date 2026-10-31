@@ -50,8 +50,8 @@ export default function AdminPostsPage() {
       <EmptyState
         icon="posts"
         title="No Posts Awaiting Moderation"
-        description="There are currently no community posts or flag reports in the queue. Content published in Phase 8 and reported by users in Phase 12 will appear here."
-        badgeText="Moderation Queue Clean • Phase 2"
+        description="There are currently no community posts or flag reports in the queue. Reported publications will appear here for review."
+        badgeText="Queue Status"
       />
     </div>
   );

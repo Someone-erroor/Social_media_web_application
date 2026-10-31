@@ -85,7 +85,7 @@ export default function UserSidebar() {
           <Avatar name="Guest User" size="sm" status="online" />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-slate-800 truncate">Preview Guest</p>
-            <p className="text-[11px] text-slate-500 truncate">Phase 2 Exploration</p>
+            <p className="text-[11px] text-slate-500 truncate">Active Session</p>
           </div>
         </div>
       </div>

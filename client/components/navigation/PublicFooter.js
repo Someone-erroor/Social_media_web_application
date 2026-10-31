@@ -77,17 +77,17 @@ export default function PublicFooter() {
             </ul>
           </div>
 
-          {/* Architecture Status Column */}
+          {/* Platform Status Column */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 mb-3">
-              Phase 2 Status
+              Platform Status
             </h4>
             <p className="text-xs text-slate-500 leading-relaxed mb-2">
-              Frontend UI foundation, route groups, and responsive navigation shells active.
+              Next-generation social interface and navigation systems active.
             </p>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              Phase 2 UI Foundation
+              All Systems Operational
             </span>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function PublicFooter() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            &copy; 2026 Looply Inc. All rights reserved. Connect. Share. Express.
+            &copy; 2026 Looply. All rights reserved. Connect. Share. Express.
           </div>
           <div className="flex items-center gap-6">
             <span className="hover:text-slate-700 cursor-default">Privacy Policy</span>

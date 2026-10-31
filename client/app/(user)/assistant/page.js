@@ -24,7 +24,7 @@ export default function AssistantPage() {
         description="Brainstorm post ideas, refine writing tone, and synthesize discussions"
         badge={
           <Badge variant="primary" size="sm">
-            Phase 14 &bull; In Planning
+            AI Preview &bull; Coming Soon
           </Badge>
         }
       />
@@ -45,7 +45,7 @@ export default function AssistantPage() {
           </p>
 
           <div className="mt-4 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-mono border border-slate-200">
-            AI Provider integration scheduled for Phase 14 &amp; 15
+            Intelligent discussion assistant &bull; Preview
           </div>
 
           {/* Starter Prompts */}
@@ -82,14 +82,14 @@ export default function AssistantPage() {
                 size="sm"
                 disabled
                 icon={<Icon name="send" className="w-3.5 h-3.5" />}
-                title="AI Assistant activates in Phase 14"
+                title="AI Assistant available soon"
               >
                 Send
               </Button>
             </div>
           </div>
           <p className="text-[11px] text-center text-slate-400">
-            Conversational engine activates in Phase 14. No AI provider credentials required in Phase 2.
+            Conversational assistant preview. Intelligent generation services activating soon.
           </p>
         </div>
       </Card>

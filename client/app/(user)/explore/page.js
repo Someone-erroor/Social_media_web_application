@@ -35,7 +35,7 @@ export default function ExplorePage() {
           icon={<Icon name="search" className="w-4 h-4" />}
         />
         <span className="absolute right-3 top-2.5 text-[11px] text-slate-400 font-mono">
-          Phase 9 Preview
+          Coming Soon
         </span>
       </div>
 
@@ -60,8 +60,8 @@ export default function ExplorePage() {
       <EmptyState
         icon="explore"
         title="No Trending Content Yet"
-        description="As discussions and public posts grow in Phase 9, algorithms and community curations will highlight the most engaging topics right here."
-        badgeText="Discovery Engine • Phase 2"
+        description="As community conversations expand, trending topics and curated highlights will populate right here."
+        badgeText="Explore Topics"
       />
     </div>
   );

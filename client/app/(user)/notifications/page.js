@@ -40,8 +40,8 @@ export default function NotificationsPage() {
       <EmptyState
         icon="notifications"
         title="No Notifications Yet"
-        description="You're all caught up! When other members interact with your posts, mention your handle, or follow you in Phase 10 & 13, alerts will appear here in real-time."
-        badgeText="Alerts Pipeline • Phase 2"
+        description="You're all caught up! When other members interact with your posts, mention your handle, or follow you, alerts will appear here in real-time."
+        badgeText="Notifications Inbox"
       />
     </div>
   );

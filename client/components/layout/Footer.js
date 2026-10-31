@@ -6,7 +6,7 @@ export default function Footer() {
           <span className="font-semibold text-slate-700">Looply</span> — Connect. Share. Express.
         </div>
         <div>
-          Phase 1: Architecture &amp; Project Initialization
+          Looply Social Platform
         </div>
       </div>
     </footer>

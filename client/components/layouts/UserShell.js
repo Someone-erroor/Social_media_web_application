@@ -50,10 +50,10 @@ export default function UserShell({ children, showSidePanel = true }) {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {[
-                      { topic: '#DesignSystems', posts: 'Phase 9 Preview' },
-                      { topic: '#NextJsAppRouter', posts: 'Phase 9 Preview' },
-                      { topic: '#WebEngineering', posts: 'Phase 9 Preview' },
-                      { topic: '#AIAssistant', posts: 'Phase 14 Preview' }
+                      { topic: '#DesignSystems', posts: 'Trending' },
+                      { topic: '#NextJsAppRouter', posts: 'Active' },
+                      { topic: '#WebEngineering', posts: 'Trending' },
+                      { topic: '#AIAssistant', posts: 'Curated' }
                     ].map((item) => (
                       <Link
                         key={item.topic}

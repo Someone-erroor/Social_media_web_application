@@ -30,7 +30,7 @@ export default function UserHeader() {
               placeholder="Search posts, topics, or creators..."
               className="w-full rounded-full border border-slate-200 bg-slate-50 pl-9 pr-4 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 transition-all"
               disabled
-              title="Search functionality activates in Phase 9"
+              title="Search coming soon"
             />
           </div>
         </div>

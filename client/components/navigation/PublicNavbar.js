@@ -32,7 +32,7 @@ export default function PublicNavbar() {
             Community
           </a>
           <Link href={ROUTES.USER.FEED} className="hover:text-indigo-600 transition-colors">
-            Live Preview
+            Feed
           </Link>
         </nav>
 
@@ -98,7 +98,7 @@ export default function PublicNavbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-indigo-600"
             >
-              Live Preview
+              Feed
             </Link>
           </nav>
 

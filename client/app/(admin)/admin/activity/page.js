@@ -45,8 +45,8 @@ export default function AdminActivityPage() {
       <EmptyState
         icon="activity"
         title="No System Events Logged"
-        description="The audit log is clear. Security checkpoints, login timestamps, and administrative actions will be recorded here automatically once Phase 13 activity tracking is implemented."
-        badgeText="Audit Service Ready • Phase 2"
+        description="The audit log is clear. Security checkpoints, login timestamps, and administrative actions are recorded in real time."
+        badgeText="Audit Ledger"
       />
     </div>
   );

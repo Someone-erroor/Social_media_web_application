@@ -51,9 +51,9 @@ export default async function DynamicUserProfilePage({ params }) {
               variant="primary"
               size="sm"
               disabled
-              title="Follow system activates in Phase 9"
+              title="Follow feature coming soon"
             >
-              Follow (Phase 9)
+              Follow
             </Button>
           </div>
 
@@ -66,7 +66,7 @@ export default async function DynamicUserProfilePage({ params }) {
             </div>
 
             <p className="text-sm text-slate-600 leading-relaxed max-w-lg">
-              Community creator on Looply. Bio and activity will be available once the user profile management phase is deployed.
+              Community creator on Looply. Bio and updates will appear here.
             </p>
 
             <div className="flex items-center gap-4 text-xs text-slate-400 pt-1">
@@ -99,8 +99,8 @@ export default async function DynamicUserProfilePage({ params }) {
       <EmptyState
         icon="posts"
         title="No Posts to Display"
-        description={`@${userId} hasn't published any posts yet. When they share posts in Phase 8 and beyond, their publications will appear here.`}
-        badgeText="Community View • Phase 2"
+        description={`@${userId} hasn't published any posts yet. When they share updates, their publications will appear here.`}
+        badgeText="Public Profile"
       />
     </div>
   );

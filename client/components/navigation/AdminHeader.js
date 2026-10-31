@@ -31,13 +31,13 @@ export default function AdminHeader() {
         {/* Status Indicators & Admin Profile */}
         <div className="flex items-center gap-4">
           <Badge variant="primary" size="sm" className="hidden sm:inline-flex">
-            Phase 2 UI Architecture
+            Admin Console
           </Badge>
 
           <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">
             <Avatar name="Sys Admin" size="sm" status="online" />
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-semibold text-slate-800 leading-tight">Admin Preview</p>
+              <p className="text-xs font-semibold text-slate-800 leading-tight">System Admin</p>
               <p className="text-[10px] text-slate-500 font-mono">admin@looply.internal</p>
             </div>
           </div>
