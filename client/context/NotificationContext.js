@@ -15,9 +15,10 @@ export function NotificationProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef(null);
 
-  // Fetch initial notifications and count
+  // Fetch initial or refreshed notifications from database
   const refreshNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
+    setLoading(true);
     try {
       const res = await notificationService.getNotifications({ page: 1, limit: 20 });
       setNotifications(res.notifications || []);
@@ -26,20 +27,27 @@ export function NotificationProvider({ children }) {
       }
     } catch (err) {
       // Fallback silently if offline or initial load
+    } finally {
+      setLoading(false);
     }
   }, [isAuthenticated]);
 
-  // Connect to Socket.IO when authenticated
+  // Connect to Socket.IO when authenticated; disconnect on logout
   useEffect(() => {
     if (!isAuthenticated || !user) {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
       }
+      setIsConnected(false);
+      setNotifications([]);
+      setUnreadCount(0);
       return;
     }
 
     let ignore = false;
+
+    // Fetch initial notifications
     notificationService
       .getNotifications({ page: 1, limit: 20 })
       .then((res) => {
@@ -50,7 +58,12 @@ export function NotificationProvider({ children }) {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
+
+    // If an existing socket is already connected, don't create duplicate
+    if (socketRef.current?.connected) {
+      return;
+    }
 
     // Determine backend base URL (strip /api if present in NEXT_PUBLIC_API_URL)
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -60,8 +73,9 @@ export function NotificationProvider({ children }) {
       withCredentials: true,
       transports: ['websocket', 'polling'],
       autoConnect: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 2000
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1500
     });
 
     socketRef.current = socket;
@@ -78,25 +92,50 @@ export function NotificationProvider({ children }) {
       setIsConnected(false);
     });
 
-    // Real-time notification received
-    socket.on('notification', (newNotification) => {
-      setNotifications((prev) => [newNotification, ...prev]);
-      setUnreadCount((c) => c + 1);
+    // Re-fetch persisted notifications upon successful reconnection
+    socket.on('reconnect', () => {
+      setIsConnected(true);
+      notificationService
+        .getNotifications({ page: 1, limit: 20 })
+        .then((res) => {
+          if (!ignore) {
+            setNotifications(res.notifications || []);
+            if (typeof res?.unreadCount === 'number') {
+              setUnreadCount(res.unreadCount);
+            }
+          }
+        })
+        .catch(() => { });
     });
 
-    // Admin-specific login alerts
-    socket.on('admin_login_alert', (adminNotification) => {
-      setNotifications((prev) => [adminNotification, ...prev]);
+    // Handle real-time incoming notification (deduplicating by _id)
+    const handleIncomingNotification = (item) => {
+      if (!item) return;
+      setNotifications((prev) => {
+        if (item._id && prev.some((n) => n._id === item._id)) {
+          return prev; // already present
+        }
+        return [item, ...prev];
+      });
       setUnreadCount((c) => c + 1);
-    });
+    };
+
+    socket.on('notification', handleIncomingNotification);
+    socket.on('admin_login_alert', handleIncomingNotification);
 
     return () => {
       ignore = true;
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('connect_error');
+      socket.off('reconnect');
+      socket.off('notification', handleIncomingNotification);
+      socket.off('admin_login_alert', handleIncomingNotification);
       socket.disconnect();
       socketRef.current = null;
       setIsConnected(false);
     };
-  }, [isAuthenticated, user, refreshNotifications]);
+  }, [isAuthenticated, user]);
 
   const markAsRead = async (notificationId) => {
     try {
@@ -147,9 +186,9 @@ export function useNotifications() {
       unreadCount: 0,
       loading: false,
       isConnected: false,
-      markAsRead: async () => {},
-      markAllAsRead: async () => {},
-      refreshNotifications: async () => {}
+      markAsRead: async () => { },
+      markAllAsRead: async () => { },
+      refreshNotifications: async () => { }
     };
   }
   return context;

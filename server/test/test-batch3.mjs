@@ -24,6 +24,7 @@ const baseUrl = `http://127.0.0.1:${TEST_PORT}/api`;
 const socketUrl = `http://127.0.0.1:${TEST_PORT}`;
 
 async function runBatch3Tests() {
+  process.env.NODE_ENV = 'test';
   console.log('====================================================');
   console.log('LOOPLY — BATCH 3 (PHASES 10, 11, 12, 13, 14) TEST SUITE');
   console.log('====================================================\n');
@@ -693,6 +694,40 @@ async function runBatch3Tests() {
     assert.strictEqual(failedAiRes.status, 502, 'Simulated failure returns 502 Bad Gateway');
     assert.strictEqual(failedAiRes.body.success, false, 'Failed response has success: false');
     recordPass('AI service simulated failure handled gracefully with 502 Bad Gateway');
+
+    // Reset AI failure state
+    setSimulateAiFailure(false);
+
+    // Test 7: Mock fallback strictly rejected in non-test mode (e.g. NODE_ENV === 'development')
+    const originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+    setForceAiMock(true); // Attempt to force mock in non-test environment
+    const devMockRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing dev rejection' }
+    });
+    assert.strictEqual(devMockRes.status, 503, 'AI service returns 503 in development even if mock flag was set');
+    assert.strictEqual(devMockRes.body.success, false);
+    recordPass('Mock mode strictly blocked in non-test environment (HTTP 503 Service Configuration Error)');
+    process.env.NODE_ENV = originalNodeEnv;
+
+    // Test 8: AI Service rejects with 503 when forceMockMode is false and GEMINI_API_KEY is not configured
+    setForceAiMock(false);
+    const savedGeminiKey = env.GEMINI_API_KEY;
+    env.GEMINI_API_KEY = '';
+    const noKeyAiRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing unconfigured key handling' }
+    });
+    assert.strictEqual(noKeyAiRes.status, 503, 'AI service returns 503 when not configured outside mock mode');
+    assert.strictEqual(noKeyAiRes.body.success, false, 'Response indicates failure');
+    assert.ok((noKeyAiRes.body.message || noKeyAiRes.body.error || '').includes('not configured'), 'Error message states service is not configured');
+    recordPass('AI service returns 503 Service Configuration Error when forceMockMode is false and API key is unconfigured');
+
+    // Restore env.GEMINI_API_KEY
+    env.GEMINI_API_KEY = savedGeminiKey;
 
     // Reset AI mock state
     setSimulateAiFailure(false);

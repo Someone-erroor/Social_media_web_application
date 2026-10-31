@@ -34,11 +34,14 @@ export const setSimulateAiTimeout = (val) => {
 
 /**
  * Determines whether mock fallback mode is active.
+ * Strictly permitted ONLY in a test environment with an explicit test switch.
+ * Never silently falls back to mock responses in production or development.
  *
  * @returns {boolean}
  */
 export const isAiMockMode = () => {
-  return forceMockMode || env.isTest || !env.GEMINI_API_KEY;
+  const isTestEnvironment = process.env.NODE_ENV === 'test' || env.isTest;
+  return Boolean(isTestEnvironment && forceMockMode);
 };
 
 /**
@@ -118,7 +121,7 @@ export const generatePost = async ({ topic, context = '', tone = 'casual', lengt
     throw error;
   }
 
-  // Fallback to deterministic mock in test mode or when no API key is provided
+  // Deterministic mock allowed ONLY in test mode when explicitly enabled
   if (isAiMockMode()) {
     const generatedContent = generateMockPost({ topic, context, tone, length });
     return {
@@ -126,6 +129,13 @@ export const generatePost = async ({ topic, context = '', tone = 'casual', lengt
       provider: 'mock-gemini',
       model: 'mock-gemini-2.5-flash'
     };
+  }
+
+  // Reject when GEMINI_API_KEY is missing outside test mock mode (HTTP 503)
+  if (!env.GEMINI_API_KEY) {
+    const error = new Error('Gemini AI service is not configured. Please configure GEMINI_API_KEY in server environment.');
+    error.status = 503;
+    throw error;
   }
 
   // Live Google Gemini API Integration
@@ -206,7 +216,7 @@ export const improvePost = async ({ content, tone = 'casual', instructions = '' 
     throw error;
   }
 
-  // Fallback to deterministic mock in test mode or when no API key is provided
+  // Deterministic mock allowed ONLY in test mode when explicitly enabled
   if (isAiMockMode()) {
     const improvedContent = generateMockImprovedPost({ content, tone, instructions });
     return {
@@ -214,6 +224,13 @@ export const improvePost = async ({ content, tone = 'casual', instructions = '' 
       provider: 'mock-gemini',
       model: 'mock-gemini-2.5-flash'
     };
+  }
+
+  // Reject when GEMINI_API_KEY is missing outside test mock mode (HTTP 503)
+  if (!env.GEMINI_API_KEY) {
+    const error = new Error('Gemini AI service is not configured. Please configure GEMINI_API_KEY in server environment.');
+    error.status = 503;
+    throw error;
   }
 
   // Live Google Gemini API Integration

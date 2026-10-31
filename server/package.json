@@ -15,7 +15,7 @@
     "test:batch3": "node test/test-batch3.mjs",
     "test:e2e": "node test/test-e2e-browser.mjs",
     "test:atlas": "node test/test-atlas-connection.mjs",
-    "test:all": "node test/test-phase3.mjs && node test/test-phase4.mjs"
+    "test:all": "node test/test-phase3.mjs && node test/test-phase4.mjs && node test/test-batch2.mjs && node test/test-batch3.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.32.0",

@@ -722,7 +722,8 @@ Across the entire codebase, 100% of all automated test suites pass without error
 
 | Test Suite | Execution Command | Target Database | Assertions Passed | Failed | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| **Batch 3 Comprehensive Suite (Phases 10–14)** | `npm run test:batch3` in `server` | `looply_test` | **45** | 0 | **PASSED** |
+| **All Test Suites Sequentially** | `npm run test:all` in `server` | `looply` / `looply_test` | **230** | 0 | **PASSED** |
+| **Batch 3 Comprehensive Suite (Phases 10–14)** | `npm run test:batch3` in `server` | `looply_test` | **47** | 0 | **PASSED** |
 | **Batch 2 Comprehensive Suite (Phases 5–9)** | `npm run test:batch2` in `server` | `looply_test` | **54** | 0 | **PASSED** |
 | **Phase 4 Authentication Suite** | `npm run test:auth` in `server` | `looply_test` | **39** | 0 | **PASSED** |
 | **Phase 4 E2E Real Browser Suite** | `npm run test:e2e` in `server` | `looply_test` | **31** | 0 | **PASSED** |
@@ -753,4 +754,4 @@ Across the entire codebase, 100% of all automated test suites pass without error
   - **BATCH 3: IMPLEMENTATION COMPLETED (AWAITING EXTERNAL REVIEW)**
   - **PHASE 15: NEXT PERMITTED PHASE (PENDING AUTHORIZATION)**
 - **Next Phase:** **PHASE 15: AI DISCUSSION SUMMARIZATION.**
-- **Current Directive:** **STOP / HALT**. Batch 3 (Phases 10 through 14) is fully implemented, integrated, and verified across all 45 automated tests. Submit the consolidated Batch 3 report for external review. Do not begin Phase 15 or make any functional changes until explicitly authorized.
+- **Current Directive:** **STOP / HALT**. Batch 3 (Phases 10 through 14) is fully implemented, integrated, and verified across all 47 automated tests and the consolidated 230-assertion `npm run test:all` suite. Submit the consolidated Batch 3 report for external review. Do not begin Phase 15 or make any functional changes until explicitly authorized.

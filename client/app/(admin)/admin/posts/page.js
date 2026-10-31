@@ -28,6 +28,7 @@ export default function AdminPostsPage() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [deletingId, setDeletingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
@@ -74,11 +75,13 @@ export default function AdminPostsPage() {
   const handleDeletePost = async (postId) => {
     setDeletingId(postId);
     setError('');
+    setSuccessMessage('');
     try {
       await adminService.deletePost(postId);
       setPosts((prev) => prev.filter((p) => p._id !== postId));
       setPagination((prev) => ({ ...prev, total: Math.max(0, prev.total - 1) }));
       setConfirmDeleteId(null);
+      setSuccessMessage('Post deleted successfully with cascading comment and like removal.');
     } catch (err) {
       setError(err.message || 'Failed to delete post.');
     } finally {
@@ -97,6 +100,19 @@ export default function AdminPostsPage() {
           </Badge>
         }
       />
+
+      {/* Success Alert */}
+      {successMessage && (
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon name="check" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+          <button type="button" onClick={() => setSuccessMessage('')} className="text-emerald-500 hover:text-emerald-700">
+            <Icon name="close" className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Error Alert */}
       {error && (
