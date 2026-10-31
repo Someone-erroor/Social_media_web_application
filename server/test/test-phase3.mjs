@@ -176,6 +176,16 @@ async function runTests() {
   const notifErr = await validateDoc(invalidNotif);
   assert(Boolean(notifErr?.errors?.type), '   Invalid notification type rejected by enum');
 
+  // Verify ActivityLog Security Exports from models/index.js
+  assert(
+    Array.isArray(SENSITIVE_METADATA_KEYS) && SENSITIVE_METADATA_KEYS.length === 11,
+    '   SENSITIVE_METADATA_KEYS successfully exported from models/index.js with 11 keys'
+  );
+  assert(
+    typeof hasNoSensitiveKeys === 'function',
+    '   hasNoSensitiveKeys validator function successfully exported from models/index.js'
+  );
+
   // Test 11: ActivityLog Model Validation - Valid Metadata Scenarios
   const validMetadataCases = [
     { name: 'empty metadata object', data: {} },

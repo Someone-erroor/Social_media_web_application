@@ -31,11 +31,12 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **CORS:** Environment-governed origin restriction (no wildcards)
 - **Environment:** `dotenv` configuration management with strict validation
 
-### Database
+### Database (Implemented in Phase 3)
 - **Database Engine:** MongoDB (v6.0+)
 - **Object Data Modeling (ODM):** Mongoose (v9.11+)
-- **Connection Architecture:** Centralized connection manager (`server/src/config/database.js`) with duplicate connection protection, credential masking in logs, lifecycle monitoring, and graceful shutdown.
+- **Connection Architecture:** Centralized connection manager (`server/src/config/database.js`) with duplicate connection protection, credential masking in logs, lifecycle monitoring, DNS resolution fallback, and graceful shutdown.
 - **Model Portfolio:** Normalized schemas for `User`, `Post`, `Comment`, `Like`, `Notification`, and `ActivityLog`.
+- **Live Connectivity:** Successfully connected and verified against live MongoDB Atlas cluster (`cluster0.vtydaeh.mongodb.net`, database `looply`).
 
 ---
 
@@ -264,7 +265,7 @@ npm run lint
 | :--- | :--- | :--- |
 | **Phase 1** | **Project architecture and initial setup.** | **APPROVED** |
 | **Phase 2** | **UI foundation, routing and dashboard layouts.** | **APPROVED** |
-| **Phase 3** | **Backend foundation and database design.** | **IMPLEMENTATION COMPLETED (Awaiting External Review)** |
+| **Phase 3** | **Backend foundation and database design.** | **AWAITING EXTERNAL REVIEW** |
 | Phase 4 | User registration and login. | Pending |
 | Phase 5 | Email verification, forgot password and password reset. | Pending |
 | Phase 6 | Authentication security and role-based access control. | Pending |

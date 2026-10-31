@@ -3,6 +3,7 @@
 > **Project:** Looply ("Connect. Share. Express.")  
 > **Target Database:** MongoDB (v6.0+) via Mongoose ODM (v9.x)  
 > **Phase Milestone:** Phase 3 — Backend Foundation and Database Design  
+> **Phase Status:** Phase 1: APPROVED | Phase 2: APPROVED | Phase 3: AWAITING EXTERNAL REVIEW  
 > **Architecture:** Decoupled Express.js REST API (`server/`) with Mongoose Schemas  
 
 ---

@@ -22,17 +22,21 @@ export const ACTIVITY_ACTIONS = [
  */
 export const SENSITIVE_METADATA_KEYS = [
   'password',
-  'passwordhash',
+  'passwordHash',
   'token',
-  'accesstoken',
-  'refreshtoken',
+  'accessToken',
+  'refreshToken',
   'jwt',
   'secret',
-  'apikey',
+  'apiKey',
   'authorization',
   'credentials',
-  'privatekey'
+  'privateKey'
 ];
+
+const NORMALIZED_SENSITIVE_KEYS = new Set(
+  SENSITIVE_METADATA_KEYS.map((k) => k.toLowerCase())
+);
 
 /**
  * Recursively inspects metadata payloads to verify that no sensitive keys
@@ -63,7 +67,7 @@ export const hasNoSensitiveKeys = (data, visited = new WeakSet()) => {
 
   for (const [key, value] of Object.entries(data)) {
     const normalizedKey = String(key).toLowerCase().trim();
-    if (SENSITIVE_METADATA_KEYS.includes(normalizedKey)) {
+    if (NORMALIZED_SENSITIVE_KEYS.has(normalizedKey)) {
       return false;
     }
     if (typeof value === 'object' && value !== null) {
