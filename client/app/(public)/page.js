@@ -53,15 +53,23 @@ export default function HomePage() {
                   size="lg"
                   className="w-full sm:w-auto shadow-md"
                 >
-                  Join the Community
+                  Create Account
+                </Button>
+                <Button
+                  href={ROUTES.PUBLIC.LOGIN}
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto bg-white/80"
+                >
+                  Sign In
                 </Button>
                 <Button
                   href={ROUTES.USER.FEED}
-                  variant="outline"
+                  variant="ghost"
                   size="lg"
                   className="w-full sm:w-auto"
                 >
-                  Explore Feed Preview
+                  Explore Feed Preview &rarr;
                 </Button>
               </div>
 
@@ -249,6 +257,14 @@ export default function HomePage() {
                 className="w-full sm:w-auto bg-white text-indigo-700 hover:bg-slate-100"
               >
                 Sign Up Now
+              </Button>
+              <Button
+                href={ROUTES.PUBLIC.LOGIN}
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto bg-transparent border-indigo-300/40 text-white hover:bg-white/10"
+              >
+                Sign In to Account
               </Button>
               <Button
                 href={ROUTES.USER.FEED}

@@ -32,7 +32,7 @@ export default function UserShell({ children, showSidePanel = true }) {
             {/* Desktop Right Contextual Side Panel */}
             {showSidePanel && (
               <aside
-                className="hidden xl:block w-80 shrink-0 space-y-5 sticky top-24"
+                className="hidden lg:block w-72 xl:w-80 shrink-0 space-y-5 sticky top-24"
                 aria-label="Contextual Side Panel"
               >
                 {/* Explore Topics Card */}

@@ -7,7 +7,7 @@ import AdminHeader from '@/components/navigation/AdminHeader';
  */
 export default function AdminShell({ children }) {
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-slate-100 flex flex-col antialiased">
       {/* Admin Sidebar Navigation */}
       <AdminSidebar />
 
