@@ -1,5 +1,6 @@
 import { spawn, execSync } from 'child_process';
 import path from 'path';
+import fs from 'fs';
 import net from 'net';
 import http from 'http';
 import { fileURLToPath } from 'url';
@@ -242,6 +243,16 @@ async function main() {
     console.error('  Next.js cannot start on port 3000. Terminating.\n');
     handleShutdown();
     process.exit(1);
+  }
+
+  // Clean stale .next/dev artifacts/locks to prevent false "Another next dev server is already running"
+  const devDir = path.join(clientDir, '.next', 'dev');
+  if (fs.existsSync(devDir)) {
+    try {
+      fs.rmSync(devDir, { recursive: true, force: true });
+    } catch {
+      // Ignore if in use
+    }
   }
 
   // Step 5: Start Next.js Frontend
