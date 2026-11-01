@@ -64,47 +64,25 @@ export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') =
     }
   }
 
-  // 1. HTTP 429 / RESOURCE_EXHAUSTED
+  // 1. HTTP 402 - Payment Required / Billing / Prepaid Credit Depleted
   if (
-    status === 429 ||
-    rawMessage.includes('RESOURCE_EXHAUSTED') ||
-    rawMessage.includes('429 Too Many Requests') ||
-    rawMessage.includes('Quota exceeded') ||
-    rawMessage.includes('quota')
+    status === 402 ||
+    rawMessage.includes('PAYMENT_REQUIRED') ||
+    rawMessage.includes('Payment Required') ||
+    /billing\s+account\s+disabled|prepaid\s+credits?\s+depleted|payment\s+required/i.test(rawMessage)
   ) {
-    let category = 'RESOURCE_EXHAUSTED_GENERAL';
-    let userMsg = retryAfter
-      ? `Gemini request limit reached. Please retry after ${retryAfter} second${retryAfter > 1 ? 's' : ''}.`
-      : 'Gemini request limit reached. Please retry after the indicated time.';
-
-    if (/requests\s+per\s+minute|RPM/i.test(rawMessage)) {
-      category = 'RATE_LIMIT_RPM';
-      userMsg = retryAfter
-        ? `Gemini request limit reached. Please retry after ${retryAfter} second${retryAfter > 1 ? 's' : ''}.`
-        : 'Gemini request limit reached. Please retry after the indicated time.';
-    } else if (/tokens\s+per\s+minute|TPM/i.test(rawMessage)) {
-      category = 'RATE_LIMIT_TPM';
-      userMsg = 'Gemini input token rate limit reached. Please try with shorter content or wait a moment.';
-    } else if (/requests\s+per\s+day|RPD|daily/i.test(rawMessage)) {
-      category = 'DAILY_QUOTA_EXHAUSTED';
-      userMsg = 'Gemini daily quota has been exhausted. Check your Google AI Studio usage limits.';
-    } else if (/spend|billing|credit/i.test(rawMessage)) {
-      category = 'SPEND_QUOTA_EXCEEDED';
-      userMsg = 'Gemini account spend or quota limit reached. Check billing settings in Google AI Studio.';
-    }
-
     return new AiProviderError({
-      message: userMsg,
-      status: 429,
-      code: 'GEMINI_RESOURCE_EXHAUSTED',
-      category,
-      retryAfter,
+      message: 'Gemini billing or prepaid credit limit reached. Check the associated Google Cloud billing project.',
+      status: 402,
+      code: 'GEMINI_PAYMENT_REQUIRED',
+      category: 'PAYMENT_REQUIRED',
+      retryAfter: null,
       model: configuredModel,
-      providerErrorCode: 'RESOURCE_EXHAUSTED'
+      providerErrorCode: 'PAYMENT_REQUIRED'
     });
   }
 
-  // 2. HTTP 401 / 403 - Authentication & Permission Denials
+  // 2. HTTP 401 - Unauthenticated / Invalid API Key
   if (
     status === 401 ||
     rawMessage.includes('UNAUTHENTICATED') ||
@@ -122,13 +100,15 @@ export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') =
     });
   }
 
+  // 3. HTTP 403 - Permission Denied / Project Access Restriction
   if (
     status === 403 ||
     rawMessage.includes('PERMISSION_DENIED') ||
-    rawMessage.includes('The caller does not have permission')
+    rawMessage.includes('The caller does not have permission') ||
+    /project.*denied|project restriction/i.test(rawMessage)
   ) {
     return new AiProviderError({
-      message: 'Gemini API request was denied. Please verify Google AI Studio project permissions and billing status.',
+      message: 'Gemini project access was denied. Check Google AI Studio permissions and billing.',
       status: 403,
       code: 'GEMINI_PERMISSION_DENIED',
       category: 'PERMISSION_DENIED',
@@ -138,7 +118,7 @@ export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') =
     });
   }
 
-  // 3. HTTP 404 - Model configuration problem
+  // 4. HTTP 404 - Model configuration problem
   if (
     status === 404 ||
     rawMessage.includes('NOT_FOUND') ||
@@ -156,7 +136,7 @@ export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') =
     });
   }
 
-  // 4. HTTP 504 / TIMEOUT / DEADLINE_EXCEEDED
+  // 5. HTTP 504 / TIMEOUT / DEADLINE_EXCEEDED
   if (
     status === 504 ||
     rawMessage.includes('DEADLINE_EXCEEDED') ||
@@ -174,7 +154,7 @@ export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') =
     });
   }
 
-  // 5. HTTP 503 / UNAVAILABLE / High demand
+  // 6. HTTP 503 / UNAVAILABLE / High demand
   if (
     status === 503 ||
     rawMessage.includes('UNAVAILABLE') ||
@@ -189,6 +169,48 @@ export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') =
       retryAfter: retryAfter || 5,
       model: configuredModel,
       providerErrorCode: 'UNAVAILABLE'
+    });
+  }
+
+  // 7. HTTP 429 / RESOURCE_EXHAUSTED / Specific Quota & Rate Limits
+  // Do NOT classify every error containing the word "quota" as HTTP 429.
+  // Authoritative status must be 429, or code/message must indicate RESOURCE_EXHAUSTED or rate/quota limit.
+  const isResourceExhausted =
+    status === 429 ||
+    rawMessage.includes('RESOURCE_EXHAUSTED') ||
+    rawMessage.includes('429 Too Many Requests') ||
+    ((/quota\s+exceeded|rate\s+limit/i.test(rawMessage)) && (status === 0 || status === 429));
+
+  if (isResourceExhausted) {
+    let category = 'RESOURCE_EXHAUSTED_GENERAL';
+    let userMsg = retryAfter
+      ? `Gemini request limit reached. Please retry after ${retryAfter} second${retryAfter > 1 ? 's' : ''}.`
+      : 'Gemini request limit reached. Please retry after the indicated time.';
+
+    if (/requests\s+per\s+minute|RPM/i.test(rawMessage)) {
+      category = 'RATE_LIMIT_RPM';
+      userMsg = retryAfter
+        ? `Gemini request limit reached. Please retry after ${retryAfter} second${retryAfter > 1 ? 's' : ''}.`
+        : 'Gemini request rate limit reached. Please wait before trying again.';
+    } else if (/tokens\s+per\s+minute|TPM/i.test(rawMessage)) {
+      category = 'RATE_LIMIT_TPM';
+      userMsg = 'Gemini input token limit reached. Try reducing the amount of text.';
+    } else if (/requests\s+per\s+day|RPD|daily\s+quota|daily/i.test(rawMessage)) {
+      category = 'DAILY_QUOTA_EXHAUSTED';
+      userMsg = 'Gemini daily quota has been exhausted. Check your Google AI Studio usage limits.';
+    } else if (/spend|spend_quota|credit\s+limit/i.test(rawMessage)) {
+      category = 'SPEND_QUOTA_EXCEEDED';
+      userMsg = 'Gemini account spend or quota limit reached. Check billing settings in Google AI Studio.';
+    }
+
+    return new AiProviderError({
+      message: userMsg,
+      status: 429,
+      code: 'GEMINI_RESOURCE_EXHAUSTED',
+      category,
+      retryAfter: (category === 'DAILY_QUOTA_EXHAUSTED' || category === 'SPEND_QUOTA_EXCEEDED') ? null : retryAfter,
+      model: configuredModel,
+      providerErrorCode: 'RESOURCE_EXHAUSTED'
     });
   }
 
@@ -301,8 +323,17 @@ const callGeminiWithRetry = async (client, model, contents, operation) => {
       (classified.category === 'TIMEOUT') ||
       (classified.category === 'RATE_LIMIT_RPM' && classified.retryAfter !== null && classified.retryAfter <= 3);
 
-    // Never retry daily quota, spend limits, auth errors, model 404, or 400
-    if (!isTransient) {
+    // Never retry daily quota, payment errors, spend limits, auth errors, model 404, or 400
+    if (
+      !isTransient ||
+      classified.category === 'DAILY_QUOTA_EXHAUSTED' ||
+      classified.category === 'PAYMENT_REQUIRED' ||
+      classified.category === 'SPEND_QUOTA_EXCEEDED' ||
+      classified.status === 402 ||
+      classified.status === 403 ||
+      classified.status === 404 ||
+      classified.status === 400
+    ) {
       throw classified;
     }
 
@@ -361,6 +392,7 @@ const checkSimulatedFailure = (configuredModel = 'gemini-3.8-flash') => {
         const status = simulatedAiError;
         const msg =
           status === 429 ? 'Resource exhausted: requests per day quota exceeded' :
+          status === 402 ? 'Payment required: prepaid credits depleted or billing project disabled' :
           status === 403 ? 'API_KEY_INVALID: API key not valid' :
           status === 404 ? `models/${configuredModel} is not found` :
           status === 503 ? 'The model is temporarily unavailable.' :

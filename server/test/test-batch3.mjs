@@ -788,6 +788,18 @@ async function runBatch3Tests() {
     assert.strictEqual(modelNotFoundRes.body.category, 'MODEL_UNAVAILABLE');
     recordPass('Simulated HTTP 404 Model Not Found returned 404 with MODEL_UNAVAILABLE category');
 
+    // Test 6e-2: Simulated HTTP 402 Payment Required returns 402
+    setSimulateAiFailure(402);
+    const paymentReqRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing payment required' }
+    });
+    assert.strictEqual(paymentReqRes.status, 402, 'Payment required returns HTTP 402');
+    assert.strictEqual(paymentReqRes.body.category, 'PAYMENT_REQUIRED');
+    assert(paymentReqRes.body.message.includes('billing or prepaid credit limit reached'));
+    recordPass('Simulated HTTP 402 Payment Required returned 402 with PAYMENT_REQUIRED category');
+
     // Test 6f: classifyGeminiError unit tests for comprehensive coverage
     const tpmErr = classifyGeminiError(new Error('RESOURCE_EXHAUSTED: tokens per minute limit exceeded'));
     assert.strictEqual(tpmErr.status, 429);
@@ -796,6 +808,10 @@ async function runBatch3Tests() {
     const spendErr = classifyGeminiError(new Error('RESOURCE_EXHAUSTED: monthly billing spend limit reached'));
     assert.strictEqual(spendErr.status, 429);
     assert.strictEqual(spendErr.category, 'SPEND_QUOTA_EXCEEDED');
+
+    const payErr = classifyGeminiError({ status: 402, message: 'Payment required: prepaid credits depleted' });
+    assert.strictEqual(payErr.status, 402);
+    assert.strictEqual(payErr.category, 'PAYMENT_REQUIRED');
 
     const timeoutErr = classifyGeminiError(new Error('DEADLINE_EXCEEDED: request timed out'));
     assert.strictEqual(timeoutErr.status, 504);
@@ -809,7 +825,7 @@ async function runBatch3Tests() {
     assert.strictEqual(netErr.status, 503);
     assert.strictEqual(netErr.category, 'NETWORK_ERROR');
 
-    recordPass('classifyGeminiError classified TPM, Spend, Timeout, Invalid Argument, and Network error categories');
+    recordPass('classifyGeminiError classified TPM, Spend, Payment Required (402), Timeout, Invalid Argument, and Network error categories');
 
     // Reset AI failure state
     setSimulateAiFailure(false);

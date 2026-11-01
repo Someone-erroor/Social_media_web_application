@@ -338,7 +338,7 @@ npm run dev
 | `JWT_SECRET` | High-entropy secret key for HMAC SHA-256 JWT signing | `random_64_char_hex_secret` |
 | `JWT_EXPIRES_IN` | Session cookie lifespan | `7d` |
 | `GEMINI_API_KEY` | Google AI Studio API key for post drafting & summarization | `AIzaSy...` (backend-only, never public) |
-| `GEMINI_MODEL` | Google Gemini model identifier | `gemini-2.5-flash` |
+| `GEMINI_MODEL` | Google Gemini model identifier | `gemini-3.8-flash` |
 | `SMTP_HOST` | Transactional email SMTP host | `smtp.ethereal.email` |
 | `SMTP_PORT` | SMTP port | `587` |
 | `SMTP_SECURE` | SMTP TLS requirement (`true` / `false`) | `false` |
@@ -454,6 +454,24 @@ cd server
 npm run test:atlas
 ```
 
+### Opt-In Live Google Gemini Test (Separate & Non-Regression)
+> [!NOTE]
+> Standard automated regression tests (`npm test`, `npm run test:all`, `npm run test:phase15`, `npm run test:batch3`) strictly use deterministic in-memory mocks and **never** call the live Gemini API, consuming **zero** API quota.  
+> Live Gemini testing is strictly separate, opt-in, and requires explicit environment authorization:
+```bash
+cd server
+# PowerShell:
+$env:RUN_LIVE_GEMINI_TESTS="true"; npm run test:gemini-live
+
+# Bash:
+RUN_LIVE_GEMINI_TESTS=true npm run test:gemini-live
+```
+**Live Test Policies:**
+- Makes exactly **ONE** real API request per execution (no automated retries).
+- Automatically measures latency and targets configured `GEMINI_MODEL=gemini-3.8-flash`.
+- Does not retry on HTTP 429 (`RATE_LIMIT_RPM`, `DAILY_QUOTA_EXHAUSTED`) or HTTP 402 (`PAYMENT_REQUIRED`).
+- Never exposes or logs `GEMINI_API_KEY` or user prompts.
+
 ### Test Client Production Build
 ```bash
 cd client
@@ -491,7 +509,7 @@ npm run lint
    - `JWT_SECRET`: High-entropy 64+ character random string
    - `JWT_EXPIRES_IN`: `7d`
    - `GEMINI_API_KEY`: Google AI Studio API key
-   - `GEMINI_MODEL`: `gemini-2.5-flash`
+   - `GEMINI_MODEL`: `gemini-3.8-flash`
    - `SMTP_HOST`: Production SMTP host (e.g. `smtp.sendgrid.net`)
    - `SMTP_PORT`: `587`
    - `SMTP_SECURE`: `false`

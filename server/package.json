@@ -17,6 +17,7 @@
     "test:phase16": "node test/test-phase16-responsive.mjs",
     "test:e2e": "node test/test-e2e-browser.mjs",
     "test:atlas": "node test/test-atlas-connection.mjs",
+    "test:gemini-live": "node test/test-gemini-live.mjs",
     "test:all": "node test/test-phase3.mjs && node test/test-phase4.mjs && node test/test-batch2.mjs && node test/test-batch3.mjs && node test/test-phase15.mjs && node test/test-phase16-responsive.mjs && node test/test-e2e-browser.mjs"
   },
   "dependencies": {

@@ -707,7 +707,7 @@ Phase 13 built real-time event distribution and persistent notification tracking
 Phase 14 integrated Google Gemini AI for intelligent writing assistance:
 
 1. **Backend AI Engine (`server/src/services/ai.service.js`, `@google/genai`)**:
-   - Official Google Gen AI SDK (`@google/genai`) integration with Google Gemini 2.5 Flash (`gemini-2.5-flash`).
+   - Official Google Gen AI SDK (`@google/genai`) integration with Google Gemini 3.8 Flash (`gemini-3.8-flash`).
    - `POST /api/ai/posts/generate`: Generates social post drafts based on topic (required, 2–200 chars), optional context (max 500 chars), tone (`casual`, `professional`, `inspiring`, `humorous`, `informative`, `insightful`), and length (`short`, `medium`, `long`).
    - `POST /api/ai/posts/improve`: Polishes existing draft text (required, 5–1000 chars) for grammar, clarity, and tone adjustment (`casual`, `professional`, `inspiring`, `humorous`, `informative`, `insightful`).
    - **Deterministic Test Mock Mode:** Provides full mock generation and error/timeout simulation for automated testing without requiring live API keys.
@@ -733,7 +733,7 @@ Phase 15 implemented intelligent thread distillation and conversation synthesis 
    - **Empty Discussion Safety:** Accurately detects empty discussions (`comments.length === 0`), returning structured JSON with `hasComments: false` without hallucinating opinions.
    - **Anti-Prompt Injection Defenses:** Untrusted user input is isolated inside explicit `<comment>` and `<discussion_context>` blocks with strict system instructions ignoring formatting or role override commands.
    - **Structured AI Output:** Returns verified JSON with `keyTakeaways` (array of concise takeaways), `viewpoints` (diverse community perspectives), `openQuestions` (unanswered community questions), and `overallConsensus` (objective summary).
-   - **Adaptive Fallback Model:** Automatically attempts `gemini-2.5-flash` and seamlessly falls back to `gemini-3.8-flash` if requested model is unavailable.
+   - **Standardized Model:** Standardized on `gemini-3.8-flash`. Normal regression tests use deterministic mocks (zero quota consumed), with live verification isolated to opt-in command `npm run test:gemini-live`.
    - **Deterministic Mock Mode:** For automated testing, provides deterministic structured mock responses without external network dependencies.
    - **Live API Key Verification:** Verified against live Google Gemini API in `server/test/test-phase15.mjs` (16/16 assertions passed).
 

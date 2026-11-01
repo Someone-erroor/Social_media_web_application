@@ -20,38 +20,80 @@ const formatAiError = (err) => {
   const data = err?.data;
   const code = data?.code || '';
   const category = data?.category || '';
-  const rawMsg = String(err?.message || '');
+  const rawMsg = String(err?.message || data?.message || '');
 
-  // 1. Daily Quota Exhausted
-  if (category === 'DAILY_QUOTA_EXHAUSTED' || /daily quota/i.test(rawMsg)) {
+  // 1. Daily Quota Exhausted (no retry)
+  if (category === 'DAILY_QUOTA_EXHAUSTED' || /daily quota|requests per day/i.test(rawMsg)) {
     return {
-      message: 'Gemini daily quota has been exhausted. Check your Google AI Studio usage limits.',
+      message:
+        'Gemini daily quota has been exhausted. The AI assistant will be available after the quota resets or the project quota is increased.',
       canRetry: false
     };
   }
 
-  // 2. Rate Limit (RPM / TPM / Resource Exhausted)
+  // 2. Payment Required / Billing / Credit Limit (no retry)
+  if (
+    status === 402 ||
+    category === 'PAYMENT_REQUIRED' ||
+    category === 'SPEND_QUOTA_EXCEEDED' ||
+    code === 'GEMINI_PAYMENT_REQUIRED' ||
+    /billing|prepaid credit|payment required/i.test(rawMsg)
+  ) {
+    return {
+      message:
+        'Gemini billing or prepaid credit limit reached. Check the associated Google Cloud billing project.',
+      canRetry: false
+    };
+  }
+
+  // 3. Rate Limit - RPM (can retry after waiting)
+  if (category === 'RATE_LIMIT_RPM' || /requests per minute|RPM/i.test(rawMsg)) {
+    return {
+      message: 'Gemini request rate limit reached. Please wait before trying again.',
+      canRetry: true
+    };
+  }
+
+  // 4. Rate Limit - TPM (no immediate retry; user must reduce text)
+  if (category === 'RATE_LIMIT_TPM' || /tokens per minute|TPM|token limit/i.test(rawMsg)) {
+    return {
+      message: 'Gemini input token limit reached. Try reducing the amount of text.',
+      canRetry: false
+    };
+  }
+
+  // 5. General HTTP 429 Resource Exhausted
   if (
     status === 429 ||
-    category === 'RATE_LIMIT_RPM' ||
-    category === 'RATE_LIMIT_TPM' ||
     category === 'RESOURCE_EXHAUSTED_GENERAL' ||
     code === 'GEMINI_RESOURCE_EXHAUSTED' ||
     /resource_exhausted|rate limit/i.test(rawMsg)
   ) {
     return {
-      message: data?.message || 'Gemini request limit reached. Please retry after the indicated time.',
+      message: 'Gemini request rate limit reached. Please wait before trying again.',
       canRetry: true
     };
   }
 
-  // 3. Invalid Credentials or Permission Denied
+  // 6. Permission Denied / Project Access Denied (HTTP 403, no retry)
   if (
-    code === 'GEMINI_AUTH_FAILED' ||
+    status === 403 ||
+    category === 'PERMISSION_DENIED' ||
     code === 'GEMINI_PERMISSION_DENIED' ||
+    /project access|permission denied/i.test(rawMsg)
+  ) {
+    return {
+      message: 'Gemini project access was denied. Check Google AI Studio permissions and billing.',
+      canRetry: false
+    };
+  }
+
+  // 7. Invalid Credentials (HTTP 401, no retry)
+  if (
     status === 401 ||
-    (status === 403 && /authentication|API key|permission/i.test(rawMsg)) ||
-    /API key not valid|UNAUTHENTICATED/i.test(rawMsg)
+    category === 'INVALID_CREDENTIALS' ||
+    code === 'GEMINI_AUTH_FAILED' ||
+    /authentication failed|API key not valid|UNAUTHENTICATED/i.test(rawMsg)
   ) {
     return {
       message: 'Gemini API authentication failed. The administrator must verify API configuration.',
@@ -59,26 +101,30 @@ const formatAiError = (err) => {
     };
   }
 
-  // 4. Model Error
-  if (status === 404 || code === 'GEMINI_MODEL_NOT_FOUND' || /model.*unavailable|not found/i.test(rawMsg)) {
-    return {
-      message: 'The configured Gemini model is unavailable.',
-      canRetry: false
-    };
-  }
-
-  // 5. Provider Unavailable
-  if (status === 503 && (code === 'GEMINI_UNAVAILABLE' || /temporarily unavailable|overloaded/i.test(rawMsg))) {
+  // 8. Provider Unavailable (HTTP 503, retryable)
+  if (
+    status === 503 &&
+    (category === 'SERVICE_UNAVAILABLE' || code === 'GEMINI_UNAVAILABLE' || /temporarily unavailable|overloaded/i.test(rawMsg))
+  ) {
     return {
       message: 'Google Gemini is temporarily unavailable.',
       canRetry: true
     };
   }
 
-  // 6. Network Error
+  // 9. Model Unavailable (HTTP 404, no retry)
+  if (status === 404 || category === 'MODEL_UNAVAILABLE' || code === 'GEMINI_MODEL_NOT_FOUND' || /model.*unavailable|not found/i.test(rawMsg)) {
+    return {
+      message: 'The configured Gemini model is unavailable.',
+      canRetry: false
+    };
+  }
+
+  // 10. Network Error (retryable)
   if (
     err?.isNetworkError ||
     status === 0 ||
+    category === 'NETWORK_ERROR' ||
     code === 'GEMINI_NETWORK_ERROR' ||
     /Unable to reach the AI service|network/i.test(rawMsg)
   ) {
@@ -88,8 +134,8 @@ const formatAiError = (err) => {
     };
   }
 
-  // 7. Timeout
-  if (status === 504 || code === 'GEMINI_TIMEOUT' || /timeout|timed out/i.test(rawMsg)) {
+  // 11. Timeout (HTTP 504, retryable)
+  if (status === 504 || category === 'TIMEOUT' || code === 'GEMINI_TIMEOUT' || /timeout|timed out/i.test(rawMsg)) {
     return {
       message: 'Google Gemini request timed out. Please try again.',
       canRetry: true
