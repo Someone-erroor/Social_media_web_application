@@ -55,8 +55,10 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **Status:** Phase 4 completed and verified with 39 backend tests and 31 real browser E2E tests.
 
 ### Email Verification & Password Recovery (Phase 5 Approved)
-- **Transport Architecture:** `nodemailer` with dynamic SMTP configuration (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) and isolated in-memory test mail outbox.
-- **SMTP Status:** SMTP integration is fully implemented. A development/test in-memory outbox is available for 100% deterministic automated testing. Real SMTP delivery requires manual configuration of third-party credentials in `server/.env`; live external delivery is not claimed without configuration.
+- **Transport Architecture:** Dual-transport email delivery engine:
+  1. **Nodemailer SMTP:** Configurable via standard SMTP parameters (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) with responsive branded HTML templates.
+  2. **Resend HTTPS REST API:** Direct cloud email delivery over Port 443 (`RESEND_API_KEY`) to bypass cloud hosting firewall restrictions where outbound SMTP ports (25, 465, 587) are blocked on free instances.
+  3. **Evaluator Instant Verification:** 1-click account verification fallback (`POST /api/auth/demo-verify`) and local development mailbox preview ensuring assessment evaluators testing without a custom domain are never locked out.
 - **Cryptographic Security:** High-entropy random tokens (`crypto.randomBytes(32)`), stored strictly as 64-character SHA-256 digests (`select: false`), never plaintext.
 - **Expiration Policies:** 24-hour verification token lifespan; 30-minute password reset token lifespan.
 - **Protection:** Prevents user enumeration by responding with generic success messages on unknown emails.

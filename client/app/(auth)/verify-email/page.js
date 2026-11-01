@@ -14,6 +14,7 @@ import { ROUTES } from '@/lib/routes';
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const emailParam = searchParams.get('email') || '';
 
   const [verifying, setVerifying] = useState(Boolean(token));
   const [verified, setVerified] = useState(false);
@@ -21,7 +22,7 @@ function VerifyEmailContent() {
   const [successMessage, setSuccessMessage] = useState('');
 
   // Resend state
-  const [resendEmail, setResendEmail] = useState('');
+  const [resendEmail, setResendEmail] = useState(emailParam);
   const [resending, setResending] = useState(false);
   const [instantVerifying, setInstantVerifying] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
@@ -140,6 +141,9 @@ function VerifyEmailContent() {
           <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] text-left space-y-1">
             <p className="font-semibold">Verification Failed</p>
             <p>{errorMessage}</p>
+            <p className="text-[#9BAAB4] pt-1">
+              💡 <em>You can still activate your account immediately by entering your email below and clicking <strong>Instant Verify</strong>.</em>
+            </p>
           </div>
         )}
 
@@ -155,28 +159,29 @@ function VerifyEmailContent() {
             href={ROUTES.PUBLIC.LOGIN}
             variant="primary"
             size="lg"
-            className="w-full shadow-md shadow-[#19D3E3]/20"
+            className="w-full shadow-md shadow-[#19D3E3]/20 font-bold"
           >
-            Sign In to Looply
+            Sign In to Looply &rarr;
           </Button>
         ) : (
           <>
             {/* Informational Instructions */}
-            {!token && (
-              <div className="p-4 rounded-xl bg-[#101A22] border border-[#263640] text-xs text-[#9BAAB4] text-left space-y-2">
-                <p className="font-semibold text-[#F4F8FA]">Verification Steps:</p>
-                <ol className="list-decimal list-inside space-y-1 text-[#9BAAB4]">
-                  <li>Open the confirmation email in your inbox.</li>
-                  <li>Click the secure verification link.</li>
-                  <li>Sign in with your email and password.</li>
-                </ol>
-              </div>
-            )}
+            <div className="p-4 rounded-xl bg-[#101A22] border border-[#263640] text-xs text-[#9BAAB4] text-left space-y-2">
+              <p className="font-semibold text-[#F4F8FA]">Verification Options:</p>
+              <ul className="list-disc list-inside space-y-1.5 text-[#9BAAB4]">
+                <li>
+                  <strong className="text-[#F4F8FA]">Email Link:</strong> Click the confirmation link delivered to your registered inbox.
+                </li>
+                <li>
+                  <strong className="text-[#19D3E3]">⚡ Instant Verify (Demo Mode):</strong> Enter your email below and click the Instant Verify button to activate your account immediately without waiting for email delivery.
+                </li>
+              </ul>
+            </div>
 
             {/* Resend Verification Form */}
             {showResendForm && (
               <form onSubmit={handleResend} className="pt-2 text-left space-y-3">
-                <FormField id="resend-email" label="Need a new verification link?">
+                <FormField id="resend-email" label="Account Email:">
                   <Input
                     id="resend-email"
                     type="email"

@@ -159,13 +159,13 @@ export default function RegisterForm() {
               </div>
               <div className="pt-2">
                 <Button
-                  href={ROUTES.PUBLIC.VERIFY_EMAIL}
+                  href={`${ROUTES.PUBLIC.VERIFY_EMAIL}?email=${encodeURIComponent(registeredState.email)}`}
                   variant="primary"
                   size="md"
                   data-testid="continue-to-login-btn"
-                  className="w-full sm:w-auto"
+                  className="w-full sm:w-auto font-bold"
                 >
-                  Continue to Email Verification
+                  Continue to Email Verification &rarr;
                 </Button>
               </div>
             </div>
