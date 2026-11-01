@@ -5,8 +5,11 @@
 Looply is a professional, full-stack, AI-powered social media platform built for rich, secure, and meaningful real-time community engagement.
 
 > [!IMPORTANT]
-> **DEPLOYMENT READY: CODEBASE CONFIGURED & PUSHED TO GITHUB.**  
-> The Looply application is fully implemented, verified, and configured for zero-friction cloud deployment across all three tiers: **MongoDB Atlas** (persistent cloud database), **Render** (Node.js Express API & WebSockets with `render.yaml`), and **Vercel** (Next.js App Router with `client/vercel.json`). All cross-domain CORS policies, dual-layer authentication (HTTP-only cookies + fallback bearer tokens), and socket handshakes are verified and pushed to GitHub main.
+> **LIVE PRODUCTION DEPLOYMENT ACTIVE & FULLY VERIFIED.**  
+> - **Live Frontend (Vercel):** [https://social-media-web-application-bay.vercel.app](https://social-media-web-application-bay.vercel.app)  
+> - **Live Backend API (Render):** [https://looply-backend-dg99.onrender.com](https://looply-backend-dg99.onrender.com)  
+> - **Live Cloud Database (MongoDB Atlas):** Primary cluster on `cluster0.vtydaeh.mongodb.net`, database `looply`.  
+> All 18 development phases and social features (feed, posts, comments, likes, real-time notifications, admin dashboard, and Google Gemini AI) are live, synchronized, and operational.
 
 ---
 
