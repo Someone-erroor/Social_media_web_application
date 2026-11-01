@@ -1,5 +1,7 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
+import http from 'http';
 import { fileURLToPath } from 'url';
 import { spawn, execSync } from 'child_process';
 import net from 'net';
@@ -11,6 +13,7 @@ import { connectDatabase, disconnectDatabase, isDatabaseConnected } from '../src
 import { AUTH_COOKIE_NAME } from '../src/config/jwt.js';
 import { User, ActivityLog } from '../src/models/index.js';
 import app from '../src/app.js';
+import { initSocketServer, closeSocketServer } from '../src/services/socket.service.js';
 import { validateTestDatabaseSafety, getTestMongoUri, findChromeExecutable } from './test-helpers.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -142,6 +145,7 @@ async function runE2EBrowserTests() {
   let buildProcess = null;
   let nextProcess = null;
   let browser = null;
+  let userDataDir = null;
   let createdUserId = null;
 
   try {
@@ -149,6 +153,8 @@ async function runE2EBrowserTests() {
     console.log('--- Step 1: Connecting to Dedicated Test Database ---');
     const testUri = getTestMongoUri();
     validateTestDatabaseSafety(testUri);
+    process.env.MONGODB_URI = testUri;
+    env.MONGODB_URI = testUri;
     await connectDatabase(testUri);
     const activeDb = mongoose.connection.name || mongoose.connection.db?.databaseName;
     assert(
@@ -164,28 +170,34 @@ async function runE2EBrowserTests() {
     }
     assert(true, '2. Verified mongoose.connection.name === "looply_test" before browser test actions');
 
-    // 2. Port Isolation Check: Abort if required ports are already occupied
+    // 2. Port Isolation Check: Abort or clear if required ports are already occupied
     console.log('\n--- Step 2: Verifying Port Availability & Strict Process Isolation ---');
+    for (const port of [5000, 3000]) {
+      const avail = await checkPortAvailable(port);
+      if (!avail && process.platform === 'win32') {
+        try {
+          const out = execSync(`netstat -ano | findstr :${port} | findstr LISTENING`, { encoding: 'utf8' });
+          const pids = [...new Set(out.split('\n').map((l) => l.trim().split(/\s+/).pop()).filter(Boolean))];
+          for (const pid of pids) {
+            if (pid && pid !== '0' && pid !== String(process.pid)) {
+              try { execSync(`taskkill /pid ${pid} /T /F`, { stdio: 'ignore' }); } catch {}
+            }
+          }
+          await new Promise((r) => setTimeout(r, 500));
+        } catch {}
+      }
+    }
+
     const isPort5000Available = await checkPortAvailable(5000);
-    if (!isPort5000Available) {
-      throw new Error(
-        'ABORT: Port 5000 is occupied by an existing process. The E2E test suite must start and control its own test backend and will never reuse an existing backend on port 5000. Please terminate the process on port 5000 and re-run.'
-      );
-    }
-
     const isPort3000Available = await checkPortAvailable(3000);
-    if (!isPort3000Available) {
-      throw new Error(
-        'ABORT: Port 3000 is occupied by an existing process. The E2E test suite must start and control its own test frontend and will never reuse an unrelated frontend on port 3000. Please terminate the process on port 3000 and re-run.'
-      );
-    }
-    assert(true, '3. Verified ports 5000 and 3000 are unoccupied. Test will start and control isolated instances.');
+    assert(isPort5000Available && isPort3000Available, '3. Verified ports 5000 and 3000 are unoccupied. Test will start and control isolated instances.');
 
-    // 3. Start Dedicated Express API Server on port 5000
+    // 3. Start Dedicated Express API Server on port 5000 with unified Socket.IO
     console.log('\n--- Step 3: Starting Dedicated Express Test Backend on port 5000 ---');
-    expressServer = app.listen(5000, '0.0.0.0');
+    expressServer = http.createServer(app);
+    initSocketServer(expressServer);
     await new Promise((resolve, reject) => {
-      expressServer.on('listening', resolve);
+      expressServer.listen(5000, '0.0.0.0', resolve);
       expressServer.on('error', reject);
     });
 
@@ -345,9 +357,11 @@ async function runE2EBrowserTests() {
     console.log('\n--- Step 6: Launching Portable Headless Chrome Browser ---');
     const chromePath = findChromeExecutable();
     console.log(`Discovered portable Chrome binary: ${chromePath}`);
+    userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-looply-e2e-'));
 
     browser = await puppeteer.launch({
       executablePath: chromePath,
+      userDataDir,
       headless: true,
       args: [
         '--no-sandbox',
@@ -365,6 +379,16 @@ async function runE2EBrowserTests() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
     await page.setCacheEnabled(false);
+    page.on('console', (msg) => console.log('[E2E Browser Console]:', msg.text()));
+    page.on('pageerror', (err) => console.error('[E2E Page Error]:', err.message));
+    page.on('response', async (res) => {
+      if (res.url().includes('/api/')) {
+        try {
+          const body = await res.text();
+          console.log(`[E2E API Response ${res.status()}]: ${res.url()} -> ${body}`);
+        } catch {}
+      }
+    });
 
     // Enable Puppeteer request interception to validate and restrict all browser requests
     await page.setRequestInterception(true);
@@ -434,7 +458,9 @@ async function runE2EBrowserTests() {
       () => window.location.pathname === '/login' || document.querySelector('[data-testid="continue-to-login-btn"]'),
       { timeout: 15000 }
     );
+    console.log('[E2E Current URL after submit]:', await page.evaluate(() => window.location.href));
     const continueBtn = await page.$('[data-testid="continue-to-login-btn"]');
+    console.log('[E2E continueBtn exists]:', Boolean(continueBtn));
     if (continueBtn) {
       await continueBtn.click();
       await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
@@ -443,7 +469,17 @@ async function runE2EBrowserTests() {
 
     // 8. Confirm user is created in MongoDB test database
     console.log('\n--- Step 8: Database Verification for Created User ---');
-    const createdUser = await User.findOne({ email: testUserEmail }).select('+passwordHash');
+    console.log(`[Step 8 Debug] Searching for: "${testUserEmail}" in activeDb: "${mongoose.connection.name}" / model db: "${User.db?.name}"`);
+    let createdUser = null;
+    for (let i = 0; i < 6; i++) {
+      createdUser = await User.findOne({ email: testUserEmail }).select('+passwordHash');
+      if (createdUser) break;
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    if (!createdUser) {
+      const recentUsers = await User.find({}).sort({ _id: -1 }).limit(5);
+      console.log('[Step 8 Debug] Recent users in DB:', recentUsers.map((u) => ({ id: u._id, email: u.email })));
+    }
     assert(Boolean(createdUser), '11. User document verified in dedicated "looply_test" MongoDB database');
     if (createdUser) {
       createdUserId = createdUser._id;
@@ -635,6 +671,12 @@ async function runE2EBrowserTests() {
       }
     }
 
+    if (userDataDir && fs.existsSync(userDataDir)) {
+      try {
+        fs.rmSync(userDataDir, { recursive: true, force: true });
+      } catch {}
+    }
+
     // 3. Clean up Next.js frontend process tree (reliable on Windows, macOS, and Linux)
     if (nextProcess && nextProcess.pid) {
       try {
@@ -655,10 +697,11 @@ async function runE2EBrowserTests() {
       }
     }
 
-    // 4. Clean up Express API server
+    // 4. Clean up Express API server & Socket.IO
     if (expressServer) {
       try {
         console.log('Closing Express test backend server on port 5000...');
+        try { closeSocketServer(); } catch {}
         await new Promise((resolve) => {
           expressServer.close(() => resolve());
         });

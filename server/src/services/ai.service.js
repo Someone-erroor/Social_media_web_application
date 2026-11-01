@@ -218,12 +218,12 @@ Important constraints:
       model: modelToUse
     };
   } catch (err) {
-    if (err.status) throw err;
-    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429) {
+    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429 || err?.message?.includes('Quota') || err?.message?.includes('quota')) {
       const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
       error.status = 503;
       throw error;
     }
+    if (err.status) throw err;
     const error = new Error('AI generation failed. Please try again.');
     error.status = 502;
     throw error;
@@ -325,12 +325,12 @@ Important constraints:
       model: modelToUse
     };
   } catch (err) {
-    if (err.status) throw err;
-    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429) {
+    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429 || err?.message?.includes('Quota') || err?.message?.includes('quota')) {
       const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
       error.status = 503;
       throw error;
     }
+    if (err.status) throw err;
     const error = new Error('AI improvement failed. Please try again.');
     error.status = 502;
     throw error;
@@ -557,12 +557,12 @@ Return ONLY the raw JSON object. Do not include markdown code block syntax (no \
       commentsAnalyzed: boundedComments.length
     };
   } catch (err) {
-    if (err.status) throw err;
-    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429) {
+    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429 || err?.message?.includes('Quota') || err?.message?.includes('quota')) {
       const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
       error.status = 503;
       throw error;
     }
+    if (err.status) throw err;
     const error = new Error('AI discussion summarization failed. Please try again.');
     error.status = 502;
     throw error;
