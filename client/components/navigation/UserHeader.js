@@ -79,6 +79,21 @@ export default function UserHeader() {
 
         {/* Quick Actions & Profile Dropdown */}
         <div className="flex items-center gap-3 ml-auto">
+          {/* Admin Activity Shortcut Button */}
+          <Link
+            href={ROUTES.ADMIN.DASHBOARD}
+            className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[#19D3E3] bg-[#151F29] border border-[#19D3E3]/40 hover:bg-[#19D3E3] hover:text-[#080D12] transition-all shadow-xs"
+            title="Looply Platform Administration Console"
+          >
+            <Icon name="shield" className="w-3.5 h-3.5 shrink-0 text-[#19D3E3] group-hover:text-[#080D12] transition-colors" />
+            <span className="hidden sm:inline">Admin</span>
+            {user?.role === 'admin' ? (
+              <span className="w-1.5 h-1.5 rounded-full bg-[#19D3E3] group-hover:bg-[#080D12] animate-pulse" />
+            ) : (
+              <span className="text-[10px] text-[#9BAAB4] group-hover:text-[#080D12] font-mono">Portal</span>
+            )}
+          </Link>
+
           <Link
             href={ROUTES.USER.NOTIFICATIONS}
             className="p-2 rounded-full text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#151F29] transition-colors relative"

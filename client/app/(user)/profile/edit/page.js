@@ -123,7 +123,7 @@ export default function ProfileEditPage() {
       />
 
       {fetchError && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between gap-3">
+        <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between gap-3">
           <span>{fetchError}</span>
           <Button
             size="sm"
@@ -133,7 +133,7 @@ export default function ProfileEditPage() {
               setFetchError('');
               setReloadTrigger((n) => n + 1);
             }}
-            className="text-xs text-red-800 hover:bg-red-100"
+            className="text-xs text-[#FF6F61] hover:bg-[#FF6F61]/10"
           >
             Retry
           </Button>
@@ -141,26 +141,26 @@ export default function ProfileEditPage() {
       )}
 
       {fetchLoading ? (
-        <Card className="border-[#E3E8E8] animate-pulse">
+        <Card className="border-[#263640] bg-[#151F29] animate-pulse">
           <CardHeader className="space-y-2">
-            <div className="h-5 w-40 bg-[#E3E8E8] rounded" />
-            <div className="h-3 w-64 bg-[#F6F8F7] rounded" />
+            <div className="h-5 w-40 bg-[#1D2A35] rounded" />
+            <div className="h-3 w-64 bg-[#1D2A35]/60 rounded" />
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-full bg-[#E3E8E8]" />
+              <div className="w-16 h-16 rounded-full bg-[#1D2A35]" />
               <div className="space-y-1.5 flex-1">
-                <div className="h-3.5 w-28 bg-[#E3E8E8] rounded" />
-                <div className="h-2.5 w-48 bg-[#F6F8F7] rounded" />
+                <div className="h-3.5 w-28 bg-[#1D2A35] rounded" />
+                <div className="h-2.5 w-48 bg-[#1D2A35]/60 rounded" />
               </div>
             </div>
-            <div className="h-10 bg-[#F6F8F7] rounded-xl" />
-            <div className="h-10 bg-[#F6F8F7] rounded-xl" />
-            <div className="h-24 bg-[#F6F8F7] rounded-xl" />
+            <div className="h-10 bg-[#1D2A35]/50 rounded-xl" />
+            <div className="h-10 bg-[#1D2A35]/50 rounded-xl" />
+            <div className="h-24 bg-[#1D2A35]/50 rounded-xl" />
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-[#E3E8E8]">
+        <Card className="border-[#263640] bg-[#151F29]">
           <CardHeader>
             <CardTitle>Profile Details</CardTitle>
             <CardDescription>
@@ -171,13 +171,13 @@ export default function ProfileEditPage() {
           <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
             {errorMessage && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
+              <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
                 {errorMessage}
               </div>
             )}
 
             {successMessage && (
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800">
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400">
                 {successMessage}
               </div>
             )}
@@ -190,8 +190,8 @@ export default function ProfileEditPage() {
                 size="xl"
               />
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#252E34]">Avatar Preview</p>
-                <p className="text-[11px] text-[#58666D]">
+                <p className="text-xs font-semibold text-[#F4F8FA]">Avatar Preview</p>
+                <p className="text-[11px] text-[#9BAAB4]">
                   Provide a direct image URL (JPEG, PNG, or WebP) below.
                 </p>
               </div>
@@ -237,7 +237,7 @@ export default function ProfileEditPage() {
                 type="email"
                 value={user?.email || ''}
                 disabled
-                className="bg-[#F6F8F7] cursor-not-allowed"
+                className="bg-[#101A22] text-[#9BAAB4] border-[#263640] cursor-not-allowed"
               />
             </FormField>
 
@@ -254,12 +254,12 @@ export default function ProfileEditPage() {
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Tell the community about yourself, your interests, or what you're working on..."
                 disabled={loading}
-                className="w-full resize-none rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] focus:outline-none focus:border-[#16B8C8]"
+                className="w-full resize-none rounded-xl border border-[#263640] bg-[#101A22] p-3 text-sm text-[#F4F8FA] placeholder-[#9BAAB4] focus:outline-none focus:border-[#19D3E3]"
               />
             </FormField>
           </CardContent>
 
-          <CardFooter className="flex items-center justify-end gap-3 border-t border-[#E3E8E8] pt-4">
+          <CardFooter className="flex items-center justify-end gap-3 border-t border-[#263640] pt-4">
             <Button
               href={ROUTES.USER.PROFILE}
               variant="outline"

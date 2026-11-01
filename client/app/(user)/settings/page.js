@@ -28,7 +28,7 @@ export default function SettingsPage() {
       />
 
       {/* Account Overview Card */}
-      <Card className="border-[#E3E8E8]">
+      <Card className="border-[#263640] bg-[#151F29]">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -44,27 +44,27 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="min-w-0 p-3.5 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-1">
-              <span className="text-[#252E34] font-medium">Display Name</span>
-              <p className="text-sm font-semibold text-[#172126] truncate">{user?.fullName || 'User'}</p>
+            <div className="min-w-0 p-3.5 rounded-xl bg-[#101A22] border border-[#263640] space-y-1">
+              <span className="text-[#9BAAB4] font-medium">Display Name</span>
+              <p className="text-sm font-semibold text-[#F4F8FA] truncate">{user?.fullName || 'User'}</p>
             </div>
 
-            <div className="min-w-0 p-3.5 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-1">
-              <span className="text-[#252E34] font-medium">Email Address</span>
-              <p className="text-sm font-semibold text-[#172126] truncate">{user?.email || '—'}</p>
+            <div className="min-w-0 p-3.5 rounded-xl bg-[#101A22] border border-[#263640] space-y-1">
+              <span className="text-[#9BAAB4] font-medium">Email Address</span>
+              <p className="text-sm font-semibold text-[#F4F8FA] truncate">{user?.email || '—'}</p>
             </div>
 
-            <div className="min-w-0 p-3.5 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-1">
-              <span className="text-[#252E34] font-medium">Email Verification</span>
+            <div className="min-w-0 p-3.5 rounded-xl bg-[#101A22] border border-[#263640] space-y-1">
+              <span className="text-[#9BAAB4] font-medium">Email Verification</span>
               <div className="flex flex-wrap items-center gap-2 pt-0.5 min-w-0">
                 {user?.isEmailVerified ? (
-                  <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold text-xs">
+                  <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold text-xs">
                     <Icon name="check" className="w-3.5 h-3.5 shrink-0" /> Verified
                   </span>
                 ) : (
                   <Link
                     href={ROUTES.PUBLIC.VERIFY_EMAIL}
-                    className="inline-flex flex-wrap items-center gap-1 text-amber-700 font-semibold text-xs hover:underline"
+                    className="inline-flex flex-wrap items-center gap-1 text-amber-400 font-semibold text-xs hover:underline"
                   >
                     <Icon name="alertCircle" className="w-3.5 h-3.5 shrink-0" />
                     <span>Unverified (Verify now)</span>
@@ -73,13 +73,13 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="min-w-0 p-3.5 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-1">
-              <span className="text-[#252E34] font-medium">Member Since</span>
-              <p className="text-sm font-semibold text-[#172126] truncate">{memberSince}</p>
+            <div className="min-w-0 p-3.5 rounded-xl bg-[#101A22] border border-[#263640] space-y-1">
+              <span className="text-[#9BAAB4] font-medium">Member Since</span>
+              <p className="text-sm font-semibold text-[#F4F8FA] truncate">{memberSince}</p>
             </div>
           </div>
 
-          <div className="pt-2 flex items-center justify-between border-t border-[#E3E8E8]">
+          <div className="pt-2 flex items-center justify-between border-t border-[#263640]">
             <Button
               href={ROUTES.USER.PROFILE_EDIT}
               variant="outline"
@@ -92,7 +92,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Security & Password Card */}
-      <Card className="border-[#E3E8E8]">
+      <Card className="border-[#263640] bg-[#151F29]">
         <CardHeader>
           <CardTitle>Security & Password</CardTitle>
           <CardDescription>
@@ -100,10 +100,10 @@ export default function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#101A22] border border-[#263640]">
             <div>
-              <p className="text-xs font-semibold text-[#172126]">Password Recovery</p>
-              <p className="text-[11px] text-[#58666D]">
+              <p className="text-xs font-semibold text-[#F4F8FA]">Password Recovery</p>
+              <p className="text-[11px] text-[#9BAAB4]">
                 Send instructions to reset your password via your verified email address.
               </p>
             </div>
@@ -117,10 +117,10 @@ export default function SettingsPage() {
             </Button>
           </div>
 
-          <div className="pt-2 flex items-center justify-between border-t border-[#E3E8E8]">
+          <div className="pt-2 flex items-center justify-between border-t border-[#263640]">
             <div>
-              <p className="text-xs font-semibold text-red-600">Active Session</p>
-              <p className="text-[11px] text-[#58666D]">
+              <p className="text-xs font-semibold text-[#FF6F61]">Active Session</p>
+              <p className="text-[11px] text-[#9BAAB4]">
                 Sign out of Looply on this browser.
               </p>
             </div>

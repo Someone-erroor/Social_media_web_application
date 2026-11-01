@@ -39,6 +39,15 @@ export default function PublicNavbar() {
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
+          <Link
+            href="/login?admin=true"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#19D3E3] bg-[#151F29] border border-[#19D3E3]/40 hover:bg-[#19D3E3] hover:text-[#080D12] transition-all shadow-xs"
+            title="Administrator Portal Access"
+          >
+            <Icon name="shield" className="w-3.5 h-3.5" />
+            <span>Admin</span>
+          </Link>
+
           <Button
             href={ROUTES.PUBLIC.LOGIN}
             variant="ghost"
@@ -105,6 +114,14 @@ export default function PublicNavbar() {
           </nav>
 
           <div className="pt-4 border-t border-[#263640] flex flex-col gap-2">
+            <Link
+              href="/login?admin=true"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2.5 rounded-xl bg-[#151F29] border border-[#19D3E3]/40 text-[#19D3E3] hover:bg-[#19D3E3] hover:text-[#080D12] transition-colors flex items-center justify-center gap-2 text-xs font-bold"
+            >
+              <Icon name="shield" className="w-4 h-4" />
+              <span>Admin Portal Access</span>
+            </Link>
             <Button
               href={ROUTES.PUBLIC.REGISTER}
               variant="primary"

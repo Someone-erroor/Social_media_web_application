@@ -128,18 +128,18 @@ export default function FeedPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-5 rounded-2xl bg-white border border-[#E3E8E8] shadow-xs space-y-3 animate-pulse"
+              className="p-5 rounded-2xl bg-[#151F29] border border-[#263640] shadow-xs space-y-3 animate-pulse"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#E3E8E8]" />
+                <div className="w-10 h-10 rounded-full bg-[#1D2A35]" />
                 <div className="space-y-1.5 flex-1">
-                  <div className="w-28 h-3.5 bg-[#E3E8E8] rounded" />
-                  <div className="w-16 h-2.5 bg-[#E3E8E8] rounded" />
+                  <div className="w-28 h-3.5 bg-[#1D2A35] rounded" />
+                  <div className="w-16 h-2.5 bg-[#1D2A35]/60 rounded" />
                 </div>
               </div>
               <div className="space-y-2 pt-1">
-                <div className="w-full h-3 bg-[#E3E8E8] rounded" />
-                <div className="w-4/5 h-3 bg-[#E3E8E8] rounded" />
+                <div className="w-full h-3 bg-[#1D2A35] rounded" />
+                <div className="w-4/5 h-3 bg-[#1D2A35]/60 rounded" />
               </div>
             </div>
           ))}

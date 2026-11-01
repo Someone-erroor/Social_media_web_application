@@ -1,9 +1,9 @@
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-[#E3E8E8] bg-white py-6 mt-auto">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#58666D]">
+    <footer className="w-full border-t border-[#263640] bg-[#101A22] py-6 mt-auto">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9BAAB4]">
         <div>
-          <span className="font-semibold text-[#252E34]">Looply</span> — Connect. Share. Express.
+          <span className="font-semibold text-[#F4F8FA]">Looply</span> — Connect. Share. Express.
         </div>
         <div>
           Looply Social Platform

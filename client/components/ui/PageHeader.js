@@ -1,6 +1,6 @@
 /**
- * Reusable PageHeader Component for Looply
- * Standard header across user and admin screens
+ * Reusable PageHeader Component for Looply (Dark Neon Theme)
+ * High-contrast header across user and admin screens
  */
 export default function PageHeader({
   title,
@@ -11,17 +11,17 @@ export default function PageHeader({
 }) {
   return (
     <div
-      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-[#E3E8E8] mb-6 ${className}`}
+      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-[#263640] mb-6 ${className}`}
     >
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#172126]">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F4F8FA]">
             {title}
           </h1>
           {badge && <div>{badge}</div>}
         </div>
         {description && (
-          <p className="mt-1 text-xs sm:text-sm text-[#252E34] leading-normal">
+          <p className="mt-1 text-xs sm:text-sm text-[#9BAAB4] leading-normal">
             {description}
           </p>
         )}

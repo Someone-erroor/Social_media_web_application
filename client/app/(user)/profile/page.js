@@ -102,7 +102,7 @@ export default function ProfilePage() {
       />
 
       {profileError && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between gap-3">
+        <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between gap-3">
           <span>{profileError}</span>
           <Button
             size="sm"
@@ -112,7 +112,7 @@ export default function ProfilePage() {
               setProfileError('');
               setReloadTrigger((n) => n + 1);
             }}
-            className="text-xs text-red-800 hover:bg-red-100"
+            className="text-xs text-[#FF6F61] hover:bg-[#FF6F61]/10"
           >
             Retry
           </Button>
@@ -120,12 +120,12 @@ export default function ProfilePage() {
       )}
 
       {/* Profile Header Card */}
-      <Card className="overflow-hidden border-[#E3E8E8]">
-        <div className="h-28 bg-linear-to-r from-[#16B8C8] via-[#087F8A] to-[#FF725E]" />
+      <Card className="overflow-hidden border-[#263640] bg-[#151F29]">
+        <div className="h-28 bg-linear-to-r from-[#19D3E3]/80 via-[#101A22] to-[#FF6F61]/80" />
 
         <CardContent className="relative pt-0 pb-6 px-6">
           <div className="-mt-12 mb-4 flex items-end justify-between">
-            <div className="rounded-full ring-4 ring-white bg-white">
+            <div className="rounded-full ring-4 ring-[#101A22] bg-[#101A22]">
               <Avatar
                 name={profile?.fullName || 'User'}
                 src={profile?.profile?.avatarUrl}
@@ -147,40 +147,40 @@ export default function ProfilePage() {
           <div className="space-y-3">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-[#172126]">
+                <h1 className="text-xl font-bold text-[#F4F8FA]">
                   {profile?.fullName || 'Creator'}
                 </h1>
                 <Badge variant={profile?.role === 'admin' ? 'danger' : 'primary'}>
                   {profile?.role === 'admin' ? 'Admin' : 'Member'}
                 </Badge>
               </div>
-              <p className="text-xs text-[#58666D]">{profile?.email}</p>
+              <p className="text-xs text-[#9BAAB4]">{profile?.email}</p>
             </div>
 
-            <p className="text-sm text-[#58666D] max-w-xl">
+            <p className="text-sm text-[#9BAAB4] max-w-xl">
               {profile?.profile?.bio ? (
                 profile.profile.bio
               ) : (
-                <span className="italic text-[#58666D]">
+                <span className="italic text-[#9BAAB4]">
                   No bio added yet.{' '}
-                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-[#087F8A] underline">
+                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-[#19D3E3] underline">
                     Add a bio
                   </Link>
                 </span>
               )}
             </p>
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#58666D] pt-1">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#9BAAB4] pt-1">
               <span className="flex items-center gap-1.5">
-                <Icon name="calendar" className="w-3.5 h-3.5 text-[#58666D]" />
+                <Icon name="calendar" className="w-3.5 h-3.5 text-[#9BAAB4]" />
                 Joined {memberSince}
               </span>
               <span className="flex items-center gap-1.5">
-                <Icon name="mail" className="w-3.5 h-3.5 text-[#58666D]" />
+                <Icon name="mail" className="w-3.5 h-3.5 text-[#9BAAB4]" />
                 {profile?.isEmailVerified ? (
-                  <span className="text-emerald-700 font-medium">Email Verified</span>
+                  <span className="text-emerald-400 font-medium">Email Verified</span>
                 ) : (
-                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-amber-700 hover:underline">
+                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-amber-400 hover:underline">
                     Unverified (Verify now)
                   </Link>
                 )}
@@ -192,7 +192,7 @@ export default function ProfilePage() {
 
       {/* Publications Section */}
       <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-[#252E34]">
+        <h2 className="text-sm font-semibold text-[#F4F8FA]">
           Your Posts ({posts.length})
         </h2>
 
@@ -201,25 +201,25 @@ export default function ProfilePage() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="p-5 rounded-2xl bg-white border border-[#E3E8E8] shadow-xs space-y-3 animate-pulse"
+                className="p-5 rounded-2xl bg-[#151F29] border border-[#263640] shadow-xs space-y-3 animate-pulse"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#E3E8E8]" />
+                  <div className="w-10 h-10 rounded-full bg-[#1D2A35]" />
                   <div className="space-y-1.5 flex-1">
-                    <div className="w-28 h-3.5 bg-[#E3E8E8] rounded" />
-                    <div className="w-16 h-2.5 bg-[#E3E8E8] rounded" />
+                    <div className="w-28 h-3.5 bg-[#1D2A35] rounded" />
+                    <div className="w-16 h-2.5 bg-[#1D2A35]/60 rounded" />
                   </div>
                 </div>
                 <div className="space-y-2 pt-1">
-                  <div className="w-full h-3 bg-[#E3E8E8] rounded" />
-                  <div className="w-3/4 h-3 bg-[#E3E8E8] rounded" />
+                  <div className="w-full h-3 bg-[#1D2A35] rounded" />
+                  <div className="w-3/4 h-3 bg-[#1D2A35]/60 rounded" />
                 </div>
               </div>
             ))}
           </div>
         ) : postsError ? (
-          <div className="p-5 rounded-2xl bg-red-50 border border-red-200 text-center space-y-3">
-            <p className="text-sm text-red-700">{postsError}</p>
+          <div className="p-5 rounded-2xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-center space-y-3">
+            <p className="text-sm text-[#FF6F61]">{postsError}</p>
             <Button
               size="sm"
               variant="outline"

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import FormField from '@/components/forms/FormField';
 import Input from '@/components/ui/Input';
@@ -12,6 +13,9 @@ import { ROUTES } from '@/lib/routes';
 
 export default function LoginForm() {
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const isAdminMode = searchParams ? searchParams.get('admin') === 'true' : false;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -47,10 +51,14 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      await login({
+      const data = await login({
         email: email.trim(),
         password
       });
+
+      if (isAdminMode && data?.user?.role !== 'admin') {
+        setErrorMessage('This account is a standard user account. Please sign in with an Administrator account to access the Administration Console.');
+      }
     } catch (err) {
       if (err.isNetworkError || err.status === 0) {
         setErrorMessage('Unable to reach the backend server. Please verify the API server is running on http://localhost:5000.');
@@ -69,26 +77,43 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="shadow-md border-[#E3E8E8]">
+    <Card className="shadow-2xl shadow-black/50 border-[#263640] bg-[#151F29]">
       <CardHeader className="text-center pb-2">
-        <CardTitle className="text-xl font-bold">Welcome back</CardTitle>
-        <CardDescription>
-          Enter your credentials to access your Looply social feed
-        </CardDescription>
+        {isAdminMode ? (
+          <div className="flex flex-col items-center gap-1.5 pb-1">
+            <div className="w-12 h-12 rounded-2xl bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center mb-1 shadow-sm shadow-[#19D3E3]/15">
+              <Icon name="shield" className="w-6 h-6 text-[#19D3E3]" />
+            </div>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#19D3E3] bg-[#101A22] border border-[#19D3E3]/30 px-2 py-0.5 rounded">
+              Administrator Portal
+            </span>
+            <CardTitle className="text-xl font-bold text-[#F4F8FA]">Admin Sign In</CardTitle>
+            <CardDescription className="text-xs text-[#9BAAB4]">
+              Enter administrator ID and password to access platform controls
+            </CardDescription>
+          </div>
+        ) : (
+          <div className="text-center pb-1">
+            <CardTitle className="text-xl font-bold text-[#F4F8FA]">Welcome back</CardTitle>
+            <CardDescription className="text-xs text-[#9BAAB4]">
+              Enter your credentials to access your Looply social feed
+            </CardDescription>
+          </div>
+        )}
       </CardHeader>
 
       <CardContent className="space-y-4 pt-4">
         {errorMessage && (
           <div
             role="alert"
-            className="flex items-start gap-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"
+            className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-[#FF6F61] text-xs"
           >
-            <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+            <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-[#FF6F61]" />
             <div className="flex-1 font-medium">
               {errorMessage}
               {errorMessage.toLowerCase().includes('verify') && (
                 <div className="mt-1.5">
-                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="underline font-semibold hover:text-rose-900">
+                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="underline font-semibold text-[#19D3E3] hover:text-[#5FE8F5]">
                     Go to email verification &rarr;
                   </Link>
                 </div>
@@ -146,7 +171,7 @@ export default function LoginForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="p-1 min-w-[24px] min-h-[24px] text-[#58666D] hover:text-[#172126] focus:outline-none flex items-center justify-center"
+                  className="p-1 min-w-[24px] min-h-[24px] text-[#9BAAB4] hover:text-[#F4F8FA] focus:outline-none flex items-center justify-center transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -173,7 +198,7 @@ export default function LoginForm() {
 
             <Link
               href={ROUTES.PUBLIC.FORGOT_PASSWORD}
-              className="font-medium text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
+              className="font-medium text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
             >
               Forgot password?
             </Link>
@@ -211,12 +236,12 @@ export default function LoginForm() {
                 <span>Signing in...</span>
               </>
             ) : (
-              'Sign In'
+              isAdminMode ? 'Sign In as Administrator' : 'Sign In'
             )}
           </Button>
 
           <p className="text-[11px] text-center text-[#9BAAB4]">
-            Protected by end-to-end secure session authentication
+            {isAdminMode ? 'Restricted to authorized Looply administrators' : 'Protected by end-to-end secure session authentication'}
           </p>
         </form>
 
@@ -224,7 +249,7 @@ export default function LoginForm() {
           Don&apos;t have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.REGISTER}
-            className="font-semibold text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
+            className="font-semibold text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
           >
             Create an account
           </Link>

@@ -34,11 +34,11 @@ function getNotificationIcon(type) {
     case 'post_like':
       return <Icon name="heart" className="w-4 h-4 text-red-500 fill-red-500" />;
     case 'post_comment':
-      return <Icon name="comments" className="w-4 h-4 text-[#16B8C8]" />;
+      return <Icon name="comments" className="w-4 h-4 text-[#19D3E3]" />;
     case 'login_alert':
-      return <Icon name="lock" className="w-4 h-4 text-amber-500" />;
+      return <Icon name="lock" className="w-4 h-4 text-amber-400" />;
     default:
-      return <Icon name="notifications" className="w-4 h-4 text-[#58666D]" />;
+      return <Icon name="notifications" className="w-4 h-4 text-[#9BAAB4]" />;
   }
 }
 
@@ -118,23 +118,23 @@ export default function NotificationsPage() {
       </div>
 
       {(contextError || errorNotice) && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="alertCircle" className="w-4 h-4 text-red-600 shrink-0" />
+            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6F61] shrink-0" />
             <span>{contextError || errorNotice}</span>
           </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-medium underline hover:text-red-900"
+              className="font-medium underline hover:text-[#FFA096]"
             >
               Retry
             </button>
             <button
               type="button"
               onClick={() => setErrorNotice('')}
-              className="text-red-500 hover:text-red-700 font-bold"
+              className="text-[#FF6F61] hover:text-[#FFA096] font-bold"
             >
               ✕
             </button>
@@ -143,7 +143,7 @@ export default function NotificationsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E3E8E8] pb-2 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#263640] pb-2 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => {
@@ -152,8 +152,8 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'all'
-              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
+              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
           }`}
         >
           All ({notifications.length})
@@ -166,8 +166,8 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'unread'
-              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
+              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
           }`}
         >
           Unread ({unreadCount})
@@ -180,8 +180,8 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'likes'
-              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
+              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
           }`}
         >
           Likes
@@ -194,8 +194,8 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'comments'
-              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
+              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
           }`}
         >
           Comments
@@ -206,11 +206,11 @@ export default function NotificationsPage() {
       {loading && notifications.length === 0 ? (
         <div className="space-y-3 animate-pulse">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-4 rounded-xl border border-[#E3E8E8] bg-white flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#E3E8E8] shrink-0" />
+            <div key={i} className="p-4 rounded-xl border border-[#263640] bg-[#151F29] flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#1D2A35] shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 w-3/4 bg-[#E3E8E8] rounded" />
-                <div className="h-2 w-1/4 bg-[#F6F8F7] rounded" />
+                <div className="h-3 w-3/4 bg-[#1D2A35] rounded" />
+                <div className="h-2 w-1/4 bg-[#1D2A35]/60 rounded" />
               </div>
             </div>
           ))}
@@ -235,10 +235,10 @@ export default function NotificationsPage() {
             return (
               <Card
                 key={notif._id}
-                className={`border-[#E3E8E8] transition-colors ${
+                className={`transition-colors ${
                   isUnread
-                    ? 'bg-cyan-50/30 border-cyan-200/80 shadow-xs'
-                    : 'bg-white hover:bg-[#F6F8F7]/50'
+                    ? 'bg-[#151F29] border-[#19D3E3]/40 shadow-xs'
+                    : 'bg-[#151F29]/70 border-[#263640] hover:bg-[#1D2A35]/50'
                 }`}
               >
                 <div className="p-4 flex items-start justify-between gap-3 text-xs">
@@ -249,16 +249,16 @@ export default function NotificationsPage() {
                         src={actor.profile?.avatarUrl}
                         size="md"
                       />
-                      <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-white shadow-xs">
+                      <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-[#101A22] border border-[#263640] shadow-xs">
                         {getNotificationIcon(notif.type)}
                       </span>
                     </div>
 
                     <div className="min-w-0 space-y-0.5">
-                      <p className="text-[#252E34] leading-snug">
+                      <p className="text-[#F4F8FA] leading-snug">
                         {notif.message}
                       </p>
-                      <span className="text-[11px] text-[#58666D] block font-mono">
+                      <span className="text-[11px] text-[#9BAAB4] block font-mono">
                         {formatTimestamp(notif.createdAt)}
                       </span>
                     </div>
@@ -268,7 +268,7 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       onClick={() => markAsRead(notif._id)}
-                      className="shrink-0 p-1.5 rounded-lg text-[#087F8A] hover:bg-cyan-100 transition-colors text-[11px] font-semibold"
+                      className="shrink-0 p-1.5 rounded-lg text-[#19D3E3] hover:bg-[#19D3E3]/10 transition-colors text-[11px] font-semibold"
                       title="Mark as read"
                     >
                       Mark read
@@ -281,7 +281,7 @@ export default function NotificationsPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="pt-3 flex items-center justify-between text-xs text-[#58666D]">
+            <div className="pt-3 flex items-center justify-between text-xs text-[#9BAAB4]">
               <span>
                 Page {page} of {totalPages}
               </span>

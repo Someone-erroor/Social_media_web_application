@@ -1,8 +1,8 @@
 import Icon from './Icon';
 
 /**
- * Reusable Avatar Component for Looply
- * Neutral fallback avatar with initials or silhouette icon.
+ * Reusable Avatar Component for Looply (Dark Neon Theme)
+ * High-contrast fallback avatar with initials or silhouette icon.
  */
 export default function Avatar({
   name = 'User',
@@ -30,16 +30,16 @@ export default function Avatar({
   return (
     <div className="relative inline-flex shrink-0" aria-hidden="true">
       <div
-        className={`flex items-center justify-center rounded-full bg-[#E3E8E8] text-[#172126] font-semibold select-none border border-white shadow-xs ${
+        className={`flex items-center justify-center rounded-full bg-[#1D2A35] text-[#19D3E3] font-bold select-none border border-[#263640] shadow-xs ${
           sizeMap[size] || sizeMap.md
         } ${className}`}
       >
-        {initials ? initials : <Icon name="profile" className="w-1/2 h-1/2 text-[#58666D]" />}
+        {initials ? initials : <Icon name="profile" className="w-1/2 h-1/2 text-[#9BAAB4]" />}
       </div>
       {status && (
         <span
-          className={`absolute bottom-0 right-0 block rounded-full ring-2 ring-white ${
-            status === 'online' ? 'bg-emerald-500' : 'bg-[#58666D]'
+          className={`absolute bottom-0 right-0 block rounded-full ring-2 ring-[#101A22] ${
+            status === 'online' ? 'bg-emerald-400' : 'bg-[#9BAAB4]'
           } ${size === 'lg' || size === 'xl' ? 'w-3.5 h-3.5' : 'w-2.5 h-2.5'}`}
         />
       )}
