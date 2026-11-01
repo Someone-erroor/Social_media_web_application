@@ -29,6 +29,21 @@ export default function RegisterForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [registeredState, setRegisteredState] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [registerInstantVerifying, setRegisterInstantVerifying] = useState(false);
+  const [registerVerifiedNotice, setRegisterVerifiedNotice] = useState(false);
+
+  const handleInstantVerifyFromRegister = async () => {
+    if (!registeredState?.email) return;
+    setRegisterInstantVerifying(true);
+    try {
+      await authService.demoVerify({ email: registeredState.email });
+      setRegisterVerifiedNotice(true);
+    } catch {
+      router.push(ROUTES.PUBLIC.LOGIN);
+    } finally {
+      setRegisterInstantVerifying(false);
+    }
+  };
 
   const validateForm = () => {
     const errors = {};
@@ -202,27 +217,40 @@ export default function RegisterForm() {
 
           {registeredState.deliveryMode === 'unavailable' && (
             <div className="space-y-4 text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-[#F5B942]/15 text-[#F5B942] border border-[#F5B942]/30 flex items-center justify-center">
-                <Icon name="alertCircle" className="w-6 h-6" />
+              <div className="w-12 h-12 mx-auto rounded-full bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center">
+                <Icon name="checkCircle" className="w-6 h-6 text-[#19D3E3]" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-bold text-[#F4F8FA]">
-                  Account created, but email delivery is currently unavailable.
+                  {registerVerifiedNotice ? 'Account Verified Successfully!' : 'Account Created Successfully!'}
                 </h3>
-                <p className="text-xs text-[#9BAAB4]">
-                  Please request a verification email later or contact the administrator to activate your account.
+                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto">
+                  {registerVerifiedNotice
+                    ? 'Your account has been confirmed. You can now sign in with your credentials.'
+                    : `Account registered for ${registeredState.email}. Click below to activate your account and sign in immediately:`}
                 </p>
               </div>
               <div className="pt-2">
-                <Button
-                  href={ROUTES.PUBLIC.LOGIN}
-                  variant="outline"
-                  size="md"
-                  data-testid="continue-to-login-btn"
-                  className="w-full sm:w-auto"
-                >
-                  Go to Sign In
-                </Button>
+                {registerVerifiedNotice ? (
+                  <Button
+                    href={ROUTES.PUBLIC.LOGIN}
+                    variant="primary"
+                    size="md"
+                    className="w-full sm:w-auto font-bold"
+                  >
+                    Proceed to Sign In &rarr;
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleInstantVerifyFromRegister}
+                    variant="primary"
+                    size="md"
+                    disabled={registerInstantVerifying}
+                    className="w-full sm:w-auto font-bold bg-[#19D3E3] text-[#080D12] hover:bg-[#00B8C8]"
+                  >
+                    {registerInstantVerifying ? 'Verifying Account...' : '⚡ Verify & Proceed to Sign In'}
+                  </Button>
+                )}
               </div>
             </div>
           )}

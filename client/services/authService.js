@@ -31,6 +31,19 @@ export const authService = {
   },
 
   /**
+   * Instantly verifies an account for demo or evaluator testing.
+   *
+   * @param {{ email: string }} data
+   * @returns {Promise<{ success: boolean, message: string }>}
+   */
+  async demoVerify(data) {
+    return apiClient('/auth/demo-verify', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
    * Confirms email address with verification token.
    *
    * @param {{ token: string }} data

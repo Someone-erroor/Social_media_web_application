@@ -23,9 +23,29 @@ function VerifyEmailContent() {
   // Resend state
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
+  const [instantVerifying, setInstantVerifying] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
   const [resendPreviewLink, setResendPreviewLink] = useState(null);
   const [showResendForm, setShowResendForm] = useState(!token);
+
+  const handleInstantVerify = async () => {
+    if (!resendEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resendEmail.trim())) {
+      setResendStatus('Please enter your registered email address above first.');
+      return;
+    }
+
+    setInstantVerifying(true);
+    setResendStatus('');
+    try {
+      const res = await authService.demoVerify({ email: resendEmail.trim() });
+      setVerified(true);
+      setSuccessMessage(res.message || 'Account verified successfully! You can now sign in.');
+    } catch (err) {
+      setResendStatus(err.message || 'Could not verify account.');
+    } finally {
+      setInstantVerifying(false);
+    }
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -167,15 +187,28 @@ function VerifyEmailContent() {
                   />
                 </FormField>
 
-                <Button
-                  type="submit"
-                  variant="outline"
-                  size="md"
-                  className="w-full"
-                  disabled={resending}
-                >
-                  {resending ? 'Sending Link...' : 'Resend Verification Email'}
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    size="md"
+                    className="w-full"
+                    disabled={resending || instantVerifying}
+                  >
+                    {resending ? 'Sending Link...' : 'Resend Verification Email'}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="md"
+                    className="w-full bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/40 hover:bg-[#19D3E3] hover:text-[#080D12] font-semibold transition-all shadow-xs"
+                    disabled={instantVerifying || resending}
+                    onClick={handleInstantVerify}
+                  >
+                    {instantVerifying ? 'Activating Account...' : '⚡ Instant Verify & Activate Account'}
+                  </Button>
+                </div>
 
                 {resendStatus && (
                   <p className="text-xs text-center text-[#9BAAB4] mt-2">

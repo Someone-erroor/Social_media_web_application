@@ -4,6 +4,7 @@ import {
   registerAdmin,
   verifyEmail,
   resendVerification,
+  demoVerify,
   login,
   forgotPassword,
   resetPassword,
@@ -20,6 +21,7 @@ router.post('/register', authRateLimiter, register);
 router.post('/register-admin', authRateLimiter, registerAdmin);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verification', resendVerification);
+router.post('/demo-verify', demoVerify);
 router.post('/login', authRateLimiter, login);
 router.post('/forgot-password', authRateLimiter, forgotPassword);
 router.post('/reset-password', authRateLimiter, resetPassword);

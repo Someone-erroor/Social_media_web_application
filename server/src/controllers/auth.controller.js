@@ -158,6 +158,36 @@ export const resendVerification = async (req, res, next) => {
 };
 
 /**
+ * Handles instant demo verification for evaluation and test accounts.
+ * POST /api/auth/demo-verify
+ */
+export const demoVerify = async (req, res, next) => {
+  try {
+    const email = req.body?.email?.trim()?.toLowerCase();
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'No account found with this email address.' });
+    }
+
+    user.isEmailVerified = true;
+    user.verificationTokenHash = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Account successfully verified! You can now sign in to Looply.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Handles user authentication, token issuance, and HTTP-only cookie setting.
  * POST /api/auth/login
  */
