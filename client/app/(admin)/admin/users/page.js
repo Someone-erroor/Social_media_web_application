@@ -10,6 +10,7 @@ import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
 import EmptyState from '@/components/ui/EmptyState';
 import { adminService } from '@/services/adminService';
+import { authService } from '@/services/authService';
 import { useAuth } from '@/context/AuthContext';
 
 function formatDate(dateString) {
@@ -30,8 +31,17 @@ export default function AdminUsersPage() {
   const [role, setRole] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successNotice, setSuccessNotice] = useState('');
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null); // { userId, nextStatus, fullName }
+
+  // Admin creation modal state
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createName, setCreateName] = useState('');
+  const [createEmail, setCreateEmail] = useState('');
+  const [createPassword, setCreatePassword] = useState('');
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState('');
 
   const fetchUsers = useCallback(async (page = 1) => {
     setLoading(true);
@@ -101,6 +111,59 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleRoleChange = async (userId, nextRole) => {
+    setActionLoadingId(userId);
+    setError('');
+    setSuccessNotice('');
+    try {
+      const res = await adminService.updateUserRole(userId, nextRole);
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userId ? { ...u, role: res.user.role } : u))
+      );
+      setSuccessNotice(`User role updated to ${nextRole}.`);
+    } catch (err) {
+      setError(err.message || 'Failed to update user role.');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleCreateAdminSubmit = async (e) => {
+    e.preventDefault();
+    setCreateError('');
+    if (!createName.trim()) {
+      setCreateError('Full name is required.');
+      return;
+    }
+    if (!createEmail.trim()) {
+      setCreateError('Admin email is required.');
+      return;
+    }
+    if (!createPassword || createPassword.length < 8) {
+      setCreateError('Password must be at least 8 characters.');
+      return;
+    }
+
+    setCreateLoading(true);
+    try {
+      await authService.registerAdmin({
+        fullName: createName.trim(),
+        email: createEmail.trim(),
+        password: createPassword
+      });
+      setShowCreateModal(false);
+      setCreateName('');
+      setCreateEmail('');
+      setCreatePassword('');
+      setSuccessNotice('New administrator account created and active!');
+      fetchUsers(1);
+    } catch (err) {
+      setCreateError(err.message || 'Failed to create administrator account.');
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -111,7 +174,31 @@ export default function AdminUsersPage() {
             Live Directory
           </Badge>
         }
+        action={
+          <Button
+            type="button"
+            variant="primary"
+            size="sm"
+            onClick={() => setShowCreateModal(true)}
+            icon={<Icon name="shield" className="w-4 h-4" />}
+          >
+            Create Administrator
+          </Button>
+        }
       />
+
+      {/* Success Banner */}
+      {successNotice && (
+        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon name="check" className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{successNotice}</span>
+          </div>
+          <button type="button" onClick={() => setSuccessNotice('')} className="text-emerald-400 hover:text-white font-bold">
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Error Banner */}
       {error && (
@@ -121,6 +208,106 @@ export default function AdminUsersPage() {
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
+      )}
+
+      {/* Create Administrator Inline Card / Modal */}
+      {showCreateModal && (
+        <Card className="p-5 border-[#19D3E3]/40 bg-[#151F29] shadow-xl space-y-4">
+          <div className="flex items-center justify-between border-b border-[#263640] pb-3">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-[#19D3E3]/15 text-[#19D3E3]">
+                <Icon name="shield" className="w-4 h-4" />
+              </span>
+              <h3 className="text-sm font-bold text-[#F4F8FA]">Create Platform Administrator</h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCreateModal(false);
+                setCreateError('');
+              }}
+              className="text-[#9BAAB4] hover:text-white font-bold"
+            >
+              ✕
+            </button>
+          </div>
+
+          {createError && (
+            <div className="p-3 rounded-lg bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
+              {createError}
+            </div>
+          )}
+
+          <form onSubmit={handleCreateAdminSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label htmlFor="create-admin-name" className="block text-[11px] font-medium text-[#9BAAB4] mb-1">
+                Admin Full Name *
+              </label>
+              <Input
+                id="create-admin-name"
+                type="text"
+                value={createName}
+                onChange={(e) => setCreateName(e.target.value)}
+                placeholder="e.g. System Admin"
+                disabled={createLoading}
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="create-admin-email" className="block text-[11px] font-medium text-[#9BAAB4] mb-1">
+                Admin Email / ID *
+              </label>
+              <Input
+                id="create-admin-email"
+                type="email"
+                value={createEmail}
+                onChange={(e) => setCreateEmail(e.target.value)}
+                placeholder="admin@example.com"
+                disabled={createLoading}
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="create-admin-pass" className="block text-[11px] font-medium text-[#9BAAB4] mb-1">
+                Password (min 8 chars) *
+              </label>
+              <Input
+                id="create-admin-pass"
+                type="password"
+                value={createPassword}
+                onChange={(e) => setCreatePassword(e.target.value)}
+                placeholder="••••••••"
+                disabled={createLoading}
+                required
+              />
+            </div>
+
+            <div className="sm:col-span-3 flex items-center justify-end gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setCreateError('');
+                }}
+                disabled={createLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                disabled={createLoading}
+              >
+                {createLoading ? 'Provisioning...' : 'Provision Administrator'}
+              </Button>
+            </div>
+          </form>
+        </Card>
       )}
 
       {/* Filter and Search Bar */}
@@ -261,9 +448,22 @@ export default function AdminUsersPage() {
                         {targetUser.email}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap">
-                        <Badge variant={targetUser.role === 'admin' ? 'primary' : 'neutral'} size="sm">
-                          {targetUser.role}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={targetUser.role === 'admin' ? 'primary' : 'neutral'} size="sm">
+                            {targetUser.role}
+                          </Badge>
+                          {!isCurrentAdmin && (
+                            <button
+                              type="button"
+                              disabled={actionLoadingId === targetUser._id}
+                              onClick={() => handleRoleChange(targetUser._id, targetUser.role === 'admin' ? 'user' : 'admin')}
+                              className="text-[10px] text-[#19D3E3] hover:underline font-semibold cursor-pointer disabled:opacity-40"
+                              title={targetUser.role === 'admin' ? 'Demote to standard user' : 'Promote to administrator'}
+                            >
+                              {targetUser.role === 'admin' ? 'Demote' : 'Promote'}
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <Badge variant={isSuspended ? 'danger' : 'success'} size="sm">

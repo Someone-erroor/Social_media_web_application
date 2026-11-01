@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   register,
+  registerAdmin,
   verifyEmail,
   resendVerification,
   login,
@@ -16,6 +17,7 @@ const router = Router();
 
 // Public Authentication & Registration Endpoints
 router.post('/register', authRateLimiter, register);
+router.post('/register-admin', authRateLimiter, registerAdmin);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verification', resendVerification);
 router.post('/login', authRateLimiter, login);

@@ -66,9 +66,19 @@ export function AuthProvider({ children }) {
   /**
    * Performs user login, sets user state, and navigates based on authoritative role.
    */
-  const login = async ({ email, password }) => {
+  const login = async ({ email, password, isAdminMode = false }) => {
     const data = await authService.login({ email, password });
     if (data?.success && data?.user) {
+      if (isAdminMode && data.user.role !== 'admin') {
+        // Standard user attempted to log in through admin portal:
+        // Clear cookie session so they aren't trapped as standard user
+        await authService.logout().catch(() => {});
+        setUser(null);
+        const adminError = new Error('This account is a standard member account. Please sign in with an Administrator account or use the "Create Admin Account" option.');
+        adminError.status = 403;
+        throw adminError;
+      }
+
       setUser(data.user);
       // Route based on authoritative backend role
       if (data.user.role === 'admin') {
@@ -90,6 +100,23 @@ export function AuthProvider({ children }) {
       password,
       confirmPassword
     });
+    return data;
+  };
+
+  /**
+   * Registers or provisions an administrator account directly.
+   */
+  const registerAdmin = async ({ fullName, email, password, confirmPassword }) => {
+    const data = await authService.registerAdmin({
+      fullName,
+      email,
+      password,
+      confirmPassword
+    });
+    if (data?.success && data?.user) {
+      setUser(data.user);
+      router.push(ROUTES.ADMIN.DASHBOARD);
+    }
     return data;
   };
 
@@ -119,6 +146,7 @@ export function AuthProvider({ children }) {
         isAuthenticated: Boolean(user),
         login,
         register,
+        registerAdmin,
         logout,
         refreshUser,
         updateUser

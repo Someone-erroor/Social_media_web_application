@@ -12,20 +12,29 @@ import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/lib/routes';
 
 export default function LoginForm() {
-  const { login } = useAuth();
+  const { login, registerAdmin } = useAuth();
   const searchParams = useSearchParams();
   const isAdminMode = searchParams ? searchParams.get('admin') === 'true' : false;
 
+  const [isCreateAdmin, setIsCreateAdmin] = useState(false);
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
 
   const validateForm = () => {
     const errors = {};
+
+    if (isCreateAdmin && (!fullName.trim() || fullName.trim().length < 2)) {
+      errors.fullName = 'Full name must be at least 2 characters.';
+    }
+
     if (!email.trim()) {
       errors.email = 'Email address is required.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
@@ -34,15 +43,30 @@ export default function LoginForm() {
 
     if (!password) {
       errors.password = 'Password is required.';
+    } else if (isCreateAdmin && password.length < 8) {
+      errors.password = 'Admin password must be at least 8 characters.';
+    }
+
+    if (isCreateAdmin && password !== confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match.';
     }
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
+  const handleFillDemoAdmin = () => {
+    setEmail('admin@looply.social');
+    setPassword('Admin@1234');
+    setFieldErrors({});
+    setErrorMessage('');
+    setIsCreateAdmin(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setSuccessMessage('');
 
     if (!validateForm()) {
       return;
@@ -51,13 +75,19 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const data = await login({
-        email: email.trim(),
-        password
-      });
-
-      if (isAdminMode && data?.user?.role !== 'admin') {
-        setErrorMessage('This account is a standard user account. Please sign in with an Administrator account to access the Administration Console.');
+      if (isCreateAdmin) {
+        await registerAdmin({
+          fullName: fullName.trim(),
+          email: email.trim(),
+          password,
+          confirmPassword
+        });
+      } else {
+        await login({
+          email: email.trim(),
+          password,
+          isAdminMode
+        });
       }
     } catch (err) {
       if (err.isNetworkError || err.status === 0) {
@@ -65,7 +95,7 @@ export default function LoginForm() {
       } else if (err.status === 401) {
         setErrorMessage(err.message || 'Invalid email or password. Please verify your credentials.');
       } else if (err.status === 403) {
-        setErrorMessage(err.message || 'Your account is unverified or has been suspended.');
+        setErrorMessage(err.message || 'Access restricted. Please use valid administrator credentials.');
       } else if (err.status >= 500) {
         setErrorMessage('The server encountered an internal error. Please try again in a moment.');
       } else {
@@ -87,9 +117,13 @@ export default function LoginForm() {
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#19D3E3] bg-[#101A22] border border-[#19D3E3]/30 px-2 py-0.5 rounded">
               Administrator Portal
             </span>
-            <CardTitle className="text-xl font-bold text-[#F4F8FA]">Admin Sign In</CardTitle>
+            <CardTitle className="text-xl font-bold text-[#F4F8FA]">
+              {isCreateAdmin ? 'Create Administrator' : 'Admin Sign In'}
+            </CardTitle>
             <CardDescription className="text-xs text-[#9BAAB4]">
-              Enter administrator ID and password to access platform controls
+              {isCreateAdmin
+                ? 'Create a new administrator ID & password for immediate platform control'
+                : 'Enter administrator ID and password to access platform controls'}
             </CardDescription>
           </div>
         ) : (
@@ -103,6 +137,29 @@ export default function LoginForm() {
       </CardHeader>
 
       <CardContent className="space-y-4 pt-4">
+        {/* Demo Admin Quick-Fill Banner (Visible in Admin Mode) */}
+        {isAdminMode && !isCreateAdmin && (
+          <div className="p-3 rounded-xl bg-[#101A22] border border-[#19D3E3]/40 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-[#19D3E3] flex items-center gap-1.5">
+                <Icon name="shield" className="w-3.5 h-3.5 shrink-0" />
+                Demo Admin Credentials
+              </span>
+              <button
+                type="button"
+                onClick={handleFillDemoAdmin}
+                className="text-[11px] font-bold text-[#080D12] bg-[#19D3E3] hover:bg-[#00B8C8] px-2.5 py-1 rounded-lg transition-colors cursor-pointer shadow-xs"
+              >
+                Auto-Fill Demo
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] font-mono text-[#9BAAB4]">
+              <div>Email: <span className="text-[#F4F8FA] font-semibold">admin@looply.social</span></div>
+              <div>Password: <span className="text-[#F4F8FA] font-semibold">Admin@1234</span></div>
+            </div>
+          </div>
+        )}
+
         {errorMessage && (
           <div
             role="alert"
@@ -122,10 +179,42 @@ export default function LoginForm() {
           </div>
         )}
 
+        {successMessage && (
+          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 flex items-center gap-2">
+            <Icon name="check" className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} action="#" method="POST" className="space-y-4" noValidate>
+          {/* Full Name field (Create Admin Mode only) */}
+          {isCreateAdmin && (
+            <FormField
+              id="admin-fullname"
+              label="Administrator Full Name"
+              required
+              error={fieldErrors.fullName}
+            >
+              <Input
+                id="admin-fullname"
+                name="fullName"
+                type="text"
+                value={fullName}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  if (fieldErrors.fullName) setFieldErrors((prev) => ({ ...prev, fullName: null }));
+                }}
+                placeholder="e.g. Master Admin"
+                disabled={loading}
+                error={Boolean(fieldErrors.fullName)}
+                icon={<Icon name="profile" className="w-4 h-4" />}
+              />
+            </FormField>
+          )}
+
           <FormField
             id="login-email"
-            label="Email address"
+            label={isCreateAdmin ? 'Administrator ID / Email' : 'Email address'}
             required
             error={fieldErrors.email}
           >
@@ -148,7 +237,7 @@ export default function LoginForm() {
 
           <FormField
             id="login-password"
-            label="Password"
+            label={isCreateAdmin ? 'Administrator Password (min 8 chars)' : 'Password'}
             required
             error={fieldErrors.password}
           >
@@ -162,7 +251,7 @@ export default function LoginForm() {
                 if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: null }));
               }}
               placeholder="••••••••"
-              autoComplete="current-password"
+              autoComplete={isCreateAdmin ? 'new-password' : 'current-password'}
               disabled={loading}
               error={Boolean(fieldErrors.password)}
               icon={<Icon name="lock" className="w-4 h-4" />}
@@ -180,29 +269,57 @@ export default function LoginForm() {
             />
           </FormField>
 
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-[#9BAAB4]">
-              <input
-                id="login-remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                disabled={loading}
-                aria-label="Remember me on this device"
-                className="w-4 h-4 rounded border-[#263640] bg-[#101A22] text-[#19D3E3] focus:ring-[#19D3E3] cursor-pointer"
-              />
-              <label htmlFor="login-remember-me" className="cursor-pointer select-none">
-                Remember me
-              </label>
-            </div>
-
-            <Link
-              href={ROUTES.PUBLIC.FORGOT_PASSWORD}
-              className="font-medium text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
+          {/* Confirm Password (Create Admin Mode only) */}
+          {isCreateAdmin && (
+            <FormField
+              id="admin-confirm-password"
+              label="Confirm Password"
+              required
+              error={fieldErrors.confirmPassword}
             >
-              Forgot password?
-            </Link>
-          </div>
+              <Input
+                id="admin-confirm-password"
+                name="confirmPassword"
+                type={showPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (fieldErrors.confirmPassword) setFieldErrors((prev) => ({ ...prev, confirmPassword: null }));
+                }}
+                placeholder="••••••••"
+                autoComplete="new-password"
+                disabled={loading}
+                error={Boolean(fieldErrors.confirmPassword)}
+                icon={<Icon name="lock" className="w-4 h-4" />}
+              />
+            </FormField>
+          )}
+
+          {!isCreateAdmin && (
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2 text-[#9BAAB4]">
+                <input
+                  id="login-remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  disabled={loading}
+                  aria-label="Remember me on this device"
+                  className="w-4 h-4 rounded border-[#263640] bg-[#101A22] text-[#19D3E3] focus:ring-[#19D3E3] cursor-pointer"
+                />
+                <label htmlFor="login-remember-me" className="cursor-pointer select-none">
+                  Remember me
+                </label>
+              </div>
+
+              <Link
+                href={ROUTES.PUBLIC.FORGOT_PASSWORD}
+                className="font-medium text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          )}
 
           <Button
             type="submit"
@@ -233,26 +350,78 @@ export default function LoginForm() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                <span>Signing in...</span>
+                <span>{isCreateAdmin ? 'Creating Administrator...' : 'Signing in...'}</span>
               </>
+            ) : isCreateAdmin ? (
+              'Create & Enter Admin Console'
+            ) : isAdminMode ? (
+              'Sign In as Administrator'
             ) : (
-              isAdminMode ? 'Sign In as Administrator' : 'Sign In'
+              'Sign In'
             )}
           </Button>
 
-          <p className="text-[11px] text-center text-[#9BAAB4]">
-            {isAdminMode ? 'Restricted to authorized Looply administrators' : 'Protected by end-to-end secure session authentication'}
-          </p>
+          {/* Mode switch for Admin Mode */}
+          {isAdminMode ? (
+            <div className="pt-2 text-center text-xs">
+              {isCreateAdmin ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCreateAdmin(false);
+                    setErrorMessage('');
+                    setFieldErrors({});
+                  }}
+                  className="text-[#19D3E3] hover:underline font-semibold cursor-pointer"
+                >
+                  &larr; Already have an Admin account? Sign In
+                </button>
+              ) : (
+                <div className="space-y-1.5">
+                  <p className="text-[11px] text-[#9BAAB4]">
+                    Need a new administrator login?
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCreateAdmin(true);
+                      setErrorMessage('');
+                      setFieldErrors({});
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#19D3E3] bg-[#101A22] border border-[#19D3E3]/40 hover:bg-[#151F29] transition-all cursor-pointer"
+                  >
+                    <Icon name="shield" className="w-3.5 h-3.5" />
+                    <span>Create New Administrator ID &amp; Password</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-[11px] text-center text-[#9BAAB4]">
+              Protected by end-to-end secure session authentication
+            </p>
+          )}
         </form>
 
         <div className="pt-4 border-t border-[#263640] text-center text-xs text-[#9BAAB4]">
-          Don&apos;t have an account?{' '}
-          <Link
-            href={ROUTES.PUBLIC.REGISTER}
-            className="font-semibold text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
-          >
-            Create an account
-          </Link>
+          {isAdminMode ? (
+            <Link
+              href={ROUTES.PUBLIC.LOGIN}
+              className="font-medium text-[#9BAAB4] hover:text-[#F4F8FA] hover:underline"
+            >
+              &larr; Return to Standard User Login
+            </Link>
+          ) : (
+            <>
+              Don&apos;t have an account?{' '}
+              <Link
+                href={ROUTES.PUBLIC.REGISTER}
+                className="font-semibold text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
+              >
+                Create an account
+              </Link>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

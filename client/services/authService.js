@@ -18,6 +18,19 @@ export const authService = {
   },
 
   /**
+   * Provisions or registers an administrator account directly.
+   *
+   * @param {{ fullName: string, email: string, password: string, confirmPassword?: string }} data
+   * @returns {Promise<{ success: boolean, message: string, user: object }>}
+   */
+  async registerAdmin(data) {
+    return apiClient('/auth/register-admin', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
    * Confirms email address with verification token.
    *
    * @param {{ token: string }} data

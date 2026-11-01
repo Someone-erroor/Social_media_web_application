@@ -41,6 +41,13 @@ export const adminService = {
     });
   },
 
+  async updateUserRole(userId, role) {
+    return apiClient(`/admin/users/${userId}/role`, {
+      method: 'PATCH',
+      body: JSON.stringify({ role })
+    });
+  },
+
   // Phase 12: Post Management
   async getPosts({ page = 1, limit = 10, search = '' } = {}) {
     const params = new URLSearchParams();

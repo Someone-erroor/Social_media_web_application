@@ -246,6 +246,66 @@ export const updateUserStatus = async ({ targetUserId, accountStatus, adminUserI
 };
 
 /**
+ * Modifies a user's role (promotes to admin or sets to standard user).
+ * Rejects revoking own admin privileges.
+ *
+ * @param {object} params
+ * @param {string} params.targetUserId
+ * @param {string} params.role - 'user' | 'admin'
+ * @param {string} params.adminUserId - Requesting admin ID
+ * @returns {Promise<object>} Updated safe user
+ */
+export const updateUserRole = async ({ targetUserId, role, adminUserId }) => {
+  if (targetUserId.toString() === adminUserId.toString() && role !== 'admin') {
+    const error = new Error('Administrators cannot revoke their own admin privileges.');
+    error.status = 400;
+    throw error;
+  }
+
+  if (!['user', 'admin'].includes(role)) {
+    const error = new Error('Invalid role. Allowed values: user, admin.');
+    error.status = 400;
+    throw error;
+  }
+
+  const user = await User.findById(targetUserId);
+  if (!user) {
+    const error = new Error('User not found.');
+    error.status = 404;
+    throw error;
+  }
+
+  user.role = role;
+  await user.save();
+
+  try {
+    const auditLog = new ActivityLog({
+      actor: adminUserId,
+      action: 'admin_action',
+      targetType: 'User',
+      targetId: user._id,
+      metadata: {
+        operation: 'role_update',
+        targetEmail: user.email,
+        newRole: role,
+        timestamp: new Date().toISOString()
+      }
+    });
+    await auditLog.save();
+  } catch (auditErr) {
+    console.error(`[ActivityLog] Failed to record role update audit: ${auditErr.message}`);
+  }
+
+  const safe = user.toObject();
+  delete safe.passwordHash;
+  delete safe.verificationTokenHash;
+  delete safe.resetPasswordTokenHash;
+  delete safe.tokenVersion;
+
+  return safe;
+};
+
+/**
  * Retrieves all platform posts for administrative moderation. (Phase 12)
  *
  * @param {object} params

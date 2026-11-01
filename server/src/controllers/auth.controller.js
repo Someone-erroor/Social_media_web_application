@@ -11,6 +11,7 @@ import {
 } from '../validators/auth.validator.js';
 import {
   registerUser,
+  registerAdminUser,
   verifyEmail as verifyEmailService,
   resendVerificationEmail as resendVerificationService,
   loginUser,
@@ -59,6 +60,37 @@ export const register = async (req, res, next) => {
         message: error.message
       });
     }
+    next(error);
+  }
+};
+
+/**
+ * Handles administrator registration/provisioning directly from the UI.
+ * POST /api/auth/register-admin
+ */
+export const registerAdmin = async (req, res, next) => {
+  try {
+    const { isValid, errors, sanitized } = validateRegisterInput(req.body);
+
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        message: errors[0] || 'Invalid administrator registration data.',
+        errors
+      });
+    }
+
+    const { user, token } = await registerAdminUser(sanitized);
+
+    // Set JWT in secure HTTP-only cookie
+    res.cookie(AUTH_COOKIE_NAME, token, getCookieOptions(env.isProduction));
+
+    return res.status(201).json({
+      success: true,
+      message: 'Administrator account created successfully. Welcome to the Admin Console.',
+      user
+    });
+  } catch (error) {
     next(error);
   }
 };

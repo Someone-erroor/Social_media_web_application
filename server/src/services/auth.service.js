@@ -109,6 +109,72 @@ export const registerUser = async ({ fullName, email, password }) => {
 };
 
 /**
+ * Provisions or registers an administrator account.
+ * Immediately marks email verified and issues active admin clearance.
+ *
+ * @param {object} sanitizedInput - Validated input containing fullName, email, password
+ * @returns {Promise<{ user: object, token: string }>} Safe user and signed JWT
+ */
+export const registerAdminUser = async ({ fullName, email, password }) => {
+  const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+
+  let user = await User.findOne({ email });
+  if (user) {
+    user.fullName = fullName || user.fullName;
+    user.passwordHash = passwordHash;
+    user.role = 'admin';
+    user.isEmailVerified = true;
+    user.accountStatus = 'active';
+    await user.save();
+  } else {
+    user = new User({
+      fullName,
+      email,
+      passwordHash,
+      role: 'admin',
+      isEmailVerified: true,
+      tokenVersion: 0,
+      accountStatus: 'active',
+      profile: {
+        bio: 'Platform Administrator',
+        avatarUrl: ''
+      }
+    });
+    await user.save();
+  }
+
+  // Generate JWT token with admin claim
+  const token = generateToken({
+    userId: user._id.toString(),
+    role: 'admin',
+    tokenVersion: user.tokenVersion || 0
+  });
+
+  // Record admin account provisioning in audit log
+  try {
+    const auditLog = new ActivityLog({
+      actor: user._id,
+      action: 'admin_action',
+      targetType: 'User',
+      targetId: user._id,
+      metadata: {
+        operation: 'admin_registration',
+        email: user.email,
+        timestamp: new Date().toISOString()
+      }
+    });
+    await auditLog.save();
+  } catch (auditErr) {
+    console.error(`[ActivityLog] Failed to record admin registration: ${auditErr.message}`);
+  }
+
+  return {
+    user: toSafeUser(user),
+    token
+  };
+};
+
+/**
  * Validates a raw email verification token, updates user status, and clears token records.
  *
  * @param {string} rawToken - Unhashed verification token from URL

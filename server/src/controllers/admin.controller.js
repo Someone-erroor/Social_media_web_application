@@ -5,6 +5,7 @@ import {
   getAdminUsers,
   getAdminUserById,
   updateUserStatus,
+  updateUserRole,
   getAdminPosts,
   adminDeletePost,
   getAdminComments,
@@ -122,6 +123,50 @@ export const handleUpdateUserStatus = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: `User account has been successfully ${accountStatus === 'suspended' ? 'suspended' : 'activated'}.`,
+      user: updatedUser
+    });
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({
+        success: false,
+        message: error.message
+      });
+    }
+    next(error);
+  }
+};
+
+/**
+ * Updates a user's role (promotes to admin or sets to standard user).
+ * PATCH /api/admin/users/:userId/role
+ */
+export const handleUpdateUserRole = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    if (!isValidObjectId(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format.'
+      });
+    }
+
+    const { role } = req.body;
+    if (!role || !['user', 'admin'].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid role ("user" or "admin") is required.'
+      });
+    }
+
+    const updatedUser = await updateUserRole({
+      targetUserId: userId,
+      role,
+      adminUserId: req.user._id
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `User role has been successfully updated to ${role}.`,
       user: updatedUser
     });
   } catch (error) {

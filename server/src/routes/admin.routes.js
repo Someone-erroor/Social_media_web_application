@@ -6,6 +6,7 @@ import {
   handleGetAdminUsers,
   handleGetAdminUserById,
   handleUpdateUserStatus,
+  handleUpdateUserRole,
   handleGetAdminPosts,
   handleAdminDeletePost,
   handleGetAdminComments,
@@ -39,6 +40,7 @@ router.get('/dashboard/activity', handleGetDashboardActivity);
 router.get('/users', handleGetAdminUsers);
 router.get('/users/:userId', handleGetAdminUserById);
 router.patch('/users/:userId/status', handleUpdateUserStatus);
+router.patch('/users/:userId/role', handleUpdateUserRole);
 
 // Phase 12: Post Moderation
 router.get('/posts', handleGetAdminPosts);
