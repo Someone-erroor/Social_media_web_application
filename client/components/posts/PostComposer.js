@@ -213,17 +213,17 @@ export default function PostComposer({ onPostCreated }) {
                 placeholder="What is happening? Share your thoughts..."
                 rows={3}
                 disabled={loading || aiLoading}
-                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-colors"
+                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] focus:bg-white transition-colors"
               />
             </div>
           </div>
 
           {/* AI Helper Drawers */}
           {aiMode === 'generate' && (
-            <div className="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 space-y-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-cyan-50/70 border border-cyan-100 space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-indigo-900 flex items-center gap-1.5">
-                  <Icon name="sparkles" className="w-4 h-4 text-indigo-600" />
+                <span className="font-semibold text-[#172126] flex items-center gap-1.5">
+                  <Icon name="sparkles" className="w-4 h-4 text-[#087F8A]" />
                   Generate Post with Gemini AI
                 </span>
                 <button
@@ -244,7 +244,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiTopic(e.target.value)}
                   maxLength={200}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8]"
                 />
 
                 <input
@@ -255,7 +255,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiContext(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="AI tone of voice"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-indigo-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
+                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="casual">Tone: Casual</option>
                     <option value="professional">Tone: Professional</option>
@@ -278,7 +278,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="Target length"
                     onChange={(e) => setAiLength(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-indigo-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
+                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="short">Length: Short (&lt; 150 chars)</option>
                     <option value="medium">Length: Medium (150-400 chars)</option>
@@ -301,10 +301,10 @@ export default function PostComposer({ onPostCreated }) {
           )}
 
           {aiMode === 'improve' && (
-            <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-100 space-y-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#FF725E]/10 border border-[#FF725E]/20 space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-purple-900 flex items-center gap-1.5">
-                  <Icon name="sparkles" className="w-4 h-4 text-purple-600" />
+                <span className="font-semibold text-[#172126] flex items-center gap-1.5">
+                  <Icon name="sparkles" className="w-4 h-4 text-[#FF725E]" />
                   Improve Post with Gemini AI
                 </span>
                 <button
@@ -325,7 +325,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiInstructions(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-purple-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-purple-500"
+                  className="w-full rounded-lg border border-[#FF725E]/30 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#FF725E]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -334,7 +334,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="Target improvement tone"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-purple-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-purple-500"
+                    className="flex-1 rounded-lg border border-[#FF725E]/30 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#FF725E]"
                   >
                     <option value="insightful">Tone: Insightful</option>
                     <option value="casual">Tone: Casual</option>
@@ -349,7 +349,7 @@ export default function PostComposer({ onPostCreated }) {
                     size="sm"
                     onClick={handleAiImprove}
                     disabled={aiLoading || !content.trim()}
-                    className="shrink-0 bg-purple-600 hover:bg-purple-700"
+                    className="shrink-0 bg-[#FF725E] hover:bg-[#e05a47]"
                   >
                     {aiLoading ? 'Improving...' : 'Improve'}
                   </Button>
@@ -365,12 +365,12 @@ export default function PostComposer({ onPostCreated }) {
                 onClick={() => setAiMode(aiMode === 'generate' ? null : 'generate')}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'generate'
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600'
+                    ? 'bg-cyan-100 text-[#087F8A]'
+                    : 'bg-slate-100 hover:bg-cyan-50 text-slate-600 hover:text-[#087F8A]'
                 }`}
                 title="Draft a post with Gemini AI"
               >
-                <Icon name="sparkles" className="w-3.5 h-3.5 text-indigo-500" />
+                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#16B8C8]" />
                 <span>AI Draft</span>
               </button>
 
@@ -380,12 +380,12 @@ export default function PostComposer({ onPostCreated }) {
                 disabled={!content.trim()}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'improve'
-                    ? 'bg-purple-100 text-purple-700'
-                    : 'bg-slate-100 hover:bg-purple-50 text-slate-600 hover:text-purple-600 disabled:opacity-40 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 disabled:cursor-not-allowed'
+                    ? 'bg-[#FF725E]/15 text-[#FF725E]'
+                    : 'bg-slate-100 hover:bg-[#FF725E]/10 text-slate-600 hover:text-[#FF725E] disabled:opacity-40 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 disabled:cursor-not-allowed'
                 }`}
                 title={content.trim() ? "Improve draft with Gemini AI" : "Write text to enable AI polish"}
               >
-                <Icon name="sparkles" className="w-3.5 h-3.5 text-purple-500" />
+                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#FF725E]" />
                 <span>AI Polish</span>
               </button>
 

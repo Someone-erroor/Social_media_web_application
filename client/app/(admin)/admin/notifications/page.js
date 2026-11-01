@@ -140,7 +140,7 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'all'
-              ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -154,7 +154,7 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'login_alerts'
-              ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -168,7 +168,7 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'unread'
-              ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -221,7 +221,7 @@ export default function AdminNotificationsPage() {
                       <tr
                         key={alert._id}
                         className={`transition-colors ${
-                          isUnread ? 'bg-indigo-50/20 font-medium' : 'hover:bg-slate-50/60'
+                          isUnread ? 'bg-cyan-50/20 font-medium' : 'hover:bg-slate-50/60'
                         }`}
                       >
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -255,7 +255,7 @@ export default function AdminNotificationsPage() {
                             <button
                               type="button"
                               onClick={() => markAsRead(alert._id)}
-                              className="text-indigo-600 hover:text-indigo-800 font-semibold"
+                              className="text-[#087F8A] hover:text-[#087F8A] font-semibold"
                             >
                               Mark read
                             </button>

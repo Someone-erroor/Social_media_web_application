@@ -22,7 +22,7 @@ export default function Logo({
       {/* Brand Mark Icon */}
       <div
         className={`flex items-center justify-center rounded-2xl shadow-sm transition-transform group-hover:scale-105 shrink-0 ${
-          inverted ? 'bg-indigo-600 text-white' : 'bg-slate-900'
+          inverted ? 'bg-[#087F8A] text-white' : 'bg-[#172126]'
         } ${
           isLarge ? 'w-14 h-14' : isSmall ? 'w-8 h-8 rounded-xl' : 'w-10 h-10'
         }`}
@@ -35,9 +35,9 @@ export default function Logo({
         >
           <defs>
             <linearGradient id="logo-grad" x1="8" y1="12" x2="56" y2="52" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#818CF8" />
-              <stop offset="50%" stopColor="#C084FC" />
-              <stop offset="100%" stopColor="#F472B6" />
+              <stop offset="0%" stopColor="#16B8C8" />
+              <stop offset="60%" stopColor="#087F8A" />
+              <stop offset="100%" stopColor="#FF725E" />
             </linearGradient>
           </defs>
           <path
@@ -47,8 +47,8 @@ export default function Logo({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <circle cx="20" cy="32" r="3" fill="#818CF8" />
-          <circle cx="44" cy="32" r="3" fill="#F472B6" />
+          <circle cx="20" cy="32" r="3" fill="#16B8C8" />
+          <circle cx="44" cy="32" r="3" fill="#FF725E" />
         </svg>
       </div>
 
@@ -62,14 +62,14 @@ export default function Logo({
               isLarge ? 'text-3xl' : isSmall ? 'text-lg' : 'text-xl'
             }`}
           >
-            Loop<span className="text-indigo-500">ly</span>
+            Loop<span className={inverted ? 'text-[#16B8C8]' : 'text-[#087F8A]'}>ly</span>
           </span>
           {badgeText && (
             <span
               className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
                 inverted
-                  ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-400/30'
-                  : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30'
+                  : 'bg-cyan-50 text-[#087F8A] border border-cyan-200'
               }`}
             >
               {badgeText}
@@ -96,7 +96,7 @@ export default function Logo({
       <Link
         href={href}
         onClick={onClick}
-        className="inline-flex focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-xl"
+        className="inline-flex focus:outline-none focus:ring-2 focus:ring-[#16B8C8] rounded-xl"
       >
         {content}
       </Link>

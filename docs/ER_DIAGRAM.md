@@ -24,7 +24,7 @@ erDiagram
         ObjectId _id PK "Unique user identifier"
         string fullName "Public member name (2-70 chars)"
         string email UK "Unique lowercase trimmed contact email"
-        string passwordHash "Argon2/bcrypt hash (select: false)"
+        string passwordHash "bcryptjs 12-round hash (select: false)"
         string role "Clearance role: 'user' | 'admin'"
         boolean isEmailVerified "Email verification flag (default: false)"
         string profile_bio "Short biographical note (max 250 chars)"

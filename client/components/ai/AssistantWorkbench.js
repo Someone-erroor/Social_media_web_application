@@ -164,11 +164,11 @@ export default function AssistantWorkbench() {
             }}
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'generate'
-                ? 'border-indigo-600 text-indigo-600'
+                ? 'border-[#087F8A] text-[#087F8A]'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Icon name="sparkles" className="w-4 h-4 text-indigo-500" />
+            <Icon name="sparkles" className="w-4 h-4 text-[#16B8C8]" />
             <span>Post Generator</span>
           </button>
 
@@ -180,11 +180,11 @@ export default function AssistantWorkbench() {
             }}
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'improve'
-                ? 'border-purple-600 text-purple-600'
+                ? 'border-[#FF725E] text-[#FF725E]'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Icon name="edit" className="w-4 h-4 text-purple-500" />
+            <Icon name="edit" className="w-4 h-4 text-[#FF725E]" />
             <span>Tone &amp; Clarity Improver</span>
           </button>
         </div>
@@ -220,7 +220,7 @@ export default function AssistantWorkbench() {
                   onChange={(e) => setTopic(e.target.value)}
                   maxLength={200}
                   disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] transition-colors"
                 />
               </div>
 
@@ -236,7 +236,7 @@ export default function AssistantWorkbench() {
                   rows={2}
                   maxLength={500}
                   disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] transition-colors"
                 />
               </div>
 
@@ -251,7 +251,7 @@ export default function AssistantWorkbench() {
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-indigo-500"
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="insightful">Insightful &amp; Analytical</option>
                     <option value="casual">Casual &amp; Friendly</option>
@@ -271,7 +271,7 @@ export default function AssistantWorkbench() {
                     value={length}
                     onChange={(e) => setLength(e.target.value)}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-indigo-500"
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="short">Short (&lt; 150 chars)</option>
                     <option value="medium">Medium (150 - 400 chars)</option>
@@ -309,7 +309,7 @@ export default function AssistantWorkbench() {
                   rows={4}
                   maxLength={1000}
                   disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#FF725E] transition-colors"
                 />
                 <div className="mt-1 flex justify-end">
                   <span className="text-[11px] text-slate-600">
@@ -329,7 +329,7 @@ export default function AssistantWorkbench() {
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-purple-500"
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#FF725E]"
                   >
                     <option value="insightful">Insightful &amp; Analytical</option>
                     <option value="casual">Casual &amp; Friendly</option>
@@ -351,7 +351,7 @@ export default function AssistantWorkbench() {
                     onChange={(e) => setInstructions(e.target.value)}
                     maxLength={300}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-purple-500"
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#FF725E]"
                   />
                 </div>
               </div>
@@ -365,7 +365,7 @@ export default function AssistantWorkbench() {
                   variant="primary"
                   size="md"
                   disabled={loading || !contentToImprove.trim()}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-[#FF725E] hover:bg-[#e05a47]"
                   icon={<Icon name="sparkles" className="w-4 h-4" />}
                 >
                   {loading ? 'Refining Content...' : 'Polish with AI'}
@@ -378,7 +378,7 @@ export default function AssistantWorkbench() {
 
       {/* Generated Result Output Box */}
       {result && (
-        <Card className="border-indigo-200 bg-linear-to-b from-indigo-50/30 to-white shadow-sm animate-in fade-in">
+        <Card className="border-cyan-200 bg-linear-to-b from-cyan-50/30 to-white shadow-sm animate-in fade-in">
           <CardContent className="p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -441,10 +441,10 @@ export default function AssistantWorkbench() {
             <div
               key={s.title}
               onClick={() => handleApplySuggestion(s)}
-              className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/30 transition-all cursor-pointer group shadow-2xs"
+              className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-cyan-300 hover:bg-cyan-50/30 transition-all cursor-pointer group shadow-2xs"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                <span className="text-xs font-bold text-slate-800 group-hover:text-[#087F8A] transition-colors">
                   {s.title}
                 </span>
                 <span className="text-[10px] font-medium text-slate-600 uppercase tracking-wider">

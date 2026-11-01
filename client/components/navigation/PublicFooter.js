@@ -26,22 +26,22 @@ export default function PublicFooter() {
             </h4>
             <ul className="space-y-2 text-xs text-slate-600">
               <li>
-                <Link href={ROUTES.USER.FEED} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.USER.FEED} className="hover:text-[#087F8A] transition-colors">
                   Social Feed
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.USER.EXPLORE} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.USER.EXPLORE} className="hover:text-[#087F8A] transition-colors">
                   Explore Topics
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.USER.ASSISTANT} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.USER.ASSISTANT} className="hover:text-[#087F8A] transition-colors">
                   AI Assistant
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.ADMIN.DASHBOARD} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.ADMIN.DASHBOARD} className="hover:text-[#087F8A] transition-colors">
                   Admin Portal
                 </Link>
               </li>
@@ -55,22 +55,22 @@ export default function PublicFooter() {
             </h4>
             <ul className="space-y-2 text-xs text-slate-600">
               <li>
-                <Link href={ROUTES.PUBLIC.LOGIN} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.PUBLIC.LOGIN} className="hover:text-[#087F8A] transition-colors">
                   Sign In
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.PUBLIC.REGISTER} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.PUBLIC.REGISTER} className="hover:text-[#087F8A] transition-colors">
                   Create Account
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.PUBLIC.FORGOT_PASSWORD} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.PUBLIC.FORGOT_PASSWORD} className="hover:text-[#087F8A] transition-colors">
                   Password Recovery
                 </Link>
               </li>
               <li>
-                <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="hover:text-indigo-600 transition-colors">
+                <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="hover:text-[#087F8A] transition-colors">
                   Email Verification
                 </Link>
               </li>

@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+const rawApiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').trim();
+const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl;
 
 /**
  * Standardized API client for Looply frontend.
@@ -9,7 +10,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/a
  * @returns {Promise<any>} Parsed response data
  */
 export async function apiClient(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE_URL}${cleanEndpoint}`;
 
   const defaultHeaders = {
     'Accept': 'application/json',
@@ -29,7 +31,11 @@ export async function apiClient(endpoint, options = {}) {
   try {
     response = await fetch(url, config);
   } catch (netErr) {
-    throw new Error('Unable to connect to Looply server. Please check your internet connection or server status.');
+    const networkError = new Error('Unable to connect to Looply server. Please check your internet connection or server status.');
+    networkError.isNetworkError = true;
+    networkError.status = 0;
+    networkError.originalError = netErr;
+    throw networkError;
   }
 
   let data;

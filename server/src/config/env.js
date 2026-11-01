@@ -180,6 +180,9 @@ const clientUrl = process.env.CLIENT_URL ? String(process.env.CLIENT_URL).trim()
 const geminiApiKey = process.env.GEMINI_API_KEY ? String(process.env.GEMINI_API_KEY).trim() : '';
 const geminiModel = process.env.GEMINI_MODEL ? String(process.env.GEMINI_MODEL).trim() : 'gemini-2.5-flash';
 
+// Development Email Preview Configuration
+const devEmailPreviewEnabled = process.env.DEV_EMAIL_PREVIEW_ENABLED ? process.env.DEV_EMAIL_PREVIEW_ENABLED === 'true' : true;
+
 export const env = {
   NODE_ENV: nodeEnv,
   PORT: port,
@@ -197,6 +200,8 @@ export const env = {
   SMTP_PASS: smtpPass,
   SMTP_FROM: smtpFrom,
   isSmtpConfigured: Boolean(smtpHost && smtpUser && smtpPass),
+  DEV_EMAIL_PREVIEW_ENABLED: devEmailPreviewEnabled,
+  isDevEmailPreviewAllowed: (nodeEnv === 'development') && devEmailPreviewEnabled,
   GEMINI_API_KEY: geminiApiKey,
   GEMINI_MODEL: geminiModel,
   isGeminiConfigured: Boolean(geminiApiKey),

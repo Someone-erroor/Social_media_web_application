@@ -1,5 +1,6 @@
 import { env } from '../config/env.js';
-import { AUTH_COOKIE_NAME, getCookieOptions, getClearCookieOptions } from '../config/jwt.js';
+import { AUTH_COOKIE_NAME, getCookieOptions, getClearCookieOptions, verifyToken } from '../config/jwt.js';
+import { User } from '../models/index.js';
 import {
   validateRegisterInput,
   validateLoginInput,
@@ -33,14 +34,22 @@ export const register = async (req, res, next) => {
       });
     }
 
-    const { user, emailDispatched } = await registerUser(sanitized);
+    const { user, emailDispatched, deliveryMode } = await registerUser(sanitized);
+
+    let message;
+    if (deliveryMode === 'smtp') {
+      message = 'Account created successfully. A verification email has been dispatched to your email address.';
+    } else if (deliveryMode === 'preview') {
+      message = 'Account created successfully. Verification email is available in the local development preview mailbox.';
+    } else {
+      message = 'Account created successfully. Email delivery is currently unavailable; please request a verification email later.';
+    }
 
     return res.status(201).json({
       success: true,
-      message: emailDispatched
-        ? 'Account created successfully. Please check your email to verify your account.'
-        : 'Account created successfully. Verification email could not be dispatched immediately; please use resend verification.',
+      message,
       emailDispatched,
+      deliveryMode,
       user
     });
   } catch (error) {
@@ -224,10 +233,33 @@ export const getMe = async (req, res) => {
 };
 
 /**
- * Handles user logout by clearing the authentication cookie.
+ * Handles user logout by invalidating the active session (incrementing tokenVersion)
+ * and clearing the authentication cookie.
  * POST /api/auth/logout
  */
 export const logout = async (req, res) => {
+  try {
+    let token = null;
+    if (req.cookies && req.cookies[AUTH_COOKIE_NAME]) {
+      token = req.cookies[AUTH_COOKIE_NAME];
+    } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (token) {
+      try {
+        const decoded = verifyToken(token);
+        if (decoded && decoded.userId) {
+          await User.findByIdAndUpdate(decoded.userId, { $inc: { tokenVersion: 1 } });
+        }
+      } catch {
+        // Token was expired or invalid; proceed with clearing cookie
+      }
+    }
+  } catch (err) {
+    // Non-blocking error handling to ensure cookie clear proceeds
+  }
+
   res.clearCookie(AUTH_COOKIE_NAME, getClearCookieOptions(env.isProduction));
 
   return res.status(200).json({

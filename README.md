@@ -287,7 +287,15 @@ c:/assestement_project/
 ### Environment Files Notice
 > **Important:** `.env` and `.env.local` are strictly local-only configuration files and are **never committed to GitHub** (enforced by `.gitignore`). Always use the provided `.env.example` templates to set up your local environment files.
 
-### Backend Setup
+### Unified Development Launcher (Recommended)
+You can start both the backend and frontend simultaneously with intelligent pre-flight port checks and database diagnostics from the project root:
+```bash
+# In the root repository directory (c:/assestement_project):
+npm run dev
+```
+*The launcher checks ports `5000` and `3000`, starts the Express backend on `http://localhost:5000`, waits for `/api/health/ready` (classifying any database startup issues into 6 actionable diagnostic categories), starts Next.js on `http://localhost:3000`, and cleans up all processes on Ctrl+C.*
+
+### Manual Backend Setup
 1. Navigate to the server directory:
    ```bash
    cd server
@@ -306,7 +314,7 @@ c:/assestement_project/
    ```
    *The server starts on port `5000`. Health check endpoint: `http://localhost:5000/api/health`.*
 
-### Frontend Setup
+### Manual Frontend Setup
 1. Navigate to the client directory:
    ```bash
    cd client

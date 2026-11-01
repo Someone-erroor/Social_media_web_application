@@ -1,7 +1,7 @@
 import http from 'http';
 import app from './app.js';
 import { env } from './config/env.js';
-import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { connectDatabase, disconnectDatabase, classifyDatabaseError } from './config/database.js';
 import { initSocketServer, closeSocketServer } from './services/socket.service.js';
 
 let server;
@@ -28,7 +28,13 @@ const startServer = async () => {
       console.log(`[Looply Server] Configured frontend origin: ${env.CLIENT_ORIGIN}`);
     });
   } catch (error) {
-    console.error(`[Looply Server] Startup halted due to database connection failure: ${error.message}`);
+    const diagnostic = classifyDatabaseError(error, env.MONGODB_URI);
+    console.error(`\n====================================================`);
+    console.error(`[Looply Server] Database Startup Diagnostics`);
+    console.error(`Diagnosis: ${diagnostic.category}`);
+    console.error(`Details:   ${diagnostic.details}`);
+    console.error(`Status:    Server HTTP listener halted (database required)`);
+    console.error(`====================================================\n`);
     process.exit(1);
   }
 };

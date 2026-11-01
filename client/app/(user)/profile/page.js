@@ -121,7 +121,7 @@ export default function ProfilePage() {
 
       {/* Profile Header Card */}
       <Card className="overflow-hidden border-slate-200">
-        <div className="h-28 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-28 bg-linear-to-r from-[#16B8C8] via-[#087F8A] to-[#FF725E]" />
 
         <CardContent className="relative pt-0 pb-6 px-6">
           <div className="-mt-12 mb-4 flex items-end justify-between">
@@ -163,7 +163,7 @@ export default function ProfilePage() {
               ) : (
                 <span className="italic text-slate-600">
                   No bio added yet.{' '}
-                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-indigo-600 underline">
+                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-[#087F8A] underline">
                     Add a bio
                   </Link>
                 </span>

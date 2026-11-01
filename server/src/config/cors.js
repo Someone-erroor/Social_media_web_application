@@ -1,10 +1,14 @@
 import { env } from './env.js';
 
-// Parse allowed origins from validated environment configuration
+// In production, strictly enforce configured origins.
+// In development and testing, permit both localhost and loopback variations to prevent dev origin mismatch.
 const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
-const allowedOrigins = env.CLIENT_ORIGINS || (env.CLIENT_ORIGIN
+const configuredOrigins = env.CLIENT_ORIGINS || (env.CLIENT_ORIGIN
   ? env.CLIENT_ORIGIN.split(',').map((origin) => origin.trim())
-  : defaultOrigins);
+  : []);
+const allowedOrigins = env.isProduction
+  ? configuredOrigins
+  : [...new Set([...defaultOrigins, ...configuredOrigins])];
 
 export const corsOptions = {
   origin: (origin, callback) => {
@@ -20,7 +24,7 @@ export const corsOptions = {
       return callback(error, false);
     }
 
-    if (allowedOrigins.includes(origin) || (env.isTest && (origin.includes('localhost') || origin.includes('127.0.0.1')))) {
+    if (allowedOrigins.includes(origin) || (!env.isProduction && (origin.includes('localhost') || origin.includes('127.0.0.1')))) {
       return callback(null, true);
     }
 

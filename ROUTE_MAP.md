@@ -102,6 +102,7 @@ These routes render within the distinct, high-contrast `AdminShell` (`AdminSideb
 | `POST` | `/api/ai/posts/generate` | Authenticated (Verified) | Generates social post draft via Gemini AI | Phase 14 |
 | `POST` | `/api/ai/posts/improve` | Authenticated (Verified) | Polishes post tone and clarity via Gemini AI | Phase 14 |
 | `POST` | `/api/ai/posts/:postId/summarize` | Authenticated (Verified) | Summarizes discussion comments into structured viewpoints via Gemini AI | Phase 15 |
+| `GET` | `/api/__dev/mailbox/latest` | Dev Loopback Only | Retrieves latest transactional email for local verification preview | Dev Utility |
 | `WS` | `/socket.io/` | Authenticated (JWT Handshake) | Real-time event transport, user & admin rooms | Phase 13 |
 
 ---

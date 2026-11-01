@@ -147,11 +147,80 @@ export const disconnectDatabase = async () => {
   }
 };
 
+/**
+ * Programmatically classifies MongoDB connection errors into diagnostic categories
+ * while strictly preventing the exposure of credentials, passwords, or connection secrets.
+ *
+ * Diagnostic Categories:
+ * - Missing MongoDB URI
+ * - Invalid MongoDB URI
+ * - DNS resolution failure
+ * - Atlas network access denied
+ * - Authentication failure
+ * - Connection timeout
+ *
+ * @param {Error|any} error - Thrown error instance
+ * @param {string} [rawUri] - Raw configured URI string
+ * @returns {{ category: string, details: string }} Safe diagnostic category and explanation
+ */
+export const classifyDatabaseError = (error, rawUri) => {
+  if (!rawUri || String(rawUri).trim() === '') {
+    return {
+      category: 'Missing MongoDB URI',
+      details: 'MONGODB_URI is required in server/.env but was not provided.'
+    };
+  }
+
+  const trimmed = String(rawUri).trim();
+  if (!trimmed.startsWith('mongodb://') && !trimmed.startsWith('mongodb+srv://')) {
+    return {
+      category: 'Invalid MongoDB URI',
+      details: 'Connection string must begin with "mongodb://" or "mongodb+srv://".'
+    };
+  }
+
+  const msg = error?.message || String(error || '');
+
+  if (/bad auth|Authentication failed|auth failed|not authorized|password|credentials/i.test(msg)) {
+    return {
+      category: 'Authentication failure',
+      details: 'MongoDB rejected the provided credentials. Please verify your username, password, and authSource.'
+    };
+  }
+
+  if (/ENOTFOUND|EAI_AGAIN|querySrv|queryA|getaddrinfo/i.test(msg)) {
+    return {
+      category: 'DNS resolution failure',
+      details: 'Unable to resolve the MongoDB host domain. Please verify network access and DNS configuration.'
+    };
+  }
+
+  if (/whitelist|network access|not allowed to connect|IP.*?not authorized|Could not connect to any servers in your MongoDB Atlas cluster/i.test(msg)) {
+    return {
+      category: 'Atlas network access denied',
+      details: 'MongoDB Atlas blocked the connection. Ensure your current client IP is added to the Atlas Network Access IP Access List.'
+    };
+  }
+
+  if (/timeout|timed out|ETIMEDOUT|serverSelectionTimeoutMS|MongoServerSelectionError/i.test(msg)) {
+    return {
+      category: 'Connection timeout',
+      details: 'Server selection timed out before reaching a healthy MongoDB primary node.'
+    };
+  }
+
+  return {
+    category: 'Database connection failure',
+    details: 'Unexpected database connection error occurred during startup.'
+  };
+};
+
 export default {
   connectDatabase,
   disconnectDatabase,
   isDatabaseConnected,
   sanitizeMongoUri,
-  validateMongoUri
+  validateMongoUri,
+  classifyDatabaseError
 };
 

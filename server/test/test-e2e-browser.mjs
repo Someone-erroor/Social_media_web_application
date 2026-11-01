@@ -183,14 +183,14 @@ async function runE2EBrowserTests() {
 
     // 3. Start Dedicated Express API Server on port 5000
     console.log('\n--- Step 3: Starting Dedicated Express Test Backend on port 5000 ---');
-    expressServer = app.listen(5000, '127.0.0.1');
+    expressServer = app.listen(5000, '0.0.0.0');
     await new Promise((resolve, reject) => {
       expressServer.on('listening', resolve);
       expressServer.on('error', reject);
     });
 
     // Verify actual health endpoint response (never accept arbitrary 4xx responses as healthy)
-    const healthUrl = 'http://127.0.0.1:5000/api/health';
+    const healthUrl = 'http://localhost:5000/api/health';
     const healthStartTime = Date.now();
     let backendHealthy = false;
     while (Date.now() - healthStartTime < 10000) {
@@ -216,7 +216,7 @@ async function runE2EBrowserTests() {
 
     // 4. Build Dedicated Next.js Frontend specifically for E2E testing
     console.log('\n--- Step 4: Building Frontend Specifically for E2E Testing ---');
-    console.log('Setting NEXT_PUBLIC_API_URL=http://127.0.0.1:5000/api before executing next build...');
+    console.log('Setting NEXT_PUBLIC_API_URL=http://localhost:5000/api before executing next build...');
     const clientDir = path.resolve(__dirname, '../../client');
 
     // Clean any prior build or dev artifacts in .next to prevent dev/prod mixups
@@ -253,7 +253,7 @@ async function runE2EBrowserTests() {
           env: {
             ...process.env,
             NODE_ENV: 'production',
-            NEXT_PUBLIC_API_URL: 'http://127.0.0.1:5000/api'
+            NEXT_PUBLIC_API_URL: 'http://localhost:5000/api'
           }
         }
       );
@@ -279,7 +279,7 @@ async function runE2EBrowserTests() {
     if (buildExitCode !== 0) {
       throw new Error(`CRITICAL: E2E Frontend build failed with exit code ${buildExitCode}.\nStdout: ${buildStdout}\nStderr: ${buildStderr}`);
     }
-    assert(buildExitCode === 0, '5. Frontend built specifically for E2E testing with NEXT_PUBLIC_API_URL=http://127.0.0.1:5000/api');
+    assert(buildExitCode === 0, '5. Frontend built specifically for E2E testing with NEXT_PUBLIC_API_URL=http://localhost:5000/api');
 
     // Remove any .next/dev created during build
     const devDir = path.join(clientDir, '.next', 'dev');
@@ -290,8 +290,8 @@ async function runE2EBrowserTests() {
     }
 
     // Verify generated frontend build uses the test backend
-    const isBuildVerified = verifyFrontendBuildApiUrl(clientDir, 'http://127.0.0.1:5000/api');
-    assert(isBuildVerified, '6. Verified generated frontend build inlined test backend URL (http://127.0.0.1:5000/api)');
+    const isBuildVerified = verifyFrontendBuildApiUrl(clientDir, 'http://localhost:5000/api');
+    assert(isBuildVerified, '6. Verified generated frontend build inlined test backend URL (http://localhost:5000/api)');
 
     // 5. Start Dedicated Next.js Production Frontend on port 3000
     console.log('\n--- Step 5: Starting Dedicated Next.js Production Frontend on port 3000 ---');
@@ -309,7 +309,7 @@ async function runE2EBrowserTests() {
           ...process.env,
           NODE_ENV: 'production',
           PORT: '3000',
-          NEXT_PUBLIC_API_URL: 'http://127.0.0.1:5000/api'
+          NEXT_PUBLIC_API_URL: 'http://localhost:5000/api'
         }
       }
     );
@@ -320,7 +320,7 @@ async function runE2EBrowserTests() {
     });
 
     // Wait for frontend to return strictly HTTP 200 (never accept 4xx as healthy)
-    const frontendUrl = 'http://127.0.0.1:3000';
+    const frontendUrl = 'http://localhost:3000';
     const frontendStartTime = Date.now();
     let frontendHealthy = false;
     while (Date.now() - frontendStartTime < 35000) {
@@ -377,7 +377,7 @@ async function runE2EBrowserTests() {
         // Inspect all API requests
         if (url.includes('/api/')) {
           interceptedApiRequests.push(url);
-          const isAllowedTestBackend = url.startsWith('http://127.0.0.1:5000/api');
+          const isAllowedTestBackend = url.startsWith('http://localhost:5000/api') || url.startsWith('http://127.0.0.1:5000/api');
           if (isAllowedTestBackend) {
             // Continue allowed test backend requests
             interceptedReq.continue();
@@ -404,7 +404,7 @@ async function runE2EBrowserTests() {
 
     // 7. Navigate to Register Page in Browser
     console.log('\n--- Step 7: User Registration via Real Browser UI ---');
-    await page.goto('http://127.0.0.1:3000/register', { waitUntil: 'networkidle2' });
+    await page.goto('http://localhost:3000/register', { waitUntil: 'networkidle2' });
     const pageTitle = await page.title();
     assert(pageTitle.includes('Looply'), `9. Loaded registration page (title: "${pageTitle}")`);
 
@@ -455,7 +455,7 @@ async function runE2EBrowserTests() {
     // 9. Role Escalation Prevention Verification via direct API injection
     console.log('\n--- Step 9: Direct API Role Escalation Prevention Check ---');
     const escalationRes = await page.evaluate(async () => {
-      const res = await fetch('http://127.0.0.1:5000/api/auth/register', {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -547,7 +547,7 @@ async function runE2EBrowserTests() {
     // 14. Verify API calls use credentials: 'include'
     console.log('\n--- Step 13: Verify Client API credentials: include ---');
     const meResult = await page.evaluate(async () => {
-      const res = await fetch('http://127.0.0.1:5000/api/auth/me', {
+      const res = await fetch('http://localhost:5000/api/auth/me', {
         credentials: 'include'
       });
       return { status: res.status, data: await res.json() };
@@ -585,8 +585,8 @@ async function runE2EBrowserTests() {
     );
     assert(
       interceptedApiRequests.length > 0 &&
-      interceptedApiRequests.every((u) => u.startsWith('http://127.0.0.1:5000/api')),
-      `31. Verified all intercepted browser API requests (${interceptedApiRequests.length}) targeted test backend exclusively (http://127.0.0.1:5000/api)`
+      interceptedApiRequests.every((u) => u.startsWith('http://localhost:5000/api') || u.startsWith('http://127.0.0.1:5000/api')),
+      `31. Verified all intercepted browser API requests (${interceptedApiRequests.length}) targeted test backend exclusively (http://localhost:5000/api)`
     );
 
     // After browser tests, fail if violations exist

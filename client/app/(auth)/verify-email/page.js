@@ -78,7 +78,7 @@ function VerifyEmailContent() {
   return (
     <Card className="shadow-md border-slate-200 text-center">
       <CardHeader className="items-center pb-2">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mb-2 shadow-xs">
+        <div className="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mb-2 shadow-xs">
           <Icon name="mail" className="w-7 h-7" />
         </div>
         <CardTitle className="text-xl font-bold">
@@ -96,8 +96,8 @@ function VerifyEmailContent() {
       <CardContent className="space-y-5 pt-3">
         {/* Verification Status Feedback */}
         {verifying && (
-          <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-xs text-indigo-700 flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin" />
+          <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-100 text-xs text-[#087F8A] flex items-center justify-center gap-2">
+            <div className="w-4 h-4 border-2 border-cyan-300 border-t-[#16B8C8] rounded-full animate-spin" />
             <span>Validating security token with Looply server...</span>
           </div>
         )}
@@ -188,7 +188,7 @@ function VerifyEmailContent() {
           Need to change your email?{' '}
           <Link
             href={ROUTES.PUBLIC.REGISTER}
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
           >
             Register again
           </Link>
@@ -204,7 +204,7 @@ export default function VerifyEmailPage() {
       fallback={
         <Card className="shadow-md border-slate-200 text-center p-8">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
             <p className="text-xs text-slate-500">Loading verification portal...</p>
           </div>
         </Card>

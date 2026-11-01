@@ -144,7 +144,7 @@ export default function UserProfilePage() {
         <>
           {/* Profile Header Card */}
           <Card className="overflow-hidden border-slate-200">
-            <div className="h-28 bg-linear-to-r from-slate-700 via-indigo-900 to-slate-900" />
+            <div className="h-28 bg-linear-to-r from-[#172126] via-[#252E34] to-[#172126]" />
 
             <CardContent className="relative pt-0 pb-6 px-6">
               <div className="-mt-12 mb-4 flex items-end justify-between">

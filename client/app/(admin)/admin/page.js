@@ -168,7 +168,7 @@ export default function AdminDashboardPage() {
               <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Total Users
               </span>
-              <span className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+              <span className="p-2 rounded-xl bg-cyan-50 text-[#087F8A]">
                 <Icon name="users" className="w-5 h-5" />
               </span>
             </div>
@@ -192,7 +192,7 @@ export default function AdminDashboardPage() {
               <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Published Posts
               </span>
-              <span className="p-2 rounded-xl bg-purple-50 text-purple-600">
+              <span className="p-2 rounded-xl bg-[#FF725E]/10 text-[#FF725E]">
                 <Icon name="posts" className="w-5 h-5" />
               </span>
             </div>

@@ -15,7 +15,7 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 antialiased selection:bg-[#16B8C8] selection:text-[#172126]">
       {/* Responsive Public Navigation */}
       <PublicNavbar />
 
@@ -24,16 +24,16 @@ export default function HomePage() {
         <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32 bg-linear-to-b from-white via-slate-50/50 to-slate-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/60 shadow-xs">
-                <span className="flex h-2 w-2 rounded-full bg-indigo-600"></span>
-                <span className="text-xs font-semibold text-indigo-700 tracking-wide uppercase">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-50 border border-cyan-200/60 shadow-xs">
+                <span className="flex h-2 w-2 rounded-full bg-[#16B8C8]"></span>
+                <span className="text-xs font-semibold text-[#087F8A] tracking-wide uppercase">
                   A New Era of Authentic Social Interaction
                 </span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-none">
                 Connect authentically.{' '}
-                <span className="bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[#16B8C8] via-[#087F8A] to-[#FF725E] bg-clip-text text-transparent">
                   Share your voice.
                 </span>{' '}
                 Express who you are.
@@ -82,7 +82,7 @@ export default function HomePage() {
 
             {/* Product UI Mockup Card Preview */}
             <div className="mt-14 max-w-4xl mx-auto">
-              <div className="rounded-3xl p-3 bg-linear-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-slate-200 shadow-xl">
+              <div className="rounded-3xl p-3 bg-linear-to-br from-[#16B8C8]/10 via-[#087F8A]/10 to-[#FF725E]/10 border border-slate-200 shadow-xl">
                 <div className="rounded-2xl bg-white border border-slate-200 p-6 sm:p-8 space-y-6">
                   {/* Mock Post Card */}
                   <div className="flex items-start justify-between gap-4">
@@ -101,7 +101,7 @@ export default function HomePage() {
 
                   <p className="text-slate-800 text-sm sm:text-base leading-relaxed">
                     Social software should empower genuine discourse rather than maximize outrage loops.
-                    Excited to experience <span className="font-semibold text-indigo-600">Looply</span> — a platform built on clarity, clean typography, and creator autonomy.
+                    Excited to experience <span className="font-semibold text-[#087F8A]">Looply</span> — a platform built on clarity, clean typography, and creator autonomy.
                   </p>
 
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
@@ -110,7 +110,7 @@ export default function HomePage() {
                         <Icon name="heart" className="w-4 h-4 text-slate-400" />
                         <span>24</span>
                       </span>
-                      <span className="flex items-center gap-1.5 hover:text-indigo-600 cursor-default">
+                      <span className="flex items-center gap-1.5 hover:text-[#087F8A] cursor-default">
                         <Icon name="comments" className="w-4 h-4 text-slate-400" />
                         <span>8</span>
                       </span>
@@ -131,7 +131,7 @@ export default function HomePage() {
         <section id="features" className="py-20 bg-white border-y border-slate-200/80">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-600">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#087F8A]">
                 Core Capabilities
               </h2>
               <p className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
@@ -146,7 +146,7 @@ export default function HomePage() {
               {/* Feature 1 */}
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2">
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-50 text-[#087F8A] flex items-center justify-center mb-2">
                     <Icon name="feed" className="w-6 h-6" />
                   </div>
                   <CardTitle>Distraction-Free Feed</CardTitle>
@@ -161,7 +161,7 @@ export default function HomePage() {
               {/* Feature 2 */}
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-2">
+                  <div className="w-12 h-12 rounded-2xl bg-[#FF725E]/10 text-[#FF725E] flex items-center justify-center mb-2">
                     <Icon name="sparkles" className="w-6 h-6" />
                   </div>
                   <CardTitle>AI-Assisted Expression</CardTitle>
@@ -195,7 +195,7 @@ export default function HomePage() {
         <section id="how-it-works" className="py-20 bg-slate-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-600">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#087F8A]">
                 Simple Workflow
               </h2>
               <p className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
@@ -208,7 +208,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[#16B8C8] text-[#172126] font-bold text-sm flex items-center justify-center">
                   1
                 </div>
                 <h3 className="text-base font-semibold text-slate-900">Create Your Profile</h3>
@@ -218,7 +218,7 @@ export default function HomePage() {
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[#16B8C8] text-[#172126] font-bold text-sm flex items-center justify-center">
                   2
                 </div>
                 <h3 className="text-base font-semibold text-slate-900">Publish &amp; Discover</h3>
@@ -228,7 +228,7 @@ export default function HomePage() {
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[#16B8C8] text-[#172126] font-bold text-sm flex items-center justify-center">
                   3
                 </div>
                 <h3 className="text-base font-semibold text-slate-900">Amplify with AI</h3>
@@ -241,12 +241,12 @@ export default function HomePage() {
         </section>
 
         {/* CTA Callout Section */}
-        <section className="py-20 bg-linear-to-r from-indigo-700 via-indigo-800 to-slate-900 text-white">
+        <section className="py-20 bg-linear-to-r from-[#172126] via-[#252E34] to-[#172126] text-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
               Ready to experience modern social connection?
             </h2>
-            <p className="text-indigo-200 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            <p className="text-cyan-200 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
               Explore the frontend interface, test the layouts, and discover how Looply is structured.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -254,7 +254,7 @@ export default function HomePage() {
                 href={ROUTES.PUBLIC.REGISTER}
                 variant="primary"
                 size="lg"
-                className="w-full sm:w-auto bg-white text-indigo-700 hover:bg-slate-100"
+                className="w-full sm:w-auto bg-white text-[#087F8A] hover:bg-slate-100"
               >
                 Sign Up Now
               </Button>
@@ -262,7 +262,7 @@ export default function HomePage() {
                 href={ROUTES.PUBLIC.LOGIN}
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto bg-transparent border-indigo-300/40 text-white hover:bg-white/10"
+                className="w-full sm:w-auto bg-transparent border-cyan-300/40 text-white hover:bg-white/10"
               >
                 Sign In to Account
               </Button>
@@ -270,7 +270,7 @@ export default function HomePage() {
                 href={ROUTES.USER.FEED}
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto bg-transparent border-indigo-300/40 text-white hover:bg-indigo-600/30"
+                className="w-full sm:w-auto bg-transparent border-cyan-300/40 text-white hover:bg-[#16B8C8]/30"
               >
                 Go to Social Feed
               </Button>

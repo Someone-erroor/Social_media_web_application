@@ -23,7 +23,7 @@ export default function Input({
 
   const stateClasses = error
     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-400'
-    : 'border-slate-300 focus:border-indigo-600 focus:ring-indigo-500/20';
+    : 'border-slate-300 focus:border-[#16B8C8] focus:ring-[#16B8C8]/20';
 
   const iconPadding = icon ? 'pl-10' : '';
   const actionPadding = action ? 'pr-11' : '';

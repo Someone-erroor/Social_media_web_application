@@ -30,7 +30,7 @@ export default function UserShell({ children, showSidePanel = true }) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-3 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
           <p className="text-xs text-slate-500 font-medium">Loading Looply...</p>
         </div>
       </div>
@@ -71,7 +71,7 @@ export default function UserShell({ children, showSidePanel = true }) {
                       <CardTitle>Discover Topics</CardTitle>
                       <Link
                         href={ROUTES.USER.EXPLORE}
-                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+                        className="text-xs font-semibold text-[#087F8A] hover:text-[#06656e]"
                       >
                         View all
                       </Link>
@@ -89,7 +89,7 @@ export default function UserShell({ children, showSidePanel = true }) {
                         href={ROUTES.USER.EXPLORE}
                         className="flex items-center justify-between group py-1"
                       >
-                        <span className="text-sm font-medium text-slate-700 group-hover:text-indigo-600 transition-colors">
+                        <span className="text-sm font-medium text-slate-700 group-hover:text-[#087F8A] transition-colors">
                           {item.topic}
                         </span>
                         <span className="text-[11px] text-slate-600 font-medium">
@@ -101,10 +101,10 @@ export default function UserShell({ children, showSidePanel = true }) {
                 </Card>
 
                 {/* AI Assistant Teaser Card */}
-                <Card className="bg-linear-to-br from-indigo-50/50 via-white to-purple-50/50 border-indigo-100">
+                <Card className="bg-linear-to-br from-cyan-50/60 via-white to-teal-50/40 border-cyan-100">
                   <CardContent className="space-y-3 p-5">
-                    <div className="flex items-center gap-2 text-indigo-700">
-                      <Icon name="sparkles" className="w-5 h-5 text-indigo-600" />
+                    <div className="flex items-center gap-2 text-[#087F8A]">
+                      <Icon name="sparkles" className="w-5 h-5 text-[#16B8C8]" />
                       <span className="text-xs font-bold uppercase tracking-wider">
                         AI Assistant
                       </span>
@@ -114,7 +114,7 @@ export default function UserShell({ children, showSidePanel = true }) {
                     </p>
                     <Link
                       href={ROUTES.USER.ASSISTANT}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#087F8A] hover:text-[#06656e]"
                     >
                       <span>Explore Assistant</span>
                       <Icon name="chevronRight" className="w-3.5 h-3.5" />

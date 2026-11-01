@@ -57,7 +57,7 @@ export default function AdminSidebar() {
             onClick={() => isMobile && setMobileDrawerOpen(false)}
             className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
               isActive
-                ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+                ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
             }`}
             aria-current={isActive ? 'page' : undefined}
@@ -65,7 +65,7 @@ export default function AdminSidebar() {
             <Icon
               name={item.icon}
               className={`w-5 h-5 shrink-0 ${
-                isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
+                isActive ? 'text-[#172126]' : 'text-slate-400 group-hover:text-slate-200'
               }`}
             />
             <span>{item.label}</span>
@@ -80,7 +80,7 @@ export default function AdminSidebar() {
       <div className="px-3 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60">
         <div className="flex items-center justify-between text-xs text-slate-300 font-medium">
           <span>Admin Clearance</span>
-          <span className="text-[10px] font-mono text-indigo-400 bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-800/50">
+          <span className="text-[10px] font-mono text-[#16B8C8] bg-[#172126] px-1.5 py-0.5 rounded border border-[#252E34]">
             Root Level
           </span>
         </div>
@@ -126,7 +126,7 @@ export default function AdminSidebar() {
         <button
           type="button"
           onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-          className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
           aria-label="Toggle admin navigation menu"
           aria-expanded={mobileDrawerOpen}
         >
@@ -164,7 +164,7 @@ export default function AdminSidebar() {
               <button
                 type="button"
                 onClick={() => setMobileDrawerOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
                 aria-label="Close navigation menu"
               >
                 <Icon name="close" className="w-5 h-5" />

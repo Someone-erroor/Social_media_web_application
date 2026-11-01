@@ -34,7 +34,7 @@ function getNotificationIcon(type) {
     case 'post_like':
       return <Icon name="heart" className="w-4 h-4 text-red-500 fill-red-500" />;
     case 'post_comment':
-      return <Icon name="comments" className="w-4 h-4 text-indigo-500" />;
+      return <Icon name="comments" className="w-4 h-4 text-[#16B8C8]" />;
     case 'login_alert':
       return <Icon name="lock" className="w-4 h-4 text-amber-500" />;
     default:
@@ -152,7 +152,7 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'all'
-              ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -166,7 +166,7 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'unread'
-              ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -180,7 +180,7 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'likes'
-              ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -194,7 +194,7 @@ export default function NotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'comments'
-              ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -237,7 +237,7 @@ export default function NotificationsPage() {
                 key={notif._id}
                 className={`border-slate-200 transition-colors ${
                   isUnread
-                    ? 'bg-indigo-50/30 border-indigo-200/80 shadow-xs'
+                    ? 'bg-cyan-50/30 border-cyan-200/80 shadow-xs'
                     : 'bg-white hover:bg-slate-50/50'
                 }`}
               >
@@ -268,7 +268,7 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       onClick={() => markAsRead(notif._id)}
-                      className="shrink-0 p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-100 transition-colors text-[11px] font-semibold"
+                      className="shrink-0 p-1.5 rounded-lg text-[#087F8A] hover:bg-cyan-100 transition-colors text-[11px] font-semibold"
                       title="Mark as read"
                     >
                       Mark read

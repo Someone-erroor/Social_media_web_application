@@ -27,18 +27,18 @@ export default function DiscussionSummaryPanel({
     <div
       role="region"
       aria-label="AI Discussion Summary"
-      className="mt-3 p-4 rounded-2xl bg-gradient-to-br from-purple-50/70 via-indigo-50/50 to-white border border-purple-200/80 shadow-xs space-y-3.5 transition-all"
+      className="mt-3 p-4 rounded-2xl bg-gradient-to-br from-[#FF725E]/5 via-cyan-50/40 to-white border border-[#FF725E]/30/80 shadow-xs space-y-3.5 transition-all"
     >
       {/* Panel Header */}
-      <div className="flex items-center justify-between pb-2.5 border-b border-purple-100/80">
+      <div className="flex items-center justify-between pb-2.5 border-b border-[#FF725E]/20/80">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs">
+          <div className="w-7 h-7 rounded-xl bg-[#FF725E] text-white flex items-center justify-center shadow-xs">
             <Icon name="sparkles" className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </div>
           <div>
             <h4 className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
               <span>Discussion Summary</span>
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-700">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#FF725E]/15 text-[#FF725E]">
                 {metadata?.provider === 'google-gemini' ? 'Gemini AI' : 'AI Analysis'}
               </span>
             </h4>
@@ -56,7 +56,7 @@ export default function DiscussionSummaryPanel({
             <button
               type="button"
               onClick={onRetry}
-              className="p-1 text-slate-400 hover:text-purple-600 rounded-lg hover:bg-purple-100/60 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="p-1 text-slate-400 hover:text-[#FF725E] rounded-lg hover:bg-[#FF725E]/15/60 transition-colors focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
               aria-label="Refresh summary"
               title="Re-analyze discussion"
             >
@@ -78,9 +78,9 @@ export default function DiscussionSummaryPanel({
       {/* Loading Skeleton */}
       {loading && (
         <div role="status" aria-live="polite" className="py-4 space-y-2.5">
-          <div className="flex items-center gap-2 text-xs text-purple-700 font-medium animate-pulse">
+          <div className="flex items-center gap-2 text-xs text-[#FF725E] font-medium animate-pulse">
             <svg
-              className="animate-spin h-3.5 w-3.5 text-purple-600"
+              className="animate-spin h-3.5 w-3.5 text-[#FF725E]"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -101,9 +101,9 @@ export default function DiscussionSummaryPanel({
             </svg>
             <span>Analyzing discussion comments with Google Gemini...</span>
           </div>
-          <div className="h-3 bg-purple-100/70 rounded-full w-5/6 animate-pulse" />
-          <div className="h-3 bg-purple-100/70 rounded-full w-4/6 animate-pulse" />
-          <div className="h-3 bg-purple-100/70 rounded-full w-3/4 animate-pulse" />
+          <div className="h-3 bg-[#FF725E]/15/70 rounded-full w-5/6 animate-pulse" />
+          <div className="h-3 bg-[#FF725E]/15/70 rounded-full w-4/6 animate-pulse" />
+          <div className="h-3 bg-[#FF725E]/15/70 rounded-full w-3/4 animate-pulse" />
         </div>
       )}
 
@@ -138,8 +138,8 @@ export default function DiscussionSummaryPanel({
         <div className="space-y-3 text-xs text-slate-700 leading-relaxed">
           {/* Topic */}
           {summary.topic && (
-            <div className="bg-white/80 p-2.5 rounded-xl border border-purple-100/80">
-              <span className="font-semibold text-purple-900 block text-[11px] uppercase tracking-wider mb-0.5">
+            <div className="bg-white/80 p-2.5 rounded-xl border border-[#FF725E]/20/80">
+              <span className="font-semibold text-[#172126] block text-[11px] uppercase tracking-wider mb-0.5">
                 Discussion Topic
               </span>
               <p className="text-slate-800 font-medium">{summary.topic}</p>
@@ -212,11 +212,11 @@ export default function DiscussionSummaryPanel({
 
           {/* Conclusion */}
           {summary.conclusion && (
-            <div className="bg-purple-100/40 p-2.5 rounded-xl border border-purple-200/60">
-              <span className="font-semibold text-purple-950 block text-[11px] uppercase tracking-wider mb-0.5">
+            <div className="bg-[#FF725E]/15/40 p-2.5 rounded-xl border border-[#FF725E]/30/60">
+              <span className="font-semibold text-[#172126] block text-[11px] uppercase tracking-wider mb-0.5">
                 Discussion Synthesis
               </span>
-              <p className="text-purple-900 text-[11px]">{summary.conclusion}</p>
+              <p className="text-[#172126] text-[11px]">{summary.conclusion}</p>
             </div>
           )}
 
@@ -224,7 +224,7 @@ export default function DiscussionSummaryPanel({
           <div className="pt-1 flex items-center justify-between text-[10px] text-slate-600">
             <span>AI-generated discussion synthesis. Never published automatically.</span>
             {metadata?.model && (
-              <span className="font-mono text-[9px] uppercase tracking-tight text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">
+              <span className="font-mono text-[9px] uppercase tracking-tight text-[#FF725E] bg-[#FF725E]/10 px-1.5 py-0.5 rounded">
                 {metadata.model}
               </span>
             )}

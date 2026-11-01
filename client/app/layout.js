@@ -21,7 +21,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full bg-slate-50 antialiased selection:bg-indigo-500 selection:text-white">
+    <html lang="en" className="h-full bg-slate-50 antialiased selection:bg-[#16B8C8] selection:text-[#172126]">
       <body className="min-h-full flex flex-col text-slate-900 bg-slate-50 font-sans">
         <ClientProviders>{children}</ClientProviders>
       </body>

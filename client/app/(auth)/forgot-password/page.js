@@ -15,6 +15,7 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [devResetLink, setDevResetLink] = useState(null);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -36,6 +37,14 @@ export default function ForgotPasswordPage() {
       setSuccessMessage(
         res.message || 'If an account exists with this email, password reset instructions have been sent.'
       );
+      try {
+        const devMail = await authService.getDevMailboxLatest();
+        if (devMail?.email?.link && devMail?.email?.type === 'password_reset') {
+          setDevResetLink(devMail.email.link);
+        }
+      } catch {
+        // non-blocking
+      }
     } catch (err) {
       setErrorMessage(err.message || 'Unable to process password reset request. Please try again.');
     } finally {
@@ -46,7 +55,7 @@ export default function ForgotPasswordPage() {
   return (
     <Card className="shadow-md border-slate-200">
       <CardHeader className="text-center pb-2">
-        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto mb-2 shadow-xs">
+        <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mx-auto mb-2 shadow-xs">
           <Icon name="lock" className="w-6 h-6" />
         </div>
         <CardTitle className="text-xl font-bold">Reset your password</CardTitle>
@@ -69,6 +78,26 @@ export default function ForgotPasswordPage() {
             <p className="text-[11px] text-emerald-700">
               The reset link will remain active for 30 minutes. Be sure to check your spam or promotions folder.
             </p>
+          </div>
+        )}
+
+        {devResetLink && (
+          <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-950 text-xs space-y-2.5">
+            <div className="flex items-center gap-2 font-semibold text-cyan-900">
+              <Icon name="mail" className="w-4 h-4 text-cyan-600" />
+              <span>Development Email Preview</span>
+            </div>
+            <p className="text-cyan-800 leading-relaxed">
+              Your password reset link is ready in the local preview mailbox. Click below to proceed with setting a new password:
+            </p>
+            <div>
+              <a
+                href={devResetLink}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-xs shadow-xs transition-colors"
+              >
+                <span>Reset Password Now &rarr;</span>
+              </a>
+            </div>
           </div>
         )}
 
@@ -114,7 +143,7 @@ export default function ForgotPasswordPage() {
           Remember your password?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
           >
             Back to sign in
           </Link>

@@ -141,7 +141,7 @@ export default function AdminUsersPage() {
             value={accountStatus}
             onChange={(e) => setAccountStatus(e.target.value)}
             aria-label="Filter by account status"
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
+            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#16B8C8]"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -152,7 +152,7 @@ export default function AdminUsersPage() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
             aria-label="Filter by user role"
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
+            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#16B8C8]"
           >
             <option value="">All Roles</option>
             <option value="user">User</option>

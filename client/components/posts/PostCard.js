@@ -311,7 +311,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
             <div className="min-w-0">
               <Link
                 href={authorId ? ROUTES.USER.USER_PROFILE(authorId) : ROUTES.USER.FEED}
-                className="text-sm font-semibold text-slate-900 hover:text-indigo-600 truncate block transition-colors"
+                className="text-sm font-semibold text-slate-900 hover:text-[#087F8A] truncate block transition-colors"
               >
                 {authorName}
               </Link>
@@ -332,7 +332,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                   setIsEditing(true);
                   setShowConfirmDelete(false);
                 }}
-                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition-colors" aria-label="Edit post"
+                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-slate-600 hover:text-[#087F8A] hover:bg-slate-100 transition-colors" aria-label="Edit post"
                 title="Edit post"
               >
                 <Icon name="edit" className="w-4 h-4" />
@@ -386,7 +386,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               onChange={(e) => setEditContent(e.target.value)}
               rows={3}
               disabled={loading}
-              className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
+              className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:outline-none focus:border-[#16B8C8]"
             />
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-slate-600">
@@ -448,8 +448,8 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               onClick={handleToggleComments}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 showComments
-                  ? 'text-indigo-600 bg-indigo-50 font-semibold'
-                  : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'
+                  ? 'text-[#087F8A] bg-cyan-50 font-semibold'
+                  : 'text-slate-500 hover:text-[#087F8A] hover:bg-slate-50'
               }`}
               title="View comments"
             >
@@ -464,15 +464,15 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               disabled={summaryLoading}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors text-xs ${
                 showSummary
-                  ? 'text-purple-600 bg-purple-50 font-semibold'
-                  : 'text-slate-500 hover:text-purple-600 hover:bg-slate-50'
+                  ? 'text-[#FF725E] bg-[#FF725E]/10 font-semibold'
+                  : 'text-slate-500 hover:text-[#FF725E] hover:bg-slate-50'
               }`}
               title="Summarize discussion with Gemini AI"
               aria-label="Summarize discussion"
             >
               <Icon
                 name="sparkles"
-                className={`w-4 h-4 text-purple-600 ${summaryLoading ? 'animate-spin' : ''}`}
+                className={`w-4 h-4 text-[#FF725E] ${summaryLoading ? 'animate-spin' : ''}`}
               />
               <span className="hidden sm:inline">Summarize</span>
             </button>
@@ -519,7 +519,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                       onChange={(e) => setCommentText(e.target.value)}
                       maxLength={500}
                       disabled={submittingComment}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] focus:bg-white"
                     />
                   </div>
                   {commentText.length > 0 && (
@@ -539,7 +539,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               </form>
             ) : (
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-600">
-                <Link href={ROUTES.AUTH.LOGIN} className="text-indigo-600 font-semibold hover:underline">
+                <Link href={ROUTES.AUTH.LOGIN} className="text-[#087F8A] font-semibold hover:underline">
                   Sign in
                 </Link>{' '}
                 to join the discussion and post a comment.
@@ -584,7 +584,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                         <div className="flex items-center justify-between gap-2">
                           <Link
                             href={commentAuthorId ? ROUTES.USER.USER_PROFILE(commentAuthorId) : ROUTES.USER.FEED}
-                            className="font-semibold text-slate-900 hover:text-indigo-600 transition-colors"
+                            className="font-semibold text-slate-900 hover:text-[#087F8A] transition-colors"
                           >
                             {commentAuthorName}
                           </Link>
@@ -598,7 +598,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                     setEditingCommentId(comment._id);
                                     setEditCommentContent(comment.content);
                                   }}
-                                  className="text-slate-600 hover:text-indigo-600 p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
+                                  className="text-slate-600 hover:text-[#087F8A] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
                                   title="Edit comment"
                                 >
                                   <Icon name="edit" className="w-3 h-3" />
@@ -626,7 +626,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                               onChange={(e) => setEditCommentContent(e.target.value)}
                               maxLength={500}
                               disabled={submittingEditComment}
-                              className="w-full rounded-lg border border-slate-300 bg-white p-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
+                              className="w-full rounded-lg border border-slate-300 bg-white p-2 text-xs text-slate-900 focus:outline-none focus:border-[#16B8C8]"
                             />
                             <div className="flex items-center justify-end gap-1.5">
                               <Button

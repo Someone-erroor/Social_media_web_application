@@ -52,7 +52,17 @@ export default function LoginForm() {
         password
       });
     } catch (err) {
-      setErrorMessage(err.message || 'Invalid email or password. Please try again.');
+      if (err.isNetworkError || err.status === 0) {
+        setErrorMessage('Unable to reach the backend server. Please verify the API server is running on http://localhost:5000.');
+      } else if (err.status === 401) {
+        setErrorMessage(err.message || 'Invalid email or password. Please verify your credentials.');
+      } else if (err.status === 403) {
+        setErrorMessage(err.message || 'Your account is unverified or has been suspended.');
+      } else if (err.status >= 500) {
+        setErrorMessage('The server encountered an internal error. Please try again in a moment.');
+      } else {
+        setErrorMessage(err.message || 'Authentication failed. Please check your credentials and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -154,7 +164,7 @@ export default function LoginForm() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 disabled={loading}
                 aria-label="Remember me on this device"
-                className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                className="w-4 h-4 rounded border-slate-300 text-[#087F8A] focus:ring-[#16B8C8] cursor-pointer"
               />
               <label htmlFor="login-remember-me" className="cursor-pointer select-none">
                 Remember me
@@ -163,7 +173,7 @@ export default function LoginForm() {
 
             <Link
               href={ROUTES.PUBLIC.FORGOT_PASSWORD}
-              className="font-medium text-indigo-600 hover:text-indigo-700 hover:underline"
+              className="font-medium text-[#087F8A] hover:text-[#087F8A] hover:underline"
             >
               Forgot password?
             </Link>
@@ -214,7 +224,7 @@ export default function LoginForm() {
           Don&apos;t have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.REGISTER}
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
           >
             Create an account
           </Link>

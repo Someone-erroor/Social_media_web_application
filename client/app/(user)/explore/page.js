@@ -116,7 +116,7 @@ export default function ExplorePage() {
           {topics.map((topic) => (
             <span
               key={topic}
-              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 hover:bg-cyan-50 hover:text-[#087F8A] transition-colors cursor-pointer"
             >
               #{topic}
             </span>

@@ -16,7 +16,7 @@ export default function PhaseStatusCard() {
           <h2 className="text-lg font-bold text-slate-900">Platform Initialization</h2>
           <p className="text-xs text-slate-500 mt-0.5">Foundational verification and architecture readiness</p>
         </div>
-        <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">
+        <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-cyan-50 text-[#087F8A] border border-cyan-100">
           Ready for Review
         </span>
       </div>

@@ -22,16 +22,16 @@ export default function PublicNavbar() {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600" aria-label="Main Navigation">
-          <a href="#features" className="hover:text-indigo-600 transition-colors">
+          <a href="#features" className="hover:text-[#087F8A] transition-colors">
             Features
           </a>
-          <a href="#how-it-works" className="hover:text-indigo-600 transition-colors">
+          <a href="#how-it-works" className="hover:text-[#087F8A] transition-colors">
             How It Works
           </a>
-          <a href="#community" className="hover:text-indigo-600 transition-colors">
+          <a href="#community" className="hover:text-[#087F8A] transition-colors">
             Community
           </a>
-          <Link href={ROUTES.USER.FEED} className="hover:text-indigo-600 transition-colors">
+          <Link href={ROUTES.USER.FEED} className="hover:text-[#087F8A] transition-colors">
             Feed
           </Link>
         </nav>
@@ -58,7 +58,7 @@ export default function PublicNavbar() {
         <div className="md:hidden flex items-center">
           <button
             type="button"
-            className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -75,28 +75,28 @@ export default function PublicNavbar() {
             <a
               href="#features"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-indigo-600"
+              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-[#087F8A]"
             >
               Features
             </a>
             <a
               href="#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-indigo-600"
+              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-[#087F8A]"
             >
               How It Works
             </a>
             <a
               href="#community"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-indigo-600"
+              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-[#087F8A]"
             >
               Community
             </a>
             <Link
               href={ROUTES.USER.FEED}
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-indigo-600"
+              className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-[#087F8A]"
             >
               Feed
             </Link>

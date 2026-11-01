@@ -8,6 +8,7 @@ import commentRoutes from './comment.routes.js';
 import notificationRoutes from './notification.routes.js';
 import aiRoutes from './ai.routes.js';
 import feedRoutes from './feed.routes.js';
+import devRoutes from './dev.routes.js';
 import { getExplore } from '../controllers/post.controller.js';
 
 const router = Router();
@@ -42,5 +43,8 @@ router.use('/feed', feedRoutes);
 
 // Direct discover/explore alias at /explore (accessible via /api/explore)
 router.get('/explore', getExplore);
+
+// Local development utilities (loopback only, never exposed in production)
+router.use('/__dev', devRoutes);
 
 export default router;

@@ -102,6 +102,17 @@ export const authService = {
     return apiClient('/auth/logout', {
       method: 'POST'
     });
+  },
+
+  /**
+   * Retrieves the latest email from the local development mailbox (dev mode only).
+   *
+   * @returns {Promise<{ success: boolean, email: object|null }>}
+   */
+  async getDevMailboxLatest() {
+    return apiClient('/__dev/mailbox/latest', {
+      method: 'GET'
+    });
   }
 };
 

@@ -44,7 +44,7 @@ export default function UserHeader() {
               type="text"
               aria-label="Search posts, topics, or creators"
               placeholder="Search posts, topics, or creators..."
-              className="w-full rounded-full border border-slate-200 bg-slate-50 pl-9 pr-4 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 transition-all"
+              className="w-full rounded-full border border-slate-200 bg-slate-50 pl-9 pr-4 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] focus:bg-white focus:ring-2 focus:ring-[#16B8C8]/20 transition-all"
               disabled
               title="Search coming soon"
             />
@@ -60,7 +60,7 @@ export default function UserHeader() {
           >
             <Icon name="notifications" className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-indigo-600 rounded-full animate-badge-pulse">
+              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-[#FF725E] rounded-full animate-badge-pulse">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
@@ -68,7 +68,7 @@ export default function UserHeader() {
 
           <Link
             href={ROUTES.USER.PROFILE}
-            className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-indigo-500/30 transition-all min-w-[28px] min-h-[28px]"
+            className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#16B8C8]/30 transition-all min-w-[28px] min-h-[28px]"
             aria-label={`${initials} - ${displayName} Profile`}
           >
             <Avatar name={displayName} src={user?.profile?.avatarUrl} size="sm" />

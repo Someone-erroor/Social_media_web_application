@@ -14,6 +14,7 @@ import { connectDatabase, disconnectDatabase } from '../src/config/database.js';
 import { AUTH_COOKIE_NAME, generateToken } from '../src/config/jwt.js';
 import { User, Post, Comment, Notification, ActivityLog } from '../src/models/index.js';
 import app from '../src/app.js';
+import { initSocketServer, closeSocketServer } from '../src/services/socket.service.js';
 import { validateTestDatabaseSafety, getTestMongoUri, findChromeExecutable } from './test-helpers.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -99,11 +100,12 @@ async function runResponsiveAndA11yAudit() {
     const port3000Ok = await checkPortAvailable(3000);
     assert(port5000Ok && port3000Ok, '2. Verified ports 5000 and 3000 are available for isolated testing');
 
-    // 2. Start Express API Server on port 5000
+    // 2. Start Express API Server on port 5000 with unified Socket.IO
     console.log('\n--- Step 2: Starting Dedicated Test Backend on port 5000 ---');
-    expressServer = app.listen(5000, '0.0.0.0');
+    expressServer = http.createServer(app);
+    initSocketServer(expressServer);
     await new Promise((resolve, reject) => {
-      expressServer.on('listening', resolve);
+      expressServer.listen(5000, '0.0.0.0', resolve);
       expressServer.on('error', reject);
     });
     assert(true, '3. Dedicated Express backend listening on 0.0.0.0:5000');
@@ -174,8 +176,8 @@ async function runResponsiveAndA11yAudit() {
     const clientDir = path.resolve(__dirname, '../../client');
     const startCmd = process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npx';
     const startArgs = process.platform === 'win32'
-      ? ['/c', 'npx', 'next', 'start', '-H', '127.0.0.1', '-p', '3000']
-      : ['next', 'start', '-H', '127.0.0.1', '-p', '3000'];
+      ? ['/c', 'npx', 'next', 'start', '-H', 'localhost', '-p', '3000']
+      : ['next', 'start', '-H', 'localhost', '-p', '3000'];
 
     nextProcess = spawn(startCmd, startArgs, {
       cwd: clientDir,
@@ -185,7 +187,7 @@ async function runResponsiveAndA11yAudit() {
         ...process.env,
         NODE_ENV: 'production',
         PORT: '3000',
-        NEXT_PUBLIC_API_URL: 'http://127.0.0.1:5000/api'
+        NEXT_PUBLIC_API_URL: 'http://localhost:5000/api'
       }
     });
 
@@ -194,7 +196,7 @@ async function runResponsiveAndA11yAudit() {
     let frontendReady = false;
     while (Date.now() - startWait < 60000) {
       const isUp = await new Promise((resolve) => {
-        const req = http.get('http://127.0.0.1:3000', (res) => {
+        const req = http.get('http://localhost:3000', (res) => {
           resolve(res.statusCode < 500);
         });
         req.on('error', () => resolve(false));
@@ -210,7 +212,7 @@ async function runResponsiveAndA11yAudit() {
       }
       await new Promise((r) => setTimeout(r, 500));
     }
-    assert(frontendReady, '5. Next.js production frontend running on http://127.0.0.1:3000');
+    assert(frontendReady, '5. Next.js production frontend running on http://localhost:3000');
 
     // 5. Launch Chrome
     console.log('\n--- Step 5: Launching Headless Chrome Browser ---');
@@ -368,7 +370,7 @@ async function runResponsiveAndA11yAudit() {
 
     for (const r of publicRoutes) {
       await page.setViewport({ width: 1280, height: 800 });
-      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await page.goto(`http://localhost:3000${r.path}`, { waitUntil: 'networkidle2' });
       await new Promise((res) => setTimeout(res, 300));
 
       // 1. axe WCAG 2.2 AA check
@@ -390,7 +392,7 @@ async function runResponsiveAndA11yAudit() {
     // GROUP B: 8 User Routes (Authenticated User)
     // -------------------------------------------------------------------------
     console.log('\n--- Step 7: Authenticating as Standard User & Testing 8 User Routes ---');
-    await page.goto('http://127.0.0.1:3000/login', { waitUntil: 'networkidle2' });
+    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle2' });
     await page.waitForSelector('#login-email', { timeout: 10000 });
     await page.waitForSelector('#login-password', { timeout: 10000 });
 
@@ -413,7 +415,7 @@ async function runResponsiveAndA11yAudit() {
 
     for (const r of userRoutes) {
       await page.setViewport({ width: 1280, height: 800 });
-      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await page.goto(`http://localhost:3000${r.path}`, { waitUntil: 'networkidle2' });
       await new Promise((res) => setTimeout(res, 400));
 
       // 1. axe WCAG 2.2 AA check
@@ -437,7 +439,7 @@ async function runResponsiveAndA11yAudit() {
     console.log('\n--- Step 8: Authenticating as Administrator & Testing 6 Admin Routes ---');
     await clientSession.send('Network.clearBrowserCookies');
 
-    await page.goto('http://127.0.0.1:3000/login', { waitUntil: 'networkidle2' });
+    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle2' });
     await page.waitForSelector('#login-email', { timeout: 10000 });
     await page.waitForSelector('#login-password', { timeout: 10000 });
 
@@ -460,7 +462,7 @@ async function runResponsiveAndA11yAudit() {
 
     for (const r of adminRoutes) {
       await page.setViewport({ width: 1440, height: 900 });
-      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await page.goto(`http://localhost:3000${r.path}`, { waitUntil: 'networkidle2' });
       await new Promise((res) => setTimeout(res, 400));
 
       // 1. axe WCAG 2.2 AA check
@@ -504,6 +506,7 @@ async function runResponsiveAndA11yAudit() {
     }
     if (expressServer) {
       try {
+        await closeSocketServer();
         await new Promise((resolve) => expressServer.close(resolve));
       } catch {}
     }

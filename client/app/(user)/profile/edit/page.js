@@ -254,7 +254,7 @@ export default function ProfileEditPage() {
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Tell the community about yourself, your interests, or what you're working on..."
                 disabled={loading}
-                className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
+                className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:outline-none focus:border-[#16B8C8]"
               />
             </FormField>
           </CardContent>

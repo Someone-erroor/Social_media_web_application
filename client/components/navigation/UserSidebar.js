@@ -50,7 +50,7 @@ export default function UserSidebar() {
               href={item.href}
               className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 isActive
-                  ? 'bg-indigo-50 text-indigo-700 shadow-xs font-semibold'
+                  ? 'bg-cyan-50 text-[#087F8A] shadow-xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
               aria-current={isActive ? 'page' : undefined}
@@ -58,7 +58,7 @@ export default function UserSidebar() {
               <Icon
                 name={item.icon}
                 className={`w-5 h-5 shrink-0 ${
-                  isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'
+                  isActive ? 'text-[#087F8A]' : 'text-slate-400 group-hover:text-slate-600'
                 }`}
               />
               <span>{item.label}</span>

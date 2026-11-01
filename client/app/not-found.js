@@ -17,7 +17,7 @@ export default function NotFound() {
       </div>
 
       <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto shadow-xs">
+        <div className="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mx-auto shadow-xs">
           <Icon name="alertCircle" className="w-7 h-7" />
         </div>
 

@@ -73,6 +73,7 @@ export const registerUser = async ({ fullName, email, password }) => {
 
   // 5. Send verification email via email service
   let emailDispatched = false;
+  let deliveryMode = 'unavailable';
   try {
     const sendResult = await sendVerificationEmail({
       to: user.email,
@@ -80,9 +81,11 @@ export const registerUser = async ({ fullName, email, password }) => {
       token: rawVerificationToken
     });
     emailDispatched = Boolean(sendResult?.success);
+    deliveryMode = sendResult?.isTestOutbox ? 'preview' : (sendResult?.success ? 'smtp' : 'unavailable');
   } catch (emailErr) {
     console.error(`[Email Service Notice] Could not dispatch registration email: ${emailErr.message}`);
     emailDispatched = false;
+    deliveryMode = 'unavailable';
   }
 
   // 6. Log security audit entry (never storing sensitive information in metadata)
@@ -102,7 +105,7 @@ export const registerUser = async ({ fullName, email, password }) => {
     console.error(`[ActivityLog] Failed to record registration audit: ${auditErr.message}`);
   }
 
-  return { user: toSafeUser(user), emailDispatched };
+  return { user: toSafeUser(user), emailDispatched, deliveryMode };
 };
 
 /**

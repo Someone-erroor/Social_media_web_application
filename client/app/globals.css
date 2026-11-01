@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --looply-ink: #172126;
+  --looply-charcoal: #252E34;
+  --looply-cyan: #16B8C8;
+  --looply-cyan-dark: #087F8A;
+  --looply-coral: #FF725E;
+  --looply-background: #F6F8F7;
+  --looply-surface: #FFFFFF;
+  --looply-muted: #68757C;
+  --looply-border: #E3E8E8;
+
+  --background: #F6F8F7;
+  --foreground: #172126;
   /* Defined consistent font stacks replacing undefined Geist variables */
   --font-geist-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -11,6 +21,16 @@
 }
 
 @theme inline {
+  --color-looply-ink: var(--looply-ink);
+  --color-looply-charcoal: var(--looply-charcoal);
+  --color-looply-cyan: var(--looply-cyan);
+  --color-looply-cyan-dark: var(--looply-cyan-dark);
+  --color-looply-coral: var(--looply-coral);
+  --color-looply-background: var(--looply-background);
+  --color-looply-surface: var(--looply-surface);
+  --color-looply-muted: var(--looply-muted);
+  --color-looply-border: var(--looply-border);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -19,8 +39,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #172126;
+    --foreground: #F6F8F7;
   }
 }
 
@@ -32,7 +52,7 @@ body {
 
 /* Accessible focus outline indicator */
 :focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #16B8C8;
   outline-offset: 2px;
 }
 

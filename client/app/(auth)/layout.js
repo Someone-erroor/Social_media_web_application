@@ -25,7 +25,7 @@ export default function AuthLayout({ children }) {
       <div className="mt-8 text-center text-xs text-slate-600">
         <p>Looply &bull; Connect. Share. Express.</p>
         <p className="mt-1">
-          <Link href={ROUTES.PUBLIC.HOME} className="text-indigo-600 hover:underline">
+          <Link href={ROUTES.PUBLIC.HOME} className="text-[#087F8A] hover:underline">
             &larr; Return to Public Homepage
           </Link>
         </p>

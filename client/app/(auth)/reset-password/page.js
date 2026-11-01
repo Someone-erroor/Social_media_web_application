@@ -73,7 +73,7 @@ function ResetPasswordContent() {
   return (
     <Card className="shadow-md border-slate-200">
       <CardHeader className="text-center pb-2">
-        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto mb-2 shadow-xs">
+        <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mx-auto mb-2 shadow-xs">
           <Icon name="lock" className="w-6 h-6" />
         </div>
         <CardTitle className="text-xl font-bold">Set new password</CardTitle>
@@ -193,7 +193,7 @@ function ResetPasswordContent() {
           Remember your credentials?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
           >
             Back to sign in
           </Link>
@@ -209,7 +209,7 @@ export default function ResetPasswordPage() {
       fallback={
         <Card className="shadow-md border-slate-200 text-center p-8">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
             <p className="text-xs text-slate-500">Loading password reset portal...</p>
           </div>
         </Card>

@@ -9,6 +9,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
+import { authService } from '@/services/authService';
 import { ROUTES } from '@/lib/routes';
 
 export default function RegisterForm() {
@@ -26,6 +27,7 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [devPreviewLink, setDevPreviewLink] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
 
   const validateForm = () => {
@@ -85,11 +87,31 @@ export default function RegisterForm() {
       });
 
       setSuccessMessage(result.message || 'Account created successfully! Please check your email to verify your account.');
-      setTimeout(() => {
-        router.push(ROUTES.PUBLIC.LOGIN);
-      }, 1200);
+      if (result?.deliveryMode === 'preview') {
+        try {
+          const devMail = await authService.getDevMailboxLatest();
+          if (devMail?.email?.link) {
+            setDevPreviewLink(devMail.email.link);
+          }
+        } catch {
+          // non-blocking
+        }
+        setTimeout(() => {
+          router.push(ROUTES.PUBLIC.LOGIN);
+        }, 2000);
+      } else {
+        setTimeout(() => {
+          router.push(ROUTES.PUBLIC.LOGIN);
+        }, 1500);
+      }
     } catch (err) {
-      setErrorMessage(err.message || 'Registration failed. Please review your details.');
+      if (err.isNetworkError || err.status === 0) {
+        setErrorMessage('Unable to reach the backend server. Please verify the API server is running on http://localhost:5000.');
+      } else if (err.status === 409) {
+        setErrorMessage(err.message || 'An account with this email address already exists.');
+      } else {
+        setErrorMessage(err.message || 'Registration failed. Please review your details.');
+      }
     } finally {
       setLoading(false);
     }
@@ -122,6 +144,26 @@ export default function RegisterForm() {
           >
             <Icon name="check" className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
             <div className="flex-1 font-medium">{successMessage}</div>
+          </div>
+        )}
+
+        {devPreviewLink && (
+          <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-950 text-xs space-y-2.5">
+            <div className="flex items-center gap-2 font-semibold text-cyan-900">
+              <Icon name="mail" className="w-4 h-4 text-cyan-600" />
+              <span>Development Email Preview</span>
+            </div>
+            <p className="text-cyan-800 leading-relaxed">
+              Your verification link is ready in the local preview mailbox. Click below to verify your account and proceed to login:
+            </p>
+            <div>
+              <a
+                href={devPreviewLink}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-xs shadow-xs transition-colors"
+              >
+                <span>Verify Account Now &rarr;</span>
+              </a>
+            </div>
           </div>
         )}
 
@@ -252,11 +294,11 @@ export default function RegisterForm() {
                   if (fieldErrors.terms) setFieldErrors((prev) => ({ ...prev, terms: null }));
                 }}
                 disabled={loading}
-                className="mt-0.5 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#087F8A] focus:ring-[#16B8C8]"
               />
               <label htmlFor="terms" className="cursor-pointer select-none leading-relaxed">
-                I agree to the Looply <span className="text-indigo-600 hover:underline">Terms of Service</span> and{' '}
-                <span className="text-indigo-600 hover:underline">Privacy Policy</span>.
+                I agree to the Looply <span className="text-[#087F8A] hover:underline">Terms of Service</span> and{' '}
+                <span className="text-[#087F8A] hover:underline">Privacy Policy</span>.
               </label>
             </div>
             {fieldErrors.terms && (
@@ -309,7 +351,7 @@ export default function RegisterForm() {
           Already have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
           >
             Sign in
           </Link>
