@@ -96,6 +96,38 @@ export const sendMail = async ({ to, subject, html, text }) => {
     html
   };
 
+  // 1. If RESEND_API_KEY is configured, dispatch via Resend HTTPS API (Port 443 - never blocked by cloud firewalls)
+  if (env.RESEND_API_KEY && !forceTestOutbox) {
+    try {
+      const resendResponse = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'Looply <onboarding@resend.dev>',
+          to: [to],
+          subject,
+          html,
+          text
+        })
+      });
+
+      const resendData = await resendResponse.json();
+      if (resendResponse.ok && resendData?.id) {
+        return {
+          success: true,
+          messageId: resendData.id,
+          isTestOutbox: false
+        };
+      }
+      console.warn(`[Resend Notice] Delivery to ${to} returned: ${resendData?.message || resendResponse.status}`);
+    } catch (resendErr) {
+      console.warn(`[Resend Notice] Could not dispatch via Resend: ${resendErr.message}`);
+    }
+  }
+
   const transporter = createTransporter();
 
   // If real SMTP is configured and available, dispatch via Nodemailer

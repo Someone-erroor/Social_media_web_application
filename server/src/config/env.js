@@ -175,6 +175,7 @@ const smtpUser = process.env.SMTP_USER ? String(process.env.SMTP_USER).trim() : 
 const smtpPass = process.env.SMTP_PASS ? String(process.env.SMTP_PASS).trim() : '';
 const smtpFrom = process.env.SMTP_FROM ? String(process.env.SMTP_FROM).trim() : 'Looply <noreply@looply.net>';
 const clientUrl = process.env.CLIENT_URL ? String(process.env.CLIENT_URL).trim() : (clientOrigins[0] || 'http://localhost:3000');
+const resendApiKey = process.env.RESEND_API_KEY ? String(process.env.RESEND_API_KEY).trim() : '';
 
 // AI / Gemini Configuration (Phase 14)
 const geminiApiKey = process.env.GEMINI_API_KEY ? String(process.env.GEMINI_API_KEY).trim() : '';
@@ -207,7 +208,8 @@ export const env = {
   SMTP_USER: smtpUser,
   SMTP_PASS: smtpPass,
   SMTP_FROM: smtpFrom,
-  isSmtpConfigured: Boolean(smtpHost && smtpUser && smtpPass),
+  RESEND_API_KEY: resendApiKey,
+  isSmtpConfigured: Boolean((smtpHost && smtpUser && smtpPass) || resendApiKey),
   DEV_EMAIL_PREVIEW_ENABLED: devEmailPreviewEnabled,
   isDevEmailPreviewAllowed: (nodeEnv === 'development') && devEmailPreviewEnabled,
   GEMINI_API_KEY: geminiApiKey,
