@@ -22,15 +22,15 @@ export default function PublicNavbar() {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#9BAAB4]" aria-label="Main Navigation">
-          <a href="/#features" className="hover:text-[#19D3E3] transition-colors">
+          <Link href="/#features" className="hover:text-[#19D3E3] transition-colors">
             Features
-          </a>
-          <a href="/#how-it-works" className="hover:text-[#19D3E3] transition-colors">
+          </Link>
+          <Link href="/#how-it-works" className="hover:text-[#19D3E3] transition-colors">
             How It Works
-          </a>
-          <a href="/#community" className="hover:text-[#19D3E3] transition-colors">
+          </Link>
+          <Link href="/#community" className="hover:text-[#19D3E3] transition-colors">
             Community
-          </a>
+          </Link>
           <Link href={ROUTES.USER.FEED} className="hover:text-[#19D3E3] transition-colors flex items-center gap-1.5">
             <span>Feed</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF6F61]" />
@@ -73,27 +73,27 @@ export default function PublicNavbar() {
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-[#263640] bg-[#101A22] px-4 pt-3 pb-6 space-y-4 shadow-2xl animate-fade-in">
           <nav className="flex flex-col space-y-2 text-base font-medium text-[#F4F8FA]" aria-label="Mobile Navigation">
-            <a
+            <Link
               href="/#features"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 rounded-lg hover:bg-[#151F29] hover:text-[#19D3E3] transition-colors"
             >
               Features
-            </a>
-            <a
+            </Link>
+            <Link
               href="/#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 rounded-lg hover:bg-[#151F29] hover:text-[#19D3E3] transition-colors"
             >
               How It Works
-            </a>
-            <a
+            </Link>
+            <Link
               href="/#community"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 rounded-lg hover:bg-[#151F29] hover:text-[#19D3E3] transition-colors"
             >
               Community
-            </a>
+            </Link>
             <Link
               href={ROUTES.USER.FEED}
               onClick={() => setMobileMenuOpen(false)}

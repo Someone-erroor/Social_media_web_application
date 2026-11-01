@@ -104,9 +104,9 @@ export default function PublicFooter() {
             <Link href={ROUTES.PUBLIC.TERMS} className="hover:text-[#19D3E3] transition-colors">
               Terms of Service
             </Link>
-            <a href="/#community" className="hover:text-[#19D3E3] transition-colors">
+            <Link href="/#community" className="hover:text-[#19D3E3] transition-colors">
               Community Guidelines
-            </a>
+            </Link>
           </div>
         </div>
       </div>
