@@ -42,6 +42,12 @@ export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') =
     return err;
   }
 
+  // Defensive normalization for configuredModel string
+  if (typeof configuredModel === 'string' && configuredModel.includes('=')) {
+    configuredModel = configuredModel.split('=').pop().trim();
+  }
+  configuredModel = String(configuredModel).replace(/^["']|["']$/g, '').trim() || 'gemini-3.8-flash';
+
   const rawMessage = String(err?.message || '');
   const status = Number(err?.status || err?.statusCode || 0);
   const code = String(err?.code || '');
@@ -498,8 +504,22 @@ const generateMockImprovedPost = ({ content, tone, instructions }) => {
  * @param {string} [params.length='medium']
  * @returns {Promise<{ generatedContent: string, provider: string, model: string }>}
  */
+/**
+ * Helper to safely resolve and normalize the configured Gemini model identifier.
+ * Prevents invalid arguments caused by leading variable prefixes or surrounding quotes.
+ *
+ * @returns {string}
+ */
+export const getConfiguredModel = () => {
+  let model = env.GEMINI_MODEL || process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  if (typeof model === 'string' && model.includes('=')) {
+    model = model.split('=').pop().trim();
+  }
+  return String(model).replace(/^["']|["']$/g, '').trim() || 'gemini-3.8-flash';
+};
+
 export const generatePost = async ({ topic, context = '', tone = 'casual', length = 'medium' }) => {
-  const configuredModel = env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const configuredModel = getConfiguredModel();
   checkSimulatedFailure(configuredModel);
 
   if (simulateAiTimeout) {
@@ -595,7 +615,7 @@ Important constraints:
  * @returns {Promise<{ improvedContent: string, provider: string, model: string }>}
  */
 export const improvePost = async ({ content, tone = 'casual', instructions = '' }) => {
-  const configuredModel = env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const configuredModel = getConfiguredModel();
   checkSimulatedFailure(configuredModel);
 
   if (simulateAiTimeout) {
@@ -729,7 +749,7 @@ const generateMockDiscussionSummary = ({ post, comments = [] }) => {
  * @returns {Promise<{ hasComments: boolean, summary: object, provider: string, model: string }>}
  */
 export const summarizeDiscussion = async ({ post, comments = [] }) => {
-  const configuredModel = env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const configuredModel = getConfiguredModel();
   checkSimulatedFailure(configuredModel);
 
   if (simulateAiTimeout) {

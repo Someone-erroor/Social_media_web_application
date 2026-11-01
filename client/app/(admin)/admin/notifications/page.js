@@ -106,23 +106,23 @@ export default function AdminNotificationsPage() {
       </div>
 
       {(contextError || actionError) && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="alertCircle" className="w-4 h-4 text-red-600 shrink-0" />
+            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6F61] shrink-0" />
             <span>{contextError || actionError}</span>
           </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-medium underline hover:text-red-900"
+              className="font-medium underline hover:text-white"
             >
               Retry
             </button>
             <button
               type="button"
               onClick={() => setActionError('')}
-              className="text-red-500 hover:text-red-700 font-bold"
+              className="text-[#FF6F61] hover:text-white font-bold"
             >
               ✕
             </button>
@@ -131,7 +131,7 @@ export default function AdminNotificationsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E3E8E8] pb-2 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#263640] pb-2 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => {
@@ -140,8 +140,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'all'
-              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
+              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
           }`}
         >
           All Notifications ({notifications.length})
@@ -154,8 +154,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'login_alerts'
-              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
+              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
           }`}
         >
           User Login Events ({loginAlerts.length})
@@ -168,8 +168,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'unread'
-              ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
+              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
           }`}
         >
           Unread ({unreadCount})
@@ -177,7 +177,7 @@ export default function AdminNotificationsPage() {
       </div>
 
       {/* Alerts Table / Feed */}
-      <Card className="border-[#E3E8E8] overflow-hidden">
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>User Authentication Event Log</CardTitle>
           <CardDescription>
@@ -188,7 +188,7 @@ export default function AdminNotificationsPage() {
         {loading && notifications.length === 0 ? (
           <div className="p-6 space-y-3 animate-pulse">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-10 bg-[#F6F8F7] rounded-lg w-full" />
+              <div key={i} className="h-10 bg-[#101A22] rounded-lg w-full" />
             ))}
           </div>
         ) : displayedAlerts.length === 0 ? (
@@ -197,13 +197,13 @@ export default function AdminNotificationsPage() {
             title="No Authentication Alerts"
             description="When users log in or administrative security events occur, real-time alerts will appear here."
             badgeText="Login Security"
-            className="border-none rounded-none bg-white py-12"
+            className="border-none rounded-none bg-transparent py-12"
           />
         ) : (
           <div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#252E34]">
-                <thead className="bg-[#F6F8F7] border-b border-[#E3E8E8] text-[#252E34] uppercase tracking-wider font-semibold">
+              <table className="w-full text-left text-xs text-[#F4F8FA]">
+                <thead className="bg-[#101A22] border-b border-[#263640] text-[#9BAAB4] uppercase tracking-wider font-semibold">
                   <tr>
                     <th scope="col" className="px-5 py-3.5">User</th>
                     <th scope="col" className="px-5 py-3.5">Email</th>
@@ -212,7 +212,7 @@ export default function AdminNotificationsPage() {
                     <th scope="col" className="px-5 py-3.5 text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E3E8E8]">
+                <tbody className="divide-y divide-[#263640]">
                   {paginatedAlerts.map((alert) => {
                     const actor = alert.actor || {};
                     const isUnread = !alert.readAt;
@@ -221,7 +221,7 @@ export default function AdminNotificationsPage() {
                       <tr
                         key={alert._id}
                         className={`transition-colors ${
-                          isUnread ? 'bg-cyan-50/20 font-medium' : 'hover:bg-[#F6F8F7]/60'
+                          isUnread ? 'bg-[#19D3E3]/10 font-medium' : 'hover:bg-[#1D2A35]/50'
                         }`}
                       >
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -231,12 +231,12 @@ export default function AdminNotificationsPage() {
                               src={actor.profile?.avatarUrl}
                               size="sm"
                             />
-                            <span className="font-semibold text-[#172126]">
+                            <span className="font-semibold text-[#F4F8FA]">
                               {actor.fullName || 'Unknown Member'}
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#58666D]">
+                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#9BAAB4]">
                           {actor.email || '—'}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -247,7 +247,7 @@ export default function AdminNotificationsPage() {
                             {alert.type === 'login_alert' ? 'Login Success' : alert.type}
                           </Badge>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap text-[#58666D]">
+                        <td className="px-5 py-3.5 whitespace-nowrap text-[#9BAAB4]">
                           {formatTimestamp(alert.createdAt)}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -255,12 +255,12 @@ export default function AdminNotificationsPage() {
                             <button
                               type="button"
                               onClick={() => markAsRead(alert._id)}
-                              className="text-[#076C76] hover:text-[#06656E] font-semibold"
+                              className="text-[#19D3E3] hover:text-[#5FE8F5] font-semibold"
                             >
                               Mark read
                             </button>
                           ) : (
-                            <span className="text-[#58666D] italic">Read</span>
+                            <span className="text-[#9BAAB4] italic">Read</span>
                           )}
                         </td>
                       </tr>
@@ -271,7 +271,7 @@ export default function AdminNotificationsPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="p-4 border-t border-[#E3E8E8] flex items-center justify-between text-xs text-[#58666D]">
+              <div className="p-4 border-t border-[#263640] flex items-center justify-between text-xs text-[#9BAAB4] bg-[#101A22]">
                 <span>
                   Page {page} of {totalPages}
                 </span>

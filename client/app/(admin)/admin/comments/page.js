@@ -103,12 +103,12 @@ export default function AdminCommentsPage() {
 
       {/* Success Alert */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="check" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <Icon name="check" className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{successMessage}</span>
           </div>
-          <button type="button" onClick={() => setSuccessMessage('')} className="text-emerald-500 hover:text-emerald-700">
+          <button type="button" onClick={() => setSuccessMessage('')} className="text-emerald-400 hover:text-white">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -116,9 +116,9 @@ export default function AdminCommentsPage() {
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
           <span>{error}</span>
-          <button type="button" onClick={() => setError('')} className="text-red-500 hover:text-red-700">
+          <button type="button" onClick={() => setError('')} className="text-[#FF6F61] hover:text-white">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -143,10 +143,10 @@ export default function AdminCommentsPage() {
       </div>
 
       {/* Table Container */}
-      <Card className="border-[#E3E8E8] overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#252E34]">
-            <thead className="bg-[#F6F8F7] border-b border-[#E3E8E8] text-[#252E34] uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#F4F8FA]">
+            <thead className="bg-[#101A22] border-b border-[#263640] text-[#9BAAB4] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">Author</th>
                 <th scope="col" className="px-5 py-3.5">Comment Text</th>
@@ -155,10 +155,10 @@ export default function AdminCommentsPage() {
                 <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E3E8E8]">
+            <tbody className="divide-y divide-[#263640]">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-[#252E34] font-medium">
+                  <td colSpan={5} className="py-8 text-center text-[#9BAAB4] font-medium">
                     Loading comments for moderation...
                   </td>
                 </tr>
@@ -169,7 +169,7 @@ export default function AdminCommentsPage() {
                       icon="comments"
                       title="No Comments Found"
                       description="No discussion comments match the search criteria or the platform has no active replies."
-                      className="border-none rounded-none bg-white py-12"
+                      className="border-none rounded-none bg-transparent py-12"
                     />
                   </td>
                 </tr>
@@ -180,7 +180,7 @@ export default function AdminCommentsPage() {
                   const isConfirming = confirmDeleteId === comment._id;
 
                   return (
-                    <tr key={comment._id} className="hover:bg-[#F6F8F7]/60 transition-colors">
+                    <tr key={comment._id} className="hover:bg-[#1D2A35]/50 transition-colors">
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -189,26 +189,26 @@ export default function AdminCommentsPage() {
                             size="sm"
                           />
                           <div>
-                            <span className="font-semibold text-[#172126] block">
+                            <span className="font-semibold text-[#F4F8FA] block">
                               {author.fullName || 'Unknown'}
                             </span>
-                            <span className="text-[10px] text-[#58666D] font-mono">
+                            <span className="text-[10px] text-[#9BAAB4] font-mono">
                               {author.email || '—'}
                             </span>
                           </div>
                         </div>
                       </td>
                       <td className="px-5 py-3.5 max-w-xs sm:max-w-md">
-                        <p className="line-clamp-2 text-[#252E34] break-words font-medium">
+                        <p className="line-clamp-2 text-[#F4F8FA] break-words font-medium">
                           {comment.content}
                         </p>
                       </td>
-                      <td className="px-5 py-3.5 max-w-xs text-[#58666D]">
+                      <td className="px-5 py-3.5 max-w-xs text-[#9BAAB4]">
                         <p className="line-clamp-1 italic text-[11px]">
                           {post.content ? `"${post.content}"` : 'Post referenced'}
                         </p>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-[#58666D]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-[#9BAAB4]">
                         {formatDate(comment.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -253,7 +253,7 @@ export default function AdminCommentsPage() {
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-[#E3E8E8] bg-[#F6F8F7]/50 text-xs text-[#58666D]">
+          <div className="flex items-center justify-between p-4 border-t border-[#263640] bg-[#101A22] text-xs text-[#9BAAB4]">
             <span>
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total comments)
             </span>

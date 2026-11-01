@@ -26,7 +26,7 @@ const formatAiError = (err) => {
   if (category === 'DAILY_QUOTA_EXHAUSTED' || /daily quota|requests per day/i.test(rawMsg)) {
     return {
       message:
-        'Gemini daily quota has been exhausted. The AI assistant will be available after the quota resets or the project quota is increased.',
+        'Gemini daily quota has been exhausted. Check the configured Google AI Studio project or wait for its quota reset.',
       canRetry: false
     };
   }
@@ -96,7 +96,7 @@ const formatAiError = (err) => {
     /authentication failed|API key not valid|UNAUTHENTICATED/i.test(rawMsg)
   ) {
     return {
-      message: 'Gemini API authentication failed. The administrator must verify API configuration.',
+      message: 'Gemini API authentication failed. Verify the configured API key.',
       canRetry: false
     };
   }

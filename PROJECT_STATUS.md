@@ -848,24 +848,29 @@ Across the entire codebase, **100% of all automated test suites pass without err
 
 ---
 
-## 26. Gemini 3.8 Flash & Dark Neon UI Redesign Summary
+## 26. Gemini 3.8 Flash, Quota Isolation & Dark Neon UI Redesign Summary
 
-1. **AI Model Standardization:**
+1. **AI Model Standardization & Quota Isolation:**
    - Standardized configured model to `gemini-3.8-flash` in `server/.env.example`, `server/.env`, and `server/src/config/env.js`.
-   - Removed obsolete 404 fallback loops.
-   - Bounded single retry with jittered exponential backoff for transient 503/504 or short rate limits (<=3s). Strictly non-retryable on daily quotas, spend limits, auth errors, and 404s.
+   - Implemented defensive model identifier normalization (`strip GEMINI_MODEL=` and string quotes) to prevent configuration corruption.
+   - Isolated normal test suites (`npm test`, `npm run test:all`, `npm run test:phase15`, `npm run test:batch3`) from consuming actual Gemini API quota by using deterministic in-memory mocks (0 live quota requests consumed during regression testing).
+   - Created dedicated opt-in runner `npm run test:gemini-live` (`server/test/test-gemini-live.mjs`) guarded by `RUN_LIVE_GEMINI_TESTS=true` executing strictly 1 request without retrying on HTTP 429 / HTTP 402.
    - Comprehensive error categorization (`RATE_LIMIT_RPM`, `RATE_LIMIT_TPM`, `DAILY_QUOTA_EXHAUSTED`, `SPEND_QUOTA_EXCEEDED`, `RESOURCE_EXHAUSTED_GENERAL`, `INVALID_CREDENTIALS`, `PERMISSION_DENIED`, `MODEL_UNAVAILABLE`, `SERVICE_UNAVAILABLE`, `TIMEOUT`, `INVALID_ARGUMENT`, `NETWORK_ERROR`).
    - Server-side diagnostics logging strictly masks prompts, secrets, and personal information.
 
-2. **Dark Neon Gen Z Visual Identity:**
-   - Deep rich void background (`#080D12`), dark charcoal sidebar/navbars (`#101A22`), elevated graphite surfaces (`#151F29`), fine borders (`#263640`).
-   - Electric cyan primary accents (`#19D3E3` / `#00B8C8`) and neon coral interactive highlights (`#FF6F61`).
-   - WCAG 2.2 AA compliant contrast on all interactive buttons and badges (contrast ratios >= 7.2 : 1).
-   - Zero horizontal overflow across all 9 viewports (360px to 1920px) on all 20 platform routes.
+2. **Admin Interface Accessibility & Dark Neon UI Consistency:**
+   - **User Navigation:** Preserved desktop `Admin Console` link in `UserSidebar.js` and implemented an accessible, responsive profile dropdown in `UserHeader.js` featuring My Profile, Settings, conditional Admin Console navigation for `role === 'admin'`, and Logout with Escape and click-outside dismissal.
+   - **Admin Header:** Converted `AdminHeader.js` from hardcoded placeholder identity to dynamic authentication context displaying `user.fullName`, `user.email`, and `user.profile.avatarUrl`.
+   - **Full Dark Neon Theme Across Admin:** Refactored all 6 administrative views (`/admin`, `/admin/users`, `/admin/posts`, `/admin/comments`, `/admin/activity`, `/admin/notifications`) from obsolete light-table styles (`bg-white`, `border-[#E3E8E8]`, `bg-[#F6F8F7]`, `text-[#252E34]`) to the high-contrast Looply dark palette (`#080D12` canvas, `#101A22` headers/sidebars, `#151F29` elevated cards, `#263640` borders, `#19D3E3` electric cyan accents, `#FF6F61` coral actions).
+
+3. **Admin Account Provisioning CLI & Credential Hygiene:**
+   - Database inspection confirmed 0 active admin accounts in the live MongoDB Atlas cluster.
+   - Authored secure local provisioning utility `server/scripts/create-admin.mjs` (`npm run admin:create`) with interactive `readline` input, strict refusal to execute against test databases (`looply_test`), bcrypt hashing (12 rounds), and zero credential logging.
+   - Removed all static demo credentials and passwords from `README.md`.
 
 ---
 
-## 26. Authoritative Status & Awaiting External Review
+## 27. Authoritative Status & Awaiting External Review
 
 - **Authoritative Project Status:**
   - **PHASE 1: APPROVED**

@@ -3,15 +3,20 @@
 import { usePathname } from 'next/navigation';
 import Badge from '@/components/ui/Badge';
 import Avatar from '@/components/ui/Avatar';
+import { useAuth } from '@/context/AuthContext';
 import { ROUTE_METADATA } from '@/lib/routes';
 
 /**
  * Top Management Header for Admin Experience (Dark Neon Theme)
- * Displays dynamic route title, system status, and administrator badge.
+ * Displays dynamic route title, system status, and live administrator profile.
  */
 export default function AdminHeader() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const currentMeta = ROUTE_METADATA[pathname] || { title: 'Administration' };
+
+  const adminName = user?.fullName || 'Platform Admin';
+  const adminEmail = user?.email || 'admin@looply.social';
 
   return (
     <header className="md:sticky md:top-0 z-20 w-full bg-[#101A22] border-b border-[#263640]">
@@ -35,10 +40,19 @@ export default function AdminHeader() {
           </Badge>
 
           <div className="flex items-center gap-2.5 pl-3 border-l border-[#263640]">
-            <Avatar name="Sys Admin" size="sm" status="online" />
+            <Avatar
+              name={adminName}
+              src={user?.profile?.avatarUrl}
+              size="sm"
+              status="online"
+            />
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-semibold text-[#F4F8FA] leading-tight">System Admin</p>
-              <p className="text-[10px] text-[#9BAAB4] font-mono">admin@looply.internal</p>
+              <p className="text-xs font-semibold text-[#F4F8FA] leading-tight truncate max-w-[140px]">
+                {adminName}
+              </p>
+              <p className="text-[10px] text-[#9BAAB4] font-mono truncate max-w-[140px]">
+                {adminEmail}
+              </p>
             </div>
           </div>
         </div>

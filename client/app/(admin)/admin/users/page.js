@@ -115,9 +115,9 @@ export default function AdminUsersPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
           <span>{error}</span>
-          <button type="button" onClick={() => setError('')} className="text-red-500 hover:text-red-700">
+          <button type="button" onClick={() => setError('')} className="text-[#FF6F61] hover:text-white">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -141,7 +141,7 @@ export default function AdminUsersPage() {
             value={accountStatus}
             onChange={(e) => setAccountStatus(e.target.value)}
             aria-label="Filter by account status"
-            className="rounded-xl border border-[#E3E8E8] bg-white px-3 py-2 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
+            className="rounded-xl border border-[#263640] bg-[#101A22] px-3 py-2 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -152,7 +152,7 @@ export default function AdminUsersPage() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
             aria-label="Filter by user role"
-            className="rounded-xl border border-[#E3E8E8] bg-white px-3 py-2 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
+            className="rounded-xl border border-[#263640] bg-[#101A22] px-3 py-2 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
           >
             <option value="">All Roles</option>
             <option value="user">User</option>
@@ -167,8 +167,8 @@ export default function AdminUsersPage() {
 
       {/* Confirmation Modal */}
       {confirmAction && (
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
-          <p className="font-semibold">
+        <div className="p-4 rounded-xl bg-amber-400/10 border border-amber-400/30 text-xs text-amber-300 space-y-2">
+          <p className="font-semibold text-amber-200">
             Confirm Account {confirmAction.nextStatus === 'suspended' ? 'Suspension' : 'Reactivation'}
           </p>
           <p>
@@ -205,10 +205,10 @@ export default function AdminUsersPage() {
       )}
 
       {/* Table Container */}
-      <Card className="border-[#E3E8E8] overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#252E34]">
-            <thead className="bg-[#F6F8F7] border-b border-[#E3E8E8] text-[#252E34] uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#F4F8FA]">
+            <thead className="bg-[#101A22] border-b border-[#263640] text-[#9BAAB4] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">User</th>
                 <th scope="col" className="px-5 py-3.5">Email</th>
@@ -218,10 +218,10 @@ export default function AdminUsersPage() {
                 <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E3E8E8]">
+            <tbody className="divide-y divide-[#263640]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#252E34] font-medium">
+                  <td colSpan={6} className="py-8 text-center text-[#9BAAB4] font-medium">
                     Loading users directory...
                   </td>
                 </tr>
@@ -232,7 +232,7 @@ export default function AdminUsersPage() {
                       icon="users"
                       title="No Users Found"
                       description="No registered user accounts match the current query criteria."
-                      className="border-none rounded-none bg-white py-12"
+                      className="border-none rounded-none bg-transparent py-12"
                     />
                   </td>
                 </tr>
@@ -244,7 +244,7 @@ export default function AdminUsersPage() {
                   const isSuspended = targetUser.accountStatus === 'suspended';
 
                   return (
-                    <tr key={targetUser._id} className="hover:bg-[#F6F8F7]/60 transition-colors">
+                    <tr key={targetUser._id} className="hover:bg-[#1D2A35]/50 transition-colors">
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -252,12 +252,12 @@ export default function AdminUsersPage() {
                             src={targetUser.profile?.avatarUrl}
                             size="sm"
                           />
-                          <span className="font-semibold text-[#172126]">
+                          <span className="font-semibold text-[#F4F8FA]">
                             {targetUser.fullName}
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#58666D]">
+                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#9BAAB4]">
                         {targetUser.email}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap">
@@ -270,12 +270,12 @@ export default function AdminUsersPage() {
                           {isSuspended ? 'Suspended' : 'Active'}
                         </Badge>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-[#58666D]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-[#9BAAB4]">
                         {formatDate(targetUser.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
                         {isCurrentAdmin ? (
-                          <span className="text-[11px] text-[#58666D] italic">Current Session</span>
+                          <span className="text-[11px] text-[#9BAAB4] italic">Current Session</span>
                         ) : (
                           <Button
                             type="button"
@@ -304,7 +304,7 @@ export default function AdminUsersPage() {
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-[#E3E8E8] bg-[#F6F8F7]/50 text-xs text-[#58666D]">
+          <div className="flex items-center justify-between p-4 border-t border-[#263640] bg-[#101A22] text-xs text-[#9BAAB4]">
             <span>
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total members)
             </span>

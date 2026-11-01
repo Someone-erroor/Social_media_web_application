@@ -355,16 +355,32 @@ npm run dev
 
 ---
 
-### Test Credentials Reference
+### Account Provisioning & Security Reference
 
-For manual exploratory testing and verification:
+> [!IMPORTANT]
+> **Static Default Passwords Removed**: In accordance with production security standards and credential hygiene, static demo passwords have been permanently removed from public documentation. Passwords must never be hardcoded or checked into source control. Always enforce strong password policies and periodic password rotation.
 
-| Role | Email | Password | Account Status | Permissions |
-| :--- | :--- | :--- | :---: | :--- |
-| **Administrator** | `admin@looply.social` | `LooplyAdmin2026!` | Active / Verified | Access to `/admin`, live KPI telemetry, post & comment moderation, user suspension |
-| **Standard User** | `alex@looply.social` | `LooplyUser2026!` | Active / Verified | Access to `/feed`, `/explore`, `/profile`, post publishing, AI drawer, comments, likes |
+#### 1. Provisioning an Administrator Account (Local CLI)
+To provision an authoritative platform administrator account, run the interactive local provisioning CLI:
 
-*Note: You can also register a brand new user via `/register`. In local development without live external SMTP, click the prominent **"Open Local Email Preview"** button on the registration confirmation card to immediately view the transactional verification link rendered by the backend at `http://localhost:5000/api/__dev/mailbox/latest`.*
+```bash
+# From workspace root:
+npm run admin:create
+
+# Or from the server directory:
+cd server && npm run admin:create
+```
+
+The CLI interactively prompts for the administrator's **Full Name**, **Email Address**, and a secure **Password** (minimum 8 characters), safely hashes the password using `bcryptjs` (12 adaptive salt rounds), sets `role: 'admin'`, verifies email status, and registers the audit event in `ActivityLog`.
+- **Safety Guard**: The provisioning CLI strictly refuses to run against automated test databases (`looply_test`).
+- **Zero Secret Exposure**: The CLI never displays or logs credentials in plaintext.
+
+#### 2. Provisioning Standard User Accounts
+To create a standard user account for exploration:
+1. Navigate to `/register` (`http://localhost:3000/register`).
+2. Provide your name, email, and password.
+3. In local development without an external live SMTP provider, click **"Open Local Email Preview"** on the confirmation card (or open `http://localhost:5000/api/__dev/mailbox/latest`) to view your transactional verification link instantly.
+4. Verify your email to activate all community features (Feed, Explore, AI Assistant Workbench, post publishing, comments, and likes).
 
 ---
 
