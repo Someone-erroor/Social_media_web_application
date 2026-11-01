@@ -209,10 +209,11 @@ export default function AssistantWorkbench() {
           {activeTab === 'generate' ? (
             <form onSubmit={handleGenerate} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label htmlFor="ai-gen-topic" className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Topic or Theme <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="ai-gen-topic"
                   type="text"
                   placeholder="e.g. 5 tips for asynchronous communication in remote engineering teams"
                   value={topic}
@@ -224,10 +225,11 @@ export default function AssistantWorkbench() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label htmlFor="ai-gen-context" className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Context / Keywords (Optional)
                 </label>
                 <textarea
+                  id="ai-gen-context"
                   placeholder="Additional context, key takeaways, hashtags, or personal anecdotes..."
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
@@ -240,10 +242,12 @@ export default function AssistantWorkbench() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-gen-tone" className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Tone of Voice
                   </label>
                   <select
+                    id="ai-gen-tone"
+                    aria-label="Tone of voice"
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                     disabled={loading}
@@ -258,10 +262,12 @@ export default function AssistantWorkbench() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-gen-length" className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Target Length
                   </label>
                   <select
+                    id="ai-gen-length"
+                    aria-label="Target length"
                     value={length}
                     onChange={(e) => setLength(e.target.value)}
                     disabled={loading}
@@ -292,10 +298,11 @@ export default function AssistantWorkbench() {
           ) : (
             <form onSubmit={handleImprove} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label htmlFor="ai-improve-content" className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Content to Polish <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  id="ai-improve-content"
                   placeholder="Paste or write the draft you would like Gemini to refine, restructure, or rewrite..."
                   value={contentToImprove}
                   onChange={(e) => setContentToImprove(e.target.value)}
@@ -313,10 +320,12 @@ export default function AssistantWorkbench() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-improve-tone" className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Target Tone
                   </label>
                   <select
+                    id="ai-improve-tone"
+                    aria-label="Target tone"
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                     disabled={loading}
@@ -331,10 +340,11 @@ export default function AssistantWorkbench() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-improve-instructions" className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Custom Instructions (Optional)
                   </label>
                   <input
+                    id="ai-improve-instructions"
                     type="text"
                     placeholder="e.g. Make it more concise, fix grammar, add a question hook"
                     value={instructions}

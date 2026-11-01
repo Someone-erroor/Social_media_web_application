@@ -1,9 +1,10 @@
 import { env } from './env.js';
 
 // Parse allowed origins from validated environment configuration
+const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 const allowedOrigins = env.CLIENT_ORIGINS || (env.CLIENT_ORIGIN
   ? env.CLIENT_ORIGIN.split(',').map((origin) => origin.trim())
-  : ['http://localhost:3000']);
+  : defaultOrigins);
 
 export const corsOptions = {
   origin: (origin, callback) => {
@@ -19,7 +20,7 @@ export const corsOptions = {
       return callback(error, false);
     }
 
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || (env.isTest && (origin.includes('localhost') || origin.includes('127.0.0.1')))) {
       return callback(null, true);
     }
 

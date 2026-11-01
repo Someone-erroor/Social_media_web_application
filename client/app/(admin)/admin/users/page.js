@@ -138,6 +138,7 @@ export default function AdminUsersPage() {
           <select
             value={accountStatus}
             onChange={(e) => setAccountStatus(e.target.value)}
+            aria-label="Filter by account status"
             className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
           >
             <option value="">All Statuses</option>
@@ -148,6 +149,7 @@ export default function AdminUsersPage() {
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
+            aria-label="Filter by user role"
             className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
           >
             <option value="">All Roles</option>

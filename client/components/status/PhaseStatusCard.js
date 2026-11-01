@@ -13,7 +13,7 @@ export default function PhaseStatusCard() {
     <div className="w-full bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8">
       <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Phase 1: Project Initialization</h2>
+          <h2 className="text-lg font-bold text-slate-900">Platform Initialization</h2>
           <p className="text-xs text-slate-500 mt-0.5">Foundational verification and architecture readiness</p>
         </div>
         <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">

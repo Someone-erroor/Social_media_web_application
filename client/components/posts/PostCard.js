@@ -424,7 +424,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               type="button"
               onClick={handleToggleLike}
               disabled={likeLoading}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all active:scale-95 ${
                 hasLiked
                   ? 'text-red-600 bg-red-50 hover:bg-red-100 font-semibold'
                   : 'text-slate-500 hover:text-red-600 hover:bg-slate-50'
@@ -433,7 +433,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
             >
               <Icon
                 name="heart"
-                className={`w-4 h-4 ${hasLiked ? 'fill-red-600 stroke-red-600' : ''}`}
+                className={`w-4 h-4 transition-transform ${hasLiked ? 'fill-red-600 stroke-red-600 animate-heart-pop' : ''}`}
               />
               <span>{likesCount}</span>
             </button>

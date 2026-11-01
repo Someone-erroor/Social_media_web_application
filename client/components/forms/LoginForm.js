@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import FormField from '@/components/forms/FormField';
@@ -10,14 +10,7 @@ import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/lib/routes';
 
-const emptySubscribe = () => () => { };
-
 export default function LoginForm() {
-  const isHydrated = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -94,7 +87,7 @@ export default function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} data-hydrated={isHydrated ? 'true' : 'false'} className="space-y-4" noValidate>
+        <form onSubmit={handleSubmit} action="#" method="POST" className="space-y-4" noValidate>
           <FormField
             id="login-email"
             label="Email address"

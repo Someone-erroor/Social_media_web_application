@@ -49,7 +49,7 @@ export default function UserHeader() {
           >
             <Icon name="notifications" className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-indigo-600 rounded-full">
+              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-indigo-600 rounded-full animate-badge-pulse">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}

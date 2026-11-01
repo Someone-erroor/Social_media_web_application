@@ -22,6 +22,7 @@ export default function AdminActivityPage() {
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <select
             disabled
+            aria-label="Filter by event type"
             className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none disabled:bg-slate-100 disabled:cursor-not-allowed"
           >
             <option>All Event Types</option>

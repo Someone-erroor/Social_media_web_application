@@ -296,17 +296,17 @@ async function runResponsiveAndA11yAudit() {
       assert(a11yChecks.allImagesAlt, `Route "${r.path}": All image elements conform to alt-attribute accessibility`);
     }
 
-    // 8. Authenticated User Flow Responsive Audit
-    console.log('\n--- Step 8: Authenticated User Experience Responsive Audit ---');
+    // 8. Authenticated User Flow Responsive & Accessibility Multi-Route Audit
+    console.log('\n--- Step 8: Authenticated User Experience Multi-Route Audit ---');
     await page.goto('http://127.0.0.1:3000/login', { waitUntil: 'networkidle2' });
     await page.waitForSelector('#login-email', { timeout: 10000 });
     await page.waitForSelector('#login-password', { timeout: 10000 });
-    await new Promise((r) => setTimeout(r, 1500)); // Allow client hydration to settle
+    await new Promise((r) => setTimeout(r, 2000)); // Allow client hydration to settle
     await page.type('#login-email', auditUser.email);
     await page.type('#login-password', 'AuditorPassword123!');
     await page.click('button[type="submit"]');
     try {
-      await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 10000 });
+      await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 15000 });
     } catch (e) {
       const currUrl = page.url();
       const alertMsg = await page.evaluate(() => document.querySelector('[role="alert"]')?.innerText || '');
@@ -314,12 +314,9 @@ async function runResponsiveAndA11yAudit() {
       throw e;
     }
 
-    // Test /feed in mobile (375px) and desktop (1280px)
+    // Verify key navigation elements on /feed
     await page.setViewport({ width: 375, height: 667 });
-    await new Promise((r) => setTimeout(r, 800));
-    const mobileFeedOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-    assert(!mobileFeedOverflow, 'User Feed @ 375px: Zero horizontal overflow on mobile feed');
-
+    await new Promise((r) => setTimeout(r, 600));
     const mobileBottomNavVisible = await page.evaluate(() => {
       const bNav = document.querySelector('nav[aria-label="Mobile Navigation"]');
       return Boolean(bNav);
@@ -327,41 +324,147 @@ async function runResponsiveAndA11yAudit() {
     assert(mobileBottomNavVisible, 'User Feed @ 375px: UserBottomNav is active and visible on mobile');
 
     await page.setViewport({ width: 1280, height: 800 });
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 600));
     const desktopSidebarVisible = await page.evaluate(() => {
       const sBar = document.querySelector('aside[aria-label="User Sidebar"]');
       return Boolean(sBar);
     });
     assert(desktopSidebarVisible, 'User Feed @ 1280px: UserSidebar is active and visible on desktop');
 
-    // 9. Authenticated Admin Flow Responsive Audit
-    console.log('\n--- Step 9: Administrator Console Responsive Audit ---');
+    const authenticatedUserRoutes = [
+      { path: '/feed', title: 'User Feed' },
+      { path: '/explore', title: 'Explore' },
+      { path: '/profile', title: 'User Profile' },
+      { path: '/profile/edit', title: 'Edit Profile' },
+      { path: '/notifications', title: 'Notifications' },
+      { path: '/assistant', title: 'AI Assistant' },
+      { path: '/settings', title: 'Settings' }
+    ];
+
+    for (const r of authenticatedUserRoutes) {
+      // Mobile viewport check (375px)
+      await page.setViewport({ width: 375, height: 667 });
+      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await new Promise((r) => setTimeout(r, 600));
+      const mobileFeedOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+      assert(!mobileFeedOverflow, `User Route "${r.path}" @ 375px: Zero horizontal overflow on mobile (${r.title})`);
+
+      // Desktop viewport check (1280px)
+      await page.setViewport({ width: 1280, height: 800 });
+      await new Promise((r) => setTimeout(r, 600));
+      const desktopFeedOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+      assert(!desktopFeedOverflow, `User Route "${r.path}" @ 1280px: Zero horizontal overflow on desktop (${r.title})`);
+
+      // Accessibility audit
+      const a11y = await page.evaluate(() => {
+        const hasHeading = Boolean(document.querySelector('h1, h2, h3'));
+        const inputs = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea'));
+        const allInputsLabeled = inputs.every((input) => {
+          const id = input.id;
+          const hasLabel = id ? Boolean(document.querySelector(`label[for="${id}"]`)) : false;
+          const hasAria = Boolean(input.getAttribute('aria-label') || input.getAttribute('aria-labelledby'));
+          const hasPlaceholder = Boolean(input.placeholder);
+          return hasLabel || hasAria || hasPlaceholder;
+        });
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const allButtonsNamed = buttons.every((btn) => {
+          const text = btn.innerText?.trim();
+          const ariaLabel = btn.getAttribute('aria-label');
+          const title = btn.getAttribute('title');
+          return Boolean(text || ariaLabel || title);
+        });
+        const images = Array.from(document.querySelectorAll('img'));
+        const allImagesAlt = images.every((img) => img.hasAttribute('alt'));
+        return { hasHeading, allInputsLabeled, allButtonsNamed, allImagesAlt };
+      });
+
+      assert(a11y.hasHeading, `User Route "${r.path}": Valid heading hierarchy present`);
+      assert(a11y.allInputsLabeled, `User Route "${r.path}": All interactive inputs properly labeled`);
+      assert(a11y.allButtonsNamed, `User Route "${r.path}": All buttons have accessible names`);
+      assert(a11y.allImagesAlt, `User Route "${r.path}": All image elements conform to alt accessibility`);
+    }
+
+    // 9. Administrator Console Multi-Route Responsive & Accessibility Audit
+    console.log('\n--- Step 9: Administrator Console Multi-Route Audit ---');
+    // Clear cookies for fresh admin authentication
+    const clientSession = await page.target().createCDPSession();
+    await clientSession.send('Network.clearBrowserCookies');
+
     await page.goto('http://127.0.0.1:3000/login', { waitUntil: 'networkidle2' });
     await page.waitForSelector('#login-email', { timeout: 10000 });
     await page.waitForSelector('#login-password', { timeout: 10000 });
-    await new Promise((r) => setTimeout(r, 1500)); // Allow client hydration to settle
+    await new Promise((r) => setTimeout(r, 2000)); // Allow client hydration to settle
     await page.type('#login-email', auditAdmin.email);
     await page.type('#login-password', 'AuditorPassword123!');
     await page.click('button[type="submit"]');
     await page.waitForFunction(() => window.location.pathname === '/admin', { timeout: 15000 });
 
-    // Test /admin at 390px (Mobile) and 1440px (Desktop)
+    // Verify key navigation elements on /admin
     await page.setViewport({ width: 390, height: 844 });
-    await new Promise((r) => setTimeout(r, 800));
-    const mobileAdminOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-    assert(!mobileAdminOverflow, 'Admin Dashboard @ 390px: Zero horizontal overflow on mobile administration');
-
+    await new Promise((r) => setTimeout(r, 600));
     const adminDrawerButtonExists = await page.evaluate(() => {
       return Boolean(document.querySelector('button[aria-label*="navigation menu" i], button[aria-label*="menu" i]'));
     });
     assert(adminDrawerButtonExists, 'Admin Dashboard @ 390px: Accessible mobile drawer toggle button present');
 
     await page.setViewport({ width: 1440, height: 900 });
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 600));
     const desktopAdminSidebar = await page.evaluate(() => {
       return Boolean(document.querySelector('aside'));
     });
     assert(desktopAdminSidebar, 'Admin Dashboard @ 1440px: Full administrative dark sidebar visible on desktop');
+
+    const adminRoutes = [
+      { path: '/admin', title: 'Admin Overview Dashboard' },
+      { path: '/admin/users', title: 'Admin User Management' },
+      { path: '/admin/posts', title: 'Admin Post Moderation' },
+      { path: '/admin/comments', title: 'Admin Comment Moderation' },
+      { path: '/admin/activity', title: 'Admin Activity & Audit Trail' },
+      { path: '/admin/notifications', title: 'Admin Notification Broadcast' }
+    ];
+
+    for (const r of adminRoutes) {
+      // Mobile viewport check (390px)
+      await page.setViewport({ width: 390, height: 844 });
+      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await new Promise((r) => setTimeout(r, 600));
+      const mobileAdminOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+      assert(!mobileAdminOverflow, `Admin Route "${r.path}" @ 390px: Zero horizontal overflow on mobile (${r.title})`);
+
+      // Desktop viewport check (1440px)
+      await page.setViewport({ width: 1440, height: 900 });
+      await new Promise((r) => setTimeout(r, 600));
+      const desktopAdminOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+      assert(!desktopAdminOverflow, `Admin Route "${r.path}" @ 1440px: Zero horizontal overflow on desktop (${r.title})`);
+
+      // Accessibility audit
+      const a11y = await page.evaluate(() => {
+        const hasHeading = Boolean(document.querySelector('h1, h2, h3'));
+        const inputs = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea'));
+        const allInputsLabeled = inputs.every((input) => {
+          const id = input.id;
+          const hasLabel = id ? Boolean(document.querySelector(`label[for="${id}"]`)) : false;
+          const hasAria = Boolean(input.getAttribute('aria-label') || input.getAttribute('aria-labelledby'));
+          const hasPlaceholder = Boolean(input.placeholder);
+          return hasLabel || hasAria || hasPlaceholder;
+        });
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const allButtonsNamed = buttons.every((btn) => {
+          const text = btn.innerText?.trim();
+          const ariaLabel = btn.getAttribute('aria-label');
+          const title = btn.getAttribute('title');
+          return Boolean(text || ariaLabel || title);
+        });
+        const images = Array.from(document.querySelectorAll('img'));
+        const allImagesAlt = images.every((img) => img.hasAttribute('alt'));
+        return { hasHeading, allInputsLabeled, allButtonsNamed, allImagesAlt };
+      });
+
+      assert(a11y.hasHeading, `Admin Route "${r.path}": Valid administrative heading structure`);
+      assert(a11y.allInputsLabeled, `Admin Route "${r.path}": All administrative inputs/selects properly labeled`);
+      assert(a11y.allButtonsNamed, `Admin Route "${r.path}": All administrative buttons have discernible names`);
+      assert(a11y.allImagesAlt, `Admin Route "${r.path}": All administrative images conform to alt accessibility`);
+    }
 
     console.log('\n====================================================');
     console.log(`Phase 16 Audit Results: ${passed} passed, ${failed} failed`);

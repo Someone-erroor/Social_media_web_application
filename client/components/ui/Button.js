@@ -17,7 +17,7 @@ export default function Button({
   ...props
 }) {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed select-none rounded-xl';
+    'inline-flex items-center justify-center font-medium transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 select-none rounded-xl';
 
   const sizeClasses = {
     sm: 'text-xs px-3 py-1.5 gap-1.5',

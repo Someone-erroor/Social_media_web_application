@@ -64,8 +64,37 @@ body {
   }
 }
 
+@keyframes heartPop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-heart-pop {
+  animation: heartPop 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-badge-pulse {
+  animation: badgePulse 2s ease-in-out infinite;
 }
 
 /* Smooth scrolling when motion is not reduced */

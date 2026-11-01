@@ -823,7 +823,7 @@ Phase 18 executed security hardening, rate limiting, and production deployment p
 
 ## 25. Comprehensive Test Verification Summary
 
-Across the entire codebase, **100% of all automated test suites pass without errors (329 passed assertions across 7 test suites)**:
+Across the entire codebase, **100% of all automated test suites pass without errors (405 passed assertions across 7 test suites)**:
 
 | Test Suite | Execution Command | Target Database | Assertions Passed | Failed | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: |
@@ -832,9 +832,9 @@ Across the entire codebase, **100% of all automated test suites pass without err
 | **Batch 2 Comprehensive Suite (Phases 5–9)** | `npm run test:batch2` in `server` | `looply_test` | **54** | 0 | **PASSED** |
 | **Batch 3 Comprehensive Suite (Phases 10–14)** | `npm run test:batch3` in `server` | `looply_test` | **49** | 0 | **PASSED** |
 | **Phase 15 AI Discussion Summarization Suite** | `npm run test:phase15` in `server` | `looply_test` | **16** | 0 | **PASSED** |
-| **Phase 16 Responsive & Accessibility Audit (9 Viewports)** | `npm run test:phase16` in `server` | `looply_test` | **50** | 0 | **PASSED** |
+| **Phase 16 Responsive & A11y Multi-Route Audit (9 Viewports, 18 Routes)** | `npm run test:phase16` in `server` | `looply_test` | **126** | 0 | **PASSED** |
 | **Phase 4 E2E Real Browser Test Suite (Headless Chrome)** | `npm run test:e2e` in `server` | `looply_test` | **31** | 0 | **PASSED** |
-| **TOTAL AUTOMATED TEST ASSERTIONS** | — | — | **329** | **0** | **100% PASSED** |
+| **TOTAL AUTOMATED TEST ASSERTIONS** | — | — | **405** | **0** | **100% PASSED** |
 | **Frontend Production Build** | `npm run build` in `client` | N/A | **22/22 routes** | 0 | **PASSED** |
 | **Frontend Code Quality & Linting** | `npm run lint` in `client` | N/A | **0 errors, 0 warnings** | 0 | **PASSED** |
 
