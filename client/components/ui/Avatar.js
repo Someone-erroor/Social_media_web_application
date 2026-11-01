@@ -34,12 +34,12 @@ export default function Avatar({
           sizeMap[size] || sizeMap.md
         } ${className}`}
       >
-        {initials ? initials : <Icon name="profile" className="w-1/2 h-1/2 text-[#68757C]" />}
+        {initials ? initials : <Icon name="profile" className="w-1/2 h-1/2 text-[#58666D]" />}
       </div>
       {status && (
         <span
           className={`absolute bottom-0 right-0 block rounded-full ring-2 ring-white ${
-            status === 'online' ? 'bg-emerald-500' : 'bg-[#68757C]'
+            status === 'online' ? 'bg-emerald-500' : 'bg-[#58666D]'
           } ${size === 'lg' || size === 'xl' ? 'w-3.5 h-3.5' : 'w-2.5 h-2.5'}`}
         />
       )}

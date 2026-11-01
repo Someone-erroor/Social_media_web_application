@@ -69,18 +69,20 @@ export default function UserSidebar() {
 
       {/* Admin Switcher & User Teaser Footer */}
       <div className="p-4 border-t border-[#E3E8E8] space-y-3">
-        <Link
-          href={ROUTES.ADMIN.DASHBOARD}
-          className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7] transition-colors"
-        >
-          <span className="flex items-center gap-2">
-            <Icon name="shield" className="w-4 h-4 text-[#076C76]" />
-            Admin Console
-          </span>
-          <span className="text-[10px] uppercase font-bold text-[#252E34] bg-[#F6F8F7] border border-[#E3E8E8] px-1.5 py-0.5 rounded">
-            Portal
-          </span>
-        </Link>
+        {user?.role === 'admin' && (
+          <Link
+            href={ROUTES.ADMIN.DASHBOARD}
+            className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7] transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Icon name="shield" className="w-4 h-4 text-[#076C76]" />
+              Admin Console
+            </span>
+            <span className="text-[10px] uppercase font-bold text-[#252E34] bg-[#F6F8F7] border border-[#E3E8E8] px-1.5 py-0.5 rounded">
+              Portal
+            </span>
+          </Link>
+        )}
 
         {/* User Card & Logout */}
         <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8]">

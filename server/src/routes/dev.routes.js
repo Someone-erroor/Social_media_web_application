@@ -7,22 +7,23 @@ const router = Router();
 /**
  * Middleware: Strictly restricts dev preview routes to local development and loopback connections.
  * Never accessible in production environments.
+ * Does not trust user-supplied Host headers or req.hostname.
  */
 const requireDevLoopback = (req, res, next) => {
-  if (!env.isDevEmailPreviewAllowed) {
+  // Disable the route completely in production or when preview is explicitly disabled
+  if (env.isProduction || !env.isDevEmailPreviewAllowed) {
     return res.status(404).json({
       success: false,
       message: 'Not found'
     });
   }
 
-  const clientIp = req.ip || req.socket?.remoteAddress || '';
-  const isLoopback =
-    clientIp === '127.0.0.1' ||
-    clientIp === '::1' ||
-    clientIp === '::ffff:127.0.0.1' ||
-    req.hostname === 'localhost' ||
-    req.hostname === '127.0.0.1';
+  // Check the actual socket remote address, never trusting Host header or req.hostname
+  const clientIp = (req.socket?.remoteAddress || req.connection?.remoteAddress || req.ip || '').trim();
+  // Normalize IPv4-mapped IPv6 loopback addresses (e.g. "::ffff:127.0.0.1" -> "127.0.0.1")
+  const normalizedIp = clientIp.replace(/^::ffff:/, '');
+
+  const isLoopback = normalizedIp === '127.0.0.1' || normalizedIp === '::1';
 
   if (!isLoopback) {
     return res.status(403).json({

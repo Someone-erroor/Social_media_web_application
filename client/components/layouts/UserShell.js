@@ -31,7 +31,7 @@ export default function UserShell({ children, showSidePanel = true }) {
       <div className="min-h-screen bg-[#F6F8F7] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-3 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
-          <p className="text-xs text-[#68757C] font-medium">Loading Looply...</p>
+          <p className="text-xs text-[#58666D] font-medium">Loading Looply...</p>
         </div>
       </div>
     );

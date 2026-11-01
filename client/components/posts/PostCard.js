@@ -389,7 +389,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               className="w-full resize-none rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] focus:outline-none focus:border-[#16B8C8]"
             />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-[#68757C]">
+              <span className="text-[11px] text-[#58666D]">
                 {editContent.length} / 1000
               </span>
               <div className="flex items-center gap-2">
@@ -519,7 +519,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                       onChange={(e) => setCommentText(e.target.value)}
                       maxLength={500}
                       disabled={submittingComment}
-                      className="w-full rounded-xl border border-[#E3E8E8] bg-[#F6F8F7]/60 px-3 py-2 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8] focus:bg-white"
+                      className="w-full rounded-xl border border-[#E3E8E8] bg-[#F6F8F7]/60 px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8] focus:bg-white"
                     />
                   </div>
                   {commentText.length > 0 && (
@@ -598,7 +598,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                     setEditingCommentId(comment._id);
                                     setEditCommentContent(comment.content);
                                   }}
-                                  className="text-[#68757C] hover:text-[#087F8A] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
+                                  className="text-[#58666D] hover:text-[#087F8A] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
                                   title="Edit comment"
                                 >
                                   <Icon name="edit" className="w-3 h-3" />
@@ -606,7 +606,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteComment(comment._id)}
-                                  className="text-[#68757C] hover:text-red-600 p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Delete comment"
+                                  className="text-[#58666D] hover:text-red-600 p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Delete comment"
                                   title="Delete comment"
                                 >
                                   <Icon name="trash" className="w-3 h-3" />

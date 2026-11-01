@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { env } from '../config/env.js';
 import { AUTH_COOKIE_NAME, getCookieOptions, getClearCookieOptions, verifyToken } from '../config/jwt.js';
 import { User } from '../models/index.js';
@@ -24,7 +23,6 @@ import {
  * POST /api/auth/register
  */
 export const register = async (req, res, next) => {
-  process.stdout.write(`\n[DEBUG REGISTER CONTROLLER] mongoose.connection.name: ${mongoose.connection.name} User.db.name: ${User.db?.name}\n`);
   try {
     const { isValid, errors, sanitized } = validateRegisterInput(req.body);
 

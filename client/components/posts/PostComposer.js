@@ -213,7 +213,7 @@ export default function PostComposer({ onPostCreated }) {
                 placeholder="What is happening? Share your thoughts..."
                 rows={3}
                 disabled={loading || aiLoading}
-                className="w-full resize-none rounded-xl border border-[#E3E8E8] bg-[#F6F8F7]/70 p-3 text-sm text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8] focus:bg-white transition-colors"
+                className="w-full resize-none rounded-xl border border-[#E3E8E8] bg-[#F6F8F7]/70 p-3 text-sm text-[#172126] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8] focus:bg-white transition-colors"
               />
             </div>
           </div>
@@ -229,7 +229,7 @@ export default function PostComposer({ onPostCreated }) {
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-[#68757C] hover:text-[#172126] font-bold"
+                  className="text-[#58666D] hover:text-[#172126] font-bold"
                 >
                   ✕
                 </button>
@@ -244,7 +244,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiTopic(e.target.value)}
                   maxLength={200}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8]"
+                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8]"
                 />
 
                 <input
@@ -255,7 +255,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiContext(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8]"
+                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -310,7 +310,7 @@ export default function PostComposer({ onPostCreated }) {
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-[#68757C] hover:text-[#172126] font-bold"
+                  className="text-[#58666D] hover:text-[#172126] font-bold"
                 >
                   ✕
                 </button>
@@ -325,7 +325,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiInstructions(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-[#FF725E]/30 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#FF725E]"
+                  className="w-full rounded-lg border border-[#FF725E]/30 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#FF725E]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -358,7 +358,7 @@ export default function PostComposer({ onPostCreated }) {
             </div>
           )}
 
-          <div className="pt-2 border-t border-[#E3E8E8] flex items-center justify-between gap-3 text-xs text-[#68757C]">
+          <div className="pt-2 border-t border-[#E3E8E8] flex items-center justify-between gap-3 text-xs text-[#58666D]">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -366,7 +366,7 @@ export default function PostComposer({ onPostCreated }) {
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'generate'
                     ? 'bg-cyan-100 text-[#087F8A]'
-                    : 'bg-[#F6F8F7] hover:bg-cyan-50 text-[#68757C] hover:text-[#087F8A]'
+                    : 'bg-[#F6F8F7] hover:bg-cyan-50 text-[#58666D] hover:text-[#087F8A]'
                 }`}
                 title="Draft a post with Gemini AI"
               >
@@ -381,7 +381,7 @@ export default function PostComposer({ onPostCreated }) {
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'improve'
                     ? 'bg-[#FF725E]/15 text-[#FF725E]'
-                    : 'bg-[#F6F8F7] hover:bg-[#FF725E]/10 text-[#68757C] hover:text-[#FF725E] disabled:opacity-40 disabled:hover:bg-[#F6F8F7] disabled:hover:text-[#68757C] disabled:cursor-not-allowed'
+                    : 'bg-[#F6F8F7] hover:bg-[#FF725E]/10 text-[#58666D] hover:text-[#FF725E] disabled:opacity-40 disabled:hover:bg-[#F6F8F7] disabled:hover:text-[#58666D] disabled:cursor-not-allowed'
                 }`}
                 title={content.trim() ? "Improve draft with Gemini AI" : "Write text to enable AI polish"}
               >
@@ -395,7 +395,7 @@ export default function PostComposer({ onPostCreated }) {
                     ? 'text-red-600 font-bold'
                     : charCount > 900
                     ? 'text-amber-600'
-                    : 'text-[#68757C]'
+                    : 'text-[#58666D]'
                 }`}
               >
                 {charCount} / 1000

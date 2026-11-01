@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -21,14 +20,6 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.get('/api/who-am-i', (req, res) => {
-  res.json({
-    db: mongoose.connection.name,
-    pid: process.pid,
-    title: 'CUSTOM_IDENTIFIER_12345'
-  });
-});
 
 // Primary API Router mounted at /api
 app.use('/api', apiRoutes);

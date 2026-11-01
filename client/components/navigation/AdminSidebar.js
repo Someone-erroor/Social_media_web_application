@@ -81,11 +81,11 @@ export default function AdminSidebar() {
         <div className="flex items-center justify-between text-xs text-[#E3E8E8] font-medium">
           <span>Admin Clearance</span>
           <span className="text-[10px] font-mono text-[#16B8C8] bg-[#172126] px-1.5 py-0.5 rounded border border-[#252E34]">
-            Root Level
+            Administrator
           </span>
         </div>
         <p className="mt-1 text-[11px] text-[#E3E8E8]">
-          Management Console &bull; Root Clearance
+          Management Console &bull; Platform Administration
         </p>
       </div>
 

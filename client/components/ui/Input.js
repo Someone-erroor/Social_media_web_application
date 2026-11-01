@@ -19,7 +19,7 @@ export default function Input({
   ...props
 }) {
   const baseClasses =
-    'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-[#172126] transition-colors placeholder:text-[#68757C] focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-[#F6F8F7] disabled:text-[#68757C] disabled:cursor-not-allowed';
+    'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-[#172126] transition-colors placeholder:text-[#58666D] focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-[#F6F8F7] disabled:text-[#58666D] disabled:cursor-not-allowed';
 
   const stateClasses = error
     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-400'
@@ -31,7 +31,7 @@ export default function Input({
   return (
     <div className="relative w-full">
       {icon && (
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#68757C]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#58666D]">
           {icon}
         </div>
       )}

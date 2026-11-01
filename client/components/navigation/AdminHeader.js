@@ -22,7 +22,7 @@ export default function AdminHeader() {
             <h1 className="text-base sm:text-lg font-bold text-[#172126] tracking-tight leading-none">
               {currentMeta.title}
             </h1>
-            <span className="text-[11px] text-[#68757C] hidden sm:inline-block mt-0.5">
+            <span className="text-[11px] text-[#58666D] hidden sm:inline-block mt-0.5">
               Looply Platform Administration
             </span>
           </div>
@@ -38,7 +38,7 @@ export default function AdminHeader() {
             <Avatar name="Sys Admin" size="sm" status="online" />
             <div className="hidden sm:block text-left">
               <p className="text-xs font-semibold text-[#172126] leading-tight">System Admin</p>
-              <p className="text-[10px] text-[#68757C] font-mono">admin@looply.internal</p>
+              <p className="text-[10px] text-[#58666D] font-mono">admin@looply.internal</p>
             </div>
           </div>
         </div>

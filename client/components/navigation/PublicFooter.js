@@ -14,7 +14,7 @@ export default function PublicFooter() {
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-3">
             <Logo size="default" showTagline={true} href={ROUTES.PUBLIC.HOME} />
-            <p className="text-xs text-[#68757C] leading-relaxed">
+            <p className="text-xs text-[#58666D] leading-relaxed">
               A modern, authentic social network built for meaningful connections and creative expression.
             </p>
           </div>
@@ -82,31 +82,31 @@ export default function PublicFooter() {
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#172126] mb-3">
               Platform Status
             </h4>
-            <p className="text-xs text-[#68757C] leading-relaxed mb-2">
-              Next-generation social interface and navigation systems active.
+            <p className="text-xs text-[#58666D] leading-relaxed mb-2">
+              All core services operational. Real-time notifications and AI workflows active.
             </p>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-cyan-50 text-[#087F8A] border border-cyan-200">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-cyan-50 text-[#076C76] border border-cyan-200">
               <span className="w-1.5 h-1.5 rounded-full bg-[#16B8C8]"></span>
-              Looply Core Platform &bull; v0.1.0
+              Looply Core Platform &bull; v1.0.0
             </span>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[#E3E8E8] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#68757C]">
+        <div className="pt-8 border-t border-[#E3E8E8] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#58666D]">
           <div>
             &copy; 2026 Looply. All rights reserved. Connect. Share. Express.
           </div>
           <div className="flex items-center gap-6">
-            <Link href={ROUTES.PUBLIC.PRIVACY} className="hover:text-[#087F8A] transition-colors">
+            <Link href={ROUTES.PUBLIC.PRIVACY} className="hover:text-[#076C76] transition-colors">
               Privacy Policy
             </Link>
-            <Link href={ROUTES.PUBLIC.TERMS} className="hover:text-[#087F8A] transition-colors">
+            <Link href={ROUTES.PUBLIC.TERMS} className="hover:text-[#076C76] transition-colors">
               Terms of Service
             </Link>
-            <a href="#community" className="hover:text-[#087F8A] transition-colors">
+            <Link href="/#community" className="hover:text-[#076C76] transition-colors">
               Community
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -165,7 +165,7 @@ export default function AssistantWorkbench() {
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'generate'
                 ? 'border-[#087F8A] text-[#087F8A]'
-                : 'border-transparent text-[#68757C] hover:text-[#172126]'
+                : 'border-transparent text-[#58666D] hover:text-[#172126]'
             }`}
           >
             <Icon name="sparkles" className="w-4 h-4 text-[#16B8C8]" />
@@ -181,7 +181,7 @@ export default function AssistantWorkbench() {
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'improve'
                 ? 'border-[#FF725E] text-[#FF725E]'
-                : 'border-transparent text-[#68757C] hover:text-[#172126]'
+                : 'border-transparent text-[#58666D] hover:text-[#172126]'
             }`}
           >
             <Icon name="edit" className="w-4 h-4 text-[#FF725E]" />
@@ -220,7 +220,7 @@ export default function AssistantWorkbench() {
                   onChange={(e) => setTopic(e.target.value)}
                   maxLength={200}
                   disabled={loading}
-                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8] transition-colors"
+                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8] transition-colors"
                 />
               </div>
 
@@ -236,7 +236,7 @@ export default function AssistantWorkbench() {
                   rows={2}
                   maxLength={500}
                   disabled={loading}
-                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-xs text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8] transition-colors"
+                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-xs text-[#172126] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8] transition-colors"
                 />
               </div>
 
@@ -281,7 +281,7 @@ export default function AssistantWorkbench() {
               </div>
 
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-[#68757C]">
+                <span className="text-[11px] text-[#58666D]">
                   Powered by Google Gemini 2.5 Flash
                 </span>
                 <Button
@@ -309,10 +309,10 @@ export default function AssistantWorkbench() {
                   rows={4}
                   maxLength={1000}
                   disabled={loading}
-                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#FF725E] transition-colors"
+                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] placeholder:text-[#58666D] focus:outline-none focus:border-[#FF725E] transition-colors"
                 />
                 <div className="mt-1 flex justify-end">
-                  <span className="text-[11px] text-[#68757C]">
+                  <span className="text-[11px] text-[#58666D]">
                     {contentToImprove.length} / 1000
                   </span>
                 </div>
@@ -351,13 +351,13 @@ export default function AssistantWorkbench() {
                     onChange={(e) => setInstructions(e.target.value)}
                     maxLength={300}
                     disabled={loading}
-                    className="w-full rounded-xl border border-[#E3E8E8] bg-white p-2.5 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#FF725E]"
+                    className="w-full rounded-xl border border-[#E3E8E8] bg-white p-2.5 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#FF725E]"
                   />
                 </div>
               </div>
 
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-[#68757C]">
+                <span className="text-[11px] text-[#58666D]">
                   Powered by Google Gemini 2.5 Flash
                 </span>
                 <Button
@@ -386,12 +386,12 @@ export default function AssistantWorkbench() {
                   {result.type === 'generated' ? 'Generated Draft' : 'Polished Draft'}
                 </Badge>
                 {result.metadata?.model && (
-                  <span className="text-[11px] font-mono text-[#68757C]">
+                  <span className="text-[11px] font-mono text-[#58666D]">
                     model: {result.metadata.model}
                   </span>
                 )}
               </div>
-              <span className="text-xs text-[#68757C]">
+              <span className="text-xs text-[#58666D]">
                 {result.text.length} chars
               </span>
             </div>
@@ -401,7 +401,7 @@ export default function AssistantWorkbench() {
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-              <p className="text-[11px] text-[#68757C] italic">
+              <p className="text-[11px] text-[#58666D] italic">
                 Never auto-published. Always review and edit before posting to Looply.
               </p>
 
@@ -451,7 +451,7 @@ export default function AssistantWorkbench() {
                   {s.tone}
                 </span>
               </div>
-              <p className="text-xs text-[#68757C] leading-relaxed">
+              <p className="text-xs text-[#58666D] leading-relaxed">
                 {s.topic}
               </p>
             </div>

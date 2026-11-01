@@ -111,7 +111,7 @@ export default function Modal({
               </h3>
             )}
             {description && (
-              <p id="modal-description" className="text-xs text-[#68757C] mt-0.5">
+              <p id="modal-description" className="text-xs text-[#58666D] mt-0.5">
                 {description}
               </p>
             )}
@@ -119,7 +119,7 @@ export default function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 text-[#68757C] hover:text-[#172126] rounded-lg hover:bg-[#F6F8F7] transition-colors focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
+            className="p-1 text-[#58666D] hover:text-[#172126] rounded-lg hover:bg-[#F6F8F7] transition-colors focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
             aria-label="Close dialog"
           >
             <Icon name="close" className="w-5 h-5" />

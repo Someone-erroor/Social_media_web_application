@@ -381,6 +381,7 @@ async function runE2EBrowserTests() {
     await page.setCacheEnabled(false);
     page.on('console', (msg) => console.log('[E2E Browser Console]:', msg.text()));
     page.on('pageerror', (err) => console.error('[E2E Page Error]:', err.message));
+    page.on('requestfailed', (req) => console.error('[E2E Request Failed]:', req.method(), req.url(), req.failure()?.errorText));
     page.on('response', async (res) => {
       if (res.url().includes('/api/')) {
         try {

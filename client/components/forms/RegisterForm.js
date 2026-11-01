@@ -86,7 +86,7 @@ export default function RegisterForm() {
         confirmPassword
       });
 
-      const deliveryMode = result?.deliveryMode || 'smtp';
+      const deliveryMode = result?.deliveryMode || 'unavailable';
       let previewLink = null;
       if (deliveryMode === 'preview') {
         try {
