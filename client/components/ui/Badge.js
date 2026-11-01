@@ -1,6 +1,6 @@
 /**
- * Reusable Badge Component for Looply
- * Status pills and descriptive tags
+ * Reusable Badge Component for Looply (Dark Neon Theme)
+ * Status pills and descriptive tags with dark neon accents.
  */
 export default function Badge({
   children,
@@ -18,13 +18,13 @@ export default function Badge({
   };
 
   const variantClasses = {
-    neutral: 'bg-[#F6F8F7] text-[#252E34] border border-[#E3E8E8]',
-    primary: 'bg-cyan-50 text-[#087F8A] border border-cyan-200 font-semibold',
-    coral: 'bg-[#FF725E]/15 text-[#D94A38] border border-[#FF725E]/30 font-semibold',
-    success: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
-    warning: 'bg-amber-50 text-amber-800 border border-amber-200',
-    danger: 'bg-rose-50 text-rose-800 border border-rose-200',
-    outline: 'bg-transparent text-[#252E34] border border-[#E3E8E8]'
+    neutral: 'bg-[#1D2A35] text-[#F4F8FA] border border-[#263640]',
+    primary: 'bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/35 font-semibold',
+    coral: 'bg-[#FF6F61]/15 text-[#FF6F61] border border-[#FF6F61]/35 font-semibold',
+    success: 'bg-[#32D583]/15 text-[#32D583] border border-[#32D583]/35 font-medium',
+    warning: 'bg-[#F5B942]/15 text-[#F5B942] border border-[#F5B942]/35 font-medium',
+    danger: 'bg-[#FF5C70]/15 text-[#FF5C70] border border-[#FF5C70]/35 font-semibold',
+    outline: 'bg-transparent text-[#9BAAB4] border border-[#263640]'
   };
 
   return (
@@ -38,4 +38,3 @@ export default function Badge({
     </span>
   );
 }
-

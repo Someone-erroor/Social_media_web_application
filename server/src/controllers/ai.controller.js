@@ -7,6 +7,30 @@ import { generatePost, improvePost, summarizeDiscussion } from '../services/ai.s
 import { Post, Comment } from '../models/index.js';
 
 /**
+ * Standardized error responder for AI controller endpoints.
+ * Preserves accurate provider HTTP status (429, 403, 404, 503, 504) and sets Retry-After header.
+ *
+ * @param {any} error
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const handleAiControllerError = (error, res, next) => {
+  if (error.status) {
+    if (error.retryAfter) {
+      res.setHeader('Retry-After', String(error.retryAfter));
+    }
+    return res.status(error.status).json({
+      success: false,
+      message: error.message,
+      code: error.code || 'AI_PROVIDER_ERROR',
+      category: error.category || undefined,
+      retryAfter: error.retryAfter || undefined
+    });
+  }
+  next(error);
+};
+
+/**
  * Generates a post draft using Gemini AI.
  * POST /api/ai/posts/generate
  */
@@ -43,13 +67,7 @@ export const handleGeneratePost = async (req, res, next) => {
       }
     });
   } catch (error) {
-    if (error.status) {
-      return res.status(error.status).json({
-        success: false,
-        message: error.message
-      });
-    }
-    next(error);
+    handleAiControllerError(error, res, next);
   }
 };
 
@@ -90,13 +108,7 @@ export const handleImprovePost = async (req, res, next) => {
       }
     });
   } catch (error) {
-    if (error.status) {
-      return res.status(error.status).json({
-        success: false,
-        message: error.message
-      });
-    }
-    next(error);
+    handleAiControllerError(error, res, next);
   }
 };
 
@@ -156,13 +168,6 @@ export const handleSummarizeDiscussion = async (req, res, next) => {
       }
     });
   } catch (error) {
-    if (error.status) {
-      return res.status(error.status).json({
-        success: false,
-        message: error.message
-      });
-    }
-    next(error);
+    handleAiControllerError(error, res, next);
   }
 };
-

@@ -6,7 +6,7 @@ import Avatar from '@/components/ui/Avatar';
 import { ROUTE_METADATA } from '@/lib/routes';
 
 /**
- * Top Management Header for Admin Experience
+ * Top Management Header for Admin Experience (Dark Neon Theme)
  * Displays dynamic route title, system status, and administrator badge.
  */
 export default function AdminHeader() {
@@ -14,15 +14,15 @@ export default function AdminHeader() {
   const currentMeta = ROUTE_METADATA[pathname] || { title: 'Administration' };
 
   return (
-    <header className="md:sticky md:top-0 z-20 w-full bg-white border-b border-[#E3E8E8]">
+    <header className="md:sticky md:top-0 z-20 w-full bg-[#101A22] border-b border-[#263640]">
       <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Breadcrumb / Title */}
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-base sm:text-lg font-bold text-[#172126] tracking-tight leading-none">
+            <h1 className="text-base sm:text-lg font-bold text-[#F4F8FA] tracking-tight leading-none">
               {currentMeta.title}
             </h1>
-            <span className="text-[11px] text-[#58666D] hidden sm:inline-block mt-0.5">
+            <span className="text-[11px] text-[#9BAAB4] hidden sm:inline-block mt-0.5">
               Looply Platform Administration
             </span>
           </div>
@@ -34,11 +34,11 @@ export default function AdminHeader() {
             Admin Console
           </Badge>
 
-          <div className="flex items-center gap-2.5 pl-3 border-l border-[#E3E8E8]">
+          <div className="flex items-center gap-2.5 pl-3 border-l border-[#263640]">
             <Avatar name="Sys Admin" size="sm" status="online" />
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-semibold text-[#172126] leading-tight">System Admin</p>
-              <p className="text-[10px] text-[#58666D] font-mono">admin@looply.internal</p>
+              <p className="text-xs font-semibold text-[#F4F8FA] leading-tight">System Admin</p>
+              <p className="text-[10px] text-[#9BAAB4] font-mono">admin@looply.internal</p>
             </div>
           </div>
         </div>
@@ -46,4 +46,3 @@ export default function AdminHeader() {
     </header>
   );
 }
-

@@ -178,7 +178,7 @@ const clientUrl = process.env.CLIENT_URL ? String(process.env.CLIENT_URL).trim()
 
 // AI / Gemini Configuration (Phase 14)
 const geminiApiKey = process.env.GEMINI_API_KEY ? String(process.env.GEMINI_API_KEY).trim() : '';
-const geminiModel = process.env.GEMINI_MODEL ? String(process.env.GEMINI_MODEL).trim() : 'gemini-2.5-flash';
+const geminiModel = process.env.GEMINI_MODEL ? String(process.env.GEMINI_MODEL).trim() : 'gemini-3.8-flash';
 
 // Development Email Preview Configuration
 const devEmailPreviewEnabled = process.env.DEV_EMAIL_PREVIEW_ENABLED ? process.env.DEV_EMAIL_PREVIEW_ENABLED === 'true' : true;

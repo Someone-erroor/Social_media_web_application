@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 /**
- * Reusable Button Component for Looply
+ * Reusable Button Component for Looply (Dark Neon Theme)
  * Supports semantic button and Next.js Link variants, accessible focus rings, and states.
  */
 export default function Button({
@@ -17,7 +17,7 @@ export default function Button({
   ...props
 }) {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 select-none rounded-xl';
+    'inline-flex items-center justify-center font-medium transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#080D12] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 select-none rounded-xl';
 
   const sizeClasses = {
     sm: 'text-xs px-3 py-1.5 gap-1.5',
@@ -27,17 +27,17 @@ export default function Button({
 
   const variantClasses = {
     primary:
-      'bg-[#16B8C8] text-[#172126] font-semibold hover:bg-[#087F8A] hover:text-white active:bg-[#06656e] focus:ring-[#16B8C8] shadow-sm border border-transparent',
+      'bg-[#19D3E3] text-[#080D12] font-bold hover:bg-[#00B8C8] active:bg-[#009da9] focus:ring-[#19D3E3] shadow-md shadow-[#19D3E3]/15 border border-transparent',
     secondary:
-      'bg-[#F6F8F7] text-[#172126] font-medium hover:bg-[#E3E8E8] active:bg-[#d8dede] focus:ring-[#16B8C8] border border-[#E3E8E8]',
+      'bg-[#151F29] text-[#F4F8FA] font-medium border border-[#19D3E3]/40 hover:border-[#19D3E3] hover:bg-[#1D2A35] active:bg-[#23333E] focus:ring-[#19D3E3]',
     outline:
-      'bg-white text-[#252E34] font-medium border border-[#E3E8E8] hover:bg-[#F6F8F7] hover:border-[#16B8C8] active:bg-[#E3E8E8] focus:ring-[#16B8C8] shadow-xs',
+      'bg-transparent text-[#F4F8FA] font-medium border border-[#263640] hover:bg-[#151F29] hover:border-[#19D3E3]/60 active:bg-[#1D2A35] focus:ring-[#19D3E3]',
     ghost:
-      'bg-transparent text-[#252E34] font-medium hover:bg-[#F6F8F7] hover:text-[#087F8A] active:bg-[#E3E8E8] focus:ring-[#16B8C8] border border-transparent',
+      'bg-transparent text-[#9BAAB4] font-medium hover:bg-[#151F29] hover:text-[#19D3E3] active:bg-[#1D2A35] focus:ring-[#19D3E3] border border-transparent',
     coral:
-      'bg-[#FF725E] text-white font-semibold hover:bg-[#e85542] active:bg-[#d44331] focus:ring-[#FF725E] shadow-sm border border-transparent',
+      'bg-[#FF6F61] text-[#080D12] font-bold hover:bg-[#e85a4d] active:bg-[#d4483b] focus:ring-[#FF6F61] shadow-md shadow-[#FF6F61]/20 border border-transparent',
     danger:
-      'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 focus:ring-rose-500 shadow-sm border border-transparent'
+      'bg-[#FF5C70] text-[#080D12] font-bold hover:bg-[#e64358] active:bg-[#cf3247] focus:ring-[#FF5C70] shadow-sm border border-transparent'
   };
 
   const combinedClasses = `${baseClasses} ${sizeClasses[size] || sizeClasses.md} ${
@@ -66,4 +66,3 @@ export default function Button({
     </button>
   );
 }
-

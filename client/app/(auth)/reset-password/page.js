@@ -71,33 +71,33 @@ function ResetPasswordContent() {
   };
 
   return (
-    <Card className="shadow-md border-[#E3E8E8]">
-      <CardHeader className="text-center pb-2">
-        <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mx-auto mb-2 shadow-xs">
+    <Card className="shadow-md border-[#263640] bg-[#151F29]">
+      <CardHeader className="text-center pb-2 border-b border-[#263640]">
+        <div className="w-12 h-12 rounded-2xl bg-[#1D2A35] border border-[#263640] flex items-center justify-center text-[#19D3E3] mx-auto mb-2 shadow-xs">
           <Icon name="lock" className="w-6 h-6" />
         </div>
-        <CardTitle className="text-xl font-bold">Set new password</CardTitle>
+        <CardTitle className="text-xl font-bold text-[#F4F8FA]">Set new password</CardTitle>
         <CardDescription>
           Your new password must be at least 8 characters long and different from previous passwords.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4 pt-4">
+      <CardContent className="space-y-4 pt-4 text-[#F4F8FA]">
         {errorMessage && (
-          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
+          <div className="p-3.5 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70]">
             {errorMessage}
           </div>
         )}
 
         {successMessage && (
-          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-3">
-            <p className="font-semibold">Password Reset Successful</p>
+          <div className="p-4 rounded-xl bg-[#32D583]/10 border border-[#32D583]/30 text-xs text-[#32D583] space-y-3">
+            <p className="font-semibold text-[#F4F8FA]">Password Reset Successful</p>
             <p>{successMessage}</p>
             <Button
               href={ROUTES.PUBLIC.LOGIN}
               variant="primary"
               size="lg"
-              className="w-full"
+              className="w-full shadow-md shadow-[#19D3E3]/20"
             >
               Sign In with New Password
             </Button>
@@ -144,7 +144,7 @@ function ResetPasswordContent() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-[#58666D] hover:text-[#172126] text-xs flex items-center justify-center"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-[#9BAAB4] hover:text-[#F4F8FA] text-xs flex items-center justify-center"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -170,7 +170,7 @@ function ResetPasswordContent() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-[#58666D] hover:text-[#172126] text-xs flex items-center justify-center"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-[#9BAAB4] hover:text-[#F4F8FA] text-xs flex items-center justify-center"
                 >
                   {showConfirmPassword ? 'Hide' : 'Show'}
                 </button>
@@ -181,7 +181,7 @@ function ResetPasswordContent() {
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full"
+              className="w-full shadow-md shadow-[#19D3E3]/20"
               disabled={loading}
             >
               {loading ? 'Updating Password...' : 'Update Password'}
@@ -189,11 +189,11 @@ function ResetPasswordContent() {
           </form>
         )}
 
-        <div className="pt-4 border-t border-[#E3E8E8] text-center text-xs text-[#252E34]">
+        <div className="pt-4 border-t border-[#263640] text-center text-xs text-[#9BAAB4]">
           Remember your credentials?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
+            className="font-semibold text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
           >
             Back to sign in
           </Link>
@@ -207,10 +207,10 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <Card className="shadow-md border-[#E3E8E8] text-center p-8">
+        <Card className="shadow-md border-[#263640] bg-[#151F29] text-center p-8">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
-            <p className="text-xs text-[#58666D]">Loading password reset portal...</p>
+            <div className="w-8 h-8 border-2 border-[#263640] border-t-[#19D3E3] rounded-full animate-spin" />
+            <p className="text-xs text-[#9BAAB4]">Loading password reset portal...</p>
           </div>
         </Card>
       }

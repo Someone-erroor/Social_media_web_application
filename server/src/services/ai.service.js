@@ -3,7 +3,259 @@ import { env } from '../config/env.js';
 
 let forceMockMode = false;
 let simulateAiFailure = false;
+let simulatedAiError = null;
 let simulateAiTimeout = false;
+
+/**
+ * Structured AI Provider Error encapsulating safe diagnostics and status codes.
+ */
+export class AiProviderError extends Error {
+  constructor({
+    message,
+    status = 502,
+    code = 'GEMINI_UNKNOWN_ERROR',
+    category = 'UNKNOWN',
+    retryAfter = null,
+    model = '',
+    providerErrorCode = ''
+  }) {
+    super(message);
+    this.name = 'AiProviderError';
+    this.status = status;
+    this.code = code;
+    this.category = category;
+    this.retryAfter = retryAfter;
+    this.model = model;
+    this.providerErrorCode = providerErrorCode;
+  }
+}
+
+/**
+ * Classifies an error from Google Gemini or upstream network into a safe, structured AiProviderError.
+ *
+ * @param {any} err - Upstream error
+ * @param {string} configuredModel - The configured model name
+ * @returns {AiProviderError}
+ */
+export const classifyGeminiError = (err, configuredModel = 'gemini-3.8-flash') => {
+  if (err instanceof AiProviderError) {
+    return err;
+  }
+
+  const rawMessage = String(err?.message || '');
+  const status = Number(err?.status || err?.statusCode || 0);
+  const code = String(err?.code || '');
+
+  // Extract Retry-After if supplied by provider
+  let retryAfter = null;
+  if (err?.retryAfter && !isNaN(Number(err.retryAfter))) {
+    retryAfter = Math.ceil(Number(err.retryAfter));
+  } else if (err?.headers && typeof err.headers.get === 'function') {
+    const headerVal = err.headers.get('retry-after');
+    if (headerVal && !isNaN(Number(headerVal))) {
+      retryAfter = Math.ceil(Number(headerVal));
+    }
+  }
+  if (!retryAfter) {
+    const match = rawMessage.match(/retry(?:-|\s+)after[:\s]+(\d+(?:\.\d+)?)\s*s?/i) ||
+                  rawMessage.match(/retryDelay[:\s]+["']?(\d+(?:\.\d+)?)s?["']?/i);
+    if (match) {
+      retryAfter = Math.ceil(parseFloat(match[1]));
+    }
+  }
+
+  // 1. HTTP 429 / RESOURCE_EXHAUSTED
+  if (
+    status === 429 ||
+    rawMessage.includes('RESOURCE_EXHAUSTED') ||
+    rawMessage.includes('429 Too Many Requests') ||
+    rawMessage.includes('Quota exceeded') ||
+    rawMessage.includes('quota')
+  ) {
+    let category = 'RESOURCE_EXHAUSTED_GENERAL';
+    let userMsg = retryAfter
+      ? `Gemini request limit reached. Please retry after ${retryAfter} second${retryAfter > 1 ? 's' : ''}.`
+      : 'Gemini request limit reached. Please retry after the indicated time.';
+
+    if (/requests\s+per\s+minute|RPM/i.test(rawMessage)) {
+      category = 'RATE_LIMIT_RPM';
+      userMsg = retryAfter
+        ? `Gemini request limit reached. Please retry after ${retryAfter} second${retryAfter > 1 ? 's' : ''}.`
+        : 'Gemini request limit reached. Please retry after the indicated time.';
+    } else if (/tokens\s+per\s+minute|TPM/i.test(rawMessage)) {
+      category = 'RATE_LIMIT_TPM';
+      userMsg = 'Gemini input token rate limit reached. Please try with shorter content or wait a moment.';
+    } else if (/requests\s+per\s+day|RPD|daily/i.test(rawMessage)) {
+      category = 'DAILY_QUOTA_EXHAUSTED';
+      userMsg = 'Gemini daily quota has been exhausted. Check your Google AI Studio usage limits.';
+    } else if (/spend|billing|credit/i.test(rawMessage)) {
+      category = 'SPEND_QUOTA_EXCEEDED';
+      userMsg = 'Gemini account spend or quota limit reached. Check billing settings in Google AI Studio.';
+    }
+
+    return new AiProviderError({
+      message: userMsg,
+      status: 429,
+      code: 'GEMINI_RESOURCE_EXHAUSTED',
+      category,
+      retryAfter,
+      model: configuredModel,
+      providerErrorCode: 'RESOURCE_EXHAUSTED'
+    });
+  }
+
+  // 2. HTTP 401 / 403 - Authentication & Permission Denials
+  if (
+    status === 401 ||
+    rawMessage.includes('UNAUTHENTICATED') ||
+    rawMessage.includes('API_KEY_INVALID') ||
+    rawMessage.includes('API key not valid')
+  ) {
+    return new AiProviderError({
+      message: 'Gemini API authentication failed. The administrator must verify API configuration.',
+      status: 403,
+      code: 'GEMINI_AUTH_FAILED',
+      category: 'INVALID_CREDENTIALS',
+      retryAfter: null,
+      model: configuredModel,
+      providerErrorCode: 'UNAUTHENTICATED'
+    });
+  }
+
+  if (
+    status === 403 ||
+    rawMessage.includes('PERMISSION_DENIED') ||
+    rawMessage.includes('The caller does not have permission')
+  ) {
+    return new AiProviderError({
+      message: 'Gemini API request was denied. Please verify Google AI Studio project permissions and billing status.',
+      status: 403,
+      code: 'GEMINI_PERMISSION_DENIED',
+      category: 'PERMISSION_DENIED',
+      retryAfter: null,
+      model: configuredModel,
+      providerErrorCode: 'PERMISSION_DENIED'
+    });
+  }
+
+  // 3. HTTP 404 - Model configuration problem
+  if (
+    status === 404 ||
+    rawMessage.includes('NOT_FOUND') ||
+    /models\/.*is not found/i.test(rawMessage) ||
+    /model.*not found/i.test(rawMessage)
+  ) {
+    return new AiProviderError({
+      message: `The configured Gemini model ("${configuredModel}") is unavailable.`,
+      status: 404,
+      code: 'GEMINI_MODEL_NOT_FOUND',
+      category: 'MODEL_UNAVAILABLE',
+      retryAfter: null,
+      model: configuredModel,
+      providerErrorCode: 'NOT_FOUND'
+    });
+  }
+
+  // 4. HTTP 504 / TIMEOUT / DEADLINE_EXCEEDED
+  if (
+    status === 504 ||
+    rawMessage.includes('DEADLINE_EXCEEDED') ||
+    rawMessage.includes('timed out') ||
+    rawMessage.includes('timeout')
+  ) {
+    return new AiProviderError({
+      message: 'Google Gemini request timed out. Please try again.',
+      status: 504,
+      code: 'GEMINI_TIMEOUT',
+      category: 'TIMEOUT',
+      retryAfter: 3,
+      model: configuredModel,
+      providerErrorCode: 'DEADLINE_EXCEEDED'
+    });
+  }
+
+  // 5. HTTP 503 / UNAVAILABLE / High demand
+  if (
+    status === 503 ||
+    rawMessage.includes('UNAVAILABLE') ||
+    rawMessage.includes('overloaded') ||
+    rawMessage.includes('temporarily unavailable')
+  ) {
+    return new AiProviderError({
+      message: 'Google Gemini is temporarily unavailable.',
+      status: 503,
+      code: 'GEMINI_UNAVAILABLE',
+      category: 'SERVICE_UNAVAILABLE',
+      retryAfter: retryAfter || 5,
+      model: configuredModel,
+      providerErrorCode: 'UNAVAILABLE'
+    });
+  }
+
+  // 6. HTTP 400 - Invalid request / Argument
+  if (status === 400 || rawMessage.includes('INVALID_ARGUMENT')) {
+    return new AiProviderError({
+      message: 'Invalid request sent to AI provider. Please check prompt parameters.',
+      status: 400,
+      code: 'GEMINI_BAD_REQUEST',
+      category: 'INVALID_ARGUMENT',
+      retryAfter: null,
+      model: configuredModel,
+      providerErrorCode: 'INVALID_ARGUMENT'
+    });
+  }
+
+  // 7. Network / Connectivity Errors
+  if (
+    code === 'ENOTFOUND' ||
+    code === 'ECONNREFUSED' ||
+    code === 'ETIMEDOUT' ||
+    code === 'ECONNRESET' ||
+    /fetch failed|network|getaddrinfo/i.test(rawMessage)
+  ) {
+    return new AiProviderError({
+      message: 'Unable to reach the AI service.',
+      status: 503,
+      code: 'GEMINI_NETWORK_ERROR',
+      category: 'NETWORK_ERROR',
+      retryAfter: 5,
+      model: configuredModel,
+      providerErrorCode: code || 'NETWORK_FAILURE'
+    });
+  }
+
+  // Generic provider fallback
+  return new AiProviderError({
+    message: 'AI generation failed due to an unexpected provider error. Please try again.',
+    status: status >= 400 && status < 600 ? status : 502,
+    code: 'GEMINI_UNKNOWN_ERROR',
+    category: 'UNKNOWN',
+    retryAfter: null,
+    model: configuredModel,
+    providerErrorCode: code || 'UNKNOWN'
+  });
+};
+
+/**
+ * Server-side diagnostics logging helper.
+ * Strictly logs operational telemetry without printing API keys, prompts, or sensitive user data.
+ *
+ * @param {AiProviderError} aiError
+ * @param {string} operation
+ */
+export const logSafeAiDiagnostics = (aiError, operation = 'unknown') => {
+  const diagnostics = {
+    timestamp: new Date().toISOString(),
+    operation,
+    status: aiError.status,
+    code: aiError.code,
+    category: aiError.category,
+    model: aiError.model,
+    retryAfter: aiError.retryAfter,
+    providerErrorCode: aiError.providerErrorCode
+  };
+  console.warn(`[AI Diagnostics] ${operation} failed:`, JSON.stringify(diagnostics));
+};
 
 /**
  * Executes a Google Gemini API call with a strict timeout to guarantee resilience.
@@ -28,6 +280,48 @@ const callGeminiWithTimeout = async (client, model, contents, timeoutMs = 12000)
 };
 
 /**
+ * Executes a Gemini request with bounded single retry for transient issues.
+ *
+ * @param {object} client
+ * @param {string} model
+ * @param {string} contents
+ * @param {string} operation
+ * @returns {Promise<any>}
+ */
+const callGeminiWithRetry = async (client, model, contents, operation) => {
+  try {
+    return await callGeminiWithTimeout(client, model, contents);
+  } catch (err) {
+    const classified = classifyGeminiError(err, model);
+    logSafeAiDiagnostics(classified, operation);
+
+    // Determine whether error is genuinely transient with a short wait duration
+    const isTransient =
+      (classified.category === 'SERVICE_UNAVAILABLE' && (classified.retryAfter === null || classified.retryAfter <= 5)) ||
+      (classified.category === 'TIMEOUT') ||
+      (classified.category === 'RATE_LIMIT_RPM' && classified.retryAfter !== null && classified.retryAfter <= 3);
+
+    // Never retry daily quota, spend limits, auth errors, model 404, or 400
+    if (!isTransient) {
+      throw classified;
+    }
+
+    // Wait with exponential backoff & jitter (max 2 seconds)
+    const baseWaitMs = classified.retryAfter ? Math.min(classified.retryAfter * 1000, 2000) : 1000;
+    const jitter = Math.floor(Math.random() * 200);
+    await new Promise((r) => setTimeout(r, baseWaitMs + jitter));
+
+    try {
+      return await callGeminiWithTimeout(client, model, contents);
+    } catch (retryErr) {
+      const finalError = classifyGeminiError(retryErr, model);
+      logSafeAiDiagnostics(finalError, `${operation}_retry`);
+      throw finalError;
+    }
+  }
+};
+
+/**
  * Toggles test mock mode explicitly for testing.
  *
  * @param {boolean} val
@@ -38,11 +332,56 @@ export const setForceAiMock = (val) => {
 
 /**
  * Simulates upstream AI provider failure for error resilience testing.
+ * Supports boolean flag, numeric status code (429, 503, 403, 404), or custom error object.
  *
- * @param {boolean} val
+ * @param {boolean|number|object} val
  */
 export const setSimulateAiFailure = (val) => {
-  simulateAiFailure = Boolean(val);
+  if (!val) {
+    simulateAiFailure = false;
+    simulatedAiError = null;
+  } else if (typeof val === 'object' || typeof val === 'number') {
+    simulateAiFailure = true;
+    simulatedAiError = val;
+  } else {
+    simulateAiFailure = true;
+    simulatedAiError = null;
+  }
+};
+
+/**
+ * Throws a simulated error if simulation is currently configured.
+ *
+ * @param {string} configuredModel
+ */
+const checkSimulatedFailure = (configuredModel = 'gemini-3.8-flash') => {
+  if (simulateAiFailure) {
+    if (simulatedAiError) {
+      if (typeof simulatedAiError === 'number') {
+        const status = simulatedAiError;
+        const msg =
+          status === 429 ? 'Resource exhausted: requests per day quota exceeded' :
+          status === 403 ? 'API_KEY_INVALID: API key not valid' :
+          status === 404 ? `models/${configuredModel} is not found` :
+          status === 503 ? 'The model is temporarily unavailable.' :
+          'AI Provider Failure: Upstream service failure';
+        throw classifyGeminiError({ status, message: msg }, configuredModel);
+      } else if (typeof simulatedAiError === 'object') {
+        if (simulatedAiError instanceof AiProviderError) {
+          throw simulatedAiError;
+        }
+        throw classifyGeminiError(simulatedAiError, configuredModel);
+      }
+    }
+    const error = new AiProviderError({
+      message: 'AI Provider Failure: Upstream Gemini service temporarily unavailable.',
+      status: 502,
+      code: 'GEMINI_SIMULATED_FAILURE',
+      category: 'SERVICE_UNAVAILABLE',
+      model: configuredModel
+    });
+    throw error;
+  }
 };
 
 /**
@@ -88,7 +427,6 @@ const generateMockPost = ({ topic, context, tone, length }) => {
     body = `${tonePrefix} ${topic}.${contextSnippet}\n\nOver the past few weeks, I’ve been reflecting on how crucial this is for creators, engineers, and community members alike. When we collaborate openly and share our real-world learnings, the entire community moves forward together.\n\nDrop your perspective below! #Looply #Growth`;
   }
 
-  // Enforce max 1000 characters
   return body.slice(0, 1000).trim();
 };
 
@@ -96,7 +434,6 @@ const generateMockPost = ({ topic, context, tone, length }) => {
  * Generates mock improved content based on original text and tone.
  */
 const generateMockImprovedPost = ({ content, tone, instructions }) => {
-  // Polish text by trimming and normalizing
   let polished = content
     .replace(/\s+/g, ' ')
     .replace(/\bi\b/g, 'I')
@@ -130,16 +467,17 @@ const generateMockImprovedPost = ({ content, tone, instructions }) => {
  * @returns {Promise<{ generatedContent: string, provider: string, model: string }>}
  */
 export const generatePost = async ({ topic, context = '', tone = 'casual', length = 'medium' }) => {
-  // Test simulation checks
-  if (simulateAiFailure) {
-    const error = new Error('AI Provider Failure: Upstream Gemini service temporarily unavailable.');
-    error.status = 502;
-    throw error;
-  }
+  const configuredModel = env.GEMINI_MODEL || 'gemini-3.8-flash';
+  checkSimulatedFailure(configuredModel);
 
   if (simulateAiTimeout) {
-    const error = new Error('AI Provider Timeout: Gemini request timed out after 15 seconds.');
-    error.status = 504;
+    const error = new AiProviderError({
+      message: 'Google Gemini request timed out. Please try again.',
+      status: 504,
+      code: 'GEMINI_TIMEOUT',
+      category: 'TIMEOUT',
+      retryAfter: 3
+    });
     throw error;
   }
 
@@ -149,21 +487,25 @@ export const generatePost = async ({ topic, context = '', tone = 'casual', lengt
     return {
       generatedContent,
       provider: 'mock-gemini',
-      model: 'mock-gemini-2.5-flash'
+      model: 'mock-gemini-3.8-flash'
     };
   }
 
   // Reject when GEMINI_API_KEY is missing outside test mock mode (HTTP 503)
   const apiKey = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    const error = new Error('AI service is not configured. Please contact the administrator.');
-    error.status = 503;
+    const error = new AiProviderError({
+      message: 'AI service is not configured. Please contact the administrator.',
+      status: 503,
+      code: 'GEMINI_NOT_CONFIGURED',
+      category: 'CONFIGURATION_MISSING',
+      model: configuredModel
+    });
     throw error;
   }
 
-  // Live Google Gemini API Integration
+  // Live Google Gemini API Integration using configured model consistently
   const client = new GoogleGenAI({ apiKey });
-  const modelName = env.GEMINI_MODEL || 'gemini-2.5-flash';
 
   const lengthInstructions = {
     short: 'Keep it concise and punchy (1-2 sentences, under 150 characters).',
@@ -182,52 +524,33 @@ Important constraints:
 - Do NOT include markdown code blocks, quotes around the whole text, or conversational preambles.
 - Never exceed 1000 characters.`;
 
-  let modelToUse = modelName;
-  try {
-    let response;
-    try {
-      response = await callGeminiWithTimeout(client, modelToUse, prompt);
-    } catch (primaryErr) {
-      if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
-        modelToUse = 'gemini-3.8-flash';
-        response = await callGeminiWithTimeout(client, modelToUse, prompt);
-      } else {
-        throw primaryErr;
-      }
-    }
+  const response = await callGeminiWithRetry(client, configuredModel, prompt, 'generatePost');
 
-    let text = response.text ? String(response.text).trim() : '';
+  let text = response.text ? String(response.text).trim() : '';
 
-    // Strip wrapping quotes or markdown if Gemini included them
-    if (text.startsWith('"') && text.endsWith('"')) {
-      text = text.slice(1, -1).trim();
-    }
-
-    if (!text) {
-      throw new Error('AI Provider returned an empty response.');
-    }
-
-    // Strict boundary enforcement: max 1000 chars
-    if (text.length > 1000) {
-      text = text.slice(0, 1000).trim();
-    }
-
-    return {
-      generatedContent: text,
-      provider: 'google-gemini',
-      model: modelToUse
-    };
-  } catch (err) {
-    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429 || err?.message?.includes('Quota') || err?.message?.includes('quota')) {
-      const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
-      error.status = 503;
-      throw error;
-    }
-    if (err.status) throw err;
-    const error = new Error('AI generation failed. Please try again.');
-    error.status = 502;
-    throw error;
+  if (text.startsWith('"') && text.endsWith('"')) {
+    text = text.slice(1, -1).trim();
   }
+
+  if (!text) {
+    throw new AiProviderError({
+      message: 'AI Provider returned an empty response.',
+      status: 502,
+      code: 'GEMINI_EMPTY_RESPONSE',
+      category: 'EMPTY_RESPONSE',
+      model: configuredModel
+    });
+  }
+
+  if (text.length > 1000) {
+    text = text.slice(0, 1000).trim();
+  }
+
+  return {
+    generatedContent: text,
+    provider: 'google-gemini',
+    model: configuredModel
+  };
 };
 
 /**
@@ -240,16 +563,17 @@ Important constraints:
  * @returns {Promise<{ improvedContent: string, provider: string, model: string }>}
  */
 export const improvePost = async ({ content, tone = 'casual', instructions = '' }) => {
-  // Test simulation checks
-  if (simulateAiFailure) {
-    const error = new Error('AI Provider Failure: Upstream Gemini service temporarily unavailable.');
-    error.status = 502;
-    throw error;
-  }
+  const configuredModel = env.GEMINI_MODEL || 'gemini-3.8-flash';
+  checkSimulatedFailure(configuredModel);
 
   if (simulateAiTimeout) {
-    const error = new Error('AI Provider Timeout: Gemini request timed out after 15 seconds.');
-    error.status = 504;
+    const error = new AiProviderError({
+      message: 'Google Gemini request timed out. Please try again.',
+      status: 504,
+      code: 'GEMINI_TIMEOUT',
+      category: 'TIMEOUT',
+      retryAfter: 3
+    });
     throw error;
   }
 
@@ -259,21 +583,25 @@ export const improvePost = async ({ content, tone = 'casual', instructions = '' 
     return {
       improvedContent,
       provider: 'mock-gemini',
-      model: 'mock-gemini-2.5-flash'
+      model: 'mock-gemini-3.8-flash'
     };
   }
 
   // Reject when GEMINI_API_KEY is missing outside test mock mode (HTTP 503)
   const apiKey = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    const error = new Error('AI service is not configured. Please contact the administrator.');
-    error.status = 503;
+    const error = new AiProviderError({
+      message: 'AI service is not configured. Please contact the administrator.',
+      status: 503,
+      code: 'GEMINI_NOT_CONFIGURED',
+      category: 'CONFIGURATION_MISSING',
+      model: configuredModel
+    });
     throw error;
   }
 
   // Live Google Gemini API Integration
   const client = new GoogleGenAI({ apiKey });
-  const modelName = env.GEMINI_MODEL || 'gemini-2.5-flash';
 
   const prompt = `You are an AI assistant improving a user's social media post on Looply.
 Original Content: "${content}"
@@ -291,50 +619,33 @@ Important constraints:
 - Return ONLY the improved text without conversational explanations, quotes, or markdown wrappers.
 - Never exceed 1000 characters.`;
 
-  let modelToUse = modelName;
-  try {
-    let response;
-    try {
-      response = await callGeminiWithTimeout(client, modelToUse, prompt);
-    } catch (primaryErr) {
-      if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
-        modelToUse = 'gemini-3.8-flash';
-        response = await callGeminiWithTimeout(client, modelToUse, prompt);
-      } else {
-        throw primaryErr;
-      }
-    }
+  const response = await callGeminiWithRetry(client, configuredModel, prompt, 'improvePost');
 
-    let text = response.text ? String(response.text).trim() : '';
+  let text = response.text ? String(response.text).trim() : '';
 
-    if (text.startsWith('"') && text.endsWith('"')) {
-      text = text.slice(1, -1).trim();
-    }
-
-    if (!text) {
-      throw new Error('AI Provider returned an empty response.');
-    }
-
-    if (text.length > 1000) {
-      text = text.slice(0, 1000).trim();
-    }
-
-    return {
-      improvedContent: text,
-      provider: 'google-gemini',
-      model: modelToUse
-    };
-  } catch (err) {
-    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429 || err?.message?.includes('Quota') || err?.message?.includes('quota')) {
-      const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
-      error.status = 503;
-      throw error;
-    }
-    if (err.status) throw err;
-    const error = new Error('AI improvement failed. Please try again.');
-    error.status = 502;
-    throw error;
+  if (text.startsWith('"') && text.endsWith('"')) {
+    text = text.slice(1, -1).trim();
   }
+
+  if (!text) {
+    throw new AiProviderError({
+      message: 'AI Provider returned an empty response.',
+      status: 502,
+      code: 'GEMINI_EMPTY_RESPONSE',
+      category: 'EMPTY_RESPONSE',
+      model: configuredModel
+    });
+  }
+
+  if (text.length > 1000) {
+    text = text.slice(0, 1000).trim();
+  }
+
+  return {
+    improvedContent: text,
+    provider: 'google-gemini',
+    model: configuredModel
+  };
 };
 
 /**
@@ -386,15 +697,17 @@ const generateMockDiscussionSummary = ({ post, comments = [] }) => {
  * @returns {Promise<{ hasComments: boolean, summary: object, provider: string, model: string }>}
  */
 export const summarizeDiscussion = async ({ post, comments = [] }) => {
-  if (simulateAiFailure) {
-    const error = new Error('AI Provider Failure: Upstream Gemini service temporarily unavailable.');
-    error.status = 502;
-    throw error;
-  }
+  const configuredModel = env.GEMINI_MODEL || 'gemini-3.8-flash';
+  checkSimulatedFailure(configuredModel);
 
   if (simulateAiTimeout) {
-    const error = new Error('AI Provider Timeout: Gemini request timed out after 15 seconds.');
-    error.status = 504;
+    const error = new AiProviderError({
+      message: 'Google Gemini request timed out. Please try again.',
+      status: 504,
+      code: 'GEMINI_TIMEOUT',
+      category: 'TIMEOUT',
+      retryAfter: 3
+    });
     throw error;
   }
 
@@ -426,7 +739,7 @@ export const summarizeDiscussion = async ({ post, comments = [] }) => {
       hasComments: true,
       summary,
       provider: 'mock-gemini',
-      model: 'mock-gemini-2.5-flash',
+      model: 'mock-gemini-3.8-flash',
       commentsAnalyzed: boundedComments.length
     };
   }
@@ -434,16 +747,19 @@ export const summarizeDiscussion = async ({ post, comments = [] }) => {
   // Reject when GEMINI_API_KEY is missing outside test mock mode (HTTP 503)
   const apiKey = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    const error = new Error('AI service is not configured. Please contact the administrator.');
-    error.status = 503;
+    const error = new AiProviderError({
+      message: 'AI service is not configured. Please contact the administrator.',
+      status: 503,
+      code: 'GEMINI_NOT_CONFIGURED',
+      category: 'CONFIGURATION_MISSING',
+      model: configuredModel
+    });
     throw error;
   }
 
   // Live Google Gemini API Integration
   const client = new GoogleGenAI({ apiKey });
-  const modelName = env.GEMINI_MODEL || 'gemini-2.5-flash';
 
-  // Sanitize discussion inputs and apply bounded limits (max 30 comments, 300 chars each)
   const authorName = post.author?.fullName || 'Original Author';
   const postSnippet = post.content.slice(0, 800).replace(/["`]/g, "'");
 
@@ -483,89 +799,62 @@ Provide a structured discussion summary in valid JSON format with exactly this J
 
 Return ONLY the raw JSON object. Do not include markdown code block syntax (no \`\`\`json).`;
 
-  let modelToUse = modelName;
-  try {
-    let response;
-    try {
-      response = await callGeminiWithTimeout(client, modelToUse, prompt);
-    } catch (primaryErr) {
-      if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
-        modelToUse = 'gemini-3.8-flash';
-        response = await callGeminiWithTimeout(client, modelToUse, prompt);
-      } else {
-        throw primaryErr;
-      }
-    }
+  const response = await callGeminiWithRetry(client, configuredModel, prompt, 'summarizeDiscussion');
 
-    let text = response.text ? String(response.text).trim() : '';
+  let text = response.text ? String(response.text).trim() : '';
 
-    // Strip markdown wrappers if present
-    if (text.startsWith('```')) {
-      text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-    }
-
-    let parsedSummary;
-    try {
-      parsedSummary = JSON.parse(text);
-    } catch {
-      // Robust JSON extraction fallback
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          parsedSummary = JSON.parse(jsonMatch[0]);
-        } catch {}
-      }
-    }
-
-    // Validate structured fields
-    if (
-      !parsedSummary ||
-      typeof parsedSummary !== 'object' ||
-      !parsedSummary.topic ||
-      !Array.isArray(parsedSummary.mainPoints)
-    ) {
-      parsedSummary = {
-        topic: postSnippet.slice(0, 80),
-        mainPoints: [text.slice(0, 200)],
-        commonOpinions: ['Engaged community participation.'],
-        differentViewpoints: [],
-        questions: [],
-        conclusion: text.slice(0, 250)
-      };
-    }
-
-    return {
-      hasComments: true,
-      summary: {
-        topic: String(parsedSummary.topic || postSnippet.slice(0, 80)).trim(),
-        mainPoints: Array.isArray(parsedSummary.mainPoints)
-          ? parsedSummary.mainPoints.map((p) => String(p).trim()).filter(Boolean)
-          : [],
-        commonOpinions: Array.isArray(parsedSummary.commonOpinions)
-          ? parsedSummary.commonOpinions.map((o) => String(o).trim()).filter(Boolean)
-          : [],
-        differentViewpoints: Array.isArray(parsedSummary.differentViewpoints)
-          ? parsedSummary.differentViewpoints.map((v) => String(v).trim()).filter(Boolean)
-          : [],
-        questions: Array.isArray(parsedSummary.questions)
-          ? parsedSummary.questions.map((q) => String(q).trim()).filter(Boolean)
-          : [],
-        conclusion: String(parsedSummary.conclusion || 'Discussion summarized successfully.').trim()
-      },
-      provider: 'google-gemini',
-      model: modelToUse,
-      commentsAnalyzed: boundedComments.length
-    };
-  } catch (err) {
-    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429 || err?.message?.includes('Quota') || err?.message?.includes('quota')) {
-      const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
-      error.status = 503;
-      throw error;
-    }
-    if (err.status) throw err;
-    const error = new Error('AI discussion summarization failed. Please try again.');
-    error.status = 502;
-    throw error;
+  if (text.startsWith('```')) {
+    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
   }
-};
 
+  let parsedSummary;
+  try {
+    parsedSummary = JSON.parse(text);
+  } catch {
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        parsedSummary = JSON.parse(jsonMatch[0]);
+      } catch {}
+    }
+  }
+
+  if (
+    !parsedSummary ||
+    typeof parsedSummary !== 'object' ||
+    !parsedSummary.topic ||
+    !Array.isArray(parsedSummary.mainPoints)
+  ) {
+    parsedSummary = {
+      topic: postSnippet.slice(0, 80),
+      mainPoints: [text.slice(0, 200)],
+      commonOpinions: ['Engaged community participation.'],
+      differentViewpoints: [],
+      questions: [],
+      conclusion: text.slice(0, 250)
+    };
+  }
+
+  return {
+    hasComments: true,
+    summary: {
+      topic: String(parsedSummary.topic || postSnippet.slice(0, 80)).trim(),
+      mainPoints: Array.isArray(parsedSummary.mainPoints)
+        ? parsedSummary.mainPoints.map((p) => String(p).trim()).filter(Boolean)
+        : [],
+      commonOpinions: Array.isArray(parsedSummary.commonOpinions)
+        ? parsedSummary.commonOpinions.map((o) => String(o).trim()).filter(Boolean)
+        : [],
+      differentViewpoints: Array.isArray(parsedSummary.differentViewpoints)
+        ? parsedSummary.differentViewpoints.map((v) => String(v).trim()).filter(Boolean)
+        : [],
+      questions: Array.isArray(parsedSummary.questions)
+        ? parsedSummary.questions.map((q) => String(q).trim()).filter(Boolean)
+        : [],
+      conclusion: String(parsedSummary.conclusion || 'Discussion summarized successfully.').trim()
+    },
+    provider: 'google-gemini',
+    model: configuredModel,
+    commentsAnalyzed: boundedComments.length
+  };
+};

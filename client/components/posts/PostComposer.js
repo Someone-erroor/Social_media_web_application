@@ -151,17 +151,17 @@ export default function PostComposer({ onPostCreated }) {
   };
 
   return (
-    <Card className="border-[#E3E8E8] shadow-xs">
+    <Card className="border-[#263640] bg-[#151F29] shadow-md">
       <CardContent className="p-4 sm:p-5 space-y-3">
         {isUnverified && (
-          <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-[#F5B942]/10 border border-[#F5B942]/30 text-xs text-[#F5B942] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Icon name="alertCircle" className="w-4 h-4 text-amber-600 shrink-0" />
+              <Icon name="alertCircle" className="w-4 h-4 text-[#F5B942] shrink-0" />
               <span>Your email is not verified yet. Verify to publish posts.</span>
             </div>
             <Link
               href={ROUTES.PUBLIC.VERIFY_EMAIL}
-              className="font-semibold underline hover:text-amber-900 ml-2 shrink-0"
+              className="font-semibold underline hover:text-[#F4F8FA] ml-2 shrink-0"
             >
               Verify now
             </Link>
@@ -169,12 +169,12 @@ export default function PostComposer({ onPostCreated }) {
         )}
 
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] flex items-center justify-between">
             <span>{errorMessage}</span>
             <button
               type="button"
               onClick={() => setErrorMessage('')}
-              className="text-red-500 hover:text-red-700 ml-2 font-bold"
+              className="text-[#9BAAB4] hover:text-[#F4F8FA] ml-2 font-bold"
             >
               ×
             </button>
@@ -182,15 +182,15 @@ export default function PostComposer({ onPostCreated }) {
         )}
 
         {successNotice && (
-          <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-[#32D583]/10 border border-[#32D583]/30 text-xs text-[#32D583] flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Icon name="check" className="w-4 h-4 text-emerald-600 shrink-0" />
+              <Icon name="check" className="w-4 h-4 text-[#32D583] shrink-0" />
               <span>{successNotice}</span>
             </div>
             <button
               type="button"
               onClick={() => setSuccessNotice('')}
-              className="text-emerald-500 hover:text-emerald-700 ml-2 font-bold"
+              className="text-[#9BAAB4] hover:text-[#F4F8FA] ml-2 font-bold"
             >
               ×
             </button>
@@ -213,23 +213,23 @@ export default function PostComposer({ onPostCreated }) {
                 placeholder="What is happening? Share your thoughts..."
                 rows={3}
                 disabled={loading || aiLoading}
-                className="w-full resize-none rounded-xl border border-[#E3E8E8] bg-[#F6F8F7]/70 p-3 text-sm text-[#172126] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8] focus:bg-white transition-colors"
+                className="w-full resize-none rounded-xl border border-[#263640] bg-[#101A22] p-3 text-sm text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#19D3E3] transition-colors"
               />
             </div>
           </div>
 
           {/* AI Helper Drawers */}
           {aiMode === 'generate' && (
-            <div className="p-3.5 rounded-xl bg-cyan-50/70 border border-cyan-100 space-y-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#101A22] border border-[#19D3E3]/30 space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-[#172126] flex items-center gap-1.5">
-                  <Icon name="sparkles" className="w-4 h-4 text-[#087F8A]" />
+                <span className="font-semibold text-[#F4F8FA] flex items-center gap-1.5">
+                  <Icon name="sparkles" className="w-4 h-4 text-[#19D3E3]" />
                   Generate Post with Gemini AI
                 </span>
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-[#58666D] hover:text-[#172126] font-bold"
+                  className="text-[#9BAAB4] hover:text-[#F4F8FA] font-bold"
                 >
                   ✕
                 </button>
@@ -244,7 +244,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiTopic(e.target.value)}
                   maxLength={200}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8]"
+                  className="w-full rounded-lg border border-[#263640] bg-[#151F29] px-3 py-2 text-xs text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#19D3E3]"
                 />
 
                 <input
@@ -255,7 +255,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiContext(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8]"
+                  className="w-full rounded-lg border border-[#263640] bg-[#151F29] px-3 py-2 text-xs text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#19D3E3]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="AI tone of voice"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
+                    className="flex-1 rounded-lg border border-[#263640] bg-[#151F29] px-2.5 py-1.5 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
                   >
                     <option value="casual">Tone: Casual</option>
                     <option value="professional">Tone: Professional</option>
@@ -278,7 +278,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="Target length"
                     onChange={(e) => setAiLength(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
+                    className="flex-1 rounded-lg border border-[#263640] bg-[#151F29] px-2.5 py-1.5 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
                   >
                     <option value="short">Length: Short (&lt; 150 chars)</option>
                     <option value="medium">Length: Medium (150-400 chars)</option>
@@ -301,16 +301,16 @@ export default function PostComposer({ onPostCreated }) {
           )}
 
           {aiMode === 'improve' && (
-            <div className="p-3.5 rounded-xl bg-[#FF725E]/10 border border-[#FF725E]/20 space-y-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#101A22] border border-[#FF6F61]/30 space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-[#172126] flex items-center gap-1.5">
-                  <Icon name="sparkles" className="w-4 h-4 text-[#FF725E]" />
+                <span className="font-semibold text-[#F4F8FA] flex items-center gap-1.5">
+                  <Icon name="sparkles" className="w-4 h-4 text-[#FF6F61]" />
                   Improve Post with Gemini AI
                 </span>
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-[#58666D] hover:text-[#172126] font-bold"
+                  className="text-[#9BAAB4] hover:text-[#F4F8FA] font-bold"
                 >
                   ✕
                 </button>
@@ -325,7 +325,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiInstructions(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-[#FF725E]/30 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#FF725E]"
+                  className="w-full rounded-lg border border-[#263640] bg-[#151F29] px-3 py-2 text-xs text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#FF6F61]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -334,7 +334,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="Target improvement tone"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-[#FF725E]/30 bg-white px-2.5 py-1.5 text-xs text-[#252E34] focus:outline-none focus:border-[#FF725E]"
+                    className="flex-1 rounded-lg border border-[#263640] bg-[#151F29] px-2.5 py-1.5 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#FF6F61]"
                   >
                     <option value="insightful">Tone: Insightful</option>
                     <option value="casual">Tone: Casual</option>
@@ -345,11 +345,11 @@ export default function PostComposer({ onPostCreated }) {
 
                   <Button
                     type="button"
-                    variant="primary"
+                    variant="coral"
                     size="sm"
                     onClick={handleAiImprove}
                     disabled={aiLoading || !content.trim()}
-                    className="shrink-0 bg-[#FF725E] hover:bg-[#e05a47]"
+                    className="shrink-0"
                   >
                     {aiLoading ? 'Improving...' : 'Improve'}
                   </Button>
@@ -358,19 +358,19 @@ export default function PostComposer({ onPostCreated }) {
             </div>
           )}
 
-          <div className="pt-2 border-t border-[#E3E8E8] flex items-center justify-between gap-3 text-xs text-[#58666D]">
+          <div className="pt-2 border-t border-[#263640] flex items-center justify-between gap-3 text-xs text-[#9BAAB4]">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setAiMode(aiMode === 'generate' ? null : 'generate')}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'generate'
-                    ? 'bg-cyan-100 text-[#087F8A]'
-                    : 'bg-[#F6F8F7] hover:bg-cyan-50 text-[#58666D] hover:text-[#087F8A]'
+                    ? 'bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 font-semibold'
+                    : 'bg-[#101A22] border border-[#263640] hover:border-[#19D3E3]/40 text-[#9BAAB4] hover:text-[#19D3E3]'
                 }`}
                 title="Draft a post with Gemini AI"
               >
-                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#16B8C8]" />
+                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#19D3E3]" />
                 <span>AI Draft</span>
               </button>
 
@@ -380,22 +380,22 @@ export default function PostComposer({ onPostCreated }) {
                 disabled={!content.trim()}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'improve'
-                    ? 'bg-[#FF725E]/15 text-[#FF725E]'
-                    : 'bg-[#F6F8F7] hover:bg-[#FF725E]/10 text-[#58666D] hover:text-[#FF725E] disabled:opacity-40 disabled:hover:bg-[#F6F8F7] disabled:hover:text-[#58666D] disabled:cursor-not-allowed'
+                    ? 'bg-[#FF6F61]/15 text-[#FF6F61] border border-[#FF6F61]/30 font-semibold'
+                    : 'bg-[#101A22] border border-[#263640] hover:border-[#FF6F61]/40 text-[#9BAAB4] hover:text-[#FF6F61] disabled:opacity-40 disabled:hover:bg-[#101A22] disabled:hover:text-[#9BAAB4] disabled:cursor-not-allowed'
                 }`}
                 title={content.trim() ? "Improve draft with Gemini AI" : "Write text to enable AI polish"}
               >
-                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#FF725E]" />
+                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#FF6F61]" />
                 <span>AI Polish</span>
               </button>
 
               <span
                 className={`text-[11px] font-medium ml-2 ${
                   isOverLimit
-                    ? 'text-red-600 font-bold'
+                    ? 'text-[#FF5C70] font-bold'
                     : charCount > 900
-                    ? 'text-amber-600'
-                    : 'text-[#58666D]'
+                    ? 'text-[#F5B942]'
+                    : 'text-[#9BAAB4]'
                 }`}
               >
                 {charCount} / 1000

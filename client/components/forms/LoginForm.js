@@ -156,7 +156,7 @@ export default function LoginForm() {
           </FormField>
 
           <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-[#58666D]">
+            <div className="flex items-center gap-2 text-[#9BAAB4]">
               <input
                 id="login-remember-me"
                 type="checkbox"
@@ -164,7 +164,7 @@ export default function LoginForm() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 disabled={loading}
                 aria-label="Remember me on this device"
-                className="w-4 h-4 rounded border-[#E3E8E8] text-[#087F8A] focus:ring-[#16B8C8] cursor-pointer"
+                className="w-4 h-4 rounded border-[#263640] bg-[#101A22] text-[#19D3E3] focus:ring-[#19D3E3] cursor-pointer"
               />
               <label htmlFor="login-remember-me" className="cursor-pointer select-none">
                 Remember me
@@ -173,7 +173,7 @@ export default function LoginForm() {
 
             <Link
               href={ROUTES.PUBLIC.FORGOT_PASSWORD}
-              className="font-medium text-[#076C76] hover:text-[#06656E] hover:underline"
+              className="font-medium text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
             >
               Forgot password?
             </Link>
@@ -183,13 +183,13 @@ export default function LoginForm() {
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 shadow-md shadow-[#19D3E3]/20"
             disabled={loading}
           >
             {loading ? (
               <>
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#080D12]"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -215,16 +215,16 @@ export default function LoginForm() {
             )}
           </Button>
 
-          <p className="text-[11px] text-center text-[#58666D]">
+          <p className="text-[11px] text-center text-[#9BAAB4]">
             Protected by end-to-end secure session authentication
           </p>
         </form>
 
-        <div className="pt-4 border-t border-[#E3E8E8] text-center text-xs text-[#58666D]">
+        <div className="pt-4 border-t border-[#263640] text-center text-xs text-[#9BAAB4]">
           Don&apos;t have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.REGISTER}
-            className="font-semibold text-[#076C76] hover:text-[#06656E] hover:underline"
+            className="font-semibold text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
           >
             Create an account
           </Link>

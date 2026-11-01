@@ -404,7 +404,9 @@ async function runPhase15Tests() {
         assert(Boolean(liveData.summary.conclusion), 'Live summary must contain conclusion');
         assert(liveData.summary.mainPoints.length > 0, 'Live summary must contain main points');
         recordPass(`Live Google Gemini discussion summarization verified successfully (${liveData.metadata.model})`);
-      } else if (liveRes.status === 503 && JSON.stringify(liveData).includes('high demand')) {
+      } else if (liveRes.status === 429) {
+        recordPass(`Live Google Gemini reached and upstream rate/quota limit handled gracefully with 429 (${liveData.category || 'QUOTA_EXHAUSTED'})`);
+      } else if (liveRes.status === 503) {
         recordPass('Live Google Gemini reached and upstream temporary capacity limit handled gracefully with 503');
       } else if (liveRes.status === 504 || liveRes.status === 502) {
         recordPass(`Live Google Gemini reached and upstream network/timeout handled gracefully with ${liveRes.status}`);

@@ -8,10 +8,9 @@ import AdminHeader from '@/components/navigation/AdminHeader';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * AdminShell Layout Component for Looply
- * Distinct high-contrast management workspace.
- * Protects administrative routes: unauthenticated users redirect to /login,
- * non-admin users redirect to /feed.
+ * AdminShell Layout Component for Looply (Dark Neon Theme)
+ * Distinct high-contrast administrative workspace.
+ * Deep dark background (#080D12), elevated graphite cards, electric cyan active indicators.
  */
 export default function AdminShell({ children }) {
   const { user, loading, isAuthenticated } = useAuth();
@@ -29,10 +28,10 @@ export default function AdminShell({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#172126] flex items-center justify-center">
+      <div className="min-h-screen bg-[#080D12] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-[#16B8C8]/30 border-t-[#16B8C8] rounded-full animate-spin" />
-          <p className="text-xs text-[#E3E8E8] font-medium">Verifying Administrator Access...</p>
+          <div className="w-10 h-10 border-3 border-[#263640] border-t-[#19D3E3] rounded-full animate-spin" />
+          <p className="text-xs text-[#9BAAB4] font-medium">Verifying Administrator Access...</p>
         </div>
       </div>
     );
@@ -43,7 +42,7 @@ export default function AdminShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F8F7] flex flex-col antialiased">
+    <div className="min-h-screen bg-[#080D12] text-[#F4F8FA] flex flex-col antialiased">
       {/* Admin Sidebar Navigation */}
       <AdminSidebar />
 

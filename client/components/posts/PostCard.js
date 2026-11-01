@@ -286,10 +286,10 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
   };
 
   return (
-    <Card className="border-[#E3E8E8] shadow-xs hover:border-[#16B8C8]/40 transition-colors">
+    <Card className="border-[#263640] bg-[#151F29] shadow-md hover:border-[#19D3E3]/40 transition-colors">
       <CardContent className="p-4 sm:p-5 space-y-3">
         {errorMessage && (
-          <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+          <div className="p-2.5 rounded-lg bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70]">
             {errorMessage}
           </div>
         )}
@@ -311,11 +311,11 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
             <div className="min-w-0">
               <Link
                 href={authorId ? ROUTES.USER.USER_PROFILE(authorId) : ROUTES.USER.FEED}
-                className="text-sm font-semibold text-[#172126] hover:text-[#087F8A] truncate block transition-colors"
+                className="text-sm font-semibold text-[#F4F8FA] hover:text-[#19D3E3] truncate block transition-colors"
               >
                 {authorName}
               </Link>
-              <span className="text-xs text-[#58666D]">
+              <span className="text-xs text-[#9BAAB4]">
                 {formatTimestamp(post.createdAt)}
                 {post.updatedAt && post.updatedAt !== post.createdAt && ' (edited)'}
               </span>
@@ -332,7 +332,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                   setIsEditing(true);
                   setShowConfirmDelete(false);
                 }}
-                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#58666D] hover:text-[#076C76] hover:bg-[#F6F8F7] transition-colors" aria-label="Edit post"
+                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#1D2A35] transition-colors" aria-label="Edit post"
                 title="Edit post"
               >
                 <Icon name="edit" className="w-4 h-4" />
@@ -341,7 +341,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               <button
                 type="button"
                 onClick={() => setShowConfirmDelete(true)}
-                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#58666D] hover:text-red-600 hover:bg-red-50 transition-colors" aria-label="Delete post"
+                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#9BAAB4] hover:text-[#FF5C70] hover:bg-[#FF5C70]/10 transition-colors" aria-label="Delete post"
                 title="Delete post"
               >
                 <Icon name="trash" className="w-4 h-4" />
@@ -352,9 +352,9 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
 
         {/* Delete Confirmation Box */}
         {showConfirmDelete && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 space-y-2">
-            <p className="font-semibold">Delete this post?</p>
-            <p className="text-red-600">This action cannot be undone.</p>
+          <div className="p-3 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] space-y-2">
+            <p className="font-semibold text-[#F4F8FA]">Delete this post?</p>
+            <p className="text-[#FF5C70]">This action cannot be undone.</p>
             <div className="flex items-center gap-2 pt-1">
               <Button
                 type="button"
@@ -386,10 +386,10 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               onChange={(e) => setEditContent(e.target.value)}
               rows={3}
               disabled={loading}
-              className="w-full resize-none rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] focus:outline-none focus:border-[#16B8C8]"
+              className="w-full resize-none rounded-xl border border-[#263640] bg-[#101A22] p-3 text-sm text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
             />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-[#58666D]">
+              <span className="text-[11px] text-[#9BAAB4]">
                 {editContent.length} / 1000
               </span>
               <div className="flex items-center gap-2">
@@ -415,13 +415,13 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-[#252E34] whitespace-pre-wrap leading-relaxed break-words">
+          <p className="text-sm text-[#F4F8FA] whitespace-pre-wrap leading-relaxed break-words">
             {post.content}
           </p>
         )}
 
         {/* Interaction Actions Bar (Phase 10: Likes & Comments) */}
-        <div className="flex items-center justify-between pt-2 border-t border-[#E3E8E8] text-xs text-[#58666D]">
+        <div className="flex items-center justify-between pt-2 border-t border-[#263640] text-xs text-[#9BAAB4]">
           <div className="flex items-center gap-4">
             {/* Like Button */}
             <button
@@ -430,14 +430,14 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               disabled={likeLoading}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all active:scale-95 ${
                 hasLiked
-                  ? 'text-red-600 bg-red-50 hover:bg-red-100 font-semibold'
-                  : 'text-[#58666D] hover:text-red-600 hover:bg-[#F6F8F7]'
+                  ? 'text-[#FF6F61] bg-[#FF6F61]/15 font-semibold'
+                  : 'text-[#9BAAB4] hover:text-[#FF6F61] hover:bg-[#1D2A35]'
               }`}
               title={hasLiked ? 'Unlike post' : 'Like post'}
             >
               <Icon
                 name="heart"
-                className={`w-4 h-4 transition-transform ${hasLiked ? 'fill-red-600 stroke-red-600 animate-heart-pop' : ''}`}
+                className={`w-4 h-4 transition-transform ${hasLiked ? 'fill-[#FF6F61] stroke-[#FF6F61] animate-heart-pop' : ''}`}
               />
               <span>{likesCount}</span>
             </button>
@@ -448,8 +448,8 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               onClick={handleToggleComments}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 showComments
-                  ? 'text-[#076C76] bg-cyan-50 font-semibold'
-                  : 'text-[#58666D] hover:text-[#076C76] hover:bg-[#F6F8F7]'
+                  ? 'text-[#19D3E3] bg-[#19D3E3]/15 font-semibold'
+                  : 'text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#1D2A35]'
               }`}
               title="View comments"
             >
@@ -464,15 +464,15 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               disabled={summaryLoading}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors text-xs ${
                 showSummary
-                  ? 'text-[#FF725E] bg-[#FF725E]/10 font-semibold'
-                  : 'text-[#58666D] hover:text-[#FF725E] hover:bg-[#F6F8F7]'
+                  ? 'text-[#19D3E3] bg-[#19D3E3]/15 font-semibold'
+                  : 'text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#1D2A35]'
               }`}
               title="Summarize discussion with Gemini AI"
               aria-label="Summarize discussion"
             >
               <Icon
                 name="sparkles"
-                className={`w-4 h-4 text-[#FF725E] ${summaryLoading ? 'animate-spin' : ''}`}
+                className={`w-4 h-4 text-[#19D3E3] ${summaryLoading ? 'animate-spin' : ''}`}
               />
               <span className="hidden sm:inline">Summarize</span>
             </button>
@@ -493,9 +493,9 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
 
         {/* Expandable Comments Section (Phase 10) */}
         {showComments && (
-          <div className="pt-3 border-t border-[#E3E8E8] space-y-4">
+          <div className="pt-3 border-t border-[#263640] space-y-4">
             {commentErrorMessage && (
-              <div className="p-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+              <div className="p-2 rounded-lg bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70]">
                 {commentErrorMessage}
               </div>
             )}
@@ -519,11 +519,11 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                       onChange={(e) => setCommentText(e.target.value)}
                       maxLength={500}
                       disabled={submittingComment}
-                      className="w-full rounded-xl border border-[#E3E8E8] bg-[#F6F8F7]/60 px-3 py-2 text-xs text-[#252E34] placeholder:text-[#58666D] focus:outline-none focus:border-[#16B8C8] focus:bg-white"
+                      className="w-full rounded-xl border border-[#263640] bg-[#101A22] px-3 py-2 text-xs text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#19D3E3]"
                     />
                   </div>
                   {commentText.length > 0 && (
-                    <div className="flex items-center justify-between text-[10px] text-[#58666D]">
+                    <div className="flex items-center justify-between text-[10px] text-[#9BAAB4]">
                       <span>{commentText.length} / 500</span>
                       <Button
                         type="submit"
@@ -538,8 +538,8 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                 </div>
               </form>
             ) : (
-              <div className="p-2.5 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8] text-center text-xs text-[#58666D]">
-                <Link href={ROUTES.AUTH.LOGIN} className="text-[#076C76] font-semibold hover:underline">
+              <div className="p-2.5 rounded-xl bg-[#101A22] border border-[#263640] text-center text-xs text-[#9BAAB4]">
+                <Link href={ROUTES.AUTH.LOGIN} className="text-[#19D3E3] font-semibold hover:underline">
                   Sign in
                 </Link>{' '}
                 to join the discussion and post a comment.
@@ -548,11 +548,11 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
 
             {/* Comments List */}
             {loadingComments ? (
-              <div className="py-4 text-center text-xs text-[#58666D]">
+              <div className="py-4 text-center text-xs text-[#9BAAB4]">
                 Loading comments...
               </div>
             ) : comments.length === 0 ? (
-              <p className="py-2 text-center text-xs text-[#58666D]">
+              <p className="py-2 text-center text-xs text-[#9BAAB4]">
                 No comments yet. Be the first to start the conversation!
               </p>
             ) : (
@@ -580,15 +580,15 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                         />
                       </Link>
 
-                      <div className="flex-1 bg-[#F6F8F7] rounded-xl p-2.5 border border-[#E3E8E8]">
+                      <div className="flex-1 bg-[#101A22] rounded-xl p-2.5 border border-[#263640]">
                         <div className="flex items-center justify-between gap-2">
                           <Link
                             href={commentAuthorId ? ROUTES.USER.USER_PROFILE(commentAuthorId) : ROUTES.USER.FEED}
-                            className="font-semibold text-[#172126] hover:text-[#087F8A] transition-colors"
+                            className="font-semibold text-[#F4F8FA] hover:text-[#19D3E3] transition-colors"
                           >
                             {commentAuthorName}
                           </Link>
-                          <div className="flex items-center gap-1.5 text-[10px] text-[#58666D]">
+                          <div className="flex items-center gap-1.5 text-[10px] text-[#9BAAB4]">
                             <span>{formatTimestamp(comment.createdAt)}</span>
                             {isCommentOwner && !isEditingThis && (
                               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-1">
@@ -598,7 +598,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                     setEditingCommentId(comment._id);
                                     setEditCommentContent(comment.content);
                                   }}
-                                  className="text-[#58666D] hover:text-[#087F8A] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
+                                  className="text-[#9BAAB4] hover:text-[#19D3E3] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
                                   title="Edit comment"
                                 >
                                   <Icon name="edit" className="w-3 h-3" />
@@ -606,7 +606,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteComment(comment._id)}
-                                  className="text-[#58666D] hover:text-red-600 p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Delete comment"
+                                  className="text-[#9BAAB4] hover:text-[#FF5C70] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Delete comment"
                                   title="Delete comment"
                                 >
                                   <Icon name="trash" className="w-3 h-3" />
@@ -626,7 +626,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                               onChange={(e) => setEditCommentContent(e.target.value)}
                               maxLength={500}
                               disabled={submittingEditComment}
-                              className="w-full rounded-lg border border-[#E3E8E8] bg-white p-2 text-xs text-[#172126] focus:outline-none focus:border-[#16B8C8]"
+                              className="w-full rounded-lg border border-[#263640] bg-[#151F29] p-2 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
                             />
                             <div className="flex items-center justify-end gap-1.5">
                               <Button
@@ -650,7 +650,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                             </div>
                           </div>
                         ) : (
-                          <p className="mt-1 text-[#252E34] whitespace-pre-wrap break-words leading-relaxed">
+                          <p className="mt-1 text-[#F4F8FA] whitespace-pre-wrap break-words leading-relaxed">
                             {comment.content}
                           </p>
                         )}

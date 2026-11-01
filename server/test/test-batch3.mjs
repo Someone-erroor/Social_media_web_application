@@ -12,7 +12,9 @@ import { initSocketServer, closeSocketServer } from '../src/services/socket.serv
 import {
   setForceAiMock,
   setSimulateAiFailure,
-  setSimulateAiTimeout
+  setSimulateAiTimeout,
+  classifyGeminiError,
+  AiProviderError
 } from '../src/services/ai.service.js';
 import {
   getTestMongoUri,
@@ -674,8 +676,8 @@ async function runBatch3Tests() {
     assert.strictEqual(generateRes.status, 200, 'AI generation returns 200');
     assert.strictEqual(generateRes.body.success, true, 'AI generation success is true');
     assert.ok(generateRes.body.generatedContent.length > 20, 'Generated content has substantive text');
-    assert.ok(generateRes.body.metadata?.model, 'Generation response includes model metadata');
-    recordPass('POST /api/ai/posts/generate produced valid post draft with metadata');
+    assert.strictEqual(generateRes.body.metadata?.model, 'mock-gemini-3.8-flash', 'Model metadata reflects gemini-3.8-flash');
+    recordPass('POST /api/ai/posts/generate produced valid post draft with Gemini 3.8 Flash metadata');
 
     // Test 4: Input validation on /api/ai/posts/improve
     const missingContentRes = await apiRequest('/ai/posts/improve', {
@@ -707,7 +709,8 @@ async function runBatch3Tests() {
     assert.strictEqual(improveRes.status, 200, 'AI improve returns 200');
     assert.strictEqual(improveRes.body.success, true, 'AI improve success is true');
     assert.ok(improveRes.body.improvedContent.length > 20, 'Improved content has substantive text');
-    recordPass('POST /api/ai/posts/improve successfully polished text with metadata');
+    assert.strictEqual(improveRes.body.metadata?.model, 'mock-gemini-3.8-flash', 'Model metadata reflects gemini-3.8-flash');
+    recordPass('POST /api/ai/posts/improve successfully polished text with Gemini 3.8 Flash metadata');
 
     // Test 6: AI graceful failure handling
     setSimulateAiFailure(true);
@@ -719,6 +722,94 @@ async function runBatch3Tests() {
     assert.strictEqual(failedAiRes.status, 502, 'Simulated failure returns 502 Bad Gateway');
     assert.strictEqual(failedAiRes.body.success, false, 'Failed response has success: false');
     recordPass('AI service simulated failure handled gracefully with 502 Bad Gateway');
+
+    // Test 6a: Simulated HTTP 429 Daily Quota failure returns 429
+    setSimulateAiFailure({
+      status: 429,
+      message: 'Quota exceeded: Resource exhausted (requests per day limit reached)'
+    });
+    const quotaRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing daily quota failure' }
+    });
+    assert.strictEqual(quotaRes.status, 429, 'Daily quota failure returns HTTP 429');
+    assert.strictEqual(quotaRes.body.success, false);
+    assert.strictEqual(quotaRes.body.category, 'DAILY_QUOTA_EXHAUSTED');
+    recordPass('Simulated HTTP 429 Daily Quota error returned HTTP 429 with DAILY_QUOTA_EXHAUSTED category');
+
+    // Test 6b: Simulated HTTP 429 RPM rate limit returns 429 with retry-after header
+    setSimulateAiFailure({
+      status: 429,
+      message: 'Too Many Requests: requests per minute exceeded. Retry after 10s',
+      retryAfter: 10
+    });
+    const rpmRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing RPM failure' }
+    });
+    assert.strictEqual(rpmRes.status, 429, 'RPM rate limit failure returns HTTP 429');
+    assert.strictEqual(rpmRes.body.category, 'RATE_LIMIT_RPM');
+    assert.strictEqual(rpmRes.body.retryAfter, 10);
+    assert.strictEqual(rpmRes.headers.get('retry-after'), '10');
+    recordPass('Simulated HTTP 429 RPM rate limit returned 429 with Retry-After header: 10');
+
+    // Test 6c: Simulated HTTP 503 Service Unavailable returns 503
+    setSimulateAiFailure(503);
+    const unavailRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing service unavailable' }
+    });
+    assert.strictEqual(unavailRes.status, 503, 'Service unavailable returns HTTP 503');
+    assert.strictEqual(unavailRes.body.category, 'SERVICE_UNAVAILABLE');
+    recordPass('Simulated HTTP 503 Service Unavailable returned 503 with SERVICE_UNAVAILABLE category');
+
+    // Test 6d: Simulated HTTP 403 Invalid API key returns 403
+    setSimulateAiFailure(403);
+    const authFailRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing invalid auth' }
+    });
+    assert.strictEqual(authFailRes.status, 403, 'Invalid auth returns HTTP 403');
+    assert.strictEqual(authFailRes.body.category, 'INVALID_CREDENTIALS');
+    recordPass('Simulated HTTP 403 Invalid API Key returned 403 with INVALID_CREDENTIALS category');
+
+    // Test 6e: Simulated HTTP 404 Model Not Found returns 404
+    setSimulateAiFailure(404);
+    const modelNotFoundRes = await apiRequest('/ai/posts/generate', {
+      method: 'POST',
+      token: tokenA,
+      body: { topic: 'Testing model not found' }
+    });
+    assert.strictEqual(modelNotFoundRes.status, 404, 'Model not found returns HTTP 404');
+    assert.strictEqual(modelNotFoundRes.body.category, 'MODEL_UNAVAILABLE');
+    recordPass('Simulated HTTP 404 Model Not Found returned 404 with MODEL_UNAVAILABLE category');
+
+    // Test 6f: classifyGeminiError unit tests for comprehensive coverage
+    const tpmErr = classifyGeminiError(new Error('RESOURCE_EXHAUSTED: tokens per minute limit exceeded'));
+    assert.strictEqual(tpmErr.status, 429);
+    assert.strictEqual(tpmErr.category, 'RATE_LIMIT_TPM');
+
+    const spendErr = classifyGeminiError(new Error('RESOURCE_EXHAUSTED: monthly billing spend limit reached'));
+    assert.strictEqual(spendErr.status, 429);
+    assert.strictEqual(spendErr.category, 'SPEND_QUOTA_EXCEEDED');
+
+    const timeoutErr = classifyGeminiError(new Error('DEADLINE_EXCEEDED: request timed out'));
+    assert.strictEqual(timeoutErr.status, 504);
+    assert.strictEqual(timeoutErr.category, 'TIMEOUT');
+
+    const badReqErr = classifyGeminiError(new Error('INVALID_ARGUMENT: temperature parameter out of range'));
+    assert.strictEqual(badReqErr.status, 400);
+    assert.strictEqual(badReqErr.category, 'INVALID_ARGUMENT');
+
+    const netErr = classifyGeminiError(Object.assign(new Error('fetch failed: getaddrinfo ENOTFOUND'), { code: 'ENOTFOUND' }));
+    assert.strictEqual(netErr.status, 503);
+    assert.strictEqual(netErr.category, 'NETWORK_ERROR');
+
+    recordPass('classifyGeminiError classified TPM, Spend, Timeout, Invalid Argument, and Network error categories');
 
     // Reset AI failure state
     setSimulateAiFailure(false);

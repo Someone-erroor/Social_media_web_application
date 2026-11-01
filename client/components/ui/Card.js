@@ -1,12 +1,12 @@
 /**
- * Reusable Card Components for Looply
- * Consistent styling, rounded borders, and subtle elevation across views.
+ * Reusable Card Components for Looply (Dark Neon Theme)
+ * Dark graphite surfaces (#151F29), subtle border (#263640), and elevated styling.
  */
 
 export function Card({ className = '', children, ...props }) {
   return (
     <div
-      className={`rounded-2xl border border-[#E3E8E8] bg-white shadow-xs transition-shadow ${className}`}
+      className={`rounded-2xl border border-[#263640] bg-[#151F29] shadow-md shadow-black/20 transition-all ${className}`}
       {...props}
     >
       {children}
@@ -17,7 +17,7 @@ export function Card({ className = '', children, ...props }) {
 export function CardHeader({ className = '', children, ...props }) {
   return (
     <div
-      className={`px-5 py-4 border-b border-[#E3E8E8] flex flex-col gap-1 ${className}`}
+      className={`px-5 py-4 border-b border-[#263640] flex flex-col gap-1 ${className}`}
       {...props}
     >
       {children}
@@ -28,7 +28,7 @@ export function CardHeader({ className = '', children, ...props }) {
 export function CardTitle({ className = '', children, ...props }) {
   return (
     <h3
-      className={`text-base font-semibold text-[#172126] tracking-tight leading-snug ${className}`}
+      className={`text-base font-semibold text-[#F4F8FA] tracking-tight leading-snug ${className}`}
       {...props}
     >
       {children}
@@ -38,7 +38,7 @@ export function CardTitle({ className = '', children, ...props }) {
 
 export function CardDescription({ className = '', children, ...props }) {
   return (
-    <p className={`text-xs text-[#58666D] leading-normal ${className}`} {...props}>
+    <p className={`text-xs text-[#9BAAB4] leading-normal ${className}`} {...props}>
       {children}
     </p>
   );
@@ -55,7 +55,7 @@ export function CardContent({ className = '', children, ...props }) {
 export function CardFooter({ className = '', children, ...props }) {
   return (
     <div
-      className={`px-5 py-3.5 bg-[#F6F8F7] border-t border-[#E3E8E8] rounded-b-2xl flex items-center justify-between text-xs text-[#58666D] ${className}`}
+      className={`px-5 py-3.5 bg-[#101A22] border-t border-[#263640] rounded-b-2xl flex items-center justify-between text-xs text-[#9BAAB4] ${className}`}
       {...props}
     >
       {children}
@@ -64,4 +64,3 @@ export function CardFooter({ className = '', children, ...props }) {
 }
 
 export default Card;
-

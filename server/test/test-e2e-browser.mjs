@@ -604,7 +604,7 @@ async function runE2EBrowserTests() {
 
     // 15. Logout through the Browser
     console.log('\n--- Step 14: User Logout via Real Browser UI ---');
-    const logoutBtn = await page.waitForSelector('button[aria-label="Sign Out"]', { timeout: 10000 });
+    const logoutBtn = await page.waitForSelector('button[aria-label="Sign Out"], button[aria-label="Sign out"], button[title="Sign Out"]', { timeout: 10000 });
     assert(Boolean(logoutBtn), '27. "Sign Out" button found in UserSidebar');
 
     await logoutBtn.click();

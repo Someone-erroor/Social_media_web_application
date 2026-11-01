@@ -16,13 +16,13 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#172126'
+  themeColor: '#080D12'
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full bg-[#F6F8F7] antialiased selection:bg-[#16B8C8] selection:text-[#172126]">
-      <body className="min-h-full flex flex-col text-[#172126] bg-[#F6F8F7] font-sans">
+    <html lang="en" className="h-full bg-[#080D12] antialiased selection:bg-[#19D3E3] selection:text-[#080D12] dark">
+      <body className="min-h-full flex flex-col text-[#F4F8FA] bg-[#080D12] font-sans">
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

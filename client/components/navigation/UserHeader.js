@@ -9,8 +9,8 @@ import { useNotifications } from '@/context/NotificationContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * Top Header for User Experience
- * Provides mobile branding with direct link to feed, search bar, and user access.
+ * Top Header for User Experience (Dark Neon Theme)
+ * Dark graphite background (#101A22), neon search bar, coral notification pill.
  */
 export default function UserHeader() {
   const { user } = useAuth();
@@ -27,7 +27,7 @@ export default function UserHeader() {
   const initials = getInitials(displayName);
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-white/95 backdrop-blur-md border-b border-[#E3E8E8]">
+    <header className="sticky top-0 z-20 w-full bg-[#101A22]/95 backdrop-blur-md border-b border-[#263640]">
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Mobile Logo: links strictly to Feed */}
         <div className="md:hidden flex items-center">
@@ -38,9 +38,9 @@ export default function UserHeader() {
         <div className="flex-1 max-w-md hidden sm:block">
           <Link
             href={ROUTES.USER.EXPLORE}
-            className="flex items-center gap-2.5 w-full rounded-full border border-[#E3E8E8] bg-[#F6F8F7] hover:bg-white hover:border-[#16B8C8] px-4 py-1.5 text-xs text-[#252E34] hover:text-[#172126] transition-all shadow-2xs group"
+            className="flex items-center gap-2.5 w-full rounded-full border border-[#263640] bg-[#151F29] hover:bg-[#1D2A35] hover:border-[#19D3E3] px-4 py-1.5 text-xs text-[#9BAAB4] hover:text-[#F4F8FA] transition-all shadow-inner group"
           >
-            <Icon name="search" className="w-4 h-4 text-[#087F8A] transition-colors" />
+            <Icon name="search" className="w-4 h-4 text-[#19D3E3] transition-colors" />
             <span className="font-medium">Explore posts, topics, and community creators...</span>
           </Link>
         </div>
@@ -49,12 +49,12 @@ export default function UserHeader() {
         <div className="flex items-center gap-3 ml-auto">
           <Link
             href={ROUTES.USER.NOTIFICATIONS}
-            className="p-2 rounded-full text-[#58666D] hover:text-[#172126] hover:bg-[#F6F8F7] transition-colors relative"
+            className="p-2 rounded-full text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#151F29] transition-colors relative"
             aria-label="View notifications"
           >
             <Icon name="notifications" className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-[#FF725E] rounded-full animate-badge-pulse">
+              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-[#FF6F61] rounded-full animate-badge-pulse shadow-xs shadow-[#FF6F61]/50">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
@@ -62,7 +62,7 @@ export default function UserHeader() {
 
           <Link
             href={ROUTES.USER.PROFILE}
-            className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#16B8C8]/30 transition-all min-w-[28px] min-h-[28px]"
+            className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#19D3E3]/40 transition-all min-w-[28px] min-h-[28px]"
             aria-label={`${initials} - ${displayName} Profile`}
           >
             <Avatar name={displayName} src={user?.profile?.avatarUrl} size="sm" />
@@ -72,4 +72,3 @@ export default function UserHeader() {
     </header>
   );
 }
-

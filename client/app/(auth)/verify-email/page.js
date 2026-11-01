@@ -90,12 +90,12 @@ function VerifyEmailContent() {
   };
 
   return (
-    <Card className="shadow-md border-[#E3E8E8] text-center">
-      <CardHeader className="items-center pb-2">
-        <div className="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mb-2 shadow-xs">
+    <Card className="shadow-md border-[#263640] bg-[#151F29] text-center">
+      <CardHeader className="items-center pb-2 border-b border-[#263640]">
+        <div className="w-14 h-14 rounded-2xl bg-[#1D2A35] border border-[#263640] flex items-center justify-center text-[#19D3E3] mb-2 shadow-xs">
           <Icon name="mail" className="w-7 h-7" />
         </div>
-        <CardTitle className="text-xl font-bold">
+        <CardTitle className="text-xl font-bold text-[#F4F8FA]">
           {verified ? 'Email Verified!' : token ? 'Verifying Email' : 'Check your email'}
         </CardTitle>
         <CardDescription className="max-w-xs mx-auto">
@@ -107,25 +107,25 @@ function VerifyEmailContent() {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-5 pt-3">
+      <CardContent className="space-y-5 pt-3 text-[#F4F8FA]">
         {/* Verification Status Feedback */}
         {verifying && (
-          <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-100 text-xs text-[#087F8A] flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-cyan-300 border-t-[#16B8C8] rounded-full animate-spin" />
+          <div className="p-4 rounded-xl bg-[#1D2A35] border border-[#263640] text-xs text-[#19D3E3] flex items-center justify-center gap-2">
+            <div className="w-4 h-4 border-2 border-[#263640] border-t-[#19D3E3] rounded-full animate-spin" />
             <span>Validating security token with Looply server...</span>
           </div>
         )}
 
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 text-left space-y-1">
+          <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] text-left space-y-1">
             <p className="font-semibold">Verification Failed</p>
             <p>{errorMessage}</p>
           </div>
         )}
 
         {successMessage && (
-          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 text-left space-y-1">
-            <p className="font-semibold">Success!</p>
+          <div className="p-4 rounded-xl bg-[#32D583]/10 border border-[#32D583]/30 text-xs text-[#32D583] text-left space-y-1">
+            <p className="font-semibold text-[#F4F8FA]">Success!</p>
             <p>{successMessage}</p>
           </div>
         )}
@@ -135,7 +135,7 @@ function VerifyEmailContent() {
             href={ROUTES.PUBLIC.LOGIN}
             variant="primary"
             size="lg"
-            className="w-full"
+            className="w-full shadow-md shadow-[#19D3E3]/20"
           >
             Sign In to Looply
           </Button>
@@ -143,9 +143,9 @@ function VerifyEmailContent() {
           <>
             {/* Informational Instructions */}
             {!token && (
-              <div className="p-4 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8] text-xs text-[#252E34] text-left space-y-2">
-                <p className="font-semibold text-[#172126]">Verification Steps:</p>
-                <ol className="list-decimal list-inside space-y-1 text-[#252E34]">
+              <div className="p-4 rounded-xl bg-[#101A22] border border-[#263640] text-xs text-[#9BAAB4] text-left space-y-2">
+                <p className="font-semibold text-[#F4F8FA]">Verification Steps:</p>
+                <ol className="list-decimal list-inside space-y-1 text-[#9BAAB4]">
                   <li>Open the confirmation email in your inbox.</li>
                   <li>Click the secure verification link.</li>
                   <li>Sign in with your email and password.</li>
@@ -178,20 +178,20 @@ function VerifyEmailContent() {
                 </Button>
 
                 {resendStatus && (
-                  <p className="text-xs text-center text-[#58666D] mt-2">
+                  <p className="text-xs text-center text-[#9BAAB4] mt-2">
                     {resendStatus}
                   </p>
                 )}
 
                 {resendPreviewLink && (
-                  <div className="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-xs text-center space-y-2 mt-2">
-                    <p className="font-semibold text-[#087F8A]">
+                  <div className="p-3 rounded-xl bg-[#101A22] border border-[#19D3E3]/30 text-xs text-center space-y-2 mt-2">
+                    <p className="font-semibold text-[#19D3E3]">
                       New verification link generated in local dev mailbox:
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
                       <a
                         href={resendPreviewLink}
-                        className="inline-block px-3 py-1.5 rounded-lg bg-[#16B8C8] text-[#172126] font-semibold text-xs hover:bg-[#087F8A] hover:text-white transition-colors"
+                        className="inline-block px-3 py-1.5 rounded-lg bg-[#19D3E3] text-[#080D12] font-bold text-xs hover:bg-[#00B8C8] transition-colors"
                       >
                         Verify with New Link &rarr;
                       </a>
@@ -199,7 +199,7 @@ function VerifyEmailContent() {
                         href="http://localhost:5000/api/__dev/mailbox/latest"
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-block px-3 py-1.5 rounded-lg border border-[#087F8A] text-[#087F8A] font-medium text-xs hover:bg-[#087F8A] hover:text-white transition-colors"
+                        className="inline-block px-3 py-1.5 rounded-lg border border-[#263640] bg-[#151F29] text-[#19D3E3] font-medium text-xs hover:bg-[#1D2A35] transition-colors"
                       >
                         Open Dev Mailbox
                       </a>
@@ -209,12 +209,12 @@ function VerifyEmailContent() {
               </form>
             )}
 
-            <div className="space-y-2 pt-2 border-t border-[#E3E8E8]">
+            <div className="space-y-2 pt-2 border-t border-[#263640]">
               <Button
                 href={ROUTES.PUBLIC.LOGIN}
                 variant="ghost"
                 size="md"
-                className="w-full text-xs text-[#58666D]"
+                className="w-full text-xs text-[#9BAAB4]"
               >
                 Back to Sign In
               </Button>
@@ -222,11 +222,11 @@ function VerifyEmailContent() {
           </>
         )}
 
-        <div className="pt-3 border-t border-[#E3E8E8] text-xs text-[#58666D]">
+        <div className="pt-3 border-t border-[#263640] text-xs text-[#9BAAB4]">
           Need to change your email?{' '}
           <Link
             href={ROUTES.PUBLIC.REGISTER}
-            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
+            className="font-semibold text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
           >
             Register again
           </Link>
@@ -240,10 +240,10 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <Card className="shadow-md border-[#E3E8E8] text-center p-8">
+        <Card className="shadow-md border-[#263640] bg-[#151F29] text-center p-8">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
-            <p className="text-xs text-[#58666D]">Loading verification portal...</p>
+            <div className="w-8 h-8 border-2 border-[#263640] border-t-[#19D3E3] rounded-full animate-spin" />
+            <p className="text-xs text-[#9BAAB4]">Loading verification portal...</p>
           </div>
         </Card>
       }

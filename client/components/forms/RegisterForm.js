@@ -118,9 +118,9 @@ export default function RegisterForm() {
 
   if (registeredState) {
     return (
-      <Card className="shadow-md border-[#E3E8E8]">
-        <CardHeader className="text-center pb-2">
-          <CardTitle className="text-xl font-bold">Account Registration</CardTitle>
+      <Card className="shadow-md border-[#263640] bg-[#151F29]">
+        <CardHeader className="text-center pb-2 border-b border-[#263640]">
+          <CardTitle className="text-xl font-bold text-[#F4F8FA]">Account Registration</CardTitle>
           <CardDescription>
             {registeredState.deliveryMode === 'smtp'
               ? 'Complete email verification to activate your account'
@@ -128,18 +128,18 @@ export default function RegisterForm() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6 pt-4" data-testid="registration-success-state">
+        <CardContent className="space-y-6 pt-4 text-[#F4F8FA]" data-testid="registration-success-state">
           {registeredState.deliveryMode === 'smtp' && (
             <div className="space-y-4 text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto rounded-full bg-[#32D583]/15 text-[#32D583] border border-[#32D583]/30 flex items-center justify-center">
                 <Icon name="mail" className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-[#172126]">
+                <h3 className="text-base font-bold text-[#F4F8FA]">
                   Verification email sent. Please check your inbox.
                 </h3>
-                <p className="text-xs text-[#58666D]">
-                  We sent a secure verification link to <strong className="text-[#172126]">{registeredState.email}</strong>. Please check your inbox to activate your account.
+                <p className="text-xs text-[#9BAAB4]">
+                  We sent a secure verification link to <strong className="text-[#19D3E3]">{registeredState.email}</strong>. Please check your inbox to activate your account.
                 </p>
               </div>
               <div className="pt-2">
@@ -158,14 +158,14 @@ export default function RegisterForm() {
 
           {registeredState.deliveryMode === 'preview' && (
             <div className="space-y-4 text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-cyan-100 text-[#087F8A] flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto rounded-full bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center">
                 <Icon name="mail" className="w-6 h-6" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-base font-bold text-[#172126]">
+                <h3 className="text-base font-bold text-[#F4F8FA]">
                   Verification email created in local preview mailbox.
                 </h3>
-                <p className="text-xs text-[#58666D] max-w-sm mx-auto leading-relaxed">
+                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto leading-relaxed">
                   Real SMTP credentials are not configured in local development. Retrieve your verification link directly from the local development preview mailbox below:
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default function RegisterForm() {
                   href="http://localhost:5000/api/__dev/mailbox/latest"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#076C76] hover:bg-[#06656E] text-white font-medium text-xs shadow-xs transition-colors w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#1D2A35] hover:bg-[#23333E] text-[#19D3E3] border border-[#19D3E3]/30 font-medium text-xs shadow-sm transition-colors w-full sm:w-auto"
                 >
                   <Icon name="mail" className="w-4 h-4" />
                   <span>Open Local Email Preview</span>
@@ -182,7 +182,7 @@ export default function RegisterForm() {
                 {registeredState.previewLink && (
                   <a
                     href={registeredState.previewLink}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#16B8C8] text-[#172126] hover:bg-[#076C76] hover:text-white font-semibold text-xs shadow-xs transition-colors w-full sm:w-auto"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#19D3E3] text-[#080D12] hover:bg-[#00B8C8] font-bold text-xs shadow-sm transition-colors w-full sm:w-auto"
                   >
                     <span>Verify Account Now &rarr;</span>
                   </a>
@@ -192,7 +192,7 @@ export default function RegisterForm() {
                 <Link
                   href={ROUTES.PUBLIC.LOGIN}
                   data-testid="continue-to-login-btn"
-                  className="text-xs font-semibold text-[#076C76] hover:underline inline-block"
+                  className="text-xs font-semibold text-[#19D3E3] hover:underline inline-block"
                 >
                   Continue to Sign In &rarr;
                 </Link>
@@ -202,14 +202,14 @@ export default function RegisterForm() {
 
           {registeredState.deliveryMode === 'unavailable' && (
             <div className="space-y-4 text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto rounded-full bg-[#F5B942]/15 text-[#F5B942] border border-[#F5B942]/30 flex items-center justify-center">
                 <Icon name="alertCircle" className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-[#172126]">
+                <h3 className="text-base font-bold text-[#F4F8FA]">
                   Account created, but email delivery is currently unavailable.
                 </h3>
-                <p className="text-xs text-[#58666D]">
+                <p className="text-xs text-[#9BAAB4]">
                   Please request a verification email later or contact the administrator to activate your account.
                 </p>
               </div>
@@ -232,9 +232,9 @@ export default function RegisterForm() {
   }
 
   return (
-    <Card className="shadow-md border-[#E3E8E8]">
-      <CardHeader className="text-center pb-2">
-        <CardTitle className="text-xl font-bold">Create your account</CardTitle>
+    <Card className="shadow-md border-[#263640] bg-[#151F29]">
+      <CardHeader className="text-center pb-2 border-b border-[#263640]">
+        <CardTitle className="text-xl font-bold text-[#F4F8FA]">Create your account</CardTitle>
         <CardDescription>
           Join Looply today to share ideas, discover creators, and build meaningful connections
         </CardDescription>
@@ -368,7 +368,7 @@ export default function RegisterForm() {
           </FormField>
 
           <div>
-            <div className="flex items-start gap-2.5 text-xs text-[#58666D]">
+            <div className="flex items-start gap-2.5 text-xs text-[#9BAAB4]">
               <input
                 id="terms"
                 type="checkbox"
@@ -378,21 +378,21 @@ export default function RegisterForm() {
                   if (fieldErrors.terms) setFieldErrors((prev) => ({ ...prev, terms: null }));
                 }}
                 disabled={loading}
-                className="mt-0.5 w-4 h-4 rounded border-[#E3E8E8] text-[#087F8A] focus:ring-[#16B8C8]"
+                className="mt-0.5 w-4 h-4 rounded border-[#263640] bg-[#101A22] text-[#19D3E3] focus:ring-[#19D3E3]"
               />
               <label htmlFor="terms" className="cursor-pointer select-none leading-relaxed">
                 I agree to the Looply{' '}
-                <Link href={ROUTES.PUBLIC.TERMS} target="_blank" className="text-[#076C76] hover:underline font-medium">
+                <Link href={ROUTES.PUBLIC.TERMS} target="_blank" className="text-[#19D3E3] hover:underline font-medium">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank" className="text-[#076C76] hover:underline font-medium">
+                <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank" className="text-[#19D3E3] hover:underline font-medium">
                   Privacy Policy
                 </Link>.
               </label>
             </div>
             {fieldErrors.terms && (
-              <p className="mt-1 text-xs text-rose-500 font-medium">{fieldErrors.terms}</p>
+              <p className="mt-1 text-xs text-[#FF5C70] font-medium">{fieldErrors.terms}</p>
             )}
           </div>
 
@@ -400,13 +400,13 @@ export default function RegisterForm() {
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 shadow-md shadow-[#19D3E3]/20"
             disabled={loading}
           >
             {loading ? (
               <>
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#080D12]"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -432,16 +432,16 @@ export default function RegisterForm() {
             )}
           </Button>
 
-          <p className="text-[11px] text-center text-[#58666D]">
+          <p className="text-[11px] text-center text-[#9BAAB4]">
             Protected by end-to-end secure registration validation
           </p>
         </form>
 
-        <div className="pt-4 border-t border-[#E3E8E8] text-center text-xs text-[#58666D]">
+        <div className="pt-4 border-t border-[#263640] text-center text-xs text-[#9BAAB4]">
           Already have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-[#076C76] hover:text-[#06656E] hover:underline"
+            className="font-semibold text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
           >
             Sign in
           </Link>

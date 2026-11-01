@@ -1,6 +1,6 @@
 /**
- * Reusable Input Component for Looply
- * Clean, consistent styling, error boundaries, accessible focus rings.
+ * Reusable Input Component for Looply (Dark Neon Theme)
+ * Dark elevated background, white text, muted placeholders, cyan focus border.
  */
 export default function Input({
   id,
@@ -19,11 +19,11 @@ export default function Input({
   ...props
 }) {
   const baseClasses =
-    'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-[#172126] transition-colors placeholder:text-[#58666D] focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-[#F6F8F7] disabled:text-[#58666D] disabled:cursor-not-allowed';
+    'w-full rounded-xl border bg-[#101A22] px-3.5 py-2.5 text-sm text-[#F4F8FA] transition-colors placeholder:text-[#9BAAB4] focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-[#080D12] disabled:bg-[#080D12] disabled:text-[#9BAAB4]/50 disabled:cursor-not-allowed';
 
   const stateClasses = error
-    ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-400'
-    : 'border-[#E3E8E8] focus:border-[#16B8C8] focus:ring-[#16B8C8]/20';
+    ? 'border-[#FF5C70] focus:border-[#FF5C70] focus:ring-[#FF5C70]/20'
+    : 'border-[#263640] focus:border-[#19D3E3] focus:ring-[#19D3E3]/20';
 
   const iconPadding = icon ? 'pl-10' : '';
   const actionPadding = action ? 'pr-11' : '';
@@ -31,7 +31,7 @@ export default function Input({
   return (
     <div className="relative w-full">
       {icon && (
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#58666D]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#9BAAB4]">
           {icon}
         </div>
       )}
@@ -58,4 +58,3 @@ export default function Input({
     </div>
   );
 }
-

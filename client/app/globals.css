@@ -1,73 +1,83 @@
 @import "tailwindcss";
 
 :root {
-  --looply-ink: #172126;
-  --looply-charcoal: #252E34;
-  --looply-cyan: #16B8C8;
-  --looply-cyan-dark: #087F8A;
-  --looply-coral: #FF725E;
-  --looply-background: #F6F8F7;
-  --looply-surface: #FFFFFF;
-  --looply-muted: #68757C;
-  --looply-border: #E3E8E8;
+  --looply-bg: #080D12;
+  --looply-sidebar: #101A22;
+  --looply-surface: #151F29;
+  --looply-surface-raised: #1D2A35;
+  --looply-surface-hover: #23333E;
 
-  --background: #F6F8F7;
-  --foreground: #172126;
-  /* Defined consistent font stacks replacing undefined Geist variables */
-  --font-geist-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --looply-cyan: #19D3E3;
+  --looply-cyan-strong: #00B8C8;
+  --looply-coral: #FF6F61;
+
+  --looply-text: #F4F8FA;
+  --looply-muted: #9BAAB4;
+  --looply-border: #263640;
+
+  --looply-success: #32D583;
+  --looply-warning: #F5B942;
+  --looply-danger: #FF5C70;
+
+  --background: var(--looply-bg);
+  --foreground: var(--looply-text);
+
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-looply-ink: var(--looply-ink);
-  --color-looply-charcoal: var(--looply-charcoal);
-  --color-looply-cyan: var(--looply-cyan);
-  --color-looply-cyan-dark: var(--looply-cyan-dark);
-  --color-looply-coral: var(--looply-coral);
-  --color-looply-background: var(--looply-background);
+  --color-looply-bg: var(--looply-bg);
+  --color-looply-sidebar: var(--looply-sidebar);
   --color-looply-surface: var(--looply-surface);
+  --color-looply-surface-raised: var(--looply-surface-raised);
+  --color-looply-surface-hover: var(--looply-surface-hover);
+
+  --color-looply-cyan: var(--looply-cyan);
+  --color-looply-cyan-strong: var(--looply-cyan-strong);
+  --color-looply-coral: var(--looply-coral);
+
+  --color-looply-text: var(--looply-text);
   --color-looply-muted: var(--looply-muted);
   --color-looply-border: var(--looply-border);
 
+  --color-looply-success: var(--looply-success);
+  --color-looply-warning: var(--looply-warning);
+  --color-looply-danger: var(--looply-danger);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-/* Consistent Looply light theme surfaces across all client configurations */
-:root {
-  color-scheme: light;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans);
+  background: var(--looply-bg);
+  color: var(--looply-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
 }
 
-/* Accessible focus outline indicator */
+/* Accessible focus outline indicator using Electric Cyan */
 :focus-visible {
-  outline: 2px solid #16B8C8;
+  outline: 2px solid #19D3E3;
   outline-offset: 2px;
 }
 
-/* Refined custom scrollbar */
+/* Refined custom scrollbar for dark theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #080D12;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #263640;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #1D2A35;
 }
 
 /* Subtle performance-optimized UI transitions (Phase 17) */
