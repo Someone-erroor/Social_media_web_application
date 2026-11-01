@@ -71,7 +71,7 @@ function ResetPasswordContent() {
   };
 
   return (
-    <Card className="shadow-md border-slate-200">
+    <Card className="shadow-md border-[#E3E8E8]">
       <CardHeader className="text-center pb-2">
         <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mx-auto mb-2 shadow-xs">
           <Icon name="lock" className="w-6 h-6" />
@@ -144,7 +144,7 @@ function ResetPasswordContent() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-slate-500 hover:text-slate-700 text-xs flex items-center justify-center"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-[#58666D] hover:text-[#172126] text-xs flex items-center justify-center"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -170,7 +170,7 @@ function ResetPasswordContent() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-slate-500 hover:text-slate-700 text-xs flex items-center justify-center"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-[#58666D] hover:text-[#172126] text-xs flex items-center justify-center"
                 >
                   {showConfirmPassword ? 'Hide' : 'Show'}
                 </button>
@@ -189,7 +189,7 @@ function ResetPasswordContent() {
           </form>
         )}
 
-        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
+        <div className="pt-4 border-t border-[#E3E8E8] text-center text-xs text-[#252E34]">
           Remember your credentials?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
@@ -207,10 +207,10 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <Card className="shadow-md border-slate-200 text-center p-8">
+        <Card className="shadow-md border-[#E3E8E8] text-center p-8">
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-2 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
-            <p className="text-xs text-slate-500">Loading password reset portal...</p>
+            <p className="text-xs text-[#58666D]">Loading password reset portal...</p>
           </div>
         </Card>
       }

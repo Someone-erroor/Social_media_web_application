@@ -151,7 +151,7 @@ export default function PostComposer({ onPostCreated }) {
   };
 
   return (
-    <Card className="border-slate-200 shadow-xs">
+    <Card className="border-[#E3E8E8] shadow-xs">
       <CardContent className="p-4 sm:p-5 space-y-3">
         {isUnverified && (
           <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center justify-between">
@@ -213,7 +213,7 @@ export default function PostComposer({ onPostCreated }) {
                 placeholder="What is happening? Share your thoughts..."
                 rows={3}
                 disabled={loading || aiLoading}
-                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] focus:bg-white transition-colors"
+                className="w-full resize-none rounded-xl border border-[#E3E8E8] bg-[#F6F8F7]/70 p-3 text-sm text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8] focus:bg-white transition-colors"
               />
             </div>
           </div>
@@ -229,7 +229,7 @@ export default function PostComposer({ onPostCreated }) {
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-slate-400 hover:text-slate-600 font-bold"
+                  className="text-[#68757C] hover:text-[#172126] font-bold"
                 >
                   ✕
                 </button>
@@ -244,7 +244,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiTopic(e.target.value)}
                   maxLength={200}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8]"
+                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8]"
                 />
 
                 <input
@@ -255,7 +255,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiContext(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8]"
+                  className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="AI tone of voice"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#16B8C8]"
+                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="casual">Tone: Casual</option>
                     <option value="professional">Tone: Professional</option>
@@ -278,7 +278,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="Target length"
                     onChange={(e) => setAiLength(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#16B8C8]"
+                    className="flex-1 rounded-lg border border-cyan-200 bg-white px-2.5 py-1.5 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="short">Length: Short (&lt; 150 chars)</option>
                     <option value="medium">Length: Medium (150-400 chars)</option>
@@ -310,7 +310,7 @@ export default function PostComposer({ onPostCreated }) {
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-slate-400 hover:text-slate-600 font-bold"
+                  className="text-[#68757C] hover:text-[#172126] font-bold"
                 >
                   ✕
                 </button>
@@ -325,7 +325,7 @@ export default function PostComposer({ onPostCreated }) {
                   onChange={(e) => setAiInstructions(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-[#FF725E]/30 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#FF725E]"
+                  className="w-full rounded-lg border border-[#FF725E]/30 bg-white px-3 py-2 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#FF725E]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -334,7 +334,7 @@ export default function PostComposer({ onPostCreated }) {
                     aria-label="Target improvement tone"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-[#FF725E]/30 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#FF725E]"
+                    className="flex-1 rounded-lg border border-[#FF725E]/30 bg-white px-2.5 py-1.5 text-xs text-[#252E34] focus:outline-none focus:border-[#FF725E]"
                   >
                     <option value="insightful">Tone: Insightful</option>
                     <option value="casual">Tone: Casual</option>
@@ -358,7 +358,7 @@ export default function PostComposer({ onPostCreated }) {
             </div>
           )}
 
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3 text-xs text-slate-500">
+          <div className="pt-2 border-t border-[#E3E8E8] flex items-center justify-between gap-3 text-xs text-[#68757C]">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -366,7 +366,7 @@ export default function PostComposer({ onPostCreated }) {
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'generate'
                     ? 'bg-cyan-100 text-[#087F8A]'
-                    : 'bg-slate-100 hover:bg-cyan-50 text-slate-600 hover:text-[#087F8A]'
+                    : 'bg-[#F6F8F7] hover:bg-cyan-50 text-[#68757C] hover:text-[#087F8A]'
                 }`}
                 title="Draft a post with Gemini AI"
               >
@@ -381,7 +381,7 @@ export default function PostComposer({ onPostCreated }) {
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                   aiMode === 'improve'
                     ? 'bg-[#FF725E]/15 text-[#FF725E]'
-                    : 'bg-slate-100 hover:bg-[#FF725E]/10 text-slate-600 hover:text-[#FF725E] disabled:opacity-40 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 disabled:cursor-not-allowed'
+                    : 'bg-[#F6F8F7] hover:bg-[#FF725E]/10 text-[#68757C] hover:text-[#FF725E] disabled:opacity-40 disabled:hover:bg-[#F6F8F7] disabled:hover:text-[#68757C] disabled:cursor-not-allowed'
                 }`}
                 title={content.trim() ? "Improve draft with Gemini AI" : "Write text to enable AI polish"}
               >
@@ -395,7 +395,7 @@ export default function PostComposer({ onPostCreated }) {
                     ? 'text-red-600 font-bold'
                     : charCount > 900
                     ? 'text-amber-600'
-                    : 'text-slate-600'
+                    : 'text-[#68757C]'
                 }`}
               >
                 {charCount} / 1000

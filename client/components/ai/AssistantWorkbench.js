@@ -153,9 +153,9 @@ export default function AssistantWorkbench() {
   return (
     <div className="space-y-6">
       {/* Workbench Card */}
-      <Card className="border-slate-200 shadow-xs">
+      <Card className="border-[#E3E8E8] shadow-xs">
         {/* Tab Header */}
-        <div className="flex border-b border-slate-100 bg-slate-50/50 rounded-t-2xl px-4 pt-3 gap-2">
+        <div className="flex border-b border-[#E3E8E8] bg-[#F6F8F7]/50 rounded-t-2xl px-4 pt-3 gap-2">
           <button
             type="button"
             onClick={() => {
@@ -165,7 +165,7 @@ export default function AssistantWorkbench() {
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'generate'
                 ? 'border-[#087F8A] text-[#087F8A]'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                : 'border-transparent text-[#68757C] hover:text-[#172126]'
             }`}
           >
             <Icon name="sparkles" className="w-4 h-4 text-[#16B8C8]" />
@@ -181,7 +181,7 @@ export default function AssistantWorkbench() {
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'improve'
                 ? 'border-[#FF725E] text-[#FF725E]'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                : 'border-transparent text-[#68757C] hover:text-[#172126]'
             }`}
           >
             <Icon name="edit" className="w-4 h-4 text-[#FF725E]" />
@@ -209,7 +209,7 @@ export default function AssistantWorkbench() {
           {activeTab === 'generate' ? (
             <form onSubmit={handleGenerate} className="space-y-4">
               <div>
-                <label htmlFor="ai-gen-topic" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label htmlFor="ai-gen-topic" className="block text-xs font-semibold text-[#252E34] mb-1.5">
                   Topic or Theme <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -220,12 +220,12 @@ export default function AssistantWorkbench() {
                   onChange={(e) => setTopic(e.target.value)}
                   maxLength={200}
                   disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] transition-colors"
+                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8] transition-colors"
                 />
               </div>
 
               <div>
-                <label htmlFor="ai-gen-context" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label htmlFor="ai-gen-context" className="block text-xs font-semibold text-[#252E34] mb-1.5">
                   Context / Keywords (Optional)
                 </label>
                 <textarea
@@ -236,13 +236,13 @@ export default function AssistantWorkbench() {
                   rows={2}
                   maxLength={500}
                   disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] transition-colors"
+                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-xs text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#16B8C8] transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="ai-gen-tone" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-gen-tone" className="block text-xs font-semibold text-[#252E34] mb-1.5">
                     Tone of Voice
                   </label>
                   <select
@@ -251,7 +251,7 @@ export default function AssistantWorkbench() {
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#16B8C8]"
+                    className="w-full rounded-xl border border-[#E3E8E8] bg-white p-2.5 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="insightful">Insightful &amp; Analytical</option>
                     <option value="casual">Casual &amp; Friendly</option>
@@ -262,7 +262,7 @@ export default function AssistantWorkbench() {
                 </div>
 
                 <div>
-                  <label htmlFor="ai-gen-length" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-gen-length" className="block text-xs font-semibold text-[#252E34] mb-1.5">
                     Target Length
                   </label>
                   <select
@@ -271,7 +271,7 @@ export default function AssistantWorkbench() {
                     value={length}
                     onChange={(e) => setLength(e.target.value)}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#16B8C8]"
+                    className="w-full rounded-xl border border-[#E3E8E8] bg-white p-2.5 text-xs text-[#252E34] focus:outline-none focus:border-[#16B8C8]"
                   >
                     <option value="short">Short (&lt; 150 chars)</option>
                     <option value="medium">Medium (150 - 400 chars)</option>
@@ -281,7 +281,7 @@ export default function AssistantWorkbench() {
               </div>
 
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-slate-600">
+                <span className="text-[11px] text-[#68757C]">
                   Powered by Google Gemini 2.5 Flash
                 </span>
                 <Button
@@ -298,7 +298,7 @@ export default function AssistantWorkbench() {
           ) : (
             <form onSubmit={handleImprove} className="space-y-4">
               <div>
-                <label htmlFor="ai-improve-content" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label htmlFor="ai-improve-content" className="block text-xs font-semibold text-[#252E34] mb-1.5">
                   Content to Polish <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -309,10 +309,10 @@ export default function AssistantWorkbench() {
                   rows={4}
                   maxLength={1000}
                   disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#FF725E] transition-colors"
+                  className="w-full rounded-xl border border-[#E3E8E8] bg-white p-3 text-sm text-[#172126] placeholder:text-[#68757C] focus:outline-none focus:border-[#FF725E] transition-colors"
                 />
                 <div className="mt-1 flex justify-end">
-                  <span className="text-[11px] text-slate-600">
+                  <span className="text-[11px] text-[#68757C]">
                     {contentToImprove.length} / 1000
                   </span>
                 </div>
@@ -320,7 +320,7 @@ export default function AssistantWorkbench() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="ai-improve-tone" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-improve-tone" className="block text-xs font-semibold text-[#252E34] mb-1.5">
                     Target Tone
                   </label>
                   <select
@@ -329,7 +329,7 @@ export default function AssistantWorkbench() {
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#FF725E]"
+                    className="w-full rounded-xl border border-[#E3E8E8] bg-white p-2.5 text-xs text-[#252E34] focus:outline-none focus:border-[#FF725E]"
                   >
                     <option value="insightful">Insightful &amp; Analytical</option>
                     <option value="casual">Casual &amp; Friendly</option>
@@ -340,7 +340,7 @@ export default function AssistantWorkbench() {
                 </div>
 
                 <div>
-                  <label htmlFor="ai-improve-instructions" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="ai-improve-instructions" className="block text-xs font-semibold text-[#252E34] mb-1.5">
                     Custom Instructions (Optional)
                   </label>
                   <input
@@ -351,13 +351,13 @@ export default function AssistantWorkbench() {
                     onChange={(e) => setInstructions(e.target.value)}
                     maxLength={300}
                     disabled={loading}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#FF725E]"
+                    className="w-full rounded-xl border border-[#E3E8E8] bg-white p-2.5 text-xs text-[#252E34] placeholder:text-[#68757C] focus:outline-none focus:border-[#FF725E]"
                   />
                 </div>
               </div>
 
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-slate-600">
+                <span className="text-[11px] text-[#68757C]">
                   Powered by Google Gemini 2.5 Flash
                 </span>
                 <Button
@@ -386,22 +386,22 @@ export default function AssistantWorkbench() {
                   {result.type === 'generated' ? 'Generated Draft' : 'Polished Draft'}
                 </Badge>
                 {result.metadata?.model && (
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-[11px] font-mono text-[#68757C]">
                     model: {result.metadata.model}
                   </span>
                 )}
               </div>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-[#68757C]">
                 {result.text.length} chars
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-white border border-slate-200/80 text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">
+            <div className="p-4 rounded-xl bg-white border border-[#E3E8E8] text-sm text-[#252E34] leading-relaxed whitespace-pre-wrap">
               {result.text}
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-              <p className="text-[11px] text-slate-500 italic">
+              <p className="text-[11px] text-[#68757C] italic">
                 Never auto-published. Always review and edit before posting to Looply.
               </p>
 
@@ -433,7 +433,7 @@ export default function AssistantWorkbench() {
 
       {/* Prompt Inspiration Section */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+        <h3 className="text-xs font-bold text-[#252E34] uppercase tracking-wider">
           Inspiration &amp; Prompt Starters
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -441,17 +441,17 @@ export default function AssistantWorkbench() {
             <div
               key={s.title}
               onClick={() => handleApplySuggestion(s)}
-              className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-cyan-300 hover:bg-cyan-50/30 transition-all cursor-pointer group shadow-2xs"
+              className="p-3.5 rounded-xl border border-[#E3E8E8] bg-white hover:border-cyan-300 hover:bg-cyan-50/30 transition-all cursor-pointer group shadow-2xs"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-800 group-hover:text-[#087F8A] transition-colors">
+                <span className="text-xs font-bold text-[#252E34] group-hover:text-[#076C76] transition-colors">
                   {s.title}
                 </span>
-                <span className="text-[10px] font-medium text-slate-600 uppercase tracking-wider">
+                <span className="text-[10px] font-medium text-[#58666D] uppercase tracking-wider">
                   {s.tone}
                 </span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-xs text-[#68757C] leading-relaxed">
                 {s.topic}
               </p>
             </div>

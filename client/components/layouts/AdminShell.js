@@ -29,10 +29,10 @@ export default function AdminShell({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#172126] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-3 border-[#16B8C8]/30 border-t-[#16B8C8] rounded-full animate-spin" />
-          <p className="text-xs text-slate-400 font-medium">Verifying Administrator Access...</p>
+          <p className="text-xs text-[#68757C] font-medium">Verifying Administrator Access...</p>
         </div>
       </div>
     );
@@ -43,7 +43,7 @@ export default function AdminShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col antialiased">
+    <div className="min-h-screen bg-[#F6F8F7] flex flex-col antialiased">
       {/* Admin Sidebar Navigation */}
       <AdminSidebar />
 

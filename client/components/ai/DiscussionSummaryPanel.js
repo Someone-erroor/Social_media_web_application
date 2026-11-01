@@ -36,13 +36,13 @@ export default function DiscussionSummaryPanel({
             <Icon name="sparkles" className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <h4 className="text-xs font-bold text-[#172126] tracking-tight flex items-center gap-1.5">
               <span>Discussion Summary</span>
               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#FF725E]/15 text-[#FF725E]">
                 {metadata?.provider === 'google-gemini' ? 'Gemini AI' : 'AI Analysis'}
               </span>
             </h4>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-[#58666D]">
               {metadata?.commentsAnalyzed
                 ? `Synthesized from ${metadata.commentsAnalyzed} community comment${metadata.commentsAnalyzed === 1 ? '' : 's'}`
                 : 'Key takeaways and community viewpoints'}
@@ -56,7 +56,7 @@ export default function DiscussionSummaryPanel({
             <button
               type="button"
               onClick={onRetry}
-              className="p-1 text-slate-400 hover:text-[#FF725E] rounded-lg hover:bg-[#FF725E]/15/60 transition-colors focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
+              className="p-1 text-[#58666D] hover:text-[#FF725E] rounded-lg hover:bg-[#FF725E]/15/60 transition-colors focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
               aria-label="Refresh summary"
               title="Re-analyze discussion"
             >
@@ -66,7 +66,7 @@ export default function DiscussionSummaryPanel({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400"
+            className="p-1 text-[#58666D] hover:text-[#172126] rounded-lg hover:bg-[#F6F8F7] transition-colors focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
             aria-label="Close discussion summary"
             title="Close summary"
           >
@@ -135,27 +135,27 @@ export default function DiscussionSummaryPanel({
 
       {/* Summary Content */}
       {!loading && !error && summary && (
-        <div className="space-y-3 text-xs text-slate-700 leading-relaxed">
+        <div className="space-y-3 text-xs text-[#252E34] leading-relaxed">
           {/* Topic */}
           {summary.topic && (
             <div className="bg-white/80 p-2.5 rounded-xl border border-[#FF725E]/20/80">
               <span className="font-semibold text-[#172126] block text-[11px] uppercase tracking-wider mb-0.5">
                 Discussion Topic
               </span>
-              <p className="text-slate-800 font-medium">{summary.topic}</p>
+              <p className="text-[#172126] font-medium">{summary.topic}</p>
             </div>
           )}
 
           {/* Main Points */}
           {Array.isArray(summary.mainPoints) && summary.mainPoints.length > 0 && (
             <div>
-              <span className="font-semibold text-slate-900 block text-[11px] uppercase tracking-wider mb-1">
+              <span className="font-semibold text-[#172126] block text-[11px] uppercase tracking-wider mb-1">
                 Main Points
               </span>
-              <ul className="space-y-1 list-disc list-inside text-slate-700 pl-0.5">
+              <ul className="space-y-1 list-disc list-inside text-[#252E34] pl-0.5">
                 {summary.mainPoints.map((pt, i) => (
                   <li key={i} className="leading-snug">
-                    <span className="text-slate-800">{pt}</span>
+                    <span className="text-[#252E34]">{pt}</span>
                   </li>
                 ))}
               </ul>
@@ -165,13 +165,13 @@ export default function DiscussionSummaryPanel({
           {/* Common Opinions */}
           {Array.isArray(summary.commonOpinions) && summary.commonOpinions.length > 0 && (
             <div>
-              <span className="font-semibold text-slate-900 block text-[11px] uppercase tracking-wider mb-1">
+              <span className="font-semibold text-[#172126] block text-[11px] uppercase tracking-wider mb-1">
                 Common Opinions & Perspectives
               </span>
-              <ul className="space-y-1 list-disc list-inside text-slate-700 pl-0.5">
+              <ul className="space-y-1 list-disc list-inside text-[#252E34] pl-0.5">
                 {summary.commonOpinions.map((op, i) => (
                   <li key={i} className="leading-snug">
-                    <span className="text-slate-800">{op}</span>
+                    <span className="text-[#252E34]">{op}</span>
                   </li>
                 ))}
               </ul>
@@ -181,13 +181,13 @@ export default function DiscussionSummaryPanel({
           {/* Diverse Viewpoints */}
           {Array.isArray(summary.differentViewpoints) && summary.differentViewpoints.length > 0 && (
             <div>
-              <span className="font-semibold text-slate-900 block text-[11px] uppercase tracking-wider mb-1">
+              <span className="font-semibold text-[#172126] block text-[11px] uppercase tracking-wider mb-1">
                 Diverse Angles & Viewpoints
               </span>
-              <ul className="space-y-1 list-disc list-inside text-slate-700 pl-0.5">
+              <ul className="space-y-1 list-disc list-inside text-[#252E34] pl-0.5">
                 {summary.differentViewpoints.map((vp, i) => (
                   <li key={i} className="leading-snug">
-                    <span className="text-slate-800">{vp}</span>
+                    <span className="text-[#252E34]">{vp}</span>
                   </li>
                 ))}
               </ul>
@@ -197,13 +197,13 @@ export default function DiscussionSummaryPanel({
           {/* Questions Raised */}
           {Array.isArray(summary.questions) && summary.questions.length > 0 && (
             <div>
-              <span className="font-semibold text-slate-900 block text-[11px] uppercase tracking-wider mb-1">
+              <span className="font-semibold text-[#172126] block text-[11px] uppercase tracking-wider mb-1">
                 Questions Raised
               </span>
-              <ul className="space-y-1 list-disc list-inside text-slate-700 pl-0.5">
+              <ul className="space-y-1 list-disc list-inside text-[#252E34] pl-0.5">
                 {summary.questions.map((q, i) => (
                   <li key={i} className="leading-snug">
-                    <span className="text-slate-800">{q}</span>
+                    <span className="text-[#252E34]">{q}</span>
                   </li>
                 ))}
               </ul>
@@ -221,7 +221,7 @@ export default function DiscussionSummaryPanel({
           )}
 
           {/* Footer Transparency Badge */}
-          <div className="pt-1 flex items-center justify-between text-[10px] text-slate-600">
+          <div className="pt-1 flex items-center justify-between text-[10px] text-[#58666D]">
             <span>AI-generated discussion synthesis. Never published automatically.</span>
             {metadata?.model && (
               <span className="font-mono text-[9px] uppercase tracking-tight text-[#FF725E] bg-[#FF725E]/10 px-1.5 py-0.5 rounded">

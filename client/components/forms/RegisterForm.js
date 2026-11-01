@@ -118,7 +118,7 @@ export default function RegisterForm() {
 
   if (registeredState) {
     return (
-      <Card className="shadow-md border-slate-200">
+      <Card className="shadow-md border-[#E3E8E8]">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-xl font-bold">Account Registration</CardTitle>
           <CardDescription>
@@ -138,7 +138,7 @@ export default function RegisterForm() {
                 <h3 className="text-base font-bold text-[#172126]">
                   Verification email sent. Please check your inbox.
                 </h3>
-                <p className="text-xs text-[#68757C]">
+                <p className="text-xs text-[#58666D]">
                   We sent a secure verification link to <strong className="text-[#172126]">{registeredState.email}</strong>. Please check your inbox to activate your account.
                 </p>
               </div>
@@ -163,9 +163,9 @@ export default function RegisterForm() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-base font-bold text-[#172126]">
-                  Your verification email has been created in the local development mailbox.
+                  Verification email created in local preview mailbox.
                 </h3>
-                <p className="text-xs text-[#68757C] max-w-sm mx-auto leading-relaxed">
+                <p className="text-xs text-[#58666D] max-w-sm mx-auto leading-relaxed">
                   Real SMTP credentials are not configured in local development. Retrieve your verification link directly from the local development preview mailbox below:
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default function RegisterForm() {
                   href="http://localhost:5000/api/__dev/mailbox/latest"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#087F8A] hover:bg-[#16B8C8] text-white font-medium text-xs shadow-xs transition-colors w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#076C76] hover:bg-[#06656E] text-white font-medium text-xs shadow-xs transition-colors w-full sm:w-auto"
                 >
                   <Icon name="mail" className="w-4 h-4" />
                   <span>Open Local Email Preview</span>
@@ -182,7 +182,7 @@ export default function RegisterForm() {
                 {registeredState.previewLink && (
                   <a
                     href={registeredState.previewLink}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#16B8C8] text-[#172126] hover:bg-[#087F8A] hover:text-white font-semibold text-xs shadow-xs transition-colors w-full sm:w-auto"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#16B8C8] text-[#172126] hover:bg-[#076C76] hover:text-white font-semibold text-xs shadow-xs transition-colors w-full sm:w-auto"
                   >
                     <span>Verify Account Now &rarr;</span>
                   </a>
@@ -192,7 +192,7 @@ export default function RegisterForm() {
                 <Link
                   href={ROUTES.PUBLIC.LOGIN}
                   data-testid="continue-to-login-btn"
-                  className="text-xs font-semibold text-[#087F8A] hover:underline inline-block"
+                  className="text-xs font-semibold text-[#076C76] hover:underline inline-block"
                 >
                   Continue to Sign In &rarr;
                 </Link>
@@ -209,7 +209,7 @@ export default function RegisterForm() {
                 <h3 className="text-base font-bold text-[#172126]">
                   Account created, but email delivery is currently unavailable.
                 </h3>
-                <p className="text-xs text-[#68757C]">
+                <p className="text-xs text-[#58666D]">
                   Please request a verification email later or contact the administrator to activate your account.
                 </p>
               </div>
@@ -232,7 +232,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <Card className="shadow-md border-slate-200">
+    <Card className="shadow-md border-[#E3E8E8]">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-xl font-bold">Create your account</CardTitle>
         <CardDescription>
@@ -324,7 +324,7 @@ export default function RegisterForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="p-1 min-w-[24px] min-h-[24px] text-slate-500 hover:text-slate-700 focus:outline-none flex items-center justify-center"
+                  className="p-1 min-w-[24px] min-h-[24px] text-[#58666D] hover:text-[#172126] focus:outline-none flex items-center justify-center"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -358,7 +358,7 @@ export default function RegisterForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  className="p-1 min-w-[24px] min-h-[24px] text-slate-500 hover:text-slate-700 focus:outline-none flex items-center justify-center"
+                  className="p-1 min-w-[24px] min-h-[24px] text-[#58666D] hover:text-[#172126] focus:outline-none flex items-center justify-center"
                   aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showConfirmPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -368,7 +368,7 @@ export default function RegisterForm() {
           </FormField>
 
           <div>
-            <div className="flex items-start gap-2.5 text-xs text-slate-600">
+            <div className="flex items-start gap-2.5 text-xs text-[#58666D]">
               <input
                 id="terms"
                 type="checkbox"
@@ -378,15 +378,15 @@ export default function RegisterForm() {
                   if (fieldErrors.terms) setFieldErrors((prev) => ({ ...prev, terms: null }));
                 }}
                 disabled={loading}
-                className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#087F8A] focus:ring-[#16B8C8]"
+                className="mt-0.5 w-4 h-4 rounded border-[#E3E8E8] text-[#087F8A] focus:ring-[#16B8C8]"
               />
               <label htmlFor="terms" className="cursor-pointer select-none leading-relaxed">
                 I agree to the Looply{' '}
-                <Link href={ROUTES.PUBLIC.TERMS} target="_blank" className="text-[#087F8A] hover:underline font-medium">
+                <Link href={ROUTES.PUBLIC.TERMS} target="_blank" className="text-[#076C76] hover:underline font-medium">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank" className="text-[#087F8A] hover:underline font-medium">
+                <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank" className="text-[#076C76] hover:underline font-medium">
                   Privacy Policy
                 </Link>.
               </label>
@@ -432,16 +432,16 @@ export default function RegisterForm() {
             )}
           </Button>
 
-          <p className="text-[11px] text-center text-slate-600">
+          <p className="text-[11px] text-center text-[#58666D]">
             Protected by end-to-end secure registration validation
           </p>
         </form>
 
-        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
+        <div className="pt-4 border-t border-[#E3E8E8] text-center text-xs text-[#58666D]">
           Already have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
+            className="font-semibold text-[#076C76] hover:text-[#06656E] hover:underline"
           >
             Sign in
           </Link>

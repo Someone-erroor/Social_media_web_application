@@ -8,7 +8,7 @@ import { ROUTES } from '@/lib/routes';
  */
 export default function AuthLayout({ children }) {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F6F8F7] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
         <div className="inline-flex justify-center mb-2">
@@ -22,10 +22,10 @@ export default function AuthLayout({ children }) {
       </main>
 
       {/* Auth Shell Footer */}
-      <div className="mt-8 text-center text-xs text-slate-600">
+      <div className="mt-8 text-center text-xs text-[#58666D]">
         <p>Looply &bull; Connect. Share. Express.</p>
         <p className="mt-1">
-          <Link href={ROUTES.PUBLIC.HOME} className="text-[#087F8A] hover:underline">
+          <Link href={ROUTES.PUBLIC.HOME} className="text-[#076C76] hover:underline font-medium">
             &larr; Return to Public Homepage
           </Link>
         </p>

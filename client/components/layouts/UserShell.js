@@ -28,10 +28,10 @@ export default function UserShell({ children, showSidePanel = true }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F6F8F7] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-3 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
-          <p className="text-xs text-slate-500 font-medium">Loading Looply...</p>
+          <p className="text-xs text-[#68757C] font-medium">Loading Looply...</p>
         </div>
       </div>
     );
@@ -42,7 +42,7 @@ export default function UserShell({ children, showSidePanel = true }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#F6F8F7] flex flex-col antialiased overflow-x-hidden">
       {/* Desktop Left Sidebar Navigation */}
       <UserSidebar />
 
@@ -71,7 +71,7 @@ export default function UserShell({ children, showSidePanel = true }) {
                       <CardTitle>Discover Topics</CardTitle>
                       <Link
                         href={ROUTES.USER.EXPLORE}
-                        className="text-xs font-semibold text-[#087F8A] hover:text-[#06656e]"
+                        className="text-xs font-semibold text-[#076C76] hover:text-[#06656e]"
                       >
                         View all
                       </Link>
@@ -89,10 +89,10 @@ export default function UserShell({ children, showSidePanel = true }) {
                         href={ROUTES.USER.EXPLORE}
                         className="flex items-center justify-between group py-1"
                       >
-                        <span className="text-sm font-medium text-slate-700 group-hover:text-[#087F8A] transition-colors">
+                        <span className="text-sm font-medium text-[#252E34] group-hover:text-[#076C76] transition-colors">
                           {item.topic}
                         </span>
-                        <span className="text-[11px] text-slate-600 font-medium">
+                        <span className="text-[11px] text-[#58666D] font-medium">
                           {item.posts}
                         </span>
                       </Link>
@@ -103,18 +103,18 @@ export default function UserShell({ children, showSidePanel = true }) {
                 {/* AI Assistant Teaser Card */}
                 <Card className="bg-linear-to-br from-cyan-50/60 via-white to-teal-50/40 border-cyan-100">
                   <CardContent className="space-y-3 p-5">
-                    <div className="flex items-center gap-2 text-[#087F8A]">
+                    <div className="flex items-center gap-2 text-[#076C76]">
                       <Icon name="sparkles" className="w-5 h-5 text-[#16B8C8]" />
                       <span className="text-xs font-bold uppercase tracking-wider">
                         AI Assistant
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs text-[#252E34] leading-relaxed">
                       Brainstorm posts, rewrite drafts, and summarize discussion threads with Looply AI.
                     </p>
                     <Link
                       href={ROUTES.USER.ASSISTANT}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#087F8A] hover:text-[#06656e]"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#076C76] hover:text-[#06656e]"
                     >
                       <span>Explore Assistant</span>
                       <Icon name="chevronRight" className="w-3.5 h-3.5" />
@@ -123,21 +123,21 @@ export default function UserShell({ children, showSidePanel = true }) {
                 </Card>
 
                 {/* Community Guidelines Card */}
-                <div className="px-3 text-xs text-slate-600 space-y-2">
+                <div className="px-3 text-xs text-[#58666D] space-y-2">
                   <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    <Link href={ROUTES.PUBLIC.HOME} className="hover:underline text-slate-600">
+                    <Link href={ROUTES.PUBLIC.HOME} className="hover:underline text-[#58666D]">
                       About Looply
                     </Link>
                     <span>&bull;</span>
-                    <a href="#privacy" className="hover:underline text-slate-600">
+                    <Link href={ROUTES.PUBLIC.PRIVACY} className="hover:underline text-[#58666D]">
                       Privacy
-                    </a>
+                    </Link>
                     <span>&bull;</span>
-                    <a href="#terms" className="hover:underline text-slate-600">
+                    <Link href={ROUTES.PUBLIC.TERMS} className="hover:underline text-[#58666D]">
                       Terms
-                    </a>
+                    </Link>
                   </div>
-                  <p className="text-[11px] text-slate-600">
+                  <p className="text-[11px] text-[#58666D]">
                     &copy; {new Date().getFullYear()} Looply. Connect. Share. Express.
                   </p>
                 </div>

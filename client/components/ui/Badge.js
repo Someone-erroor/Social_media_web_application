@@ -18,13 +18,13 @@ export default function Badge({
   };
 
   const variantClasses = {
-    neutral: 'bg-slate-100 text-slate-700 border border-slate-200',
+    neutral: 'bg-[#F6F8F7] text-[#252E34] border border-[#E3E8E8]',
     primary: 'bg-cyan-50 text-[#087F8A] border border-cyan-200 font-semibold',
-    coral: 'bg-[#FF725E]/10 text-[#FF725E] border border-[#FF725E]/30 font-semibold',
-    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    coral: 'bg-[#FF725E]/15 text-[#D94A38] border border-[#FF725E]/30 font-semibold',
+    success: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
     warning: 'bg-amber-50 text-amber-800 border border-amber-200',
-    danger: 'bg-rose-50 text-rose-700 border border-rose-200',
-    outline: 'bg-transparent text-slate-600 border border-slate-300'
+    danger: 'bg-rose-50 text-rose-800 border border-rose-200',
+    outline: 'bg-transparent text-[#252E34] border border-[#E3E8E8]'
   };
 
   return (

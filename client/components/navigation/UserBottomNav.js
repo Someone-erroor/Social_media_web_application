@@ -22,7 +22,7 @@ export default function UserBottomNav() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200/90 z-30 px-2 py-1.5 shadow-lg"
+      className="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#E3E8E8] z-30 px-2 py-1.5 shadow-lg"
       aria-label="Mobile Navigation"
     >
       <div className="flex items-center justify-around">
@@ -38,14 +38,14 @@ export default function UserBottomNav() {
               href={item.href}
               className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl text-[10px] font-medium transition-colors ${
                 isActive
-                  ? 'text-[#087F8A] font-semibold'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'text-[#076C76] font-semibold'
+                  : 'text-[#58666D] hover:text-[#172126]'
               }`}
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon
                 name={item.icon}
-                className={`w-5 h-5 mb-0.5 ${isActive ? 'text-[#087F8A]' : 'text-slate-500'}`}
+                className={`w-5 h-5 mb-0.5 ${isActive ? 'text-[#076C76]' : 'text-[#58666D]'}`}
               />
               <span>{item.label}</span>
             </Link>

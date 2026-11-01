@@ -8,23 +8,23 @@ import { ROUTES } from '@/lib/routes';
  */
 export default function PublicFooter() {
   return (
-    <footer className="w-full border-t border-slate-200 bg-white">
+    <footer className="w-full border-t border-[#E3E8E8] bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-3">
             <Logo size="default" showTagline={true} href={ROUTES.PUBLIC.HOME} />
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-xs text-[#68757C] leading-relaxed">
               A modern, authentic social network built for meaningful connections and creative expression.
             </p>
           </div>
 
           {/* Navigation Column */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 mb-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#172126] mb-3">
               Platform
             </h4>
-            <ul className="space-y-2 text-xs text-slate-600">
+            <ul className="space-y-2 text-xs text-[#252E34]">
               <li>
                 <Link href={ROUTES.USER.FEED} className="hover:text-[#087F8A] transition-colors">
                   Social Feed
@@ -50,10 +50,10 @@ export default function PublicFooter() {
 
           {/* Authentication Column */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 mb-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#172126] mb-3">
               Account
             </h4>
-            <ul className="space-y-2 text-xs text-slate-600">
+            <ul className="space-y-2 text-xs text-[#252E34]">
               <li>
                 <Link href={ROUTES.PUBLIC.LOGIN} className="hover:text-[#087F8A] transition-colors">
                   Sign In
@@ -79,10 +79,10 @@ export default function PublicFooter() {
 
           {/* Platform Status Column */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 mb-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#172126] mb-3">
               Platform Status
             </h4>
-            <p className="text-xs text-slate-500 leading-relaxed mb-2">
+            <p className="text-xs text-[#68757C] leading-relaxed mb-2">
               Next-generation social interface and navigation systems active.
             </p>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-cyan-50 text-[#087F8A] border border-cyan-200">
@@ -93,7 +93,7 @@ export default function PublicFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-8 border-t border-[#E3E8E8] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#68757C]">
           <div>
             &copy; 2026 Looply. All rights reserved. Connect. Share. Express.
           </div>

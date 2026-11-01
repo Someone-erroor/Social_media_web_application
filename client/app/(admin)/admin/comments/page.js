@@ -143,10 +143,10 @@ export default function AdminCommentsPage() {
       </div>
 
       {/* Table Container */}
-      <Card className="border-slate-200 overflow-hidden">
+      <Card className="border-[#E3E8E8] overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#252E34]">
+            <thead className="bg-[#F6F8F7] border-b border-[#E3E8E8] text-[#252E34] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">Author</th>
                 <th scope="col" className="px-5 py-3.5">Comment Text</th>
@@ -155,10 +155,10 @@ export default function AdminCommentsPage() {
                 <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[#E3E8E8]">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-700 font-medium">
+                  <td colSpan={5} className="py-8 text-center text-[#252E34] font-medium">
                     Loading comments for moderation...
                   </td>
                 </tr>
@@ -180,7 +180,7 @@ export default function AdminCommentsPage() {
                   const isConfirming = confirmDeleteId === comment._id;
 
                   return (
-                    <tr key={comment._id} className="hover:bg-slate-50/60 transition-colors">
+                    <tr key={comment._id} className="hover:bg-[#F6F8F7]/60 transition-colors">
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -189,26 +189,26 @@ export default function AdminCommentsPage() {
                             size="sm"
                           />
                           <div>
-                            <span className="font-semibold text-slate-900 block">
+                            <span className="font-semibold text-[#172126] block">
                               {author.fullName || 'Unknown'}
                             </span>
-                            <span className="text-[10px] text-slate-600 font-mono">
+                            <span className="text-[10px] text-[#58666D] font-mono">
                               {author.email || '—'}
                             </span>
                           </div>
                         </div>
                       </td>
                       <td className="px-5 py-3.5 max-w-xs sm:max-w-md">
-                        <p className="line-clamp-2 text-slate-800 break-words font-medium">
+                        <p className="line-clamp-2 text-[#252E34] break-words font-medium">
                           {comment.content}
                         </p>
                       </td>
-                      <td className="px-5 py-3.5 max-w-xs text-slate-600">
+                      <td className="px-5 py-3.5 max-w-xs text-[#58666D]">
                         <p className="line-clamp-1 italic text-[11px]">
                           {post.content ? `"${post.content}"` : 'Post referenced'}
                         </p>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-slate-600">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-[#58666D]">
                         {formatDate(comment.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -253,7 +253,7 @@ export default function AdminCommentsPage() {
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-600">
+          <div className="flex items-center justify-between p-4 border-t border-[#E3E8E8] bg-[#F6F8F7]/50 text-xs text-[#58666D]">
             <span>
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total comments)
             </span>

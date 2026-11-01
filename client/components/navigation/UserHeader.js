@@ -27,7 +27,7 @@ export default function UserHeader() {
   const initials = getInitials(displayName);
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+    <header className="sticky top-0 z-20 w-full bg-white/95 backdrop-blur-md border-b border-[#E3E8E8]">
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Mobile Logo: links strictly to Feed */}
         <div className="md:hidden flex items-center">
@@ -49,7 +49,7 @@ export default function UserHeader() {
         <div className="flex items-center gap-3 ml-auto">
           <Link
             href={ROUTES.USER.NOTIFICATIONS}
-            className="p-2 rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors relative"
+            className="p-2 rounded-full text-[#58666D] hover:text-[#172126] hover:bg-[#F6F8F7] transition-colors relative"
             aria-label="View notifications"
           >
             <Icon name="notifications" className="w-5 h-5" />

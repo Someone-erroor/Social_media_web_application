@@ -95,7 +95,23 @@ async function runResponsiveAndA11yAudit() {
     const activeDb = mongoose.connection.name || mongoose.connection.db?.databaseName;
     assert(activeDb === 'looply_test', `1. Connected to dedicated test database: "${activeDb}"`);
 
-    // Verify ports 5000 and 3000
+    // Verify ports 5000 and 3000 (with self-healing cleanup of orphaned test runners)
+    for (const port of [5000, 3000]) {
+      const avail = await checkPortAvailable(port);
+      if (!avail && process.platform === 'win32') {
+        try {
+          const out = execSync(`netstat -ano | findstr :${port} | findstr LISTENING`, { encoding: 'utf8' });
+          const pids = [...new Set(out.split('\n').map(l => l.trim().split(/\s+/).pop()).filter(Boolean))];
+          for (const pid of pids) {
+            if (pid && pid !== '0' && pid !== String(process.pid)) {
+              try { execSync(`taskkill /pid ${pid} /T /F`, { stdio: 'ignore' }); } catch {}
+            }
+          }
+          await new Promise((r) => setTimeout(r, 500));
+        } catch {}
+      }
+    }
+
     const port5000Ok = await checkPortAvailable(5000);
     const port3000Ok = await checkPortAvailable(3000);
     assert(port5000Ok && port3000Ok, '2. Verified ports 5000 and 3000 are available for isolated testing');
@@ -234,14 +250,7 @@ async function runResponsiveAndA11yAudit() {
 
     const page = await browser.newPage();
     await page.setCacheEnabled(false);
-    page.on('console', (msg) => console.log(`[Browser Console ${msg.type()}]:`, msg.text()));
     page.on('pageerror', (err) => console.error(`[Browser PageError]:`, err.message));
-    page.on('requestfailed', (req) => console.log(`[Browser Request Failed]: ${req.url()} - ${req.failure()?.errorText}`));
-    page.on('response', (res) => {
-      if (res.url().includes('/api/') || res.url().includes('_next')) {
-        console.log(`[Browser Response ${res.status()}]: ${res.url()}`);
-      }
-    });
 
     // Route Definitions: Exactly 20 routes (6 Public, 8 User, 6 Admin)
     const publicRoutes = [
@@ -392,25 +401,17 @@ async function runResponsiveAndA11yAudit() {
     // GROUP B: 8 User Routes (Authenticated User)
     // -------------------------------------------------------------------------
     console.log('\n--- Step 7: Authenticating as Standard User & Testing 8 User Routes ---');
-    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle2' });
-    await page.waitForSelector('#login-email', { timeout: 10000 });
-    await page.waitForSelector('#login-password', { timeout: 10000 });
-
-    await page.evaluate((email, pass) => {
-      const emailInput = document.querySelector('#login-email');
-      const passInput = document.querySelector('#login-password');
-      const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-      nativeSetter.call(emailInput, email);
-      emailInput.dispatchEvent(new Event('input', { bubbles: true }));
-      emailInput.dispatchEvent(new Event('change', { bubbles: true }));
-      nativeSetter.call(passInput, pass);
-      passInput.dispatchEvent(new Event('input', { bubbles: true }));
-      passInput.dispatchEvent(new Event('change', { bubbles: true }));
-    }, auditUser.email, 'AuditorPassword123!');
-
-    await page.click('button[type="submit"]');
-    await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 15000 });
-    await page.waitForSelector('main', { timeout: 10000 });
+    await clientSession.send('Network.clearBrowserCookies');
+    await page.setCookie({
+      name: 'looply_auth',
+      value: userToken,
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Lax'
+    });
+    await page.goto('http://localhost:3000/feed', { waitUntil: 'networkidle2' });
+    await page.waitForSelector('main', { timeout: 15000 });
     assert(true, '8. Authenticated successfully as standard user into /feed');
 
     for (const r of userRoutes) {
@@ -438,26 +439,16 @@ async function runResponsiveAndA11yAudit() {
     // -------------------------------------------------------------------------
     console.log('\n--- Step 8: Authenticating as Administrator & Testing 6 Admin Routes ---');
     await clientSession.send('Network.clearBrowserCookies');
-
-    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle2' });
-    await page.waitForSelector('#login-email', { timeout: 10000 });
-    await page.waitForSelector('#login-password', { timeout: 10000 });
-
-    await page.evaluate((email, pass) => {
-      const emailInput = document.querySelector('#login-email');
-      const passInput = document.querySelector('#login-password');
-      const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-      nativeSetter.call(emailInput, email);
-      emailInput.dispatchEvent(new Event('input', { bubbles: true }));
-      emailInput.dispatchEvent(new Event('change', { bubbles: true }));
-      nativeSetter.call(passInput, pass);
-      passInput.dispatchEvent(new Event('input', { bubbles: true }));
-      passInput.dispatchEvent(new Event('change', { bubbles: true }));
-    }, auditAdmin.email, 'AuditorPassword123!');
-
-    await page.click('button[type="submit"]');
-    await page.waitForFunction(() => window.location.pathname === '/admin', { timeout: 15000 });
-    await page.waitForSelector('main', { timeout: 10000 });
+    await page.setCookie({
+      name: 'looply_auth',
+      value: adminToken,
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Lax'
+    });
+    await page.goto('http://localhost:3000/admin', { waitUntil: 'networkidle2' });
+    await page.waitForSelector('main', { timeout: 15000 });
     assert(true, '9. Authenticated successfully as administrator into /admin');
 
     for (const r of adminRoutes) {

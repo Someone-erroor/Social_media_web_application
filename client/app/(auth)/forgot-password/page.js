@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Card className="shadow-md border-slate-200">
+    <Card className="shadow-md border-[#E3E8E8]">
       <CardHeader className="text-center pb-2">
         <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mx-auto mb-2 shadow-xs">
           <Icon name="lock" className="w-6 h-6" />
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <a
                 href={devResetLink}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-xs shadow-xs transition-colors"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#087F8A] hover:bg-[#16B8C8] hover:text-[#172126] text-white font-medium text-xs shadow-xs transition-colors"
               >
                 <span>Reset Password Now &rarr;</span>
               </a>
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
                 href="http://localhost:5000/api/__dev/mailbox/latest"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-cyan-300 text-[#087F8A] hover:bg-cyan-100 font-medium text-xs transition-colors"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-cyan-300 text-[#087F8A] hover:bg-[#F6F8F7] font-medium text-xs transition-colors"
               >
                 <span>Open Local Email Preview</span>
               </a>
@@ -147,7 +147,7 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
+        <div className="pt-4 border-t border-[#E3E8E8] text-center text-xs text-[#58666D]">
           Remember your password?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}

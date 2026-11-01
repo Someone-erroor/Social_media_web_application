@@ -40,7 +40,7 @@ export default function AdminSidebar() {
 
   const renderNavLinks = (isMobile = false) => (
     <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto" aria-label="Admin Navigation">
-      <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-[#E3E8E8]">
         Platform Management
       </div>
 
@@ -58,14 +58,14 @@ export default function AdminSidebar() {
             className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
               isActive
                 ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                : 'text-[#E3E8E8] hover:text-white hover:bg-[#252E34]'
             }`}
             aria-current={isActive ? 'page' : undefined}
           >
             <Icon
               name={item.icon}
               className={`w-5 h-5 shrink-0 ${
-                isActive ? 'text-[#172126]' : 'text-slate-400 group-hover:text-slate-200'
+                isActive ? 'text-[#172126]' : 'text-[#E3E8E8] group-hover:text-[#F6F8F7]'
               }`}
             />
             <span>{item.label}</span>
@@ -76,15 +76,15 @@ export default function AdminSidebar() {
   );
 
   const renderFooter = (isMobile = false) => (
-    <div className="p-4 border-t border-slate-800 space-y-3">
-      <div className="px-3 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60">
-        <div className="flex items-center justify-between text-xs text-slate-300 font-medium">
+    <div className="p-4 border-t border-[#252E34] space-y-3">
+      <div className="px-3 py-2 rounded-xl bg-[#252E34]/60 border border-[#E3E8E8]/20">
+        <div className="flex items-center justify-between text-xs text-[#E3E8E8] font-medium">
           <span>Admin Clearance</span>
           <span className="text-[10px] font-mono text-[#16B8C8] bg-[#172126] px-1.5 py-0.5 rounded border border-[#252E34]">
             Root Level
           </span>
         </div>
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="mt-1 text-[11px] text-[#E3E8E8]">
           Management Console &bull; Root Clearance
         </p>
       </div>
@@ -92,7 +92,7 @@ export default function AdminSidebar() {
       <Link
         href={ROUTES.USER.FEED}
         onClick={() => isMobile && setMobileDrawerOpen(false)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#E3E8E8] hover:text-white hover:bg-[#252E34] transition-colors"
       >
         <Icon name="arrowLeft" className="w-4 h-4" />
         <span>Return to User Feed</span>
@@ -103,7 +103,7 @@ export default function AdminSidebar() {
           if (isMobile) setMobileDrawerOpen(false);
           logout();
         }}
-        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#E3E8E8] hover:text-rose-400 hover:bg-[#252E34] transition-colors cursor-pointer"
       >
         <Icon name="logout" className="w-4 h-4" />
         <span>Sign Out</span>
@@ -114,7 +114,7 @@ export default function AdminSidebar() {
   return (
     <>
       {/* 1. Mobile Compact Header (md:hidden) */}
-      <div className="md:hidden sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 h-14 flex items-center justify-between text-slate-100">
+      <div className="md:hidden sticky top-0 z-40 bg-[#172126] border-b border-[#252E34] px-4 h-14 flex items-center justify-between text-[#F6F8F7]">
         <Logo
           size="small"
           showTagline={false}
@@ -126,7 +126,7 @@ export default function AdminSidebar() {
         <button
           type="button"
           onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-          className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
+          className="p-2 rounded-xl text-[#E3E8E8] hover:text-white hover:bg-[#252E34] focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
           aria-label="Toggle admin navigation menu"
           aria-expanded={mobileDrawerOpen}
         >
@@ -146,13 +146,13 @@ export default function AdminSidebar() {
 
           {/* Drawer content */}
           <div
-            className="relative flex-1 flex flex-col max-w-xs w-full bg-slate-900 border-r border-slate-800 text-slate-200 shadow-2xl z-10"
+            className="relative flex-1 flex flex-col max-w-xs w-full bg-[#172126] border-r border-[#252E34] text-[#F6F8F7] shadow-2xl z-10"
             role="dialog"
             aria-modal="true"
             aria-label="Admin Navigation Menu"
           >
             {/* Drawer Header */}
-            <div className="h-14 flex items-center justify-between px-4 border-b border-slate-800">
+            <div className="h-14 flex items-center justify-between px-4 border-b border-[#252E34]">
               <Logo
                 size="small"
                 showTagline={false}
@@ -164,7 +164,7 @@ export default function AdminSidebar() {
               <button
                 type="button"
                 onClick={() => setMobileDrawerOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
+                className="p-1.5 rounded-lg text-[#E3E8E8] hover:text-white hover:bg-[#252E34] focus:outline-none focus:ring-2 focus:ring-[#16B8C8]"
                 aria-label="Close navigation menu"
               >
                 <Icon name="close" className="w-5 h-5" />
@@ -182,10 +182,10 @@ export default function AdminSidebar() {
 
       {/* 3. Existing Desktop Sidebar (hidden md:flex md:w-64 - UNCHANGED) */}
       <aside
-        className="hidden md:flex md:w-64 flex-col md:fixed md:inset-y-0 md:left-0 bg-slate-900 border-r border-slate-800 text-slate-200 z-30"
+        className="hidden md:flex md:w-64 flex-col md:fixed md:inset-y-0 md:left-0 bg-[#172126] border-r border-[#252E34] text-[#F6F8F7] z-30"
         aria-label="Admin Sidebar"
       >
-        <div className="h-16 flex items-center px-6 border-b border-slate-800/80 justify-between">
+        <div className="h-16 flex items-center px-6 border-b border-[#252E34] justify-between">
           <Logo
             showTagline={false}
             href={ROUTES.ADMIN.DASHBOARD}

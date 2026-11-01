@@ -90,7 +90,7 @@ function VerifyEmailContent() {
   };
 
   return (
-    <Card className="shadow-md border-slate-200 text-center">
+    <Card className="shadow-md border-[#E3E8E8] text-center">
       <CardHeader className="items-center pb-2">
         <div className="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mb-2 shadow-xs">
           <Icon name="mail" className="w-7 h-7" />
@@ -143,9 +143,9 @@ function VerifyEmailContent() {
           <>
             {/* Informational Instructions */}
             {!token && (
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 text-left space-y-2">
-                <p className="font-semibold text-slate-800">Verification Steps:</p>
-                <ol className="list-decimal list-inside space-y-1 text-slate-500">
+              <div className="p-4 rounded-xl bg-[#F6F8F7] border border-[#E3E8E8] text-xs text-[#252E34] text-left space-y-2">
+                <p className="font-semibold text-[#172126]">Verification Steps:</p>
+                <ol className="list-decimal list-inside space-y-1 text-[#252E34]">
                   <li>Open the confirmation email in your inbox.</li>
                   <li>Click the secure verification link.</li>
                   <li>Sign in with your email and password.</li>
@@ -178,7 +178,7 @@ function VerifyEmailContent() {
                 </Button>
 
                 {resendStatus && (
-                  <p className="text-xs text-center text-slate-600 mt-2">
+                  <p className="text-xs text-center text-[#58666D] mt-2">
                     {resendStatus}
                   </p>
                 )}
@@ -209,12 +209,12 @@ function VerifyEmailContent() {
               </form>
             )}
 
-            <div className="space-y-2 pt-2 border-t border-slate-100">
+            <div className="space-y-2 pt-2 border-t border-[#E3E8E8]">
               <Button
                 href={ROUTES.PUBLIC.LOGIN}
                 variant="ghost"
                 size="md"
-                className="w-full text-xs text-slate-600"
+                className="w-full text-xs text-[#58666D]"
               >
                 Back to Sign In
               </Button>
@@ -222,7 +222,7 @@ function VerifyEmailContent() {
           </>
         )}
 
-        <div className="pt-3 border-t border-slate-100 text-xs text-slate-600">
+        <div className="pt-3 border-t border-[#E3E8E8] text-xs text-[#58666D]">
           Need to change your email?{' '}
           <Link
             href={ROUTES.PUBLIC.REGISTER}
@@ -240,10 +240,10 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <Card className="shadow-md border-slate-200 text-center p-8">
+        <Card className="shadow-md border-[#E3E8E8] text-center p-8">
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-2 border-cyan-200 border-t-[#16B8C8] rounded-full animate-spin" />
-            <p className="text-xs text-slate-500">Loading verification portal...</p>
+            <p className="text-xs text-[#58666D]">Loading verification portal...</p>
           </div>
         </Card>
       }

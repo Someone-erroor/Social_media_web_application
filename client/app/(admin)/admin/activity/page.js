@@ -23,7 +23,7 @@ export default function AdminActivityPage() {
           <select
             disabled
             aria-label="Filter by event type"
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none disabled:bg-slate-100 disabled:cursor-not-allowed"
+            className="rounded-xl border border-[#E3E8E8] bg-white px-3 py-2 text-xs text-[#252E34] focus:outline-none disabled:bg-[#F6F8F7] disabled:cursor-not-allowed"
           >
             <option>All Event Types</option>
             <option>User Login</option>

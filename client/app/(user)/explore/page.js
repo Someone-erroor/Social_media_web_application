@@ -109,14 +109,14 @@ export default function ExplorePage() {
 
       {/* Category Tag Pills */}
       <div className="space-y-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-[#252E34]">
           Suggested Topics
         </h2>
         <div className="flex flex-wrap gap-2">
           {topics.map((topic) => (
             <span
               key={topic}
-              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 hover:bg-cyan-50 hover:text-[#087F8A] transition-colors cursor-pointer"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-[#F6F8F7] text-[#252E34] hover:bg-cyan-50 hover:text-[#087F8A] transition-colors cursor-pointer"
             >
               #{topic}
             </span>
@@ -141,7 +141,7 @@ export default function ExplorePage() {
 
       {/* Posts Section */}
       <div className="space-y-4 pt-2">
-        <h2 className="text-sm font-semibold text-slate-800">
+        <h2 className="text-sm font-semibold text-[#252E34]">
           Recent Discussions
         </h2>
 
@@ -150,18 +150,18 @@ export default function ExplorePage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3 animate-pulse"
+                className="p-5 rounded-2xl bg-white border border-[#E3E8E8] shadow-xs space-y-3 animate-pulse"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-200" />
+                  <div className="w-10 h-10 rounded-full bg-[#E3E8E8]" />
                   <div className="space-y-1.5 flex-1">
-                    <div className="w-28 h-3.5 bg-slate-200 rounded" />
-                    <div className="w-16 h-2.5 bg-slate-200 rounded" />
+                    <div className="w-28 h-3.5 bg-[#E3E8E8] rounded" />
+                    <div className="w-16 h-2.5 bg-[#E3E8E8] rounded" />
                   </div>
                 </div>
                 <div className="space-y-2 pt-1">
-                  <div className="w-full h-3 bg-slate-200 rounded" />
-                  <div className="w-3/4 h-3 bg-slate-200 rounded" />
+                  <div className="w-full h-3 bg-[#E3E8E8] rounded" />
+                  <div className="w-3/4 h-3 bg-[#E3E8E8] rounded" />
                 </div>
               </div>
             ))}

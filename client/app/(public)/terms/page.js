@@ -21,7 +21,7 @@ export default function TermsPage() {
             <h1 className="text-3xl sm:text-4xl font-extrabold text-[#172126] tracking-tight">
               Terms of Service
             </h1>
-            <p className="text-sm text-[#68757C]">
+            <p className="text-sm text-[#58666D]">
               Last Updated: November 1, 2026 &bull; Looply Core Platform
             </p>
           </div>
@@ -42,7 +42,7 @@ export default function TermsPage() {
               <CardTitle className="text-lg text-[#172126]">2. Account Security &amp; Registration</CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-3 text-sm text-[#252E34] leading-relaxed">
-              <ul className="list-disc pl-5 space-y-1.5 text-xs text-[#68757C]">
+              <ul className="list-disc pl-5 space-y-1.5 text-xs text-[#58666D]">
                 <li><strong className="text-[#172126]">Accurate Credentials:</strong> You must supply a valid email address and legal full name. Public registrations are strictly assigned standard user permissions.</li>
                 <li><strong className="text-[#172126]">Security &amp; Passwords:</strong> You are responsible for preserving the confidentiality of your authentication credentials. Unauthorized access attempts, token tampering, or role-escalation exploits will trigger automatic account suspension.</li>
                 <li><strong className="text-[#172126]">Email Verification:</strong> Full interactive platform capabilities (posting, commenting, AI tools) require email verification before account activation is completed.</li>
@@ -58,7 +58,7 @@ export default function TermsPage() {
               <p>
                 Looply is committed to respectful discourse. You agree not to engage in or publish:
               </p>
-              <ul className="list-disc pl-5 space-y-1.5 text-xs text-[#68757C]">
+              <ul className="list-disc pl-5 space-y-1.5 text-xs text-[#58666D]">
                 <li>Harassment, hate speech, bullying, defamation, or threats of violence.</li>
                 <li>Malicious software, phishing links, prompt-injection attacks, or automated denial-of-service activities.</li>
                 <li>Spamming, automated bot accounts, or fraudulent impersonation of other individuals or entities.</li>
@@ -72,7 +72,7 @@ export default function TermsPage() {
               <CardTitle className="text-lg text-[#172126]">4. Content Ownership &amp; AI Assistance</CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-3 text-sm text-[#252E34] leading-relaxed">
-              <ul className="list-disc pl-5 space-y-1.5 text-xs text-[#68757C]">
+              <ul className="list-disc pl-5 space-y-1.5 text-xs text-[#58666D]">
                 <li><strong className="text-[#172126]">Ownership:</strong> You retain complete ownership of all original text, thoughts, and commentary you publish to Looply.</li>
                 <li><strong className="text-[#172126]">Display License:</strong> You grant Looply a non-exclusive, royalty-free license to store, format, and display your content strictly within the application ecosystem.</li>
                 <li><strong className="text-[#172126]">AI Authorship:</strong> Suggestions generated through the Gemini AI assistant are advisory. You maintain final editorial discretion and legal responsibility for any content you choose to publish.</li>
@@ -85,7 +85,7 @@ export default function TermsPage() {
               <CardTitle className="text-lg text-[#172126]">5. Moderation &amp; Enforcement</CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-3 text-sm text-[#252E34] leading-relaxed">
-              <p className="text-xs text-[#68757C]">
+              <p className="text-xs text-[#58666D]">
                 Platform administrators reserve the right to review, edit, hide, or delete any content and suspend any account that violates these terms or threatens community safety. For support, contact <a href="mailto:support@looply.net" className="text-[#087F8A] hover:underline font-medium">support@looply.net</a>.
               </p>
             </CardContent>

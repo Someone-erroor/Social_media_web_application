@@ -29,11 +29,11 @@ export default function Button({
     primary:
       'bg-[#16B8C8] text-[#172126] font-semibold hover:bg-[#087F8A] hover:text-white active:bg-[#06656e] focus:ring-[#16B8C8] shadow-sm border border-transparent',
     secondary:
-      'bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300 focus:ring-slate-400 border border-transparent',
+      'bg-[#F6F8F7] text-[#172126] font-medium hover:bg-[#E3E8E8] active:bg-[#d8dede] focus:ring-[#16B8C8] border border-[#E3E8E8]',
     outline:
-      'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 active:bg-slate-100 focus:ring-[#16B8C8] shadow-xs',
+      'bg-white text-[#252E34] font-medium border border-[#E3E8E8] hover:bg-[#F6F8F7] hover:border-[#16B8C8] active:bg-[#E3E8E8] focus:ring-[#16B8C8] shadow-xs',
     ghost:
-      'bg-transparent text-slate-600 hover:bg-slate-100 active:bg-slate-200 focus:ring-slate-400 border border-transparent',
+      'bg-transparent text-[#252E34] font-medium hover:bg-[#F6F8F7] hover:text-[#087F8A] active:bg-[#E3E8E8] focus:ring-[#16B8C8] border border-transparent',
     coral:
       'bg-[#FF725E] text-white font-semibold hover:bg-[#e85542] active:bg-[#d44331] focus:ring-[#FF725E] shadow-sm border border-transparent',
     danger:

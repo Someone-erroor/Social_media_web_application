@@ -11,11 +11,11 @@ export default function PageHeader({
 }) {
   return (
     <div
-      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200/80 mb-6 ${className}`}
+      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-[#E3E8E8] mb-6 ${className}`}
     >
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#172126]">
             {title}
           </h1>
           {badge && <div>{badge}</div>}

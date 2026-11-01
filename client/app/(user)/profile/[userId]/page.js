@@ -106,13 +106,13 @@ export default function UserProfilePage() {
       />
 
       {loading ? (
-        <Card className="overflow-hidden border-slate-200 animate-pulse">
-          <div className="h-28 bg-slate-200" />
+        <Card className="overflow-hidden border-[#E3E8E8] animate-pulse">
+          <div className="h-28 bg-[#E3E8E8]" />
           <CardContent className="pt-0 pb-6 px-6">
-            <div className="-mt-12 mb-4 w-24 h-24 rounded-full bg-slate-300 ring-4 ring-white" />
+            <div className="-mt-12 mb-4 w-24 h-24 rounded-full bg-[#E3E8E8] ring-4 ring-white" />
             <div className="space-y-2">
-              <div className="w-48 h-5 bg-slate-200 rounded" />
-              <div className="w-64 h-3 bg-slate-200 rounded" />
+              <div className="w-48 h-5 bg-[#E3E8E8] rounded" />
+              <div className="w-64 h-3 bg-[#E3E8E8] rounded" />
             </div>
           </CardContent>
         </Card>
@@ -143,7 +143,7 @@ export default function UserProfilePage() {
       ) : (
         <>
           {/* Profile Header Card */}
-          <Card className="overflow-hidden border-slate-200">
+          <Card className="overflow-hidden border-[#E3E8E8]">
             <div className="h-28 bg-linear-to-r from-[#172126] via-[#252E34] to-[#172126]" />
 
             <CardContent className="relative pt-0 pb-6 px-6">
@@ -170,20 +170,20 @@ export default function UserProfilePage() {
 
               <div className="space-y-3">
                 <div>
-                  <h1 className="text-xl font-bold text-slate-900">
+                  <h1 className="text-xl font-bold text-[#172126]">
                     {profile.fullName}
                   </h1>
                   {memberSince && (
-                    <p className="text-xs text-slate-600">Member since {memberSince}</p>
+                    <p className="text-xs text-[#58666D]">Member since {memberSince}</p>
                   )}
                 </div>
 
                 {profile.profile?.bio ? (
-                  <p className="text-sm text-slate-600 max-w-xl">
+                  <p className="text-sm text-[#58666D] max-w-xl">
                     {profile.profile.bio}
                   </p>
                 ) : (
-                  <p className="text-xs italic text-slate-600">
+                  <p className="text-xs italic text-[#58666D]">
                     This member has not written a bio yet.
                   </p>
                 )}
@@ -193,7 +193,7 @@ export default function UserProfilePage() {
 
           {/* User Posts Section */}
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-slate-800">
+            <h2 className="text-sm font-semibold text-[#252E34]">
               Posts by {profile.fullName} ({posts.length})
             </h2>
 

@@ -57,7 +57,7 @@ export default function Logo({
         <div className="flex items-center gap-2">
           <span
             className={`font-black tracking-tight leading-none ${
-              inverted ? 'text-white' : 'text-slate-900'
+              inverted ? 'text-white' : 'text-[#172126]'
             } ${
               isLarge ? 'text-3xl' : isSmall ? 'text-lg' : 'text-xl'
             }`}
@@ -79,7 +79,7 @@ export default function Logo({
         {showTagline && (
           <span
             className={`font-semibold uppercase tracking-wider mt-1 ${
-              inverted ? 'text-slate-400' : 'text-slate-500'
+              inverted ? 'text-[#E3E8E8]' : 'text-[#58666D]'
             } ${
               isLarge ? 'text-xs' : 'text-[10px]'
             }`}

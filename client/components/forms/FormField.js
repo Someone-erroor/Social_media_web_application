@@ -16,7 +16,7 @@ export default function FormField({
       {label && (
         <label
           htmlFor={id}
-          className="block text-sm font-medium text-slate-700"
+          className="block text-sm font-medium text-[#252E34]"
         >
           {label}
           {required && <span className="ml-1 text-rose-500" aria-hidden="true">*</span>}
@@ -32,7 +32,7 @@ export default function FormField({
       )}
 
       {!error && helperText && (
-        <p className="text-xs text-slate-500">{helperText}</p>
+        <p className="text-xs text-[#58666D]">{helperText}</p>
       )}
     </div>
   );

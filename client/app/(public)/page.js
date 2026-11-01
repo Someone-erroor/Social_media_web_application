@@ -15,13 +15,13 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 antialiased selection:bg-[#16B8C8] selection:text-[#172126]">
+    <div className="min-h-screen flex flex-col bg-[#F6F8F7] antialiased selection:bg-[#16B8C8] selection:text-[#172126]">
       {/* Responsive Public Navigation */}
       <PublicNavbar />
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32 bg-linear-to-b from-white via-slate-50/50 to-slate-50">
+        <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32 bg-linear-to-b from-white via-[#F6F8F7]/50 to-[#F6F8F7]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-50 border border-cyan-200/60 shadow-xs">
@@ -31,7 +31,7 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-none">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#172126] tracking-tight leading-none">
                 Connect authentically.{' '}
                 <span className="bg-linear-to-r from-[#16B8C8] via-[#087F8A] to-[#FF725E] bg-clip-text text-transparent">
                   Share your voice.
@@ -39,7 +39,7 @@ export default function HomePage() {
                 Express who you are.
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg text-[#252E34] max-w-2xl mx-auto leading-relaxed">
                 Looply is the modern social network where authentic dialogue thrives.
                 Connect with communities, share rich posts, and amplify your thoughts
                 with intelligent AI assistance.
@@ -73,7 +73,7 @@ export default function HomePage() {
                 </Button>
               </div>
 
-              <div className="pt-2 text-xs text-slate-600 flex items-center justify-center gap-4">
+              <div className="pt-2 text-xs text-[#58666D] flex items-center justify-center gap-4">
                 <span>&bull; No predatory algorithms</span>
                 <span>&bull; Full privacy controls</span>
                 <span>&bull; AI-assisted workflows</span>
@@ -82,40 +82,40 @@ export default function HomePage() {
 
             {/* Product UI Mockup Card Preview */}
             <div className="mt-14 max-w-4xl mx-auto">
-              <div className="rounded-3xl p-3 bg-linear-to-br from-[#16B8C8]/10 via-[#087F8A]/10 to-[#FF725E]/10 border border-slate-200 shadow-xl">
-                <div className="rounded-2xl bg-white border border-slate-200 p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl p-3 bg-linear-to-br from-[#16B8C8]/10 via-[#087F8A]/10 to-[#FF725E]/10 border border-[#E3E8E8] shadow-xl">
+                <div className="rounded-2xl bg-white border border-[#E3E8E8] p-6 sm:p-8 space-y-6">
                   {/* Mock Post Card */}
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <Avatar name="Sarah Jenkins" size="md" status="online" />
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900 text-sm">Sarah Jenkins</span>
-                          <span className="text-xs text-slate-600">@sarahj</span>
+                          <span className="font-bold text-[#172126] text-sm">Sarah Jenkins</span>
+                          <span className="text-xs text-[#58666D]">@sarahj</span>
                         </div>
-                        <span className="text-xs text-slate-600">Software Architect &bull; 2h ago</span>
+                        <span className="text-xs text-[#58666D]">Software Architect &bull; 2h ago</span>
                       </div>
                     </div>
                     <Badge variant="primary" size="sm">Design Philosophy</Badge>
                   </div>
 
-                  <p className="text-slate-800 text-sm sm:text-base leading-relaxed">
+                  <p className="text-[#172126] text-sm sm:text-base leading-relaxed">
                     Social software should empower genuine discourse rather than maximize outrage loops.
                     Excited to experience <span className="font-semibold text-[#087F8A]">Looply</span> — a platform built on clarity, clean typography, and creator autonomy.
                   </p>
 
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                  <div className="pt-4 border-t border-[#E3E8E8] flex items-center justify-between text-xs text-[#58666D]">
                     <div className="flex items-center gap-6">
                       <span className="flex items-center gap-1.5 hover:text-rose-600 cursor-default">
-                        <Icon name="heart" className="w-4 h-4 text-slate-400" />
+                        <Icon name="heart" className="w-4 h-4 text-[#58666D]" />
                         <span>24</span>
                       </span>
                       <span className="flex items-center gap-1.5 hover:text-[#087F8A] cursor-default">
-                        <Icon name="comments" className="w-4 h-4 text-slate-400" />
+                        <Icon name="comments" className="w-4 h-4 text-[#58666D]" />
                         <span>8</span>
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-slate-600">Community Highlight</span>
+                    <span className="text-[11px] font-mono text-[#58666D]">Community Highlight</span>
                   </div>
                 </div>
               </div>
@@ -124,16 +124,16 @@ export default function HomePage() {
         </section>
 
         {/* Feature Highlights Section */}
-        <section id="features" className="py-20 bg-white border-y border-slate-200/80">
+        <section id="features" className="py-20 bg-white border-y border-[#E3E8E8]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
               <h2 className="text-xs font-bold uppercase tracking-wider text-[#087F8A]">
                 Core Capabilities
               </h2>
-              <p className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
+              <p className="text-3xl font-extrabold text-[#172126] tracking-tight sm:text-4xl">
                 Engineered for quality connection
               </p>
-              <p className="text-slate-600 text-sm leading-relaxed">
+              <p className="text-[#252E34] text-sm leading-relaxed">
                 Everything you need to express ideas, converse thoughtfully, and manage your online presence.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function HomePage() {
                   <CardTitle>Distraction-Free Feed</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-[#252E34] leading-relaxed">
                     A chronological, focused stream centered on quality written content, curated topics, and discussions that matter without manipulative doom-scrolling.
                   </p>
                 </CardContent>
@@ -163,7 +163,7 @@ export default function HomePage() {
                   <CardTitle>AI-Assisted Expression</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-[#252E34] leading-relaxed">
                     Integrated intelligent assistant to brainstorm perspectives, refine writing clarity, and summarize long-running community threads.
                   </p>
                 </CardContent>
@@ -178,7 +178,7 @@ export default function HomePage() {
                   <CardTitle>Audited Integrity</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-[#252E34] leading-relaxed">
                     Robust role-based moderation, login activity tracking, and clear administrative oversight to ensure community safety and transparent standards.
                   </p>
                 </CardContent>
@@ -188,47 +188,47 @@ export default function HomePage() {
         </section>
 
         {/* How Looply Works Section */}
-        <section id="how-it-works" className="py-20 bg-slate-50">
+        <section id="how-it-works" className="py-20 bg-[#F6F8F7]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#087F8A]">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#076C76]">
                 Simple Workflow
               </h2>
-              <p className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
+              <p className="text-3xl font-extrabold text-[#172126] tracking-tight sm:text-4xl">
                 How Looply Works
               </p>
-              <p className="text-slate-600 text-sm leading-relaxed">
+              <p className="text-[#252E34] text-sm leading-relaxed">
                 Three effortless steps to begin connecting and sharing your perspective.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+              <div className="bg-white p-6 rounded-2xl border border-[#E3E8E8] shadow-xs space-y-3">
                 <div className="w-8 h-8 rounded-full bg-[#16B8C8] text-[#172126] font-bold text-sm flex items-center justify-center">
                   1
                 </div>
-                <h3 className="text-base font-semibold text-slate-900">Create Your Profile</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <h3 className="text-base font-semibold text-[#172126]">Create Your Profile</h3>
+                <p className="text-xs text-[#58666D] leading-relaxed">
                   Sign up with email verification, configure your avatar, customize your bio, and tailor your interest preferences.
                 </p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+              <div className="bg-white p-6 rounded-2xl border border-[#E3E8E8] shadow-xs space-y-3">
                 <div className="w-8 h-8 rounded-full bg-[#16B8C8] text-[#172126] font-bold text-sm flex items-center justify-center">
                   2
                 </div>
-                <h3 className="text-base font-semibold text-slate-900">Publish &amp; Discover</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <h3 className="text-base font-semibold text-[#172126]">Publish &amp; Discover</h3>
+                <p className="text-xs text-[#58666D] leading-relaxed">
                   Compose rich thoughts, format insights, engage in conversation threads, and discover creators across specialized topics.
                 </p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+              <div className="bg-white p-6 rounded-2xl border border-[#E3E8E8] shadow-xs space-y-3">
                 <div className="w-8 h-8 rounded-full bg-[#16B8C8] text-[#172126] font-bold text-sm flex items-center justify-center">
                   3
                 </div>
-                <h3 className="text-base font-semibold text-slate-900">Amplify with AI</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <h3 className="text-base font-semibold text-[#172126]">Amplify with AI</h3>
+                <p className="text-xs text-[#58666D] leading-relaxed">
                   Leverage built-in AI tools to refine drafts, brainstorm new topics, and quickly digest active discussions.
                 </p>
               </div>
@@ -237,7 +237,7 @@ export default function HomePage() {
         </section>
 
         {/* Community Purpose & Principles Section */}
-        <section id="community" className="py-20 bg-white border-b border-slate-200/80">
+        <section id="community" className="py-20 bg-white border-b border-[#E3E8E8]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
               <h2 className="text-xs font-bold uppercase tracking-wider text-[#087F8A]">
@@ -246,7 +246,7 @@ export default function HomePage() {
               <p className="text-3xl font-extrabold text-[#172126] tracking-tight sm:text-4xl">
                 The Looply Community
               </p>
-              <p className="text-[#68757C] text-sm leading-relaxed">
+              <p className="text-[#58666D] text-sm leading-relaxed">
                 Why we created Looply and how creators, readers, and thinkers interact with purpose.
               </p>
             </div>
@@ -320,7 +320,7 @@ export default function HomePage() {
                 href={ROUTES.PUBLIC.REGISTER}
                 variant="primary"
                 size="lg"
-                className="w-full sm:w-auto bg-white text-[#087F8A] hover:bg-slate-100"
+                className="w-full sm:w-auto bg-white text-[#087F8A] hover:bg-[#F6F8F7]"
               >
                 Sign Up Now
               </Button>

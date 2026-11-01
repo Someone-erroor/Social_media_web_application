@@ -11,21 +11,21 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-16 text-center">
+    <div className="min-h-screen bg-[#F6F8F7] flex flex-col justify-center items-center px-4 py-16 text-center">
       <div className="mb-6">
         <Logo size="large" showTagline={true} href={ROUTES.PUBLIC.HOME} />
       </div>
 
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+      <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-[#E3E8E8] shadow-sm space-y-4">
         <div className="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-[#087F8A] mx-auto shadow-xs">
           <Icon name="alertCircle" className="w-7 h-7" />
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+        <h1 className="text-2xl font-bold text-[#172126] tracking-tight">
           Page Not Found
         </h1>
 
-        <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#58666D] leading-relaxed">
           The link you followed may be broken, or the page may have been removed. Check the URL or return to the feed.
         </p>
 

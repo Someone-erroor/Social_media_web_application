@@ -38,7 +38,7 @@ function getNotificationIcon(type) {
     case 'login_alert':
       return <Icon name="lock" className="w-4 h-4 text-amber-500" />;
     default:
-      return <Icon name="notifications" className="w-4 h-4 text-slate-500" />;
+      return <Icon name="notifications" className="w-4 h-4 text-[#58666D]" />;
   }
 }
 
@@ -143,7 +143,7 @@ export default function NotificationsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#E3E8E8] pb-2 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => {
@@ -153,7 +153,7 @@ export default function NotificationsPage() {
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'all'
               ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
           }`}
         >
           All ({notifications.length})
@@ -167,7 +167,7 @@ export default function NotificationsPage() {
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'unread'
               ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
           }`}
         >
           Unread ({unreadCount})
@@ -181,7 +181,7 @@ export default function NotificationsPage() {
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'likes'
               ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
           }`}
         >
           Likes
@@ -195,7 +195,7 @@ export default function NotificationsPage() {
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'comments'
               ? 'bg-[#16B8C8] text-[#172126] font-semibold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              : 'text-[#252E34] hover:text-[#172126] hover:bg-[#F6F8F7]'
           }`}
         >
           Comments
@@ -206,11 +206,11 @@ export default function NotificationsPage() {
       {loading && notifications.length === 0 ? (
         <div className="space-y-3 animate-pulse">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-4 rounded-xl border border-slate-200 bg-white flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-200 shrink-0" />
+            <div key={i} className="p-4 rounded-xl border border-[#E3E8E8] bg-white flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#E3E8E8] shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 w-3/4 bg-slate-200 rounded" />
-                <div className="h-2 w-1/4 bg-slate-100 rounded" />
+                <div className="h-3 w-3/4 bg-[#E3E8E8] rounded" />
+                <div className="h-2 w-1/4 bg-[#F6F8F7] rounded" />
               </div>
             </div>
           ))}
@@ -235,10 +235,10 @@ export default function NotificationsPage() {
             return (
               <Card
                 key={notif._id}
-                className={`border-slate-200 transition-colors ${
+                className={`border-[#E3E8E8] transition-colors ${
                   isUnread
                     ? 'bg-cyan-50/30 border-cyan-200/80 shadow-xs'
-                    : 'bg-white hover:bg-slate-50/50'
+                    : 'bg-white hover:bg-[#F6F8F7]/50'
                 }`}
               >
                 <div className="p-4 flex items-start justify-between gap-3 text-xs">
@@ -255,10 +255,10 @@ export default function NotificationsPage() {
                     </div>
 
                     <div className="min-w-0 space-y-0.5">
-                      <p className="text-slate-800 leading-snug">
+                      <p className="text-[#252E34] leading-snug">
                         {notif.message}
                       </p>
-                      <span className="text-[11px] text-slate-600 block font-mono">
+                      <span className="text-[11px] text-[#58666D] block font-mono">
                         {formatTimestamp(notif.createdAt)}
                       </span>
                     </div>
@@ -281,7 +281,7 @@ export default function NotificationsPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="pt-3 flex items-center justify-between text-xs text-slate-500">
+            <div className="pt-3 flex items-center justify-between text-xs text-[#58666D]">
               <span>
                 Page {page} of {totalPages}
               </span>

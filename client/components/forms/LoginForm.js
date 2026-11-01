@@ -69,7 +69,7 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="shadow-md border-slate-200">
+    <Card className="shadow-md border-[#E3E8E8]">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-xl font-bold">Welcome back</CardTitle>
         <CardDescription>
@@ -146,7 +146,7 @@ export default function LoginForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="p-1 min-w-[24px] min-h-[24px] text-slate-500 hover:text-slate-700 focus:outline-none flex items-center justify-center"
+                  className="p-1 min-w-[24px] min-h-[24px] text-[#58666D] hover:text-[#172126] focus:outline-none flex items-center justify-center"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default function LoginForm() {
           </FormField>
 
           <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-slate-600">
+            <div className="flex items-center gap-2 text-[#58666D]">
               <input
                 id="login-remember-me"
                 type="checkbox"
@@ -164,7 +164,7 @@ export default function LoginForm() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 disabled={loading}
                 aria-label="Remember me on this device"
-                className="w-4 h-4 rounded border-slate-300 text-[#087F8A] focus:ring-[#16B8C8] cursor-pointer"
+                className="w-4 h-4 rounded border-[#E3E8E8] text-[#087F8A] focus:ring-[#16B8C8] cursor-pointer"
               />
               <label htmlFor="login-remember-me" className="cursor-pointer select-none">
                 Remember me
@@ -173,7 +173,7 @@ export default function LoginForm() {
 
             <Link
               href={ROUTES.PUBLIC.FORGOT_PASSWORD}
-              className="font-medium text-[#087F8A] hover:text-[#087F8A] hover:underline"
+              className="font-medium text-[#076C76] hover:text-[#06656E] hover:underline"
             >
               Forgot password?
             </Link>
@@ -215,16 +215,16 @@ export default function LoginForm() {
             )}
           </Button>
 
-          <p className="text-[11px] text-center text-slate-600">
+          <p className="text-[11px] text-center text-[#58666D]">
             Protected by end-to-end secure session authentication
           </p>
         </form>
 
-        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
+        <div className="pt-4 border-t border-[#E3E8E8] text-center text-xs text-[#58666D]">
           Don&apos;t have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.REGISTER}
-            className="font-semibold text-[#087F8A] hover:text-[#087F8A] hover:underline"
+            className="font-semibold text-[#076C76] hover:text-[#06656E] hover:underline"
           >
             Create an account
           </Link>
