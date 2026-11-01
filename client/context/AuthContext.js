@@ -73,10 +73,15 @@ export function AuthProvider({ children }) {
         // Standard user attempted to log in through admin portal:
         // Clear cookie session so they aren't trapped as standard user
         await authService.logout().catch(() => {});
+        try { localStorage.removeItem('looply_token'); } catch {}
         setUser(null);
         const adminError = new Error('This account is a standard member account. Please sign in with an Administrator account or use the "Create Admin Account" option.');
         adminError.status = 403;
         throw adminError;
+      }
+
+      if (data?.token) {
+        try { localStorage.setItem('looply_token', data.token); } catch {}
       }
 
       setUser(data.user);
@@ -114,6 +119,9 @@ export function AuthProvider({ children }) {
       confirmPassword
     });
     if (data?.success && data?.user) {
+      if (data?.token) {
+        try { localStorage.setItem('looply_token', data.token); } catch {}
+      }
       setUser(data.user);
       router.push(ROUTES.ADMIN.DASHBOARD);
     }
@@ -133,6 +141,7 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.warn('Logout notice:', err.message);
     } finally {
+      try { localStorage.removeItem('looply_token'); } catch {}
       setUser(null);
       router.push(ROUTES.PUBLIC.LOGIN);
     }

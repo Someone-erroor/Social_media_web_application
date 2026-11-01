@@ -88,6 +88,7 @@ export const registerAdmin = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: 'Administrator account created successfully. Welcome to the Admin Console.',
+      token,
       user
     });
   } catch (error) {
@@ -180,6 +181,7 @@ export const login = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: 'Signed in successfully.',
+      token,
       user
     });
   } catch (error) {

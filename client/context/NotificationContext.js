@@ -94,8 +94,14 @@ export function NotificationProvider({ children }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const socketUrl = apiUrl.replace(/\/api\/?$/, '');
 
+    let authToken = null;
+    if (typeof window !== 'undefined') {
+      try { authToken = localStorage.getItem('looply_token'); } catch {}
+    }
+
     const socket = io(socketUrl, {
       withCredentials: true,
+      auth: authToken ? { token: authToken } : undefined,
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,

@@ -18,6 +18,17 @@ export async function apiClient(endpoint, options = {}) {
     ...(options.body ? { 'Content-Type': 'application/json' } : {})
   };
 
+  if (typeof window !== 'undefined') {
+    try {
+      const storedToken = localStorage.getItem('looply_token');
+      if (storedToken && !options.headers?.Authorization && !options.headers?.authorization) {
+        defaultHeaders['Authorization'] = `Bearer ${storedToken}`;
+      }
+    } catch {
+      // In restricted browser environments, proceed with cookie credentials
+    }
+  }
+
   const config = {
     ...options,
     credentials: 'include', // Guarantees HTTP-only auth cookies are transmitted cross-origin and same-origin

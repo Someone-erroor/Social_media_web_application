@@ -12,19 +12,18 @@ const allowedOrigins = env.isProduction
 
 export const corsOptions = {
   origin: (origin, callback) => {
-    // Requests without an Origin header (e.g. curl, test runners, mobile apps)
-    // are allowed only in development and test environments.
-    // In production, they are strictly rejected with HTTP 403 Forbidden.
+    // Requests without an Origin header (e.g. cloud health checks, uptime monitors, curl, SSR)
+    // are allowed so services like Render/Railway/AWS health probes succeed.
     if (!origin) {
-      if (env.isDevelopment || env.isTest) {
-        return callback(null, true);
-      }
-      const error = new Error('CORS policy violation: Requests without an Origin header are not allowed in production.');
-      error.status = 403;
-      return callback(error, false);
+      return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin) || (!env.isProduction && (origin.includes('localhost') || origin.includes('127.0.0.1')))) {
+    // Allow configured origins, local development, and Vercel cloud deployments
+    if (
+      allowedOrigins.includes(origin) ||
+      (!env.isProduction && (origin.includes('localhost') || origin.includes('127.0.0.1'))) ||
+      origin.endsWith('.vercel.app')
+    ) {
       return callback(null, true);
     }
 
