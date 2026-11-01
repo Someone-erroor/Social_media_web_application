@@ -7,7 +7,7 @@ const uri = 'mongodb+srv://ravikishan76768_db_user:1akCgBZbypjb56bN@cluster0.vty
 async function run() {
   await mongoose.connect(uri);
   const res = await mongoose.connection.collection('users').updateMany(
-    { email: { $in: ['user@gmail.com', 'randomsuser@gmail.com', 'randomuser@gmail.com'] } },
+    { email: { $in: ['rkv2036@gmail.com', 'user@gmail.com', 'ravikishan76768+looply@gmail.com', 'ravikishan76768+live@gmail.com'] } },
     { $set: { isEmailVerified: true } }
   );
   console.log('Successfully verified users count:', res.modifiedCount);
@@ -15,4 +15,3 @@ async function run() {
 }
 
 run().catch(console.error);
-
