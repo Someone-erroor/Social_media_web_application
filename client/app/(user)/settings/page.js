@@ -44,37 +44,38 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span className="text-slate-400 font-medium">Display Name</span>
-              <p className="text-sm font-semibold text-slate-800">{user?.fullName || 'User'}</p>
+            <div className="min-w-0 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-600 font-medium">Display Name</span>
+              <p className="text-sm font-semibold text-slate-800 truncate">{user?.fullName || 'User'}</p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span className="text-slate-400 font-medium">Email Address</span>
-              <p className="text-sm font-semibold text-slate-800">{user?.email || '—'}</p>
+            <div className="min-w-0 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-600 font-medium">Email Address</span>
+              <p className="text-sm font-semibold text-slate-800 truncate">{user?.email || '—'}</p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span className="text-slate-400 font-medium">Email Verification</span>
-              <div className="flex items-center gap-2 pt-0.5">
+            <div className="min-w-0 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-600 font-medium">Email Verification</span>
+              <div className="flex flex-wrap items-center gap-2 pt-0.5 min-w-0">
                 {user?.isEmailVerified ? (
-                  <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold text-xs">
-                    <Icon name="check" className="w-3.5 h-3.5" /> Verified
+                  <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold text-xs">
+                    <Icon name="check" className="w-3.5 h-3.5 shrink-0" /> Verified
                   </span>
                 ) : (
                   <Link
                     href={ROUTES.PUBLIC.VERIFY_EMAIL}
-                    className="inline-flex items-center gap-1 text-amber-600 font-semibold text-xs hover:underline"
+                    className="inline-flex flex-wrap items-center gap-1 text-amber-700 font-semibold text-xs hover:underline"
                   >
-                    <Icon name="alertCircle" className="w-3.5 h-3.5" /> Unverified (Click to verify)
+                    <Icon name="alertCircle" className="w-3.5 h-3.5 shrink-0" />
+                    <span>Unverified (Verify now)</span>
                   </Link>
                 )}
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span className="text-slate-400 font-medium">Member Since</span>
-              <p className="text-sm font-semibold text-slate-800">{memberSince}</p>
+            <div className="min-w-0 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-slate-600 font-medium">Member Since</span>
+              <p className="text-sm font-semibold text-slate-800 truncate">{memberSince}</p>
             </div>
           </div>
 
@@ -102,7 +103,7 @@ export default function SettingsPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
             <div>
               <p className="text-xs font-semibold text-slate-800">Password Recovery</p>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-600">
                 Send instructions to reset your password via your verified email address.
               </p>
             </div>
@@ -119,7 +120,7 @@ export default function SettingsPage() {
           <div className="pt-2 flex items-center justify-between border-t border-slate-100">
             <div>
               <p className="text-xs font-semibold text-red-600">Active Session</p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-600">
                 Sign out of Looply on this browser.
               </p>
             </div>

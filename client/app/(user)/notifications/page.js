@@ -258,7 +258,7 @@ export default function NotificationsPage() {
                       <p className="text-slate-800 leading-snug">
                         {notif.message}
                       </p>
-                      <span className="text-[11px] text-slate-400 block font-mono">
+                      <span className="text-[11px] text-slate-600 block font-mono">
                         {formatTimestamp(notif.createdAt)}
                       </span>
                     </div>

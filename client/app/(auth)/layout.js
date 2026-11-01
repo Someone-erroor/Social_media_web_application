@@ -17,12 +17,12 @@ export default function AuthLayout({ children }) {
       </div>
 
       {/* Main Form Container */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <main className="sm:mx-auto sm:w-full sm:max-w-md">
         {children}
-      </div>
+      </main>
 
       {/* Auth Shell Footer */}
-      <div className="mt-8 text-center text-xs text-slate-400">
+      <div className="mt-8 text-center text-xs text-slate-600">
         <p>Looply &bull; Connect. Share. Express.</p>
         <p className="mt-1">
           <Link href={ROUTES.PUBLIC.HOME} className="text-indigo-600 hover:underline">

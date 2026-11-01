@@ -73,7 +73,7 @@ export default function HomePage() {
                 </Button>
               </div>
 
-              <div className="pt-2 text-xs text-slate-400 flex items-center justify-center gap-4">
+              <div className="pt-2 text-xs text-slate-600 flex items-center justify-center gap-4">
                 <span>&bull; No predatory algorithms</span>
                 <span>&bull; Full privacy controls</span>
                 <span>&bull; AI-assisted workflows</span>
@@ -91,9 +91,9 @@ export default function HomePage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900 text-sm">Sarah Jenkins</span>
-                          <span className="text-xs text-slate-400">@sarahj</span>
+                          <span className="text-xs text-slate-600">@sarahj</span>
                         </div>
-                        <span className="text-xs text-slate-400">Software Architect &bull; 2h ago</span>
+                        <span className="text-xs text-slate-600">Software Architect &bull; 2h ago</span>
                       </div>
                     </div>
                     <Badge variant="primary" size="sm">Design Philosophy</Badge>
@@ -119,7 +119,7 @@ export default function HomePage() {
                         <span>Share</span>
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400">Community Highlight</span>
+                    <span className="text-[11px] font-mono text-slate-600">Community Highlight</span>
                   </div>
                 </div>
               </div>

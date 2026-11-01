@@ -221,7 +221,7 @@ export default function DiscussionSummaryPanel({
           )}
 
           {/* Footer Transparency Badge */}
-          <div className="pt-1 flex items-center justify-between text-[10px] text-slate-400">
+          <div className="pt-1 flex items-center justify-between text-[10px] text-slate-600">
             <span>AI-generated discussion synthesis. Never published automatically.</span>
             {metadata?.model && (
               <span className="font-mono text-[9px] uppercase tracking-tight text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">

@@ -131,13 +131,15 @@ export const handleSummarizeDiscussion = async (req, res, next) => {
       });
     }
 
-    // Bounded query for discussion comments (up to 50 comments)
+    // Bounded query for discussion comments (up to 30 comments)
     const comments = await Comment.find({ post: sanitized.postId })
       .sort({ createdAt: 1 })
-      .limit(50)
+      .limit(30)
       .populate('author', 'fullName');
 
     const result = await summarizeDiscussion({ post, comments });
+
+    const commentsAnalyzedCount = Math.min(comments.length, 30);
 
     return res.status(200).json({
       success: true,
@@ -148,7 +150,7 @@ export const handleSummarizeDiscussion = async (req, res, next) => {
       summary: result.summary,
       metadata: {
         postId: sanitized.postId,
-        commentsAnalyzed: comments.length,
+        commentsAnalyzed: result.commentsAnalyzed !== undefined ? result.commentsAnalyzed : commentsAnalyzedCount,
         provider: result.provider,
         model: result.model
       }

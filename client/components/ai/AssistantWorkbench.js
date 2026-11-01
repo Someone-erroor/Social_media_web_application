@@ -281,7 +281,7 @@ export default function AssistantWorkbench() {
               </div>
 
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-600">
                   Powered by Google Gemini 2.5 Flash
                 </span>
                 <Button
@@ -312,7 +312,7 @@ export default function AssistantWorkbench() {
                   className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-purple-500 transition-colors"
                 />
                 <div className="mt-1 flex justify-end">
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-slate-600">
                     {contentToImprove.length} / 1000
                   </span>
                 </div>
@@ -357,7 +357,7 @@ export default function AssistantWorkbench() {
               </div>
 
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-600">
                   Powered by Google Gemini 2.5 Flash
                 </span>
                 <Button
@@ -447,7 +447,7 @@ export default function AssistantWorkbench() {
                 <span className="text-xs font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
                   {s.title}
                 </span>
-                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] font-medium text-slate-600 uppercase tracking-wider">
                   {s.tone}
                 </span>
               </div>

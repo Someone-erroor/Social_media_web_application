@@ -174,7 +174,7 @@ export default function UserProfilePage() {
                     {profile.fullName}
                   </h1>
                   {memberSince && (
-                    <p className="text-xs text-slate-400">Member since {memberSince}</p>
+                    <p className="text-xs text-slate-600">Member since {memberSince}</p>
                   )}
                 </div>
 
@@ -183,7 +183,7 @@ export default function UserProfilePage() {
                     {profile.profile.bio}
                   </p>
                 ) : (
-                  <p className="text-xs italic text-slate-400">
+                  <p className="text-xs italic text-slate-600">
                     This member has not written a bio yet.
                   </p>
                 )}

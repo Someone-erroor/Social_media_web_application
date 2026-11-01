@@ -203,7 +203,7 @@ export default function AdminNotificationsPage() {
           <div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-slate-600">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
                   <tr>
                     <th scope="col" className="px-5 py-3.5">User</th>
                     <th scope="col" className="px-5 py-3.5">Email</th>
@@ -236,7 +236,7 @@ export default function AdminNotificationsPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-slate-500">
+                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-slate-600">
                           {actor.email || '—'}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -247,7 +247,7 @@ export default function AdminNotificationsPage() {
                             {alert.type === 'login_alert' ? 'Login Success' : alert.type}
                           </Badge>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap text-slate-400">
+                        <td className="px-5 py-3.5 whitespace-nowrap text-slate-600">
                           {formatTimestamp(alert.createdAt)}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -260,7 +260,7 @@ export default function AdminNotificationsPage() {
                               Mark read
                             </button>
                           ) : (
-                            <span className="text-slate-400 italic">Read</span>
+                            <span className="text-slate-600 italic">Read</span>
                           )}
                         </td>
                       </tr>
@@ -271,7 +271,7 @@ export default function AdminNotificationsPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
                 <span>
                   Page {page} of {totalPages}
                 </span>

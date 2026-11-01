@@ -42,12 +42,12 @@ export default function UserShell({ children, showSidePanel = true }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col antialiased">
+    <div className="min-h-screen bg-slate-50 flex flex-col antialiased overflow-x-hidden">
       {/* Desktop Left Sidebar Navigation */}
       <UserSidebar />
 
       {/* Main Experience Column (Offset by sidebar width on desktop) */}
-      <div className="flex-1 md:pl-64 flex flex-col min-w-0">
+      <div className="flex-1 md:pl-64 flex flex-col min-w-0 overflow-x-hidden">
         <UserHeader />
 
         {/* Content Area */}
@@ -92,7 +92,7 @@ export default function UserShell({ children, showSidePanel = true }) {
                         <span className="text-sm font-medium text-slate-700 group-hover:text-indigo-600 transition-colors">
                           {item.topic}
                         </span>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-[11px] text-slate-600 font-medium">
                           {item.posts}
                         </span>
                       </Link>
@@ -123,21 +123,21 @@ export default function UserShell({ children, showSidePanel = true }) {
                 </Card>
 
                 {/* Community Guidelines Card */}
-                <div className="px-3 text-xs text-slate-400 space-y-2">
+                <div className="px-3 text-xs text-slate-600 space-y-2">
                   <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    <Link href={ROUTES.PUBLIC.HOME} className="hover:underline">
+                    <Link href={ROUTES.PUBLIC.HOME} className="hover:underline text-slate-600">
                       About Looply
                     </Link>
                     <span>&bull;</span>
-                    <a href="#privacy" className="hover:underline">
+                    <a href="#privacy" className="hover:underline text-slate-600">
                       Privacy
                     </a>
                     <span>&bull;</span>
-                    <a href="#terms" className="hover:underline">
+                    <a href="#terms" className="hover:underline text-slate-600">
                       Terms
                     </a>
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-600">
                     &copy; {new Date().getFullYear()} Looply. Connect. Share. Express.
                   </p>
                 </div>

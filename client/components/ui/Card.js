@@ -38,7 +38,7 @@ export function CardTitle({ className = '', children, ...props }) {
 
 export function CardDescription({ className = '', children, ...props }) {
   return (
-    <p className={`text-xs text-slate-500 leading-normal ${className}`} {...props}>
+    <p className={`text-xs text-slate-600 leading-normal ${className}`} {...props}>
       {children}
     </p>
   );

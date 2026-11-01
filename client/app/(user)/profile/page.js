@@ -154,14 +154,14 @@ export default function ProfilePage() {
                   {profile?.role === 'admin' ? 'Admin' : 'Member'}
                 </Badge>
               </div>
-              <p className="text-xs text-slate-400">{profile?.email}</p>
+              <p className="text-xs text-slate-600">{profile?.email}</p>
             </div>
 
             <p className="text-sm text-slate-600 max-w-xl">
               {profile?.profile?.bio ? (
                 profile.profile.bio
               ) : (
-                <span className="italic text-slate-400">
+                <span className="italic text-slate-600">
                   No bio added yet.{' '}
                   <Link href={ROUTES.USER.PROFILE_EDIT} className="text-indigo-600 underline">
                     Add a bio
@@ -178,9 +178,9 @@ export default function ProfilePage() {
               <span className="flex items-center gap-1.5">
                 <Icon name="mail" className="w-3.5 h-3.5 text-slate-400" />
                 {profile?.isEmailVerified ? (
-                  <span className="text-emerald-600 font-medium">Email Verified</span>
+                  <span className="text-emerald-700 font-medium">Email Verified</span>
                 ) : (
-                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-amber-600 hover:underline">
+                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-amber-700 hover:underline">
                     Unverified (Verify now)
                   </Link>
                 )}

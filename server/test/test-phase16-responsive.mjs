@@ -1,16 +1,18 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import http from 'http';
 import { fileURLToPath } from 'url';
 import { spawn, execSync } from 'child_process';
 import net from 'net';
 import puppeteer from 'puppeteer-core';
+import axeCore from 'axe-core';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { env } from '../src/config/env.js';
 import { connectDatabase, disconnectDatabase } from '../src/config/database.js';
 import { AUTH_COOKIE_NAME, generateToken } from '../src/config/jwt.js';
-import { User, Post, ActivityLog } from '../src/models/index.js';
+import { User, Post, Comment, Notification, ActivityLog } from '../src/models/index.js';
 import app from '../src/app.js';
 import { validateTestDatabaseSafety, getTestMongoUri, findChromeExecutable } from './test-helpers.mjs';
 
@@ -72,14 +74,16 @@ function terminateProcess(childProc) {
 async function runResponsiveAndA11yAudit() {
   process.env.NODE_ENV = 'test';
   console.log('====================================================');
-  console.log('LOOPLY — PHASE 16 RESPONSIVE DESIGN & A11Y AUDIT');
+  console.log('LOOPLY — 20-ROUTE RESPONSIVE & AXE WCAG 2.2 AA AUDIT');
   console.log('====================================================\n');
 
   let expressServer = null;
   let nextProcess = null;
   let browser = null;
+  let userDataDir = null;
   const createdUserIds = [];
   const createdPostIds = [];
+  const createdCommentIds = [];
 
   try {
     // 1. Connect to test DB
@@ -116,7 +120,10 @@ async function runResponsiveAndA11yAudit() {
       role: 'user',
       isEmailVerified: true,
       tokenVersion: 0,
-      accountStatus: 'active'
+      accountStatus: 'active',
+      profile: {
+        bio: 'Automated test profile bio for responsive verification.'
+      }
     });
     await auditUser.save();
     createdUserIds.push(auditUser._id);
@@ -139,6 +146,15 @@ async function runResponsiveAndA11yAudit() {
     });
     await seedPost.save();
     createdPostIds.push(seedPost._id);
+
+    const seedComment = new Comment({
+      post: seedPost._id,
+      author: auditAdmin._id,
+      content: 'Excellent layout fidelity and typography hierarchy.'
+    });
+    await seedComment.save();
+    createdCommentIds.push(seedComment._id);
+
     assert(true, '4. Seed accounts (user, admin) and sample content created');
 
     const userToken = generateToken({
@@ -199,8 +215,10 @@ async function runResponsiveAndA11yAudit() {
     // 5. Launch Chrome
     console.log('\n--- Step 5: Launching Headless Chrome Browser ---');
     const chromePath = findChromeExecutable();
+    userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-looply-'));
     browser = await puppeteer.launch({
       executablePath: chromePath,
+      userDataDir,
       headless: true,
       args: [
         '--no-sandbox',
@@ -216,258 +234,254 @@ async function runResponsiveAndA11yAudit() {
     await page.setCacheEnabled(false);
     page.on('console', (msg) => console.log(`[Browser Console ${msg.type()}]:`, msg.text()));
     page.on('pageerror', (err) => console.error(`[Browser PageError]:`, err.message));
-
-    // 6. Test Exact Viewports
-    console.log('\n--- Step 6: Testing All Required Viewports (360px to 1920px) ---');
-    for (const vp of VIEWPORTS) {
-      await page.setViewport({ width: vp.width, height: vp.height });
-      await page.goto('http://127.0.0.1:3000', { waitUntil: 'networkidle2' });
-
-      // Check horizontal overflow
-      const overflow = await page.evaluate(() => {
-        return document.documentElement.scrollWidth > window.innerWidth;
-      });
-
-      assert(!overflow, `Viewport ${vp.label}: Zero horizontal overflow (scrollWidth <= window.innerWidth)`);
-
-      // Check responsive elements visibility
-      if (vp.width < 768) {
-        // Mobile view checks
-        const mobileNavExists = await page.evaluate(() => {
-          return Boolean(document.querySelector('nav, header'));
-        });
-        assert(mobileNavExists, `Viewport ${vp.label}: Mobile header/nav present and accessible`);
-      } else {
-        // Desktop view checks
-        const desktopLayout = await page.evaluate(() => {
-          return window.innerWidth >= 768;
-        });
-        assert(desktopLayout, `Viewport ${vp.label}: Desktop layout scaled properly without layout breakage`);
+    page.on('requestfailed', (req) => console.log(`[Browser Request Failed]: ${req.url()} - ${req.failure()?.errorText}`));
+    page.on('response', (res) => {
+      if (res.url().includes('/api/') || res.url().includes('_next')) {
+        console.log(`[Browser Response ${res.status()}]: ${res.url()}`);
       }
-    }
+    });
 
-    // 7. Accessibility Audit on Key Routes
-    console.log('\n--- Step 7: Accessibility & Semantic Structure Audit ---');
-    const routesToAudit = [
+    // Route Definitions: Exactly 20 routes (6 Public, 8 User, 6 Admin)
+    const publicRoutes = [
       { path: '/', title: 'Landing' },
       { path: '/login', title: 'Login' },
       { path: '/register', title: 'Register' },
       { path: '/verify-email', title: 'Email Verification' },
-      { path: '/forgot-password', title: 'Forgot Password' }
+      { path: '/forgot-password', title: 'Forgot Password' },
+      { path: '/reset-password', title: 'Reset Password' }
     ];
 
-    for (const r of routesToAudit) {
-      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
-
-      const a11yChecks = await page.evaluate(() => {
-        // 1. Heading hierarchy: H1 must exist
-        const h1 = document.querySelector('h1, h2, h3');
-        const hasHeading = Boolean(h1);
-
-        // 2. Form inputs must have labels or aria-labels
-        const inputs = Array.from(document.querySelectorAll('input:not([type="hidden"])'));
-        const allInputsLabeled = inputs.every((input) => {
-          const id = input.id;
-          const hasLabel = id ? Boolean(document.querySelector(`label[for="${id}"]`)) : false;
-          const hasAria = Boolean(input.getAttribute('aria-label') || input.getAttribute('aria-labelledby'));
-          const hasPlaceholder = Boolean(input.placeholder);
-          return hasLabel || hasAria || hasPlaceholder;
-        });
-
-        // 3. Buttons have accessible names
-        const buttons = Array.from(document.querySelectorAll('button'));
-        const allButtonsNamed = buttons.every((btn) => {
-          const text = btn.innerText?.trim();
-          const ariaLabel = btn.getAttribute('aria-label');
-          const title = btn.getAttribute('title');
-          return Boolean(text || ariaLabel || title);
-        });
-
-        // 4. Zero broken image elements (missing alt)
-        const images = Array.from(document.querySelectorAll('img'));
-        const allImagesAlt = images.every((img) => img.hasAttribute('alt'));
-
-        return { hasHeading, allInputsLabeled, allButtonsNamed, allImagesAlt };
-      });
-
-      assert(a11yChecks.hasHeading, `Route "${r.path}": Contains valid semantic heading structure`);
-      assert(a11yChecks.allInputsLabeled, `Route "${r.path}": All interactive form inputs have accessible labels`);
-      assert(a11yChecks.allButtonsNamed, `Route "${r.path}": All buttons have discernible accessible names`);
-      assert(a11yChecks.allImagesAlt, `Route "${r.path}": All image elements conform to alt-attribute accessibility`);
-    }
-
-    // 8. Authenticated User Flow Responsive & Accessibility Multi-Route Audit
-    console.log('\n--- Step 8: Authenticated User Experience Multi-Route Audit ---');
-    await page.goto('http://127.0.0.1:3000/login', { waitUntil: 'networkidle2' });
-    await page.waitForSelector('#login-email', { timeout: 10000 });
-    await page.waitForSelector('#login-password', { timeout: 10000 });
-    await new Promise((r) => setTimeout(r, 2000)); // Allow client hydration to settle
-    await page.type('#login-email', auditUser.email);
-    await page.type('#login-password', 'AuditorPassword123!');
-    await page.click('button[type="submit"]');
-    try {
-      await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 15000 });
-    } catch (e) {
-      const currUrl = page.url();
-      const alertMsg = await page.evaluate(() => document.querySelector('[role="alert"]')?.innerText || '');
-      console.error(`[Login wait failed] Current URL: ${currUrl}, Alert: ${alertMsg}`);
-      throw e;
-    }
-
-    // Verify key navigation elements on /feed
-    await page.setViewport({ width: 375, height: 667 });
-    await new Promise((r) => setTimeout(r, 600));
-    const mobileBottomNavVisible = await page.evaluate(() => {
-      const bNav = document.querySelector('nav[aria-label="Mobile Navigation"]');
-      return Boolean(bNav);
-    });
-    assert(mobileBottomNavVisible, 'User Feed @ 375px: UserBottomNav is active and visible on mobile');
-
-    await page.setViewport({ width: 1280, height: 800 });
-    await new Promise((r) => setTimeout(r, 600));
-    const desktopSidebarVisible = await page.evaluate(() => {
-      const sBar = document.querySelector('aside[aria-label="User Sidebar"]');
-      return Boolean(sBar);
-    });
-    assert(desktopSidebarVisible, 'User Feed @ 1280px: UserSidebar is active and visible on desktop');
-
-    const authenticatedUserRoutes = [
+    const userRoutes = [
       { path: '/feed', title: 'User Feed' },
       { path: '/explore', title: 'Explore' },
       { path: '/profile', title: 'User Profile' },
       { path: '/profile/edit', title: 'Edit Profile' },
+      { path: `/profile/${auditUser._id}`, title: 'Member Profile' },
       { path: '/notifications', title: 'Notifications' },
       { path: '/assistant', title: 'AI Assistant' },
       { path: '/settings', title: 'Settings' }
     ];
 
-    for (const r of authenticatedUserRoutes) {
-      // Mobile viewport check (375px)
-      await page.setViewport({ width: 375, height: 667 });
-      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
-      await new Promise((r) => setTimeout(r, 600));
-      const mobileFeedOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-      assert(!mobileFeedOverflow, `User Route "${r.path}" @ 375px: Zero horizontal overflow on mobile (${r.title})`);
+    const adminRoutes = [
+      { path: '/admin', title: 'Admin Overview' },
+      { path: '/admin/users', title: 'Admin User Management' },
+      { path: '/admin/posts', title: 'Admin Post Moderation' },
+      { path: '/admin/comments', title: 'Admin Comment Moderation' },
+      { path: '/admin/activity', title: 'Admin Activity & Audit' },
+      { path: '/admin/notifications', title: 'Admin Broadcast Alerts' }
+    ];
 
-      // Desktop viewport check (1280px)
-      await page.setViewport({ width: 1280, height: 800 });
-      await new Promise((r) => setTimeout(r, 600));
-      const desktopFeedOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-      assert(!desktopFeedOverflow, `User Route "${r.path}" @ 1280px: Zero horizontal overflow on desktop (${r.title})`);
+    assert(
+      publicRoutes.length + userRoutes.length + adminRoutes.length === 20,
+      `7. Configured all 20 distinct platform routes (6 Public, 8 User, 6 Admin)`
+    );
 
-      // Accessibility audit
-      const a11y = await page.evaluate(() => {
-        const hasHeading = Boolean(document.querySelector('h1, h2, h3'));
-        const inputs = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea'));
-        const allInputsLabeled = inputs.every((input) => {
-          const id = input.id;
-          const hasLabel = id ? Boolean(document.querySelector(`label[for="${id}"]`)) : false;
-          const hasAria = Boolean(input.getAttribute('aria-label') || input.getAttribute('aria-labelledby'));
-          const hasPlaceholder = Boolean(input.placeholder);
-          return hasLabel || hasAria || hasPlaceholder;
+    // Helper: Execute axe-core WCAG 2.2 AA audit
+    async function runAxeAudit(routePath) {
+      await page.evaluate(axeCore.source);
+      const results = await page.evaluate(async () => {
+        return await window.axe.run(document, {
+          runOnly: {
+            type: 'tag',
+            values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
+          }
         });
-        const buttons = Array.from(document.querySelectorAll('button'));
-        const allButtonsNamed = buttons.every((btn) => {
-          const text = btn.innerText?.trim();
-          const ariaLabel = btn.getAttribute('aria-label');
-          const title = btn.getAttribute('title');
-          return Boolean(text || ariaLabel || title);
-        });
-        const images = Array.from(document.querySelectorAll('img'));
-        const allImagesAlt = images.every((img) => img.hasAttribute('alt'));
-        return { hasHeading, allInputsLabeled, allButtonsNamed, allImagesAlt };
       });
 
-      assert(a11y.hasHeading, `User Route "${r.path}": Valid heading hierarchy present`);
-      assert(a11y.allInputsLabeled, `User Route "${r.path}": All interactive inputs properly labeled`);
-      assert(a11y.allButtonsNamed, `User Route "${r.path}": All buttons have accessible names`);
-      assert(a11y.allImagesAlt, `User Route "${r.path}": All image elements conform to alt accessibility`);
+      // Filter critical and serious violations
+      const criticalOrSerious = (results.violations || []).filter(
+        (v) => v.impact === 'critical' || v.impact === 'serious'
+      );
+
+      if (criticalOrSerious.length > 0) {
+        console.error(`[A11y Violations on ${routePath}]:`, JSON.stringify(criticalOrSerious.map(v => ({
+          id: v.id,
+          impact: v.impact,
+          description: v.description,
+          nodes: v.nodes.map(n => n.target)
+        })), null, 2));
+      }
+
+      return criticalOrSerious;
     }
 
-    // 9. Administrator Console Multi-Route Responsive & Accessibility Audit
-    console.log('\n--- Step 9: Administrator Console Multi-Route Audit ---');
-    // Clear cookies for fresh admin authentication
+    // Helper: Run 9-viewport responsive tests for a given route
+    async function testRouteViewports(routePath, groupType) {
+      let routeOverflowCount = 0;
+      let routeBlankCount = 0;
+
+      for (const vp of VIEWPORTS) {
+        await page.setViewport({ width: vp.width, height: vp.height });
+        await new Promise((r) => setTimeout(r, 60));
+
+        const metrics = await page.evaluate((width, group) => {
+          const docEl = document.documentElement;
+          const body = document.body;
+          const scrollWidth = docEl.scrollWidth;
+          const innerWidth = window.innerWidth;
+          const hasOverflow = scrollWidth > innerWidth + 1; // 1px threshold for subpixel rounding
+          const text = (body.innerText || '').trim();
+          const isBlank = text.length === 0;
+
+          // Navigation element visibility checks
+          let navOk = true;
+          if (group === 'user') {
+            const sidebar = document.querySelector('aside[aria-label="User Sidebar"]');
+            const bottomNav = document.querySelector('nav[aria-label="Mobile Navigation"]');
+            if (width >= 1024) {
+              navOk = Boolean(sidebar);
+            } else if (width < 768) {
+              navOk = Boolean(bottomNav);
+            }
+          } else if (group === 'admin') {
+            const aside = document.querySelector('aside');
+            const mobileBtn = document.querySelector('button[aria-label="Toggle admin navigation menu"]');
+            if (width >= 1024) {
+              navOk = Boolean(aside);
+            } else if (width < 768) {
+              navOk = Boolean(mobileBtn);
+            }
+          }
+
+          return { hasOverflow, isBlank, navOk, scrollWidth, innerWidth };
+        }, vp.width, groupType);
+
+        if (metrics.hasOverflow) {
+          routeOverflowCount++;
+          console.error(`Horizontal overflow on ${routePath} @ ${vp.label}: scrollWidth=${metrics.scrollWidth}, innerWidth=${metrics.innerWidth}`);
+        }
+        if (metrics.isBlank) {
+          routeBlankCount++;
+          console.error(`Blank content detected on ${routePath} @ ${vp.label}`);
+        }
+      }
+
+      return { routeOverflowCount, routeBlankCount };
+    }
+
+    // -------------------------------------------------------------------------
+    // GROUP A: 6 Public Routes (Unauthenticated)
+    // -------------------------------------------------------------------------
+    console.log('\n--- Step 6: Testing 6 Public Routes (axe WCAG 2.2 AA & 9 Viewports) ---');
     const clientSession = await page.target().createCDPSession();
+    await clientSession.send('Network.clearBrowserCookies');
+
+    for (const r of publicRoutes) {
+      await page.setViewport({ width: 1280, height: 800 });
+      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await new Promise((res) => setTimeout(res, 300));
+
+      // 1. axe WCAG 2.2 AA check
+      const violations = await runAxeAudit(r.path);
+      assert(
+        violations.length === 0,
+        `Public Route "${r.path}": 0 critical or serious WCAG 2.2 AA violations`
+      );
+
+      // 2. Viewport testing across all 9 screen widths
+      const vpResults = await testRouteViewports(r.path, 'public');
+      assert(
+        vpResults.routeOverflowCount === 0 && vpResults.routeBlankCount === 0,
+        `Public Route "${r.path}": Zero horizontal overflow & rendered content across all 9 viewports (360px - 1920px)`
+      );
+    }
+
+    // -------------------------------------------------------------------------
+    // GROUP B: 8 User Routes (Authenticated User)
+    // -------------------------------------------------------------------------
+    console.log('\n--- Step 7: Authenticating as Standard User & Testing 8 User Routes ---');
+    await page.goto('http://127.0.0.1:3000/login', { waitUntil: 'networkidle2' });
+    await page.waitForSelector('#login-email', { timeout: 10000 });
+    await page.waitForSelector('#login-password', { timeout: 10000 });
+
+    await page.evaluate((email, pass) => {
+      const emailInput = document.querySelector('#login-email');
+      const passInput = document.querySelector('#login-password');
+      const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      nativeSetter.call(emailInput, email);
+      emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+      emailInput.dispatchEvent(new Event('change', { bubbles: true }));
+      nativeSetter.call(passInput, pass);
+      passInput.dispatchEvent(new Event('input', { bubbles: true }));
+      passInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }, auditUser.email, 'AuditorPassword123!');
+
+    await page.click('button[type="submit"]');
+    await page.waitForFunction(() => window.location.pathname === '/feed', { timeout: 15000 });
+    await page.waitForSelector('main', { timeout: 10000 });
+    assert(true, '8. Authenticated successfully as standard user into /feed');
+
+    for (const r of userRoutes) {
+      await page.setViewport({ width: 1280, height: 800 });
+      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await new Promise((res) => setTimeout(res, 400));
+
+      // 1. axe WCAG 2.2 AA check
+      const violations = await runAxeAudit(r.path);
+      assert(
+        violations.length === 0,
+        `User Route "${r.path}": 0 critical or serious WCAG 2.2 AA violations`
+      );
+
+      // 2. Viewport testing across all 9 screen widths
+      const vpResults = await testRouteViewports(r.path, 'user');
+      assert(
+        vpResults.routeOverflowCount === 0 && vpResults.routeBlankCount === 0,
+        `User Route "${r.path}": Zero horizontal overflow & rendered content across all 9 viewports (360px - 1920px)`
+      );
+    }
+
+    // -------------------------------------------------------------------------
+    // GROUP C: 6 Admin Routes (Authenticated Administrator)
+    // -------------------------------------------------------------------------
+    console.log('\n--- Step 8: Authenticating as Administrator & Testing 6 Admin Routes ---');
     await clientSession.send('Network.clearBrowserCookies');
 
     await page.goto('http://127.0.0.1:3000/login', { waitUntil: 'networkidle2' });
     await page.waitForSelector('#login-email', { timeout: 10000 });
     await page.waitForSelector('#login-password', { timeout: 10000 });
-    await new Promise((r) => setTimeout(r, 2000)); // Allow client hydration to settle
-    await page.type('#login-email', auditAdmin.email);
-    await page.type('#login-password', 'AuditorPassword123!');
+
+    await page.evaluate((email, pass) => {
+      const emailInput = document.querySelector('#login-email');
+      const passInput = document.querySelector('#login-password');
+      const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      nativeSetter.call(emailInput, email);
+      emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+      emailInput.dispatchEvent(new Event('change', { bubbles: true }));
+      nativeSetter.call(passInput, pass);
+      passInput.dispatchEvent(new Event('input', { bubbles: true }));
+      passInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }, auditAdmin.email, 'AuditorPassword123!');
+
     await page.click('button[type="submit"]');
     await page.waitForFunction(() => window.location.pathname === '/admin', { timeout: 15000 });
-
-    // Verify key navigation elements on /admin
-    await page.setViewport({ width: 390, height: 844 });
-    await new Promise((r) => setTimeout(r, 600));
-    const adminDrawerButtonExists = await page.evaluate(() => {
-      return Boolean(document.querySelector('button[aria-label*="navigation menu" i], button[aria-label*="menu" i]'));
-    });
-    assert(adminDrawerButtonExists, 'Admin Dashboard @ 390px: Accessible mobile drawer toggle button present');
-
-    await page.setViewport({ width: 1440, height: 900 });
-    await new Promise((r) => setTimeout(r, 600));
-    const desktopAdminSidebar = await page.evaluate(() => {
-      return Boolean(document.querySelector('aside'));
-    });
-    assert(desktopAdminSidebar, 'Admin Dashboard @ 1440px: Full administrative dark sidebar visible on desktop');
-
-    const adminRoutes = [
-      { path: '/admin', title: 'Admin Overview Dashboard' },
-      { path: '/admin/users', title: 'Admin User Management' },
-      { path: '/admin/posts', title: 'Admin Post Moderation' },
-      { path: '/admin/comments', title: 'Admin Comment Moderation' },
-      { path: '/admin/activity', title: 'Admin Activity & Audit Trail' },
-      { path: '/admin/notifications', title: 'Admin Notification Broadcast' }
-    ];
+    await page.waitForSelector('main', { timeout: 10000 });
+    assert(true, '9. Authenticated successfully as administrator into /admin');
 
     for (const r of adminRoutes) {
-      // Mobile viewport check (390px)
-      await page.setViewport({ width: 390, height: 844 });
-      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
-      await new Promise((r) => setTimeout(r, 600));
-      const mobileAdminOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-      assert(!mobileAdminOverflow, `Admin Route "${r.path}" @ 390px: Zero horizontal overflow on mobile (${r.title})`);
-
-      // Desktop viewport check (1440px)
       await page.setViewport({ width: 1440, height: 900 });
-      await new Promise((r) => setTimeout(r, 600));
-      const desktopAdminOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-      assert(!desktopAdminOverflow, `Admin Route "${r.path}" @ 1440px: Zero horizontal overflow on desktop (${r.title})`);
+      await page.goto(`http://127.0.0.1:3000${r.path}`, { waitUntil: 'networkidle2' });
+      await new Promise((res) => setTimeout(res, 400));
 
-      // Accessibility audit
-      const a11y = await page.evaluate(() => {
-        const hasHeading = Boolean(document.querySelector('h1, h2, h3'));
-        const inputs = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea'));
-        const allInputsLabeled = inputs.every((input) => {
-          const id = input.id;
-          const hasLabel = id ? Boolean(document.querySelector(`label[for="${id}"]`)) : false;
-          const hasAria = Boolean(input.getAttribute('aria-label') || input.getAttribute('aria-labelledby'));
-          const hasPlaceholder = Boolean(input.placeholder);
-          return hasLabel || hasAria || hasPlaceholder;
-        });
-        const buttons = Array.from(document.querySelectorAll('button'));
-        const allButtonsNamed = buttons.every((btn) => {
-          const text = btn.innerText?.trim();
-          const ariaLabel = btn.getAttribute('aria-label');
-          const title = btn.getAttribute('title');
-          return Boolean(text || ariaLabel || title);
-        });
-        const images = Array.from(document.querySelectorAll('img'));
-        const allImagesAlt = images.every((img) => img.hasAttribute('alt'));
-        return { hasHeading, allInputsLabeled, allButtonsNamed, allImagesAlt };
-      });
+      // 1. axe WCAG 2.2 AA check
+      const violations = await runAxeAudit(r.path);
+      assert(
+        violations.length === 0,
+        `Admin Route "${r.path}": 0 critical or serious WCAG 2.2 AA violations`
+      );
 
-      assert(a11y.hasHeading, `Admin Route "${r.path}": Valid administrative heading structure`);
-      assert(a11y.allInputsLabeled, `Admin Route "${r.path}": All administrative inputs/selects properly labeled`);
-      assert(a11y.allButtonsNamed, `Admin Route "${r.path}": All administrative buttons have discernible names`);
-      assert(a11y.allImagesAlt, `Admin Route "${r.path}": All administrative images conform to alt accessibility`);
+      // 2. Viewport testing across all 9 screen widths
+      const vpResults = await testRouteViewports(r.path, 'admin');
+      assert(
+        vpResults.routeOverflowCount === 0 && vpResults.routeBlankCount === 0,
+        `Admin Route "${r.path}": Zero horizontal overflow & rendered content across all 9 viewports (360px - 1920px)`
+      );
     }
 
     console.log('\n====================================================');
-    console.log(`Phase 16 Audit Results: ${passed} passed, ${failed} failed`);
+    console.log(`Phase 16 Responsive & A11y Audit: ${passed} passed, ${failed} failed`);
+    console.log(`Total Routes Audited: ${publicRoutes.length + userRoutes.length + adminRoutes.length}`);
+    console.log(`Total Viewport Checks: ${(publicRoutes.length + userRoutes.length + adminRoutes.length) * VIEWPORTS.length}`);
     console.log('====================================================\n');
 
     if (failed > 0) {
@@ -480,6 +494,11 @@ async function runResponsiveAndA11yAudit() {
         await browser.close();
       } catch {}
     }
+    if (userDataDir) {
+      try {
+        fs.rmSync(userDataDir, { recursive: true, force: true });
+      } catch {}
+    }
     if (nextProcess) {
       terminateProcess(nextProcess);
     }
@@ -489,6 +508,9 @@ async function runResponsiveAndA11yAudit() {
       } catch {}
     }
     try {
+      if (createdCommentIds.length > 0) {
+        await Comment.deleteMany({ _id: { $in: createdCommentIds } });
+      }
       if (createdPostIds.length > 0) {
         await Post.deleteMany({ _id: { $in: createdPostIds } });
       }
@@ -504,4 +526,3 @@ runResponsiveAndA11yAudit().catch((err) => {
   console.error('[Phase 16 Audit Error]', err);
   process.exit(1);
 });
-

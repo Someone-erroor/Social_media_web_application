@@ -78,14 +78,18 @@ Development follows a strict **18-phase implementation lifecycle**. Each phase i
 - **Status:** Batch 3 (Phases 10, 11, 12, 13, and 14) completed, integrated, verified with 49 automated tests (and 263 total passing backend assertions across all 5 regression suites via `npm run test:all`), and **APPROVED**. Next development batch: Phases 15–18.
 
 ### Final Development Batch: Phases 15–18 (Implementation Completed & Fully Verified)
-- **AI Discussion Summarization (Phase 15 Completed):** Real-time AI summarization of conversation threads (`POST /api/ai/posts/:postId/summarize`). Summarizes up to 30 bounded comments into structured key takeaways, community viewpoints, open questions, and conclusion. Anti-prompt injection defenses, empty discussion guard (`hasComments: false`), and accessible UI on post cards via `DiscussionSummaryPanel.js`.
-- **Responsive Multi-Screen Design & WCAG 2.2 AA (Phase 16 Completed):** Comprehensive responsiveness verified across 9 discrete viewport widths (360px, 375px, 390px, 414px, 768px, 1024px, 1280px, 1440px, 1920px). Zero horizontal scrolling. Form accessibility with explicit `label[for]` and `id` bindings, button accessible naming, image alt compliance, and accessible modal dialogs with focus trapping.
+- **AI Discussion Summarization (Phase 15 Completed):** Real-time AI summarization of conversation threads (`POST /api/ai/posts/:postId/summarize`). Summarizes up to 30 bounded comments (with controller limit synchronized to service capacity) into structured key takeaways, community viewpoints, open questions, and conclusion. Anti-prompt injection defenses, empty discussion guard (`hasComments: false`), and accessible UI on post cards via `DiscussionSummaryPanel.js`. Verified against live Google Gemini (`gemini-2.5-flash`).
+- **Responsive Multi-Screen Design & WCAG 2.2 AA (Phase 16 Completed):** Comprehensive responsiveness verified across all 20 distinct platform routes at 9 discrete viewport widths (360px, 375px, 390px, 414px, 768px, 1024px, 1280px, 1440px, 1920px) — 180 total viewport checks with zero horizontal overflow. Automated `axe-core` accessibility audit across all 20 routes with authenticated sessions against WCAG 2.2 AA rules (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`) verified 0 critical or serious violations.
 - **Animations, Motion Polish & Accessibility (Phase 17 Completed):** Micro-interactions with GPU-accelerated CSS transitions, skeleton loaders for asynchronous feed loading, and full `prefers-reduced-motion: reduce` support disabling transitions for motion-sensitive users.
-- **Security Hardening & Complete Testing (Phase 18 Completed):** Defense-in-depth security configuration:
+- **Security Hardening, Complete Testing & Deployment Audit (Phase 18 Completed):** Defense-in-depth security configuration:
+  - Reverse-proxy client IP trust: `app.set('trust proxy', 1)` in `server/src/app.js`.
   - Helmet security headers (`nosniff`, `SAMEORIGIN`, `HSTS`, `XSS-Protection`).
   - Sliding-window in-memory rate limiting (`authRateLimiter`: 30 req/min, `aiRateLimiter`: 20 req/min).
   - Strict `tokenVersion` session revocation, `HttpOnly` cookie isolation, and role escalation sanitization.
-  - 100% automated test pass rate: **329 passed assertions across 7 test suites**.
+  - Production cookie settings: `SameSite: 'none'` and `Secure: true` in production for cross-origin decoupling; `SameSite: 'lax'` in development.
+  - Vulnerability audits: `npm audit` reports **0 vulnerabilities** on both server and client production trees.
+  - 100% automated test pass rate: **330 passed assertions across 7 test suites** (0 failures).
+  - Deployment status: Fully configured for Vercel (frontend) + Render/Railway (backend) + MongoDB Atlas; marked as **PENDING** without fabricated URLs.
 - **Status:** Final Development Batch (Phases 15–18) completed, integrated, verified, and awaiting external review.
 
 ---

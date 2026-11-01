@@ -97,7 +97,6 @@ export default function Logo({
         href={href}
         onClick={onClick}
         className="inline-flex focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-xl"
-        aria-label="Looply Home"
       >
         {content}
       </Link>

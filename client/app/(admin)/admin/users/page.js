@@ -127,6 +127,8 @@ export default function AdminUsersPage() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="w-full sm:max-w-md">
           <Input
+            id="admin-search-users"
+            aria-label="Search users by name or email"
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -206,7 +208,7 @@ export default function AdminUsersPage() {
       <Card className="border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">User</th>
                 <th scope="col" className="px-5 py-3.5">Email</th>
@@ -255,7 +257,7 @@ export default function AdminUsersPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-slate-500">
+                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-slate-600">
                         {targetUser.email}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap">
@@ -268,12 +270,12 @@ export default function AdminUsersPage() {
                           {isSuspended ? 'Suspended' : 'Active'}
                         </Badge>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-slate-400">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-slate-600">
                         {formatDate(targetUser.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
                         {isCurrentAdmin ? (
-                          <span className="text-[11px] text-slate-400 italic">Current Session</span>
+                          <span className="text-[11px] text-slate-600 italic">Current Session</span>
                         ) : (
                           <Button
                             type="button"

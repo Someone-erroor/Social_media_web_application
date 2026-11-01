@@ -128,6 +128,8 @@ export default function AdminPostsPage() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="w-full sm:max-w-md">
           <Input
+            id="admin-search-posts"
+            aria-label="Search posts by content keywords"
             placeholder="Search posts by content keywords..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -144,7 +146,7 @@ export default function AdminPostsPage() {
       <Card className="border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">Author</th>
                 <th scope="col" className="px-5 py-3.5">Content Preview</th>
@@ -190,7 +192,7 @@ export default function AdminPostsPage() {
                             <span className="font-semibold text-slate-900 block">
                               {author.fullName || 'Unknown'}
                             </span>
-                            <span className="text-[10px] text-slate-400 font-mono">
+                            <span className="text-[10px] text-slate-600 font-mono">
                               {author.email || '—'}
                             </span>
                           </div>
@@ -207,7 +209,7 @@ export default function AdminPostsPage() {
                       <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono">
                         {post.commentsCount ?? 0}
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-slate-400">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-slate-600">
                         {formatDate(post.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">

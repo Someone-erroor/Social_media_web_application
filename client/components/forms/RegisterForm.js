@@ -198,7 +198,7 @@ export default function RegisterForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="p-1 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  className="p-1 min-w-[24px] min-h-[24px] text-slate-500 hover:text-slate-700 focus:outline-none flex items-center justify-center"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -232,7 +232,7 @@ export default function RegisterForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  className="p-1 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  className="p-1 min-w-[24px] min-h-[24px] text-slate-500 hover:text-slate-700 focus:outline-none flex items-center justify-center"
                   aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showConfirmPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -300,7 +300,7 @@ export default function RegisterForm() {
             )}
           </Button>
 
-          <p className="text-[11px] text-center text-slate-400">
+          <p className="text-[11px] text-center text-slate-600">
             Protected by end-to-end secure registration validation
           </p>
         </form>

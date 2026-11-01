@@ -389,18 +389,23 @@ export const summarizeDiscussion = async ({ post, comments = [] }) => {
         conclusion: 'No discussion has taken place yet on this post. Be the first to share your perspective!'
       },
       provider: 'looply-internal',
-      model: 'rule-based'
+      model: 'rule-based',
+      commentsAnalyzed: 0
     };
   }
 
+  // Bound comments to exactly maximum 30 for summarization
+  const boundedComments = comments.slice(0, 30);
+
   // Deterministic mock allowed ONLY in test mode when explicitly enabled
   if (isAiMockMode()) {
-    const summary = generateMockDiscussionSummary({ post, comments });
+    const summary = generateMockDiscussionSummary({ post, comments: boundedComments });
     return {
       hasComments: true,
       summary,
       provider: 'mock-gemini',
-      model: 'mock-gemini-2.5-flash'
+      model: 'mock-gemini-2.5-flash',
+      commentsAnalyzed: boundedComments.length
     };
   }
 
@@ -532,7 +537,8 @@ Return ONLY the raw JSON object. Do not include markdown code block syntax (no \
         conclusion: String(parsedSummary.conclusion || 'Discussion summarized successfully.').trim()
       },
       provider: 'google-gemini',
-      model: modelToUse
+      model: modelToUse,
+      commentsAnalyzed: boundedComments.length
     };
   } catch (err) {
     if (err.status) throw err;

@@ -28,12 +28,11 @@ export default function Avatar({
   const initials = getInitials(name);
 
   return (
-    <div className="relative inline-flex shrink-0">
+    <div className="relative inline-flex shrink-0" aria-hidden="true">
       <div
         className={`flex items-center justify-center rounded-full bg-slate-200 text-slate-700 font-semibold select-none border border-white shadow-xs ${
           sizeMap[size] || sizeMap.md
         } ${className}`}
-        aria-label={name}
       >
         {initials ? initials : <Icon name="profile" className="w-1/2 h-1/2 text-slate-400" />}
       </div>

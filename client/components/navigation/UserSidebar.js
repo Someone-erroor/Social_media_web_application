@@ -77,7 +77,7 @@ export default function UserSidebar() {
             <Icon name="shield" className="w-4 h-4 text-slate-400" />
             Admin Console
           </span>
-          <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+          <span className="text-[10px] uppercase font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
             Portal
           </span>
         </Link>

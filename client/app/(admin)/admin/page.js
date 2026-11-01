@@ -165,7 +165,7 @@ export default function AdminDashboardPage() {
         <Card className="border-slate-200">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Total Users
               </span>
               <span className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
@@ -176,7 +176,7 @@ export default function AdminDashboardPage() {
               <div className="text-2xl font-bold text-slate-900 tracking-tight">
                 {loading ? '...' : stats?.users?.total ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-[11px] text-slate-600">
                 {loading
                   ? 'Loading metrics...'
                   : `${stats?.users?.active ?? 0} active &bull; ${stats?.users?.suspended ?? 0} suspended`}
@@ -189,7 +189,7 @@ export default function AdminDashboardPage() {
         <Card className="border-slate-200">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Published Posts
               </span>
               <span className="p-2 rounded-xl bg-purple-50 text-purple-600">
@@ -200,7 +200,7 @@ export default function AdminDashboardPage() {
               <div className="text-2xl font-bold text-slate-900 tracking-tight">
                 {loading ? '...' : stats?.content?.posts ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-[11px] text-slate-600">
                 {loading ? 'Loading metrics...' : 'Total community posts in MongoDB'}
               </p>
             </div>
@@ -211,7 +211,7 @@ export default function AdminDashboardPage() {
         <Card className="border-slate-200">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Total Comments
               </span>
               <span className="p-2 rounded-xl bg-amber-50 text-amber-600">
@@ -222,7 +222,7 @@ export default function AdminDashboardPage() {
               <div className="text-2xl font-bold text-slate-900 tracking-tight">
                 {loading ? '...' : stats?.content?.comments ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-[11px] text-slate-600">
                 {loading ? 'Loading metrics...' : 'Total discussion replies'}
               </p>
             </div>
@@ -233,7 +233,7 @@ export default function AdminDashboardPage() {
         <Card className="border-slate-200">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Total Likes
               </span>
               <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
               <div className="text-2xl font-bold text-slate-900 tracking-tight">
                 {loading ? '...' : stats?.content?.likes ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-[11px] text-slate-600">
                 {loading ? 'Loading metrics...' : 'Total post reactions recorded'}
               </p>
             </div>
@@ -271,19 +271,19 @@ export default function AdminDashboardPage() {
         <CardContent className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span className="text-slate-400 block text-[11px]">New Registrations Today</span>
+              <span className="text-slate-600 block text-[11px]">New Registrations Today</span>
               <span className="text-base font-bold text-slate-900 mt-1 block">
                 {loading ? '...' : stats?.users?.newToday ?? 0}
               </span>
             </div>
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span className="text-slate-400 block text-[11px]">New Registrations This Week</span>
+              <span className="text-slate-600 block text-[11px]">New Registrations This Week</span>
               <span className="text-base font-bold text-slate-900 mt-1 block">
                 {loading ? '...' : stats?.users?.newThisWeek ?? 0}
               </span>
             </div>
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span className="text-slate-400 block text-[11px]">Verified Email Accounts</span>
+              <span className="text-slate-600 block text-[11px]">Verified Email Accounts</span>
               <span className="text-base font-bold text-slate-900 mt-1 block">
                 {loading ? '...' : stats?.users?.verified ?? 0}
               </span>
@@ -303,7 +303,7 @@ export default function AdminDashboardPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">Action</th>
                 <th scope="col" className="px-5 py-3.5">Actor</th>
@@ -349,19 +349,19 @@ export default function AdminDashboardPage() {
                             <span className="font-semibold text-slate-900 block">
                               {log.actor.fullName}
                             </span>
-                            <span className="text-[10px] text-slate-400 font-mono">
+                            <span className="text-[10px] text-slate-600 font-mono">
                               {log.actor.email}
                             </span>
                           </div>
                         </div>
                       ) : (
-                        <span className="text-slate-400 italic">System / Visitor</span>
+                        <span className="text-slate-600 italic">System / Visitor</span>
                       )}
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap text-slate-700">
                       {log.targetType ? `${log.targetType} (${log.targetId ? log.targetId.slice(-6) : '—'})` : '—'}
                     </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap text-slate-400">
+                    <td className="px-5 py-3.5 whitespace-nowrap text-slate-600">
                       {formatTimestamp(log.createdAt)}
                     </td>
                   </tr>

@@ -144,7 +144,7 @@ function ResetPasswordContent() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-slate-500 hover:text-slate-700 text-xs flex items-center justify-center"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -170,7 +170,7 @@ function ResetPasswordContent() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-w-[24px] min-h-[24px] p-1 text-slate-500 hover:text-slate-700 text-xs flex items-center justify-center"
                 >
                   {showConfirmPassword ? 'Hide' : 'Show'}
                 </button>

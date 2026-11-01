@@ -8,6 +8,9 @@ import { notFoundHandler, errorHandler } from './middleware/error.middleware.js'
 
 const app = express();
 
+// Enable reverse proxy trust for secure cookies & rate limiting behind reverse proxies (Render, Vercel, Nginx)
+app.set('trust proxy', 1);
+
 // Security and utility middleware
 app.use(helmet({
   contentSecurityPolicy: false, // APIs serving JSON do not require HTML CSP

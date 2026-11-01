@@ -209,6 +209,7 @@ export default function PostComposer({ onPostCreated }) {
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                aria-label="What is happening? Share your thoughts"
                 placeholder="What is happening? Share your thoughts..."
                 rows={3}
                 disabled={loading || aiLoading}
@@ -237,6 +238,7 @@ export default function PostComposer({ onPostCreated }) {
               <div className="space-y-2">
                 <input
                   type="text"
+                  aria-label="Topic or main idea for AI generation"
                   placeholder="Topic or main idea (e.g. Tips for junior developers)..."
                   value={aiTopic}
                   onChange={(e) => setAiTopic(e.target.value)}
@@ -247,6 +249,7 @@ export default function PostComposer({ onPostCreated }) {
 
                 <input
                   type="text"
+                  aria-label="Additional context or keywords"
                   placeholder="Additional context or keywords (optional)..."
                   value={aiContext}
                   onChange={(e) => setAiContext(e.target.value)}
@@ -258,6 +261,7 @@ export default function PostComposer({ onPostCreated }) {
                 <div className="flex items-center gap-2">
                   <select
                     value={aiTone}
+                    aria-label="AI tone of voice"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
                     className="flex-1 rounded-lg border border-indigo-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
@@ -271,6 +275,7 @@ export default function PostComposer({ onPostCreated }) {
 
                   <select
                     value={aiLength}
+                    aria-label="Target length"
                     onChange={(e) => setAiLength(e.target.value)}
                     disabled={aiLoading}
                     className="flex-1 rounded-lg border border-indigo-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
@@ -314,6 +319,7 @@ export default function PostComposer({ onPostCreated }) {
               <div className="space-y-2">
                 <input
                   type="text"
+                  aria-label="Optional instructions for AI improvement"
                   placeholder="Optional instructions (e.g. Make it punchier, fix grammar)..."
                   value={aiInstructions}
                   onChange={(e) => setAiInstructions(e.target.value)}
@@ -325,6 +331,7 @@ export default function PostComposer({ onPostCreated }) {
                 <div className="flex items-center gap-2">
                   <select
                     value={aiTone}
+                    aria-label="Target improvement tone"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
                     className="flex-1 rounded-lg border border-purple-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-purple-500"
@@ -388,7 +395,7 @@ export default function PostComposer({ onPostCreated }) {
                     ? 'text-red-600 font-bold'
                     : charCount > 900
                     ? 'text-amber-600'
-                    : 'text-slate-400'
+                    : 'text-slate-600'
                 }`}
               >
                 {charCount} / 1000

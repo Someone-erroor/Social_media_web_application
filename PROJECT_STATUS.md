@@ -2,7 +2,7 @@
 
 > **Tagline:** Connect. Share. Express.  
 > **Repository:** `Looply` (`c:/assestement_project`)  
-> **Last Updated:** 2026-10-31  
+> **Last Updated:** 2026-11-01  
 
 ---
 
@@ -802,17 +802,19 @@ Phase 17 refined the user experience with purposeful micro-interactions and moti
 
 Phase 18 executed security hardening, rate limiting, and production deployment preparation:
 
-1. **Security Hardening (`server/src/app.js`, `middleware/rateLimit.middleware.js`)**:
+1. **Security Hardening (`server/src/app.js`, `middleware/rateLimit.middleware.js`, `config/jwt.js`)**:
+   - **Reverse-Proxy Support:** Explicitly enabled via `app.set('trust proxy', 1)` in `server/src/app.js` to ensure accurate client IP resolution behind Render, AWS ALB, Cloudflare, or Vercel edge proxies.
    - **Helmet Security Headers:** Applied in `server/src/app.js` (`X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Strict-Transport-Security`, `X-XSS-Protection`).
    - **Sliding-Window Rate Limiting:**
      - `authRateLimiter`: 30 requests per minute per IP on authentication routes (`/register`, `/login`, `/forgot-password`, `/reset-password`).
      - `aiRateLimiter`: 20 requests per minute per IP on Google Gemini AI endpoints (`/generate`, `/improve`, `/summarize`).
      - Test environment bypass: Rate limiting automatically bypassed during automated test suites (`NODE_ENV=test`) to guarantee deterministic CI/CD execution.
-   - **Cookie Security:** `HttpOnly`, `Path=/`, `SameSite=Lax`, and environment-governed `Secure` cookie flags.
+   - **Cookie Security:** `HttpOnly`, `Path=/`, dynamic `sameSite` (`none` in production for cross-origin domain decoupling, `lax` in development), and environment-governed `Secure` cookie flags.
    - **Role Escalation Protection:** Any registration or update request attempting to inject `role: 'admin'` is strictly stripped and defaulted to `'user'`.
    - **Session Revocation:** Authoritative `tokenVersion` check on every authenticated request; password reset or admin suspension immediately invalidates all active JWT sessions.
 
-2. **Production Deployment Specifications**:
+2. **Production Deployment Specifications (Status: PENDING)**:
+   - **Deployment Status:** **PENDING** — Continuous deployment configuration ready; zero unverified or fabricated live URLs emitted.
    - **Frontend (Vercel):** Native Next.js App Router deployment with `NEXT_PUBLIC_API_URL` pointing to production API.
    - **Backend (Render / Railway):** Node.js Express service configured with production environment variables (`PORT`, `NODE_ENV=production`, `CLIENT_ORIGIN`, `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `SMTP_*`).
    - **Database (MongoDB Atlas):** Primary production replica set (`looply`) with automated backups, encrypted connections, and separate test database (`looply_test`).
@@ -823,7 +825,7 @@ Phase 18 executed security hardening, rate limiting, and production deployment p
 
 ## 25. Comprehensive Test Verification Summary
 
-Across the entire codebase, **100% of all automated test suites pass without errors (405 passed assertions across 7 test suites)**:
+Across the entire codebase, **100% of all automated test suites pass without errors (330 passed assertions across 7 test suites)**:
 
 | Test Suite | Execution Command | Target Database | Assertions Passed | Failed | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: |
@@ -831,12 +833,14 @@ Across the entire codebase, **100% of all automated test suites pass without err
 | **Phase 4 Authentication Suite** | `npm run test:auth` in `server` | `looply_test` | **39** | 0 | **PASSED** |
 | **Batch 2 Comprehensive Suite (Phases 5–9)** | `npm run test:batch2` in `server` | `looply_test` | **54** | 0 | **PASSED** |
 | **Batch 3 Comprehensive Suite (Phases 10–14)** | `npm run test:batch3` in `server` | `looply_test` | **49** | 0 | **PASSED** |
-| **Phase 15 AI Discussion Summarization Suite** | `npm run test:phase15` in `server` | `looply_test` | **16** | 0 | **PASSED** |
-| **Phase 16 Responsive & A11y Multi-Route Audit (9 Viewports, 18 Routes)** | `npm run test:phase16` in `server` | `looply_test` | **126** | 0 | **PASSED** |
+| **Phase 15 AI Discussion Summarization Suite** | `npm run test:phase15` in `server` | `looply_test` | **18** | 0 | **PASSED** |
+| **Phase 16 Responsive & A11y Audit (20 Routes, 9 Viewports, 180 Checks)** | `npm run test:phase16` in `server` | `looply_test` | **49** | 0 | **PASSED** |
 | **Phase 4 E2E Real Browser Test Suite (Headless Chrome)** | `npm run test:e2e` in `server` | `looply_test` | **31** | 0 | **PASSED** |
-| **TOTAL AUTOMATED TEST ASSERTIONS** | — | — | **405** | **0** | **100% PASSED** |
+| **TOTAL AUTOMATED TEST ASSERTIONS** | — | — | **330** | **0** | **100% PASSED** |
 | **Frontend Production Build** | `npm run build` in `client` | N/A | **22/22 routes** | 0 | **PASSED** |
 | **Frontend Code Quality & Linting** | `npm run lint` in `client` | N/A | **0 errors, 0 warnings** | 0 | **PASSED** |
+| **Server Security Vulnerability Audit** | `npm audit` in `server` | N/A | **0 vulnerabilities** | 0 | **PASSED** |
+| **Client Security Vulnerability Audit** | `npm audit --omit=dev` in `client` | N/A | **0 vulnerabilities** | 0 | **PASSED** |
 
 ---
 

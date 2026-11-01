@@ -297,7 +297,11 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
         {/* Post Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <Link href={authorId ? ROUTES.USER.USER_PROFILE(authorId) : ROUTES.USER.FEED}>
+            <Link
+              href={authorId ? ROUTES.USER.USER_PROFILE(authorId) : ROUTES.USER.FEED}
+              tabIndex={-1}
+              aria-hidden="true"
+            >
               <Avatar
                 name={authorName}
                 src={authorAvatar}
@@ -311,7 +315,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               >
                 {authorName}
               </Link>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-600">
                 {formatTimestamp(post.createdAt)}
                 {post.updatedAt && post.updatedAt !== post.createdAt && ' (edited)'}
               </span>
@@ -328,7 +332,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                   setIsEditing(true);
                   setShowConfirmDelete(false);
                 }}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition-colors" aria-label="Edit post"
                 title="Edit post"
               >
                 <Icon name="edit" className="w-4 h-4" />
@@ -337,7 +341,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               <button
                 type="button"
                 onClick={() => setShowConfirmDelete(true)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-slate-600 hover:text-red-600 hover:bg-red-50 transition-colors" aria-label="Delete post"
                 title="Delete post"
               >
                 <Icon name="trash" className="w-4 h-4" />
@@ -385,7 +389,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
             />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-600">
                 {editContent.length} / 1000
               </span>
               <div className="flex items-center gap-2">
@@ -509,6 +513,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                   <div className="relative">
                     <input
                       type="text"
+                      aria-label="Write a comment"
                       placeholder="Write a comment..."
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
@@ -518,7 +523,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                     />
                   </div>
                   {commentText.length > 0 && (
-                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                    <div className="flex items-center justify-between text-[10px] text-slate-600">
                       <span>{commentText.length} / 500</span>
                       <Button
                         type="submit"
@@ -543,11 +548,11 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
 
             {/* Comments List */}
             {loadingComments ? (
-              <div className="py-4 text-center text-xs text-slate-400">
+              <div className="py-4 text-center text-xs text-slate-600">
                 Loading comments...
               </div>
             ) : comments.length === 0 ? (
-              <p className="py-2 text-center text-xs text-slate-400">
+              <p className="py-2 text-center text-xs text-slate-600">
                 No comments yet. Be the first to start the conversation!
               </p>
             ) : (
@@ -562,7 +567,11 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
 
                   return (
                     <div key={comment._id} className="flex gap-2.5 group text-xs">
-                      <Link href={commentAuthorId ? ROUTES.USER.USER_PROFILE(commentAuthorId) : ROUTES.USER.FEED}>
+                      <Link
+                        href={commentAuthorId ? ROUTES.USER.USER_PROFILE(commentAuthorId) : ROUTES.USER.FEED}
+                        tabIndex={-1}
+                        aria-hidden="true"
+                      >
                         <Avatar
                           name={commentAuthorName}
                           src={commentAuthorAvatar}
@@ -579,7 +588,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                           >
                             {commentAuthorName}
                           </Link>
-                          <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                          <div className="flex items-center gap-1.5 text-[10px] text-slate-600">
                             <span>{formatTimestamp(comment.createdAt)}</span>
                             {isCommentOwner && !isEditingThis && (
                               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-1">
@@ -589,7 +598,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                     setEditingCommentId(comment._id);
                                     setEditCommentContent(comment.content);
                                   }}
-                                  className="text-slate-400 hover:text-indigo-600 p-0.5"
+                                  className="text-slate-600 hover:text-indigo-600 p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
                                   title="Edit comment"
                                 >
                                   <Icon name="edit" className="w-3 h-3" />
@@ -597,7 +606,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteComment(comment._id)}
-                                  className="text-slate-400 hover:text-red-600 p-0.5"
+                                  className="text-slate-600 hover:text-red-600 p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Delete comment"
                                   title="Delete comment"
                                 >
                                   <Icon name="trash" className="w-3 h-3" />
@@ -612,6 +621,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                           <div className="mt-2 space-y-2">
                             <input
                               type="text"
+                              aria-label="Edit comment content"
                               value={editCommentContent}
                               onChange={(e) => setEditCommentContent(e.target.value)}
                               maxLength={500}

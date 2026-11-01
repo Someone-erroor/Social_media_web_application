@@ -191,7 +191,7 @@ export default function ProfileEditPage() {
               />
               <div className="space-y-1">
                 <p className="text-xs font-semibold text-slate-800">Avatar Preview</p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-600">
                   Provide a direct image URL (JPEG, PNG, or WebP) below.
                 </p>
               </div>

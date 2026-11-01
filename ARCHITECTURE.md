@@ -50,7 +50,7 @@ Looply is engineered as an enterprise-grade social media platform ("Connect. Sha
 |           ├── feed.routes.js         --> GET /api/feed, GET /api/explore                |
 |           ├── admin.routes.js        --> Admin stats, activity, users, posts, comments   |
 |           ├── notification.routes.js --> GET/read /api/notifications, unread count      |
-|           └── ai.routes.js           --> POST /api/ai/posts/generate, /ai/posts/improve  |
+|           └── ai.routes.js           --> POST /api/ai/posts/generate, /ai/posts/improve, /api/ai/posts/:id/summarize |
 |           |                                                                             |
 |  [src/middleware]   --> auth.middleware.js (requireAuth, requireRole, optionalAuth)     |
 |                     --> error.middleware.js (404 Not Found & Global Error Handler)      |
