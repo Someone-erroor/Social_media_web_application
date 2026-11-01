@@ -291,15 +291,15 @@ export const logSafeAiDiagnostics = (aiError, operation = 'unknown') => {
  * @param {object} client - GoogleGenAI client instance
  * @param {string} model - Target model identifier
  * @param {string} contents - Text prompt
- * @param {number} [timeoutMs=12000] - Timeout threshold in milliseconds
+ * @param {number} [timeoutMs=25000] - Timeout threshold in milliseconds
  * @returns {Promise<any>}
  */
-const callGeminiWithTimeout = async (client, model, contents, timeoutMs = 12000) => {
+const callGeminiWithTimeout = async (client, model, contents, timeoutMs = 25000) => {
   return Promise.race([
     client.models.generateContent({ model, contents }),
     new Promise((_, reject) => {
       setTimeout(() => {
-        const error = new Error('AI Provider Timeout: Gemini request timed out after 12 seconds.');
+        const error = new Error(`AI Provider Timeout: Gemini request timed out after ${Math.round(timeoutMs / 1000)} seconds.`);
         error.status = 504;
         reject(error);
       }, timeoutMs);
@@ -309,6 +309,7 @@ const callGeminiWithTimeout = async (client, model, contents, timeoutMs = 12000)
 
 /**
  * Executes a Gemini request with bounded single retry for transient issues.
+ * Automatically attempts verified stable fallback model if configured model encounters upstream timeouts.
  *
  * @param {object} client
  * @param {string} model
@@ -318,7 +319,7 @@ const callGeminiWithTimeout = async (client, model, contents, timeoutMs = 12000)
  */
 const callGeminiWithRetry = async (client, model, contents, operation) => {
   try {
-    return await callGeminiWithTimeout(client, model, contents);
+    return await callGeminiWithTimeout(client, model, contents, 20000);
   } catch (err) {
     const classified = classifyGeminiError(err, model);
     logSafeAiDiagnostics(classified, operation);
@@ -343,15 +344,20 @@ const callGeminiWithRetry = async (client, model, contents, operation) => {
       throw classified;
     }
 
-    // Wait with exponential backoff & jitter (max 2 seconds)
-    const baseWaitMs = classified.retryAfter ? Math.min(classified.retryAfter * 1000, 2000) : 1000;
+    // If the initial model timed out or had service unavailability, route retry to gemini-3.5-flash
+    const retryModel = (model === 'gemini-3.8-flash' || model === 'gemini-3.7-flash')
+      ? 'gemini-3.5-flash'
+      : model;
+
+    // Wait with exponential backoff & jitter (max 1.5 seconds)
+    const baseWaitMs = classified.retryAfter ? Math.min(classified.retryAfter * 1000, 1500) : 800;
     const jitter = Math.floor(Math.random() * 200);
     await new Promise((r) => setTimeout(r, baseWaitMs + jitter));
 
     try {
-      return await callGeminiWithTimeout(client, model, contents);
+      return await callGeminiWithTimeout(client, retryModel, contents, 25000);
     } catch (retryErr) {
-      const finalError = classifyGeminiError(retryErr, model);
+      const finalError = classifyGeminiError(retryErr, retryModel);
       logSafeAiDiagnostics(finalError, `${operation}_retry`);
       throw finalError;
     }
@@ -511,11 +517,11 @@ const generateMockImprovedPost = ({ content, tone, instructions }) => {
  * @returns {string}
  */
 export const getConfiguredModel = () => {
-  let model = env.GEMINI_MODEL || process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  let model = env.GEMINI_MODEL || process.env.GEMINI_MODEL || 'gemini-3.5-flash';
   if (typeof model === 'string' && model.includes('=')) {
     model = model.split('=').pop().trim();
   }
-  return String(model).replace(/^["']|["']$/g, '').trim() || 'gemini-3.8-flash';
+  return String(model).replace(/^["']|["']$/g, '').trim() || 'gemini-3.5-flash';
 };
 
 export const generatePost = async ({ topic, context = '', tone = 'casual', length = 'medium' }) => {

@@ -445,7 +445,7 @@ export default function AssistantWorkbench() {
 
               <div className="pt-2 flex items-center justify-between">
                 <span className="text-[11px] text-[#9BAAB4]">
-                  Powered by Google Gemini 3.8 Flash
+                  Powered by Google Gemini AI
                 </span>
                 <Button
                   type="submit"
@@ -521,7 +521,7 @@ export default function AssistantWorkbench() {
 
               <div className="pt-2 flex items-center justify-between">
                 <span className="text-[11px] text-[#9BAAB4]">
-                  Powered by Google Gemini 3.8 Flash
+                  Powered by Google Gemini AI
                 </span>
                 <Button
                   type="submit"

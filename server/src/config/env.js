@@ -179,12 +179,12 @@ const clientUrl = process.env.CLIENT_URL ? String(process.env.CLIENT_URL).trim()
 // AI / Gemini Configuration (Phase 14)
 const geminiApiKey = process.env.GEMINI_API_KEY ? String(process.env.GEMINI_API_KEY).trim() : '';
 const normalizeGeminiModel = (val) => {
-  if (!val) return 'gemini-3.8-flash';
+  if (!val) return 'gemini-3.5-flash';
   let str = String(val).trim();
   if (str.includes('=')) {
     str = str.split('=').pop().trim();
   }
-  return str.replace(/^["']|["']$/g, '').trim() || 'gemini-3.8-flash';
+  return str.replace(/^["']|["']$/g, '').trim() || 'gemini-3.5-flash';
 };
 const geminiModel = normalizeGeminiModel(process.env.GEMINI_MODEL);
 

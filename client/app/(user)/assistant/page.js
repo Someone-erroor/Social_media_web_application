@@ -12,7 +12,7 @@ export default function AssistantPage() {
     <div className="space-y-6">
       <PageHeader
         title="AI Assistant Workbench"
-        description="Brainstorm post ideas, draft engaging updates, and refine your writing with Google Gemini 2.5 Flash"
+        description="Brainstorm post ideas, draft engaging updates, and refine your writing with Google Gemini AI"
         badge={
           <Badge variant="primary" size="sm">
             Google Gemini Active

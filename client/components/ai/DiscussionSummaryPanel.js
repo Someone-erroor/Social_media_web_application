@@ -39,7 +39,7 @@ export default function DiscussionSummaryPanel({
             <h4 className="text-xs font-bold text-[#F4F8FA] tracking-tight flex items-center gap-1.5">
               <span>Discussion Summary</span>
               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30">
-                {metadata?.provider === 'google-gemini' ? 'Gemini 3.8 Flash' : 'AI Analysis'}
+                {metadata?.provider === 'google-gemini' ? (metadata?.model || 'Gemini AI') : 'AI Analysis'}
               </span>
             </h4>
             <p className="text-[11px] text-[#9BAAB4]">
