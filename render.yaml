@@ -27,3 +27,4 @@ services:
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
     healthCheckPath: /api/health
+
