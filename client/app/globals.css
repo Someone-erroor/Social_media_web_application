@@ -37,11 +37,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #172126;
-    --foreground: #F6F8F7;
-  }
+/* Consistent Looply light theme surfaces across all client configurations */
+:root {
+  color-scheme: light;
 }
 
 body {

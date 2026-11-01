@@ -6,6 +6,28 @@ let simulateAiFailure = false;
 let simulateAiTimeout = false;
 
 /**
+ * Executes a Google Gemini API call with a strict timeout to guarantee resilience.
+ *
+ * @param {object} client - GoogleGenAI client instance
+ * @param {string} model - Target model identifier
+ * @param {string} contents - Text prompt
+ * @param {number} [timeoutMs=12000] - Timeout threshold in milliseconds
+ * @returns {Promise<any>}
+ */
+const callGeminiWithTimeout = async (client, model, contents, timeoutMs = 12000) => {
+  return Promise.race([
+    client.models.generateContent({ model, contents }),
+    new Promise((_, reject) => {
+      setTimeout(() => {
+        const error = new Error('AI Provider Timeout: Gemini request timed out after 12 seconds.');
+        error.status = 504;
+        reject(error);
+      }, timeoutMs);
+    })
+  ]);
+};
+
+/**
  * Toggles test mock mode explicitly for testing.
  *
  * @param {boolean} val
@@ -164,17 +186,11 @@ Important constraints:
   try {
     let response;
     try {
-      response = await client.models.generateContent({
-        model: modelToUse,
-        contents: prompt
-      });
+      response = await callGeminiWithTimeout(client, modelToUse, prompt);
     } catch (primaryErr) {
       if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
         modelToUse = 'gemini-3.8-flash';
-        response = await client.models.generateContent({
-          model: modelToUse,
-          contents: prompt
-        });
+        response = await callGeminiWithTimeout(client, modelToUse, prompt);
       } else {
         throw primaryErr;
       }
@@ -202,6 +218,12 @@ Important constraints:
       model: modelToUse
     };
   } catch (err) {
+    if (err.status) throw err;
+    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429) {
+      const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
+      error.status = 503;
+      throw error;
+    }
     const error = new Error('AI generation failed. Please try again.');
     error.status = 502;
     throw error;
@@ -273,17 +295,11 @@ Important constraints:
   try {
     let response;
     try {
-      response = await client.models.generateContent({
-        model: modelToUse,
-        contents: prompt
-      });
+      response = await callGeminiWithTimeout(client, modelToUse, prompt);
     } catch (primaryErr) {
       if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
         modelToUse = 'gemini-3.8-flash';
-        response = await client.models.generateContent({
-          model: modelToUse,
-          contents: prompt
-        });
+        response = await callGeminiWithTimeout(client, modelToUse, prompt);
       } else {
         throw primaryErr;
       }
@@ -309,7 +325,13 @@ Important constraints:
       model: modelToUse
     };
   } catch (err) {
-    const error = new Error('AI generation failed. Please try again.');
+    if (err.status) throw err;
+    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429) {
+      const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
+      error.status = 503;
+      throw error;
+    }
+    const error = new Error('AI improvement failed. Please try again.');
     error.status = 502;
     throw error;
   }
@@ -465,17 +487,11 @@ Return ONLY the raw JSON object. Do not include markdown code block syntax (no \
   try {
     let response;
     try {
-      response = await client.models.generateContent({
-        model: modelToUse,
-        contents: prompt
-      });
+      response = await callGeminiWithTimeout(client, modelToUse, prompt);
     } catch (primaryErr) {
       if (primaryErr?.message?.includes('gemini-3.8-flash') || primaryErr?.status === 404) {
         modelToUse = 'gemini-3.8-flash';
-        response = await client.models.generateContent({
-          model: modelToUse,
-          contents: prompt
-        });
+        response = await callGeminiWithTimeout(client, modelToUse, prompt);
       } else {
         throw primaryErr;
       }
@@ -542,6 +558,11 @@ Return ONLY the raw JSON object. Do not include markdown code block syntax (no \
     };
   } catch (err) {
     if (err.status) throw err;
+    if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429) {
+      const error = new Error('The AI service is experiencing high demand. Please try again shortly.');
+      error.status = 503;
+      throw error;
+    }
     const error = new Error('AI discussion summarization failed. Please try again.');
     error.status = 502;
     throw error;

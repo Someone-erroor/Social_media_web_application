@@ -176,8 +176,8 @@ async function runResponsiveAndA11yAudit() {
     const clientDir = path.resolve(__dirname, '../../client');
     const startCmd = process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npx';
     const startArgs = process.platform === 'win32'
-      ? ['/c', 'npx', 'next', 'start', '-H', 'localhost', '-p', '3000']
-      : ['next', 'start', '-H', 'localhost', '-p', '3000'];
+      ? ['/c', 'npx', 'next', 'start', '-H', '127.0.0.1', '-p', '3000']
+      : ['next', 'start', '-H', '127.0.0.1', '-p', '3000'];
 
     nextProcess = spawn(startCmd, startArgs, {
       cwd: clientDir,

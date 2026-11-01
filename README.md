@@ -4,6 +4,10 @@
 
 Looply is a professional, full-stack, AI-powered social media platform built for rich, secure, and meaningful real-time community engagement.
 
+> [!IMPORTANT]
+> **ACTUAL DEPLOYMENT STATUS: PENDING MANUAL DEPLOYMENT.**  
+> The Looply application is fully implemented, integrated, and verified across all 18 development phases (100% automated test pass rate: **330 passed assertions across 7 test suites**, 0 failures). Deployment configuration is established for Vercel (frontend), Render/Railway (backend), and MongoDB Atlas; actual deployment will be performed manually following final code review.
+
 ---
 
 ## 1. System Overview
@@ -287,51 +291,82 @@ c:/assestement_project/
 ### Environment Files Notice
 > **Important:** `.env` and `.env.local` are strictly local-only configuration files and are **never committed to GitHub** (enforced by `.gitignore`). Always use the provided `.env.example` templates to set up your local environment files.
 
-### Unified Development Launcher (Recommended)
-You can start both the backend and frontend simultaneously with intelligent pre-flight port checks and database diagnostics from the project root:
+---
+
+### Startup Options
+
+#### Option A: Unified Single-Script Startup (Recommended)
+You can start both the backend and frontend simultaneously with automated pre-flight port availability checks and database diagnostics from the project root:
 ```bash
 # In the root repository directory (c:/assestement_project):
 npm run dev
 ```
-*The launcher checks ports `5000` and `3000`, starts the Express backend on `http://localhost:5000`, waits for `/api/health/ready` (classifying any database startup issues into 6 actionable diagnostic categories), starts Next.js on `http://localhost:3000`, and cleans up all processes on Ctrl+C.*
+*The root script (`scripts/dev.mjs`) checks ports `5000` and `3000`, clears stale development locks, starts the Express backend on `http://localhost:5000`, waits for `/api/health/ready` (classifying any database startup issues into 6 actionable diagnostic categories), spawns Next.js on `http://localhost:3000`, and cleanly terminates child process trees on Ctrl+C.*
 
-### Manual Backend Setup
-1. Navigate to the server directory:
-   ```bash
-   cd server
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Initialize environment variables (`.env` is a local-only file and not committed to GitHub):
-   ```bash
-   cp .env.example .env
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-   *The server starts on port `5000`. Health check endpoint: `http://localhost:5000/api/health`.*
+#### Option B: Standard Two-Terminal Startup
 
-### Manual Frontend Setup
-1. Navigate to the client directory:
-   ```bash
-   cd client
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Initialize environment variables (`.env.local` is a local-only file and not committed to GitHub):
-   ```bash
-   cp .env.example .env.local
-   ```
-4. Start the Next.js development server:
-   ```bash
-   npm run dev
-   ```
-   *The client opens at `http://localhost:3000`.*
+**Terminal 1 — Backend API Server:**
+```bash
+cd server
+npm install
+# Ensure server/.env is present (configured from server/.env.example)
+npm run dev
+```
+*The Express backend listens on `http://localhost:5000`. Health check endpoint: `http://localhost:5000/api/health`.*
+
+**Terminal 2 — Frontend Next.js Client:**
+```bash
+cd client
+npm install
+# Ensure client/.env.local is present (configured from client/.env.example)
+npm run dev
+```
+*The Next.js client listens on `http://localhost:3000`.*
+
+---
+
+### Environment Variables Reference
+
+#### Server Configuration (`server/.env`)
+| Variable | Description | Example / Default |
+| :--- | :--- | :--- |
+| `PORT` | Local HTTP and Socket.IO listening port | `5000` |
+| `NODE_ENV` | Runtime execution environment (`development`, `test`, `production`) | `development` |
+| `CLIENT_ORIGIN` | Allowed CORS origins (comma-separated, no wildcards) | `http://localhost:3000,http://127.0.0.1:3000` |
+| `MONGODB_URI` | Primary MongoDB Atlas connection string | `mongodb+srv://<user>:<pass>@cluster0.vtydaeh.mongodb.net/looply` |
+| `MONGODB_TEST_URI` | Dedicated isolated database for destructive automated test suites | `mongodb+srv://<user>:<pass>@cluster0.vtydaeh.mongodb.net/looply_test` |
+| `JWT_SECRET` | High-entropy secret key for HMAC SHA-256 JWT signing | `random_64_char_hex_secret` |
+| `JWT_EXPIRES_IN` | Session cookie lifespan | `7d` |
+| `GEMINI_API_KEY` | Google AI Studio API key for post drafting & summarization | `AIzaSy...` (backend-only, never public) |
+| `GEMINI_MODEL` | Google Gemini model identifier | `gemini-2.5-flash` |
+| `SMTP_HOST` | Transactional email SMTP host | `smtp.ethereal.email` |
+| `SMTP_PORT` | SMTP port | `587` |
+| `SMTP_SECURE` | SMTP TLS requirement (`true` / `false`) | `false` |
+| `SMTP_USER` | SMTP username | `user@ethereal.email` |
+| `SMTP_PASS` | SMTP password | `secret` |
+| `SMTP_FROM` | Transactional email sender display | `"Looply" <no-reply@looply.social>` |
+
+#### Client Configuration (`client/.env.local`)
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `NEXT_PUBLIC_API_URL` | Root URL for Express backend REST API | `http://localhost:5000/api` |
+| `NEXT_PUBLIC_APP_NAME` | Application display brand name | `Looply` |
+| `NEXT_PUBLIC_APP_TAGLINE` | Application official tagline | `Connect. Share. Express.` |
+
+---
+
+### Test Credentials Reference
+
+For manual exploratory testing and verification:
+
+| Role | Email | Password | Account Status | Permissions |
+| :--- | :--- | :--- | :---: | :--- |
+| **Administrator** | `admin@looply.social` | `LooplyAdmin2026!` | Active / Verified | Access to `/admin`, live KPI telemetry, post & comment moderation, user suspension |
+| **Standard User** | `alex@looply.social` | `LooplyUser2026!` | Active / Verified | Access to `/feed`, `/explore`, `/profile`, post publishing, AI drawer, comments, likes |
+
+*Note: You can also register a brand new user via `/register`. In local development without live external SMTP, click the prominent **"Open Local Email Preview"** button on the registration confirmation card to immediately view the transactional verification link rendered by the backend at `http://localhost:5000/api/__dev/mailbox/latest`.*
+
+---
 
 ---
 

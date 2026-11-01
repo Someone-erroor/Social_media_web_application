@@ -27,7 +27,7 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [devPreviewLink, setDevPreviewLink] = useState(null);
+  const [registeredState, setRegisteredState] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
 
   const validateForm = () => {
@@ -86,24 +86,23 @@ export default function RegisterForm() {
         confirmPassword
       });
 
-      setSuccessMessage(result.message || 'Account created successfully! Please check your email to verify your account.');
-      if (result?.deliveryMode === 'preview') {
+      const deliveryMode = result?.deliveryMode || 'smtp';
+      let previewLink = null;
+      if (deliveryMode === 'preview') {
         try {
           const devMail = await authService.getDevMailboxLatest();
-          if (devMail?.email?.link) {
-            setDevPreviewLink(devMail.email.link);
-          }
+          previewLink = devMail?.email?.link || null;
         } catch {
           // non-blocking
         }
-        setTimeout(() => {
-          router.push(ROUTES.PUBLIC.LOGIN);
-        }, 2000);
-      } else {
-        setTimeout(() => {
-          router.push(ROUTES.PUBLIC.LOGIN);
-        }, 1500);
       }
+
+      setRegisteredState({
+        deliveryMode,
+        email: email.trim(),
+        message: result?.message,
+        previewLink
+      });
     } catch (err) {
       if (err.isNetworkError || err.status === 0) {
         setErrorMessage('Unable to reach the backend server. Please verify the API server is running on http://localhost:5000.');
@@ -116,6 +115,121 @@ export default function RegisterForm() {
       setLoading(false);
     }
   };
+
+  if (registeredState) {
+    return (
+      <Card className="shadow-md border-slate-200">
+        <CardHeader className="text-center pb-2">
+          <CardTitle className="text-xl font-bold">Account Registration</CardTitle>
+          <CardDescription>
+            {registeredState.deliveryMode === 'smtp'
+              ? 'Complete email verification to activate your account'
+              : 'Local development verification preview'}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6 pt-4" data-testid="registration-success-state">
+          {registeredState.deliveryMode === 'smtp' && (
+            <div className="space-y-4 text-center">
+              <div className="w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                <Icon name="mail" className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-[#172126]">
+                  Verification email sent. Please check your inbox.
+                </h3>
+                <p className="text-xs text-[#68757C]">
+                  We sent a secure verification link to <strong className="text-[#172126]">{registeredState.email}</strong>. Please check your inbox to activate your account.
+                </p>
+              </div>
+              <div className="pt-2">
+                <Button
+                  href={ROUTES.PUBLIC.VERIFY_EMAIL}
+                  variant="primary"
+                  size="md"
+                  data-testid="continue-to-login-btn"
+                  className="w-full sm:w-auto"
+                >
+                  Continue to Email Verification
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {registeredState.deliveryMode === 'preview' && (
+            <div className="space-y-4 text-center">
+              <div className="w-12 h-12 mx-auto rounded-full bg-cyan-100 text-[#087F8A] flex items-center justify-center">
+                <Icon name="mail" className="w-6 h-6" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-base font-bold text-[#172126]">
+                  Your verification email has been created in the local development mailbox.
+                </h3>
+                <p className="text-xs text-[#68757C] max-w-sm mx-auto leading-relaxed">
+                  Real SMTP credentials are not configured in local development. Retrieve your verification link directly from the local development preview mailbox below:
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <a
+                  href="http://localhost:5000/api/__dev/mailbox/latest"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#087F8A] hover:bg-[#16B8C8] text-white font-medium text-xs shadow-xs transition-colors w-full sm:w-auto"
+                >
+                  <Icon name="mail" className="w-4 h-4" />
+                  <span>Open Local Email Preview</span>
+                </a>
+                {registeredState.previewLink && (
+                  <a
+                    href={registeredState.previewLink}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#16B8C8] text-[#172126] hover:bg-[#087F8A] hover:text-white font-semibold text-xs shadow-xs transition-colors w-full sm:w-auto"
+                  >
+                    <span>Verify Account Now &rarr;</span>
+                  </a>
+                )}
+              </div>
+              <div className="pt-2">
+                <Link
+                  href={ROUTES.PUBLIC.LOGIN}
+                  data-testid="continue-to-login-btn"
+                  className="text-xs font-semibold text-[#087F8A] hover:underline inline-block"
+                >
+                  Continue to Sign In &rarr;
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {registeredState.deliveryMode === 'unavailable' && (
+            <div className="space-y-4 text-center">
+              <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+                <Icon name="alertCircle" className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-[#172126]">
+                  Account created, but email delivery is currently unavailable.
+                </h3>
+                <p className="text-xs text-[#68757C]">
+                  Please request a verification email later or contact the administrator to activate your account.
+                </p>
+              </div>
+              <div className="pt-2">
+                <Button
+                  href={ROUTES.PUBLIC.LOGIN}
+                  variant="outline"
+                  size="md"
+                  data-testid="continue-to-login-btn"
+                  className="w-full sm:w-auto"
+                >
+                  Go to Sign In
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="shadow-md border-slate-200">
@@ -134,36 +248,6 @@ export default function RegisterForm() {
           >
             <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
             <div className="flex-1 font-medium">{errorMessage}</div>
-          </div>
-        )}
-
-        {successMessage && (
-          <div
-            role="alert"
-            className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs"
-          >
-            <Icon name="check" className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
-            <div className="flex-1 font-medium">{successMessage}</div>
-          </div>
-        )}
-
-        {devPreviewLink && (
-          <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-950 text-xs space-y-2.5">
-            <div className="flex items-center gap-2 font-semibold text-cyan-900">
-              <Icon name="mail" className="w-4 h-4 text-cyan-600" />
-              <span>Development Email Preview</span>
-            </div>
-            <p className="text-cyan-800 leading-relaxed">
-              Your verification link is ready in the local preview mailbox. Click below to verify your account and proceed to login:
-            </p>
-            <div>
-              <a
-                href={devPreviewLink}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-xs shadow-xs transition-colors"
-              >
-                <span>Verify Account Now &rarr;</span>
-              </a>
-            </div>
           </div>
         )}
 
@@ -297,8 +381,14 @@ export default function RegisterForm() {
                 className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#087F8A] focus:ring-[#16B8C8]"
               />
               <label htmlFor="terms" className="cursor-pointer select-none leading-relaxed">
-                I agree to the Looply <span className="text-[#087F8A] hover:underline">Terms of Service</span> and{' '}
-                <span className="text-[#087F8A] hover:underline">Privacy Policy</span>.
+                I agree to the Looply{' '}
+                <Link href={ROUTES.PUBLIC.TERMS} target="_blank" className="text-[#087F8A] hover:underline font-medium">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank" className="text-[#087F8A] hover:underline font-medium">
+                  Privacy Policy
+                </Link>.
               </label>
             </div>
             {fieldErrors.terms && (

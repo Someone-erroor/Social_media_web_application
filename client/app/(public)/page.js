@@ -114,10 +114,6 @@ export default function HomePage() {
                         <Icon name="comments" className="w-4 h-4 text-slate-400" />
                         <span>8</span>
                       </span>
-                      <span className="flex items-center gap-1.5 hover:text-slate-700 cursor-default">
-                        <Icon name="share" className="w-4 h-4 text-slate-400" />
-                        <span>Share</span>
-                      </span>
                     </div>
                     <span className="text-[11px] font-mono text-slate-600">Community Highlight</span>
                   </div>
@@ -176,7 +172,7 @@ export default function HomePage() {
               {/* Feature 3 */}
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
+                  <div className="w-12 h-12 rounded-2xl bg-[#087F8A]/10 text-[#087F8A] flex items-center justify-center mb-2">
                     <Icon name="shield" className="w-6 h-6" />
                   </div>
                   <CardTitle>Audited Integrity</CardTitle>
@@ -236,6 +232,76 @@ export default function HomePage() {
                   Leverage built-in AI tools to refine drafts, brainstorm new topics, and quickly digest active discussions.
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Community Purpose & Principles Section */}
+        <section id="community" className="py-20 bg-white border-b border-slate-200/80">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#087F8A]">
+                Our Philosophy &amp; Principles
+              </h2>
+              <p className="text-3xl font-extrabold text-[#172126] tracking-tight sm:text-4xl">
+                The Looply Community
+              </p>
+              <p className="text-[#68757C] text-sm leading-relaxed">
+                Why we created Looply and how creators, readers, and thinkers interact with purpose.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+              <div className="p-6 sm:p-8 rounded-2xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-cyan-100/70 text-[#087F8A] flex items-center justify-center font-bold text-lg">
+                  <Icon name="heart" className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-bold text-[#172126]">Why Looply Exists</h3>
+                <p className="text-xs sm:text-sm text-[#252E34] leading-relaxed">
+                  Traditional social platforms prioritize polarizing engagement over genuine insight. Looply is built from the ground up to return social technology to its original promise: authentic expression, human connection, and meaningful community dialogue without manipulation.
+                </p>
+              </div>
+
+              <div className="p-6 sm:p-8 rounded-2xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-cyan-100/70 text-[#087F8A] flex items-center justify-center font-bold text-lg">
+                  <Icon name="edit" className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-bold text-[#172126]">How Users Share Ideas</h3>
+                <p className="text-xs sm:text-sm text-[#252E34] leading-relaxed">
+                  Share concise insights or in-depth technical analysis in a chronological feed. Readers see posts when they are published, ensuring that creators connect with an engaged audience on their own merit rather than algorithmic favouritism.
+                </p>
+              </div>
+
+              <div className="p-6 sm:p-8 rounded-2xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-cyan-100/70 text-[#087F8A] flex items-center justify-center font-bold text-lg">
+                  <Icon name="comments" className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-bold text-[#172126]">How Users Interact</h3>
+                <p className="text-xs sm:text-sm text-[#252E34] leading-relaxed">
+                  Engage in chronological, threaded commentary, express appreciation with instant likes, and receive real-time notifications via secure Socket.IO websockets. Respectful discourse is reinforced by verified accounts and transparent community moderation.
+                </p>
+              </div>
+
+              <div className="p-6 sm:p-8 rounded-2xl bg-[#F6F8F7] border border-[#E3E8E8] space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-cyan-100/70 text-[#087F8A] flex items-center justify-center font-bold text-lg">
+                  <Icon name="sparkles" className="w-5 h-5 text-[#FF725E]" />
+                </div>
+                <h3 className="text-lg font-bold text-[#172126]">How AI Supports Discussions</h3>
+                <p className="text-xs sm:text-sm text-[#252E34] leading-relaxed">
+                  Integrated with Google Gemini 2.5, Looply provides instant discussion summaries of complex comment threads. Whether catching up on active debates or polishing your writing tone, AI is an assistive co-pilot, never a replacement for your human voice.
+                </p>
+              </div>
+            </div>
+
+            <div className="text-center pt-2">
+              <Button
+                href={ROUTES.PUBLIC.REGISTER}
+                variant="primary"
+                size="lg"
+                className="shadow-sm"
+              >
+                Join the Looply Community &rarr;
+              </Button>
             </div>
           </div>
         </section>

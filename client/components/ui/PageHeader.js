@@ -21,7 +21,7 @@ export default function PageHeader({
           {badge && <div>{badge}</div>}
         </div>
         {description && (
-          <p className="mt-1 text-xs sm:text-sm text-slate-600 leading-normal">
+          <p className="mt-1 text-xs sm:text-sm text-[#252E34] leading-normal">
             {description}
           </p>
         )}

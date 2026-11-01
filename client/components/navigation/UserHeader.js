@@ -34,21 +34,15 @@ export default function UserHeader() {
           <Logo size="small" showTagline={false} href={ROUTES.USER.FEED} />
         </div>
 
-        {/* Global Search Bar Placeholder */}
+        {/* Global Explore Shortcut */}
         <div className="flex-1 max-w-md hidden sm:block">
-          <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-              <Icon name="search" className="w-4 h-4" />
-            </div>
-            <input
-              type="text"
-              aria-label="Search posts, topics, or creators"
-              placeholder="Search posts, topics, or creators..."
-              className="w-full rounded-full border border-slate-200 bg-slate-50 pl-9 pr-4 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#16B8C8] focus:bg-white focus:ring-2 focus:ring-[#16B8C8]/20 transition-all"
-              disabled
-              title="Search coming soon"
-            />
-          </div>
+          <Link
+            href={ROUTES.USER.EXPLORE}
+            className="flex items-center gap-2.5 w-full rounded-full border border-[#E3E8E8] bg-[#F6F8F7] hover:bg-white hover:border-[#16B8C8] px-4 py-1.5 text-xs text-[#252E34] hover:text-[#172126] transition-all shadow-2xs group"
+          >
+            <Icon name="search" className="w-4 h-4 text-[#087F8A] transition-colors" />
+            <span className="font-medium">Explore posts, topics, and community creators...</span>
+          </Link>
         </div>
 
         {/* Quick Actions */}

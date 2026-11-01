@@ -15,7 +15,9 @@ These routes are accessible to unauthenticated visitors and prospective members.
 
 | Target URL | Experience Scope | Route Group File Path | Layout Shell | Status |
 | :--- | :---: | :--- | :--- | :---: |
-| `/` | Public | `client/app/(public)/page.js` | `PublicNavbar` + `PublicFooter` | Implemented (Phase 2) |
+| `/` | Public | `client/app/(public)/page.js` | `PublicNavbar` + `PublicFooter` | Implemented (Phase 2 & Final Audit) |
+| `/privacy` | Public | `client/app/(public)/privacy/page.js` | `PublicNavbar` + `PublicFooter` | Active &bull; Privacy Policy & Data Governance |
+| `/terms` | Public | `client/app/(public)/terms/page.js` | `PublicNavbar` + `PublicFooter` | Active &bull; Terms of Service & Acceptable Use |
 | `/login` | Auth | `client/app/(auth)/login/page.js` | `AuthLayout` (Centered Card) | **Active (Phase 4 Approved)** &bull; Real API Connected |
 | `/register` | Auth | `client/app/(auth)/register/page.js` | `AuthLayout` (Centered Card) | **Active (Phase 4 Approved)** &bull; Real API Connected |
 | `/verify-email` | Auth | `client/app/(auth)/verify-email/page.js` | `AuthLayout` (Centered Card) | **Active (Phase 5 Approved)** &bull; Real Verification & Resend Connected |
@@ -113,7 +115,9 @@ These routes render within the distinct, high-contrast `AdminShell` (`AdminSideb
 client/app/
 ├── (public)/
 │   ├── layout.js              --> Wraps public presentation views
-│   └── page.js                --> Maps to: /
+│   ├── page.js                --> Maps to: /
+│   ├── privacy/page.js        --> Maps to: /privacy
+│   └── terms/page.js          --> Maps to: /terms
 ├── (auth)/
 │   ├── layout.js              --> Wraps centered auth cards
 │   ├── login/page.js          --> Maps to: /login

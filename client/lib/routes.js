@@ -14,7 +14,9 @@ export const ROUTES = {
     REGISTER: '/register',
     VERIFY_EMAIL: '/verify-email',
     FORGOT_PASSWORD: '/forgot-password',
-    RESET_PASSWORD: '/reset-password'
+    RESET_PASSWORD: '/reset-password',
+    PRIVACY: '/privacy',
+    TERMS: '/terms'
   },
 
   // User Experience Routes
@@ -50,6 +52,8 @@ export const ROUTE_METADATA = {
   [ROUTES.PUBLIC.VERIFY_EMAIL]: { title: 'Verify Email', scope: 'auth', description: 'Email address verification' },
   [ROUTES.PUBLIC.FORGOT_PASSWORD]: { title: 'Forgot Password', scope: 'auth', description: 'Password reset request' },
   [ROUTES.PUBLIC.RESET_PASSWORD]: { title: 'Reset Password', scope: 'auth', description: 'Password reset execution' },
+  [ROUTES.PUBLIC.PRIVACY]: { title: 'Privacy Policy', scope: 'public', description: 'Platform privacy policy and data governance' },
+  [ROUTES.PUBLIC.TERMS]: { title: 'Terms of Service', scope: 'public', description: 'Platform terms of service and acceptable use' },
 
   [ROUTES.USER.FEED]: { title: 'Feed', scope: 'user', description: 'Social media home feed' },
   [ROUTES.USER.EXPLORE]: { title: 'Explore', scope: 'user', description: 'Discover trending posts and creators' },

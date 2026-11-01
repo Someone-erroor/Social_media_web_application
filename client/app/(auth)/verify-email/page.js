@@ -24,6 +24,7 @@ function VerifyEmailContent() {
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
+  const [resendPreviewLink, setResendPreviewLink] = useState(null);
   const [showResendForm, setShowResendForm] = useState(!token);
 
   useEffect(() => {
@@ -64,10 +65,23 @@ function VerifyEmailContent() {
 
     setResending(true);
     setResendStatus('');
+    setResendPreviewLink(null);
 
     try {
       const res = await authService.resendVerification({ email: resendEmail.trim() });
       setResendStatus(res.message || 'Verification link sent if an account exists.');
+
+      // Refresh the latest local email preview in development
+      if (res?.deliveryMode === 'preview' || process.env.NODE_ENV !== 'production') {
+        try {
+          const devMail = await authService.getDevMailboxLatest();
+          if (devMail?.email?.link) {
+            setResendPreviewLink(devMail.email.link);
+          }
+        } catch {
+          // non-blocking
+        }
+      }
     } catch (err) {
       setResendStatus(err.message || 'Failed to resend verification email.');
     } finally {
@@ -167,6 +181,30 @@ function VerifyEmailContent() {
                   <p className="text-xs text-center text-slate-600 mt-2">
                     {resendStatus}
                   </p>
+                )}
+
+                {resendPreviewLink && (
+                  <div className="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-xs text-center space-y-2 mt-2">
+                    <p className="font-semibold text-[#087F8A]">
+                      New verification link generated in local dev mailbox:
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                      <a
+                        href={resendPreviewLink}
+                        className="inline-block px-3 py-1.5 rounded-lg bg-[#16B8C8] text-[#172126] font-semibold text-xs hover:bg-[#087F8A] hover:text-white transition-colors"
+                      >
+                        Verify with New Link &rarr;
+                      </a>
+                      <a
+                        href="http://localhost:5000/api/__dev/mailbox/latest"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-block px-3 py-1.5 rounded-lg border border-[#087F8A] text-[#087F8A] font-medium text-xs hover:bg-[#087F8A] hover:text-white transition-colors"
+                      >
+                        Open Dev Mailbox
+                      </a>
+                    </div>
+                  </div>
                 )}
               </form>
             )}

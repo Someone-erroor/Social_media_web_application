@@ -85,9 +85,9 @@ export default function PublicFooter() {
             <p className="text-xs text-slate-500 leading-relaxed mb-2">
               Next-generation social interface and navigation systems active.
             </p>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              All Systems Operational
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-cyan-50 text-[#087F8A] border border-cyan-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#16B8C8]"></span>
+              Looply Core Platform &bull; v0.1.0
             </span>
           </div>
         </div>
@@ -98,9 +98,15 @@ export default function PublicFooter() {
             &copy; 2026 Looply. All rights reserved. Connect. Share. Express.
           </div>
           <div className="flex items-center gap-6">
-            <span className="hover:text-slate-700 cursor-default">Privacy Policy</span>
-            <span className="hover:text-slate-700 cursor-default">Terms of Service</span>
-            <span className="hover:text-slate-700 cursor-default">Community Guidelines</span>
+            <Link href={ROUTES.PUBLIC.PRIVACY} className="hover:text-[#087F8A] transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href={ROUTES.PUBLIC.TERMS} className="hover:text-[#087F8A] transition-colors">
+              Terms of Service
+            </Link>
+            <a href="#community" className="hover:text-[#087F8A] transition-colors">
+              Community
+            </a>
           </div>
         </div>
       </div>

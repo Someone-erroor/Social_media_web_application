@@ -95,11 +95,16 @@ Looply is engineered as an enterprise-grade social media platform ("Connect. Sha
 
 ### 3.2 Design System Tokens & Brand Identity
 - **Tagline:** Connect. Share. Express.
-- **Color Palette:**
-  - **Primary:** Indigo (`indigo-600`, `indigo-700`, `indigo-500`) and Violet accents.
-  - **Neutrals:** Soft neutral canvas (`bg-slate-50`, `bg-slate-100`), crisp white card containers (`bg-white`).
-  - **Typography:** Dark slate (`text-slate-900`) for primary headings, muted slate (`text-slate-500`) for body/secondary text.
-  - **Borders & Elevation:** Subtle borders (`border-slate-200/80`), gentle elevation (`shadow-xs`, `shadow-sm`).
+- **Color Palette (Authoritative Looply Brand Tokens):**
+  - **Deep Ink (`#172126`):** Primary headings, prominent body copy, dark UI elements (WCAG AAA contrast).
+  - **Charcoal (`#252E34`):** Subheadings, descriptive text, dark secondary surfaces.
+  - **Primary Cyan (`#16B8C8`):** Main brand accent, primary CTA buttons, active state indicators.
+  - **Deep Cyan (`#087F8A`):** Interactive button hover states, focused borders, accessible links.
+  - **Coral (`#FF725E`):** Secondary accent, creative highlights, AI actions, notification alert indicators.
+  - **Off-White (`#F6F8F7`):** Application page background, soft container fills, neutral cards.
+  - **White (`#FFFFFF`):** High-contrast card surfaces, modals, popovers, input fields.
+  - **Muted Grey (`#68757C`):** Form labels, timestamp metadata, subtle captions.
+  - **Border / Divider (`#E3E8E8`):** Structured card outlines, table borders, dividers.
   - **Admin Canvas:** Deep slate navigation (`bg-slate-900`, `text-slate-200`) providing high contrast and visual distinction from user spaces.
 
 ### 3.3 Reusable Component Architecture (`client/components/`)

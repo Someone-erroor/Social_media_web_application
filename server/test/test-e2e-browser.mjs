@@ -429,9 +429,17 @@ async function runE2EBrowserTests() {
     console.log('Submitting registration form...');
     await page.click('button[type="submit"]');
 
-    // Wait for redirect to login page
-    await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
-    assert(true, '10. Browser automatically navigated to /login after successful registration');
+    // Wait for registration completion state and navigate to login
+    await page.waitForFunction(
+      () => window.location.pathname === '/login' || document.querySelector('[data-testid="continue-to-login-btn"]'),
+      { timeout: 15000 }
+    );
+    const continueBtn = await page.$('[data-testid="continue-to-login-btn"]');
+    if (continueBtn) {
+      await continueBtn.click();
+      await page.waitForFunction(() => window.location.pathname === '/login', { timeout: 15000 });
+    }
+    assert(true, '10. Browser navigated to /login after successful registration confirmation');
 
     // 8. Confirm user is created in MongoDB test database
     console.log('\n--- Step 8: Database Verification for Created User ---');

@@ -90,12 +90,20 @@ export default function ForgotPasswordPage() {
             <p className="text-cyan-800 leading-relaxed">
               Your password reset link is ready in the local preview mailbox. Click below to proceed with setting a new password:
             </p>
-            <div>
+            <div className="flex flex-col sm:flex-row items-center gap-2">
               <a
                 href={devResetLink}
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-xs shadow-xs transition-colors"
               >
                 <span>Reset Password Now &rarr;</span>
+              </a>
+              <a
+                href="http://localhost:5000/api/__dev/mailbox/latest"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-cyan-300 text-[#087F8A] hover:bg-cyan-100 font-medium text-xs transition-colors"
+              >
+                <span>Open Local Email Preview</span>
               </a>
             </div>
           </div>

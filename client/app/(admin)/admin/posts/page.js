@@ -159,7 +159,7 @@ export default function AdminPostsPage() {
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
+                  <td colSpan={6} className="py-8 text-center text-slate-700 font-medium">
                     Loading posts for moderation...
                   </td>
                 </tr>

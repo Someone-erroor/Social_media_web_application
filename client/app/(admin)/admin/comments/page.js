@@ -158,7 +158,7 @@ export default function AdminCommentsPage() {
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400">
+                  <td colSpan={5} className="py-8 text-center text-slate-700 font-medium">
                     Loading comments for moderation...
                   </td>
                 </tr>
