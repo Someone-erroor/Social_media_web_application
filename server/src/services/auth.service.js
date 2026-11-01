@@ -267,8 +267,8 @@ export const resendVerificationEmail = async (email) => {
  * @returns {Promise<{ user: object, token: string }>} Safe user and signed JWT
  */
 export const loginUser = async ({ email, password }) => {
-  // 1. Find user including passwordHash for comparison
-  const user = await User.findOne({ email }).select('+passwordHash');
+  // 1. Find user including passwordHash and tokenVersion for secure session generation
+  const user = await User.findOne({ email }).select('+passwordHash +tokenVersion');
   if (!user) {
     const error = new Error('Invalid email or password.');
     error.status = 401;
