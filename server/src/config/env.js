@@ -176,6 +176,8 @@ const smtpPass = process.env.SMTP_PASS ? String(process.env.SMTP_PASS).trim() : 
 const smtpFrom = process.env.SMTP_FROM ? String(process.env.SMTP_FROM).trim() : 'Looply <noreply@looply.net>';
 const clientUrl = process.env.CLIENT_URL ? String(process.env.CLIENT_URL).trim() : (clientOrigins[0] || 'http://localhost:3000');
 const resendApiKey = process.env.RESEND_API_KEY ? String(process.env.RESEND_API_KEY).trim() : '';
+const gmailWebhookUrl = process.env.GMAIL_WEBHOOK_URL ? String(process.env.GMAIL_WEBHOOK_URL).trim() : '';
+const brevoApiKey = process.env.BREVO_API_KEY ? String(process.env.BREVO_API_KEY).trim() : '';
 
 // AI / Gemini Configuration (Phase 14)
 const geminiApiKey = process.env.GEMINI_API_KEY ? String(process.env.GEMINI_API_KEY).trim() : '';
@@ -209,7 +211,9 @@ export const env = {
   SMTP_PASS: smtpPass,
   SMTP_FROM: smtpFrom,
   RESEND_API_KEY: resendApiKey,
-  isSmtpConfigured: Boolean((smtpHost && smtpUser && smtpPass) || resendApiKey),
+  GMAIL_WEBHOOK_URL: gmailWebhookUrl,
+  BREVO_API_KEY: brevoApiKey,
+  isSmtpConfigured: Boolean((smtpHost && smtpUser && smtpPass) || resendApiKey || gmailWebhookUrl || brevoApiKey),
   DEV_EMAIL_PREVIEW_ENABLED: devEmailPreviewEnabled,
   isDevEmailPreviewAllowed: (nodeEnv === 'development') && devEmailPreviewEnabled,
   GEMINI_API_KEY: geminiApiKey,

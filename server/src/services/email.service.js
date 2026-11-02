@@ -20,37 +20,22 @@ let forceTestOutbox = env.isTest;
  * @returns {object|null} Transporter instance or null
  */
 const createTransporter = () => {
-  // In production, strictly require real SMTP configuration
-  if (env.isProduction) {
-    if (!env.isSmtpConfigured) {
-      return null;
-    }
-    return nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_SECURE,
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS
-      }
-    });
+  if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASS) {
+    return null;
   }
-
-  // If SMTP is fully configured in non-production and test outbox is not forced, use real SMTP
-  if (env.isSmtpConfigured && !forceTestOutbox) {
-    return nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_SECURE,
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS
-      }
-    });
-  }
-
-  // Development/Test fallback outbox transport
-  return null;
+  const port = env.SMTP_PORT || 587;
+  const secure = env.SMTP_SECURE || port === 465;
+  return nodemailer.createTransport({
+    host: env.SMTP_HOST,
+    port,
+    secure,
+    auth: {
+      user: env.SMTP_USER,
+      pass: env.SMTP_PASS
+    },
+    connectionTimeout: 8000,
+    greetingTimeout: 8000
+  });
 };
 
 /**
@@ -96,7 +81,62 @@ export const sendMail = async ({ to, subject, html, text }) => {
     html
   };
 
-  // 1. If RESEND_API_KEY is configured, dispatch via Resend HTTPS API (Port 443 - never blocked by cloud firewalls)
+  // 1. If GMAIL_WEBHOOK_URL is configured, dispatch via Google Apps Script (Sends directly from Gmail to ANY email worldwide on Port 443)
+  if (env.GMAIL_WEBHOOK_URL && !forceTestOutbox) {
+    try {
+      const gRes = await fetch(env.GMAIL_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, subject, html, text }),
+        redirect: 'follow'
+      });
+      const gData = await gRes.json().catch(() => null);
+      if (gRes.ok || gData?.success) {
+        return {
+          success: true,
+          messageId: `gmail-${Date.now()}`,
+          isTestOutbox: false
+        };
+      }
+      console.warn(`[Gmail Webhook Notice] Delivery returned: ${gData?.error || gRes.status}`);
+    } catch (gErr) {
+      console.warn(`[Gmail Webhook Error] Could not dispatch via Gmail Webhook: ${gErr.message}`);
+    }
+  }
+
+  // 2. If BREVO_API_KEY is configured, dispatch via Brevo HTTPS REST API (Port 443 - zero domain restriction, sends to ANY recipient)
+  if (env.BREVO_API_KEY && !forceTestOutbox) {
+    try {
+      const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': env.BREVO_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { name: 'Looply', email: env.SMTP_USER || 'ravikishan76768@gmail.com' },
+          to: [{ email: to }],
+          subject,
+          htmlContent: html,
+          textContent: text
+        })
+      });
+      const brevoData = await brevoRes.json().catch(() => null);
+      if (brevoRes.ok && (brevoData?.messageId || brevoRes.status === 201 || brevoRes.status === 200)) {
+        return {
+          success: true,
+          messageId: brevoData?.messageId || `brevo-${Date.now()}`,
+          isTestOutbox: false
+        };
+      }
+      console.warn(`[Brevo Notice] Delivery to ${to} returned: ${brevoData?.message || brevoRes.status}`);
+    } catch (bErr) {
+      console.warn(`[Brevo Error] Could not dispatch via Brevo: ${bErr.message}`);
+    }
+  }
+
+  // 3. If RESEND_API_KEY is configured, dispatch via Resend HTTPS API (Port 443 - never blocked by cloud firewalls)
   if (env.RESEND_API_KEY && !forceTestOutbox) {
     try {
       const resendResponse = await fetch('https://api.resend.com/emails', {
@@ -114,7 +154,7 @@ export const sendMail = async ({ to, subject, html, text }) => {
         })
       });
 
-      const resendData = await resendResponse.json();
+      const resendData = await resendResponse.json().catch(() => null);
       if (resendResponse.ok && resendData?.id) {
         return {
           success: true,

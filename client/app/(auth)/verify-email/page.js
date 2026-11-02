@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -12,6 +12,7 @@ import { authService } from '@/services/authService';
 import { ROUTES } from '@/lib/routes';
 
 function VerifyEmailContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const emailParam = searchParams.get('email') || '';
@@ -24,29 +25,8 @@ function VerifyEmailContent() {
   // Resend state
   const [resendEmail, setResendEmail] = useState(emailParam);
   const [resending, setResending] = useState(false);
-  const [instantVerifying, setInstantVerifying] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
-  const [resendPreviewLink, setResendPreviewLink] = useState(null);
   const [showResendForm, setShowResendForm] = useState(!token);
-
-  const handleInstantVerify = async () => {
-    if (!resendEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resendEmail.trim())) {
-      setResendStatus('Please enter your registered email address above first.');
-      return;
-    }
-
-    setInstantVerifying(true);
-    setResendStatus('');
-    try {
-      const res = await authService.demoVerify({ email: resendEmail.trim() });
-      setVerified(true);
-      setSuccessMessage(res.message || 'Account verified successfully! You can now sign in.');
-    } catch (err) {
-      setResendStatus(err.message || 'Could not verify account.');
-    } finally {
-      setInstantVerifying(false);
-    }
-  };
 
   useEffect(() => {
     let ignore = false;
@@ -77,6 +57,20 @@ function VerifyEmailContent() {
     };
   }, [token]);
 
+  // Automatic redirect to sign in once verified
+  useEffect(() => {
+    if (verified) {
+      const redirectTimer = setTimeout(() => {
+        const destination = `${ROUTES.PUBLIC.LOGIN}?verified=true${
+          emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''
+        }`;
+        router.push(destination);
+      }, 2500);
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [verified, emailParam, router]);
+
   const handleResend = async (e) => {
     e.preventDefault();
     if (!resendEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resendEmail.trim())) {
@@ -86,23 +80,10 @@ function VerifyEmailContent() {
 
     setResending(true);
     setResendStatus('');
-    setResendPreviewLink(null);
 
     try {
       const res = await authService.resendVerification({ email: resendEmail.trim() });
-      setResendStatus(res.message || 'Verification link sent if an account exists.');
-
-      // Refresh the latest local email preview in development
-      if (res?.deliveryMode === 'preview' || process.env.NODE_ENV !== 'production') {
-        try {
-          const devMail = await authService.getDevMailboxLatest();
-          if (devMail?.email?.link) {
-            setResendPreviewLink(devMail.email.link);
-          }
-        } catch {
-          // non-blocking
-        }
-      }
+      setResendStatus(res.message || 'A verification link has been sent to your email address.');
     } catch (err) {
       setResendStatus(err.message || 'Failed to resend verification email.');
     } finally {
@@ -111,7 +92,7 @@ function VerifyEmailContent() {
   };
 
   return (
-    <Card className="shadow-md border-[#263640] bg-[#151F29] text-center">
+    <Card className="shadow-2xl shadow-black/50 border-[#263640] bg-[#151F29] text-center">
       <CardHeader className="items-center pb-2 border-b border-[#263640]">
         <div className="w-14 h-14 rounded-2xl bg-[#1D2A35] border border-[#263640] flex items-center justify-center text-[#19D3E3] mb-2 shadow-xs">
           <Icon name="mail" className="w-7 h-7" />
@@ -119,9 +100,9 @@ function VerifyEmailContent() {
         <CardTitle className="text-xl font-bold text-[#F4F8FA]">
           {verified ? 'Email Verified!' : token ? 'Verifying Email' : 'Check your email'}
         </CardTitle>
-        <CardDescription className="max-w-xs mx-auto">
+        <CardDescription className="max-w-xs mx-auto text-xs text-[#9BAAB4]">
           {verified
-            ? 'Your email has been confirmed. You can now access your Looply account.'
+            ? 'Your email has been confirmed. Redirecting to sign in...'
             : token
             ? 'Confirming your Looply account credentials...'
             : "We've sent a verification link to your registered email address."}
@@ -138,50 +119,68 @@ function VerifyEmailContent() {
         )}
 
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] text-left space-y-1">
-            <p className="font-semibold">Verification Failed</p>
-            <p>{errorMessage}</p>
-            <p className="text-[#9BAAB4] pt-1">
-              💡 <em>You can still activate your account immediately by entering your email below and clicking <strong>Instant Verify</strong>.</em>
+          <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] text-left space-y-2">
+            <p className="font-semibold flex items-center gap-1.5">
+              <Icon name="alertCircle" className="w-4 h-4" />
+              Verification Link Expired or Invalid
             </p>
+            <p className="text-[#9BAAB4]">
+              {errorMessage}
+            </p>
+            <p className="text-[#9BAAB4]">
+              If you have already verified your account, you can sign in directly. Otherwise, request a new verification link below.
+            </p>
+            <div className="pt-1">
+              <Link
+                href={ROUTES.PUBLIC.LOGIN}
+                className="inline-block px-3 py-1.5 rounded-lg bg-[#19D3E3] text-[#080D12] font-bold text-xs hover:bg-[#00B8C8] transition-colors"
+              >
+                Go to Sign In &rarr;
+              </Link>
+            </div>
           </div>
         )}
 
         {successMessage && (
-          <div className="p-4 rounded-xl bg-[#32D583]/10 border border-[#32D583]/30 text-xs text-[#32D583] text-left space-y-1">
-            <p className="font-semibold text-[#F4F8FA]">Success!</p>
-            <p>{successMessage}</p>
+          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 text-left space-y-2">
+            <p className="font-semibold flex items-center gap-1.5 text-emerald-300">
+              <Icon name="check" className="w-4 h-4" />
+              Email Successfully Verified!
+            </p>
+            <p className="text-[#9BAAB4]">{successMessage}</p>
+            <p className="text-[11px] text-[#9BAAB4] italic">
+              Redirecting to sign in automatically in a few seconds...
+            </p>
           </div>
         )}
 
         {verified ? (
           <Button
-            href={ROUTES.PUBLIC.LOGIN}
+            href={`${ROUTES.PUBLIC.LOGIN}?verified=true${
+              emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''
+            }`}
             variant="primary"
             size="lg"
             className="w-full shadow-md shadow-[#19D3E3]/20 font-bold"
           >
-            Sign In to Looply &rarr;
+            Sign In to Looply Now &rarr;
           </Button>
         ) : (
           <>
             {/* Informational Instructions */}
             <div className="p-4 rounded-xl bg-[#101A22] border border-[#263640] text-xs text-[#9BAAB4] text-left space-y-2">
-              <p className="font-semibold text-[#F4F8FA]">Verification Options:</p>
-              <ul className="list-disc list-inside space-y-1.5 text-[#9BAAB4]">
-                <li>
-                  <strong className="text-[#F4F8FA]">Email Link:</strong> Click the confirmation link delivered to your registered inbox.
-                </li>
-                <li>
-                  <strong className="text-[#19D3E3]">⚡ Instant Verify (Demo Mode):</strong> Enter your email below and click the Instant Verify button to activate your account immediately without waiting for email delivery.
-                </li>
-              </ul>
+              <p className="font-semibold text-[#F4F8FA]">Next Steps:</p>
+              <ol className="list-decimal list-inside space-y-1.5 text-[#9BAAB4]">
+                <li>Open your email inbox (check spam/junk if not received).</li>
+                <li>Click the secure verification link inside the email.</li>
+                <li>Sign in with your email and password to access Looply.</li>
+              </ol>
             </div>
 
             {/* Resend Verification Form */}
             {showResendForm && (
               <form onSubmit={handleResend} className="pt-2 text-left space-y-3">
-                <FormField id="resend-email" label="Account Email:">
+                <FormField id="resend-email" label="Need a new verification link?">
                   <Input
                     id="resend-email"
                     type="email"
@@ -192,57 +191,20 @@ function VerifyEmailContent() {
                   />
                 </FormField>
 
-                <div className="flex flex-col gap-2">
-                  <Button
-                    type="submit"
-                    variant="outline"
-                    size="md"
-                    className="w-full"
-                    disabled={resending || instantVerifying}
-                  >
-                    {resending ? 'Sending Link...' : 'Resend Verification Email'}
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="md"
-                    className="w-full bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/40 hover:bg-[#19D3E3] hover:text-[#080D12] font-semibold transition-all shadow-xs"
-                    disabled={instantVerifying || resending}
-                    onClick={handleInstantVerify}
-                  >
-                    {instantVerifying ? 'Activating Account...' : '⚡ Instant Verify & Activate Account'}
-                  </Button>
-                </div>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="md"
+                  className="w-full font-bold"
+                  disabled={resending}
+                >
+                  {resending ? 'Sending Verification Link...' : 'Resend Verification Email'}
+                </Button>
 
                 {resendStatus && (
-                  <p className="text-xs text-center text-[#9BAAB4] mt-2">
+                  <p className="text-xs text-center text-[#19D3E3] mt-2 font-medium">
                     {resendStatus}
                   </p>
-                )}
-
-                {resendPreviewLink && (
-                  <div className="p-3 rounded-xl bg-[#101A22] border border-[#19D3E3]/30 text-xs text-center space-y-2 mt-2">
-                    <p className="font-semibold text-[#19D3E3]">
-                      New verification link generated in local dev mailbox:
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                      <a
-                        href={resendPreviewLink}
-                        className="inline-block px-3 py-1.5 rounded-lg bg-[#19D3E3] text-[#080D12] font-bold text-xs hover:bg-[#00B8C8] transition-colors"
-                      >
-                        Verify with New Link &rarr;
-                      </a>
-                      <a
-                        href="http://localhost:5000/api/__dev/mailbox/latest"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-block px-3 py-1.5 rounded-lg border border-[#263640] bg-[#151F29] text-[#19D3E3] font-medium text-xs hover:bg-[#1D2A35] transition-colors"
-                      >
-                        Open Dev Mailbox
-                      </a>
-                    </div>
-                  </div>
                 )}
               </form>
             )}
@@ -252,7 +214,7 @@ function VerifyEmailContent() {
                 href={ROUTES.PUBLIC.LOGIN}
                 variant="ghost"
                 size="md"
-                className="w-full text-xs text-[#9BAAB4]"
+                className="w-full text-xs text-[#9BAAB4] hover:text-[#F4F8FA]"
               >
                 Back to Sign In
               </Button>
@@ -278,7 +240,7 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <Card className="shadow-md border-[#263640] bg-[#151F29] text-center p-8">
+        <Card className="shadow-2xl shadow-black/50 border-[#263640] bg-[#151F29] text-center p-8">
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-2 border-[#263640] border-t-[#19D3E3] rounded-full animate-spin" />
             <p className="text-xs text-[#9BAAB4]">Loading verification portal...</p>

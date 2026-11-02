@@ -29,21 +29,6 @@ export default function RegisterForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [registeredState, setRegisteredState] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [registerInstantVerifying, setRegisterInstantVerifying] = useState(false);
-  const [registerVerifiedNotice, setRegisterVerifiedNotice] = useState(false);
-
-  const handleInstantVerifyFromRegister = async () => {
-    if (!registeredState?.email) return;
-    setRegisterInstantVerifying(true);
-    try {
-      await authService.demoVerify({ email: registeredState.email });
-      setRegisterVerifiedNotice(true);
-    } catch {
-      router.push(ROUTES.PUBLIC.LOGIN);
-    } finally {
-      setRegisterInstantVerifying(false);
-    }
-  };
 
   const validateForm = () => {
     const errors = {};
@@ -133,127 +118,55 @@ export default function RegisterForm() {
 
   if (registeredState) {
     return (
-      <Card className="shadow-md border-[#263640] bg-[#151F29]">
+      <Card className="shadow-2xl shadow-black/50 border-[#263640] bg-[#151F29]">
         <CardHeader className="text-center pb-2 border-b border-[#263640]">
           <CardTitle className="text-xl font-bold text-[#F4F8FA]">Account Registration</CardTitle>
-          <CardDescription>
-            {registeredState.deliveryMode === 'smtp'
-              ? 'Complete email verification to activate your account'
-              : 'Local development verification preview'}
+          <CardDescription className="text-xs text-[#9BAAB4]">
+            Complete email verification to activate your Looply account
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6 pt-4 text-[#F4F8FA]" data-testid="registration-success-state">
-          {registeredState.deliveryMode === 'smtp' && (
-            <div className="space-y-4 text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-[#32D583]/15 text-[#32D583] border border-[#32D583]/30 flex items-center justify-center">
-                <Icon name="mail" className="w-6 h-6" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-bold text-[#F4F8FA]">
-                  Verification email sent. Please check your inbox.
-                </h3>
-                <p className="text-xs text-[#9BAAB4]">
-                  We sent a secure verification link to <strong className="text-[#19D3E3]">{registeredState.email}</strong>. Please check your inbox to activate your account.
-                </p>
-              </div>
-              <div className="pt-2">
-                <Button
-                  href={`${ROUTES.PUBLIC.VERIFY_EMAIL}?email=${encodeURIComponent(registeredState.email)}`}
-                  variant="primary"
-                  size="md"
-                  data-testid="continue-to-login-btn"
-                  className="w-full sm:w-auto font-bold"
-                >
-                  Continue to Email Verification &rarr;
-                </Button>
+          <div className="space-y-4 text-center">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center shadow-sm shadow-[#19D3E3]/20">
+              <Icon name="mail" className="w-7 h-7" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-bold text-[#F4F8FA]">
+                Verification Email Dispatched!
+              </h3>
+              <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto leading-relaxed">
+                We sent a secure verification link to <strong className="text-[#19D3E3] font-semibold">{registeredState.email}</strong>.
+              </p>
+              <div className="p-3.5 rounded-xl bg-[#101A22] border border-[#263640] text-xs text-[#9BAAB4] text-left space-y-1.5 max-w-sm mx-auto">
+                <p className="font-semibold text-[#F4F8FA]">What to do next:</p>
+                <ol className="list-decimal list-inside space-y-1 text-[#9BAAB4]">
+                  <li>Check your email inbox (and spam/junk folder).</li>
+                  <li>Click the confirmation link to activate your account.</li>
+                  <li>Once verified, sign in to start exploring Looply!</li>
+                </ol>
               </div>
             </div>
-          )}
-
-          {registeredState.deliveryMode === 'preview' && (
-            <div className="space-y-4 text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center">
-                <Icon name="mail" className="w-6 h-6" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-base font-bold text-[#F4F8FA]">
-                  Verification email created in local preview mailbox.
-                </h3>
-                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto leading-relaxed">
-                  Real SMTP credentials are not configured in local development. Retrieve your verification link directly from the local development preview mailbox below:
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                <a
-                  href="http://localhost:5000/api/__dev/mailbox/latest"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#1D2A35] hover:bg-[#23333E] text-[#19D3E3] border border-[#19D3E3]/30 font-medium text-xs shadow-sm transition-colors w-full sm:w-auto"
-                >
-                  <Icon name="mail" className="w-4 h-4" />
-                  <span>Open Local Email Preview</span>
-                </a>
-                {registeredState.previewLink && (
-                  <a
-                    href={registeredState.previewLink}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#19D3E3] text-[#080D12] hover:bg-[#00B8C8] font-bold text-xs shadow-sm transition-colors w-full sm:w-auto"
-                  >
-                    <span>Verify Account Now &rarr;</span>
-                  </a>
-                )}
-              </div>
-              <div className="pt-2">
-                <Link
-                  href={ROUTES.PUBLIC.LOGIN}
-                  data-testid="continue-to-login-btn"
-                  className="text-xs font-semibold text-[#19D3E3] hover:underline inline-block"
-                >
-                  Continue to Sign In &rarr;
-                </Link>
-              </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Button
+                href={`${ROUTES.PUBLIC.VERIFY_EMAIL}?email=${encodeURIComponent(registeredState.email)}`}
+                variant="primary"
+                size="md"
+                data-testid="continue-to-login-btn"
+                className="w-full sm:w-auto font-bold shadow-md shadow-[#19D3E3]/20"
+              >
+                Go to Verification Page &rarr;
+              </Button>
+              <Button
+                href={ROUTES.PUBLIC.LOGIN}
+                variant="ghost"
+                size="md"
+                className="w-full sm:w-auto text-xs text-[#9BAAB4] hover:text-[#F4F8FA]"
+              >
+                Back to Sign In
+              </Button>
             </div>
-          )}
-
-          {registeredState.deliveryMode === 'unavailable' && (
-            <div className="space-y-4 text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center">
-                <Icon name="checkCircle" className="w-6 h-6 text-[#19D3E3]" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-bold text-[#F4F8FA]">
-                  {registerVerifiedNotice ? 'Account Verified Successfully!' : 'Account Created Successfully!'}
-                </h3>
-                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto">
-                  {registerVerifiedNotice
-                    ? 'Your account has been confirmed. You can now sign in with your credentials.'
-                    : `Account registered for ${registeredState.email}. Click below to activate your account and sign in immediately:`}
-                </p>
-              </div>
-              <div className="pt-2">
-                {registerVerifiedNotice ? (
-                  <Button
-                    href={ROUTES.PUBLIC.LOGIN}
-                    variant="primary"
-                    size="md"
-                    className="w-full sm:w-auto font-bold"
-                  >
-                    Proceed to Sign In &rarr;
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleInstantVerifyFromRegister}
-                    variant="primary"
-                    size="md"
-                    disabled={registerInstantVerifying}
-                    className="w-full sm:w-auto font-bold bg-[#19D3E3] text-[#080D12] hover:bg-[#00B8C8]"
-                  >
-                    {registerInstantVerifying ? 'Verifying Account...' : '⚡ Verify & Proceed to Sign In'}
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
+          </div>
         </CardContent>
       </Card>
     );

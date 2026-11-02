@@ -15,6 +15,8 @@ export default function LoginForm() {
   const { login, registerAdmin } = useAuth();
   const searchParams = useSearchParams();
   const isAdminMode = searchParams ? searchParams.get('admin') === 'true' : false;
+  const isVerifiedParam = searchParams ? searchParams.get('verified') === 'true' : false;
+  const emailParam = searchParams ? searchParams.get('email') || '' : '';
 
   const [isCreateAdmin, setIsCreateAdmin] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -27,6 +29,15 @@ export default function LoginForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    if (emailParam) {
+      setEmail(emailParam);
+    }
+    if (isVerifiedParam) {
+      setSuccessMessage('Your email has been verified successfully! You can now sign in.');
+    }
+  }, [emailParam, isVerifiedParam]);
 
   const validateForm = () => {
     const errors = {};
