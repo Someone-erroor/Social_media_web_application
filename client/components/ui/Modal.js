@@ -99,7 +99,7 @@ export default function Modal({
       {/* Modal Dialog Card */}
       <div
         ref={modalRef}
-        className={`relative w-full ${sizeClasses} bg-[#151F29] rounded-2xl border border-[#263640] shadow-2xl shadow-black/60 overflow-hidden z-10 transition-transform animate-fade-in my-8 ${className}`}
+        className={`relative w-full ${sizeClasses} bg-[#151F29] rounded-2xl border border-[#263640] shadow-2xl shadow-black/80 overflow-hidden z-10 animate-slide-up my-8 ${className}`}
       >
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-[#263640]">

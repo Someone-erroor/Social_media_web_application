@@ -109,7 +109,7 @@ export default function FeedPage() {
 
       {/* Error state */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] flex items-center justify-between">
           <span>{errorMessage}</span>
           <Button
             type="button"

@@ -23,22 +23,22 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32">
           {/* Subtle Gen Z Glow Spheres */}
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[#19D3E3]/15 via-[#FF6F61]/10 to-transparent blur-3xl rounded-full pointer-events-none" />
-          <div className="absolute -top-12 -left-20 w-80 h-80 bg-[#19D3E3]/10 blur-3xl rounded-full pointer-events-none" />
-          <div className="absolute bottom-10 -right-20 w-96 h-96 bg-[#FF6F61]/10 blur-3xl rounded-full pointer-events-none" />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[#19D3E3]/15 via-[#FF6F61]/10 to-transparent blur-3xl rounded-full pointer-events-none animate-glow-pulse" />
+          <div className="absolute -top-12 -left-20 w-80 h-80 bg-[#19D3E3]/10 blur-3xl rounded-full pointer-events-none animate-float-slow" />
+          <div className="absolute bottom-10 -right-20 w-96 h-96 bg-[#FF6F61]/10 blur-3xl rounded-full pointer-events-none animate-float" />
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#151F29] border border-[#19D3E3]/30 shadow-lg shadow-[#19D3E3]/5">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#151F29] border border-[#19D3E3]/30 shadow-lg shadow-[#19D3E3]/5 animate-fade-in">
                 <span className="flex h-2 w-2 rounded-full bg-[#19D3E3] animate-pulse"></span>
                 <span className="text-xs font-semibold text-[#19D3E3] tracking-wide uppercase">
                   A New Era of Authentic Social Interaction
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] animate-fade-in">
                 Connect authentically.{' '}
-                <span className="bg-gradient-to-r from-[#19D3E3] via-[#00B8C8] to-[#FF6F61] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#19D3E3] via-[#00B8C8] to-[#FF6F61] bg-clip-text text-transparent animate-gradient-shift">
                   Share your voice.
                 </span>{' '}
                 Express who you are.
@@ -86,8 +86,8 @@ export default function HomePage() {
             </div>
 
             {/* Product UI Mockup Card Preview */}
-            <div className="mt-14 max-w-4xl mx-auto">
-              <div className="rounded-3xl p-3 bg-gradient-to-br from-[#19D3E3]/20 via-[#1D2A35] to-[#FF6F61]/20 border border-[#263640] shadow-2xl shadow-black/80">
+            <div className="mt-14 max-w-4xl mx-auto transition-transform duration-500 hover:scale-[1.01] animate-slide-up">
+              <div className="rounded-3xl p-3 bg-gradient-to-br from-[#19D3E3]/25 via-[#1D2A35] to-[#FF6F61]/25 border border-[#263640] shadow-2xl shadow-black/80 hover:border-[#19D3E3]/50 transition-colors">
                 <div className="rounded-2xl bg-[#151F29] border border-[#263640] p-6 sm:p-8 space-y-6">
                   {/* Mock Post Card */}
                   <div className="flex items-start justify-between gap-4">
@@ -145,8 +145,8 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Feature 1 */}
-              <div className="p-6 rounded-2xl bg-[#151F29] border border-[#263640] hover:border-[#19D3E3]/50 transition-all shadow-md group">
-                <div className="w-12 h-12 rounded-2xl bg-[#1D2A35] text-[#19D3E3] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform border border-[#263640]">
+              <div className="p-6 rounded-2xl bg-[#151F29] border border-[#263640] interactive-card shadow-md group">
+                <div className="w-12 h-12 rounded-2xl bg-[#1D2A35] text-[#19D3E3] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 border border-[#263640]">
                   <Icon name="feed" className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-semibold text-[#F4F8FA] mb-2 group-hover:text-[#19D3E3] transition-colors">
@@ -158,8 +158,8 @@ export default function HomePage() {
               </div>
 
               {/* Feature 2 */}
-              <div className="p-6 rounded-2xl bg-[#151F29] border border-[#263640] hover:border-[#FF6F61]/50 transition-all shadow-md group">
-                <div className="w-12 h-12 rounded-2xl bg-[#1D2A35] text-[#FF6F61] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform border border-[#263640]">
+              <div className="p-6 rounded-2xl bg-[#151F29] border border-[#263640] interactive-card shadow-md group">
+                <div className="w-12 h-12 rounded-2xl bg-[#1D2A35] text-[#FF6F61] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 border border-[#263640]">
                   <Icon name="sparkles" className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-semibold text-[#F4F8FA] mb-2 group-hover:text-[#FF6F61] transition-colors">
@@ -171,8 +171,8 @@ export default function HomePage() {
               </div>
 
               {/* Feature 3 */}
-              <div className="p-6 rounded-2xl bg-[#151F29] border border-[#263640] hover:border-[#19D3E3]/50 transition-all shadow-md group">
-                <div className="w-12 h-12 rounded-2xl bg-[#1D2A35] text-[#19D3E3] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform border border-[#263640]">
+              <div className="p-6 rounded-2xl bg-[#151F29] border border-[#263640] interactive-card shadow-md group">
+                <div className="w-12 h-12 rounded-2xl bg-[#1D2A35] text-[#19D3E3] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 border border-[#263640]">
                   <Icon name="shield" className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-semibold text-[#F4F8FA] mb-2 group-hover:text-[#19D3E3] transition-colors">

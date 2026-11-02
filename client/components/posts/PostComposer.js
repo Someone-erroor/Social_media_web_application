@@ -151,7 +151,7 @@ export default function PostComposer({ onPostCreated }) {
   };
 
   return (
-    <Card className="border-[#263640] bg-[#151F29] shadow-md">
+    <Card className="border-[#263640] bg-[#151F29] shadow-md transition-all duration-300 hover:border-[#19D3E3]/40 hover:shadow-lg hover:shadow-[#19D3E3]/5">
       <CardContent className="p-4 sm:p-5 space-y-3">
         {isUnverified && (
           <div className="p-3 rounded-xl bg-[#F5B942]/10 border border-[#F5B942]/30 text-xs text-[#F5B942] flex items-center justify-between">

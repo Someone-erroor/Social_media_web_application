@@ -19,7 +19,7 @@ export default function Input({
   ...props
 }) {
   const baseClasses =
-    'w-full rounded-xl border bg-[#101A22] px-3.5 py-2.5 text-sm text-[#F4F8FA] transition-colors placeholder:text-[#9BAAB4] focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-[#080D12] disabled:bg-[#080D12] disabled:text-[#9BAAB4]/50 disabled:cursor-not-allowed';
+    'w-full rounded-xl border bg-[#101A22] px-3.5 py-2.5 text-sm text-[#F4F8FA] transition-all duration-200 placeholder:text-[#9BAAB4] focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-[#080D12] focus:shadow-md focus:shadow-[#19D3E3]/10 disabled:bg-[#080D12] disabled:text-[#9BAAB4]/50 disabled:cursor-not-allowed';
 
   const stateClasses = error
     ? 'border-[#FF5C70] focus:border-[#FF5C70] focus:ring-[#FF5C70]/20'

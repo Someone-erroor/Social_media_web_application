@@ -286,7 +286,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
   };
 
   return (
-    <Card className="border-[#263640] bg-[#151F29] shadow-md hover:border-[#19D3E3]/40 transition-colors">
+    <Card className="border-[#263640] bg-[#151F29] shadow-md interactive-card animate-fade-in">
       <CardContent className="p-4 sm:p-5 space-y-3">
         {errorMessage && (
           <div className="p-2.5 rounded-lg bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70]">

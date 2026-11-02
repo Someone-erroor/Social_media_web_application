@@ -47,7 +47,7 @@ export default function UserSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
                 isActive
                   ? 'bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 font-semibold shadow-sm'
                   : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
@@ -56,8 +56,8 @@ export default function UserSidebar() {
             >
               <Icon
                 name={item.icon}
-                className={`w-5 h-5 shrink-0 ${
-                  isActive ? 'text-[#19D3E3]' : 'text-[#9BAAB4] group-hover:text-[#F4F8FA]'
+                className={`w-5 h-5 shrink-0 transition-colors ${
+                  isActive ? 'text-[#19D3E3]' : 'text-[#9BAAB4]'
                 }`}
               />
               <span>{item.label}</span>

@@ -18,10 +18,10 @@ export default function Logo({
   const isSmall = size === 'small';
 
   const content = (
-    <div className="flex items-center gap-3 select-none group">
+    <div className="flex items-center gap-3 select-none group cursor-pointer">
       {/* Brand Mark Icon */}
       <div
-        className={`flex items-center justify-center rounded-2xl shadow-sm border border-[#263640] transition-transform group-hover:scale-105 shrink-0 ${
+        className={`flex items-center justify-center rounded-2xl shadow-sm border border-[#263640] transition-all duration-300 group-hover:scale-105 group-hover:border-[#19D3E3]/50 group-hover:shadow-md group-hover:shadow-[#19D3E3]/20 shrink-0 ${
           inverted ? 'bg-[#1D2A35] text-white' : 'bg-[#151F29]'
         } ${
           isLarge ? 'w-14 h-14' : isSmall ? 'w-8 h-8 rounded-xl' : 'w-10 h-10'
@@ -31,7 +31,7 @@ export default function Logo({
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={isLarge ? 'w-9 h-9' : isSmall ? 'w-5 h-5' : 'w-6 h-6'}
+          className={`transition-transform duration-500 group-hover:rotate-6 ${isLarge ? 'w-9 h-9' : isSmall ? 'w-5 h-5' : 'w-6 h-6'}`}
         >
           <defs>
             <linearGradient id="logo-grad" x1="8" y1="12" x2="56" y2="52" gradientUnits="userSpaceOnUse">
