@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import Card, { CardContent } from '@/components/ui/Card';
@@ -9,6 +9,8 @@ import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import EmptyState from '@/components/ui/EmptyState';
 import PostCard from '@/components/posts/PostCard';
+import FollowButton from '@/components/profile/FollowButton';
+import UserListModal from '@/components/profile/UserListModal';
 import { useAuth } from '@/context/AuthContext';
 import { profileService } from '@/services/profileService';
 import { postService } from '@/services/postService';
@@ -25,6 +27,12 @@ export default function UserProfilePage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [postsError, setPostsError] = useState('');
   const [reloadTrigger, setReloadTrigger] = useState(0);
+
+  // User list modal state (Followers / Following)
+  const [userListModalOpen, setUserListModalOpen] = useState(false);
+  const [userListType, setUserListType] = useState('followers');
+  const [userListUsers, setUserListUsers] = useState([]);
+  const [userListLoading, setUserListLoading] = useState(false);
 
   const isOwnProfile = currentUser && (currentUser._id === userId || currentUser.id === userId);
 
@@ -79,6 +87,50 @@ export default function UserProfilePage() {
 
   const handlePostDeleted = (postId) => {
     setPosts((prev) => prev.filter((p) => p._id !== postId));
+  };
+
+  const handleFollowChange = useCallback((isFollowing, result) => {
+    setProfile((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        isFollowing,
+        followersCount:
+          typeof result?.followersCount === 'number'
+            ? result.followersCount
+            : isFollowing
+            ? (prev.followersCount || 0) + 1
+            : Math.max(0, (prev.followersCount || 1) - 1)
+      };
+    });
+  }, []);
+
+  const handleOpenFollowers = async () => {
+    setUserListType('followers');
+    setUserListModalOpen(true);
+    setUserListLoading(true);
+    try {
+      const res = await profileService.getFollowers(userId);
+      setUserListUsers(res?.followers || []);
+    } catch {
+      setUserListUsers([]);
+    } finally {
+      setUserListLoading(false);
+    }
+  };
+
+  const handleOpenFollowing = async () => {
+    setUserListType('following');
+    setUserListModalOpen(true);
+    setUserListLoading(true);
+    try {
+      const res = await profileService.getFollowing(userId);
+      setUserListUsers(res?.following || []);
+    } catch {
+      setUserListUsers([]);
+    } finally {
+      setUserListLoading(false);
+    }
   };
 
   const memberSince = profile?.createdAt
@@ -143,11 +195,11 @@ export default function UserProfilePage() {
       ) : (
         <>
           {/* Profile Header Card */}
-          <Card className="overflow-hidden border-[#263640] bg-[#151F29]">
-            <div className="h-28 bg-linear-to-r from-[#19D3E3]/60 via-[#101A22] to-[#FF6F61]/60" />
+          <Card className="overflow-hidden border-[#263640] bg-[#151F29] shadow-lg shadow-black/40">
+            <div className="h-28 bg-gradient-to-r from-[#19D3E3]/60 via-[#101A22] to-[#FF6F61]/60" />
 
             <CardContent className="relative pt-0 pb-6 px-6">
-              <div className="-mt-12 mb-4 flex items-end justify-between">
+              <div className="-mt-12 mb-4 flex items-end justify-between gap-3">
                 <div className="rounded-full ring-4 ring-[#101A22] bg-[#101A22]">
                   <Avatar
                     name={profile.fullName}
@@ -156,16 +208,23 @@ export default function UserProfilePage() {
                   />
                 </div>
 
-                {isOwnProfile && (
-                  <Button
-                    href={ROUTES.USER.PROFILE_EDIT}
-                    variant="outline"
-                    size="sm"
-                    className="mt-2"
-                  >
-                    Edit Profile
-                  </Button>
-                )}
+                <div className="pt-2">
+                  {isOwnProfile ? (
+                    <Button
+                      href={ROUTES.USER.PROFILE_EDIT}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Edit Profile
+                    </Button>
+                  ) : (
+                    <FollowButton
+                      userId={userId}
+                      isFollowing={Boolean(profile.isFollowing)}
+                      onFollowChange={handleFollowChange}
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -179,7 +238,7 @@ export default function UserProfilePage() {
                 </div>
 
                 {profile.profile?.bio ? (
-                  <p className="text-sm text-[#9BAAB4] max-w-xl">
+                  <p className="text-sm text-[#9BAAB4] max-w-xl leading-relaxed">
                     {profile.profile.bio}
                   </p>
                 ) : (
@@ -187,6 +246,33 @@ export default function UserProfilePage() {
                     This member has not written a bio yet.
                   </p>
                 )}
+
+                {/* Follower / Following Metrics Bar */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-t border-[#263640] text-xs">
+                  <button
+                    type="button"
+                    onClick={handleOpenFollowers}
+                    className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                    title="View followers"
+                  >
+                    <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                      {profile.followersCount ?? 0}
+                    </span>
+                    <span>Followers</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenFollowing}
+                    className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                    title="View following"
+                  >
+                    <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                      {profile.followingCount ?? 0}
+                    </span>
+                    <span>Following</span>
+                  </button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -198,24 +284,14 @@ export default function UserProfilePage() {
             </h2>
 
             {postsError ? (
-              <div className="p-5 rounded-2xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-center space-y-3">
-                <p className="text-sm text-[#FF6F61]">{postsError}</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setPostsError('');
-                    setReloadTrigger((n) => n + 1);
-                  }}
-                >
-                  Retry Loading Posts
-                </Button>
+              <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
+                {postsError}
               </div>
             ) : posts.length === 0 ? (
               <EmptyState
                 icon="posts"
-                title="No Posts Yet"
-                description={`${profile.fullName} hasn't published any posts on Looply yet.`}
+                title="No Publications Yet"
+                description={`${profile.fullName} has not published any posts on Looply yet.`}
               />
             ) : (
               <div className="space-y-4">
@@ -230,6 +306,16 @@ export default function UserProfilePage() {
               </div>
             )}
           </div>
+
+          {/* Followers / Following List Modal */}
+          <UserListModal
+            isOpen={userListModalOpen}
+            onClose={() => setUserListModalOpen(false)}
+            type={userListType}
+            users={userListUsers}
+            loading={userListLoading}
+            profileName={profile.fullName}
+          />
         </>
       )}
     </div>

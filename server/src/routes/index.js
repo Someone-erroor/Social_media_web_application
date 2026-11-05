@@ -22,9 +22,10 @@ router.use('/auth', authRoutes);
 // Mount administrative routes at /admin (accessible via /api/admin)
 router.use('/admin', adminRoutes);
 
-// Mount user profile routes at /profile and /profiles (e.g. /api/profile/me, /api/profiles/:userId)
+// Mount user profile routes at /profile, /profiles, and /users (e.g. /api/profile/me, /api/profiles/:userId, /api/users/:userId/follow)
 router.use('/profile', profileRoutes);
 router.use('/profiles', profileRoutes);
+router.use('/users', profileRoutes);
 
 // Mount post management routes at /posts (accessible via /api/posts)
 router.use('/posts', postRoutes);

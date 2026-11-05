@@ -67,7 +67,7 @@ export const getPublicProfile = async (req, res, next) => {
       });
     }
 
-    const publicProfile = await getPublicProfileService(userId);
+    const publicProfile = await getPublicProfileService(userId, req.user?._id || null);
 
     return res.status(200).json({
       success: true,

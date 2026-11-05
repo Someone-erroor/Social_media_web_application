@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import EmptyState from '@/components/ui/EmptyState';
 import PostCard from '@/components/posts/PostCard';
+import UserListModal from '@/components/profile/UserListModal';
 import { useAuth } from '@/context/AuthContext';
 import { profileService } from '@/services/profileService';
 import { postService } from '@/services/postService';
@@ -24,6 +25,12 @@ export default function ProfilePage() {
   const [profileError, setProfileError] = useState('');
   const [postsError, setPostsError] = useState('');
   const [reloadTrigger, setReloadTrigger] = useState(0);
+
+  // User list modal state (Followers / Following)
+  const [userListModalOpen, setUserListModalOpen] = useState(false);
+  const [userListType, setUserListType] = useState('followers');
+  const [userListUsers, setUserListUsers] = useState([]);
+  const [userListLoading, setUserListLoading] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -77,6 +84,38 @@ export default function ProfilePage() {
     setPosts((prev) => prev.filter((p) => p._id !== postId));
   };
 
+  const handleOpenFollowers = async () => {
+    const currentId = profile?._id || authUser?._id;
+    if (!currentId) return;
+    setUserListType('followers');
+    setUserListModalOpen(true);
+    setUserListLoading(true);
+    try {
+      const res = await profileService.getFollowers(currentId);
+      setUserListUsers(res?.followers || []);
+    } catch {
+      setUserListUsers([]);
+    } finally {
+      setUserListLoading(false);
+    }
+  };
+
+  const handleOpenFollowing = async () => {
+    const currentId = profile?._id || authUser?._id;
+    if (!currentId) return;
+    setUserListType('following');
+    setUserListModalOpen(true);
+    setUserListLoading(true);
+    try {
+      const res = await profileService.getFollowing(currentId);
+      setUserListUsers(res?.following || []);
+    } catch {
+      setUserListUsers([]);
+    } finally {
+      setUserListLoading(false);
+    }
+  };
+
   const memberSince = profile?.createdAt
     ? new Date(profile.createdAt).toLocaleDateString(undefined, {
         month: 'long',
@@ -120,8 +159,8 @@ export default function ProfilePage() {
       )}
 
       {/* Profile Header Card */}
-      <Card className="overflow-hidden border-[#263640] bg-[#151F29]">
-        <div className="h-28 bg-linear-to-r from-[#19D3E3]/80 via-[#101A22] to-[#FF6F61]/80" />
+      <Card className="overflow-hidden border-[#263640] bg-[#151F29] shadow-lg shadow-black/40">
+        <div className="h-28 bg-gradient-to-r from-[#19D3E3]/80 via-[#101A22] to-[#FF6F61]/80" />
 
         <CardContent className="relative pt-0 pb-6 px-6">
           <div className="-mt-12 mb-4 flex items-end justify-between">
@@ -186,6 +225,33 @@ export default function ProfilePage() {
                 )}
               </span>
             </div>
+
+            {/* Follower / Following Metrics Bar */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-t border-[#263640] text-xs">
+              <button
+                type="button"
+                onClick={handleOpenFollowers}
+                className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                title="View your followers"
+              >
+                <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                  {profile?.followersCount ?? 0}
+                </span>
+                <span>Followers</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleOpenFollowing}
+                className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                title="View who you are following"
+              >
+                <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                  {profile?.followingCount ?? 0}
+                </span>
+                <span>Following</span>
+              </button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -198,7 +264,7 @@ export default function ProfilePage() {
 
         {loading ? (
           <div className="space-y-4">
-            {[1, 2].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div
                 key={i}
                 className="p-5 rounded-2xl bg-[#151F29] border border-[#263640] shadow-xs space-y-3 animate-pulse"
@@ -212,34 +278,23 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2 pt-1">
                   <div className="w-full h-3 bg-[#1D2A35] rounded" />
-                  <div className="w-3/4 h-3 bg-[#1D2A35]/60 rounded" />
+                  <div className="w-4/5 h-3 bg-[#1D2A35]/60 rounded" />
                 </div>
               </div>
             ))}
           </div>
         ) : postsError ? (
-          <div className="p-5 rounded-2xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-center space-y-3">
-            <p className="text-sm text-[#FF6F61]">{postsError}</p>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setLoading(true);
-                setPostsError('');
-                setReloadTrigger((n) => n + 1);
-              }}
-            >
-              Retry Loading Publications
-            </Button>
+          <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
+            {postsError}
           </div>
         ) : posts.length === 0 ? (
           <EmptyState
             icon="posts"
-            title="No Posts Published Yet"
-            description="You haven't published any thoughts yet. Head over to your feed and publish your first post!"
+            title="No Publications Yet"
+            description="You have not published any posts on Looply yet. Share your thoughts with the community from the Feed!"
             action={
               <Button href={ROUTES.USER.FEED} variant="primary" size="sm">
-                Create First Post
+                Go to Feed
               </Button>
             }
           />
@@ -256,6 +311,16 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+
+      {/* Followers / Following List Modal */}
+      <UserListModal
+        isOpen={userListModalOpen}
+        onClose={() => setUserListModalOpen(false)}
+        type={userListType}
+        users={userListUsers}
+        loading={userListLoading}
+        profileName={profile?.fullName || 'You'}
+      />
     </div>
   );
 }

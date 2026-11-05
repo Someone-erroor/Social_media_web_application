@@ -67,19 +67,27 @@ export const updateMyProfile = async (userId, updates = {}) => {
 
 /**
  * Retrieves a public profile by user ID.
- * Returns only public attributes: _id, fullName, profile (bio, avatarUrl), and createdAt.
+ * Returns only public attributes: _id, fullName, profile (bio, avatarUrl), followersCount, followingCount, isFollowing, and createdAt.
  * Strictly excludes email, passwordHash, and account credentials.
  *
  * @param {string} targetUserId - Target user ID
+ * @param {string|null} currentUserId - Viewer user ID (optional)
  * @returns {Promise<object>} Public profile representation
  */
-export const getPublicProfileById = async (targetUserId) => {
+export const getPublicProfileById = async (targetUserId, currentUserId = null) => {
   const user = await User.findById(targetUserId);
   if (!user || user.accountStatus === 'suspended') {
     const error = new Error('User profile not found.');
     error.status = 404;
     throw error;
   }
+
+  const followersCount = user.followers?.length || 0;
+  const followingCount = user.following?.length || 0;
+  const isOwnProfile = currentUserId ? currentUserId.toString() === targetUserId.toString() : false;
+  const isFollowing = currentUserId
+    ? !isOwnProfile && (user.followers || []).some((id) => id.toString() === currentUserId.toString())
+    : false;
 
   return {
     _id: user._id,
@@ -88,6 +96,11 @@ export const getPublicProfileById = async (targetUserId) => {
       bio: user.profile?.bio || '',
       avatarUrl: user.profile?.avatarUrl || ''
     },
+    followersCount,
+    followingCount,
+    isFollowing,
+    isOwnProfile,
+    canFollow: currentUserId ? !isOwnProfile : false,
     createdAt: user.createdAt
   };
 };

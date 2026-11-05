@@ -24,6 +24,8 @@ export const toSafeUser = (user) => {
   delete obj.resetPasswordTokenExpiresAt;
   delete obj.tokenVersion;
   delete obj.__v;
+  obj.followersCount = Array.isArray(obj.followers) ? obj.followers.length : 0;
+  obj.followingCount = Array.isArray(obj.following) ? obj.following.length : 0;
   return obj;
 };
 

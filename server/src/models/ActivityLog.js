@@ -18,6 +18,8 @@ export const ACTIVITY_ACTIONS = [
   'post_deletion',
   'comment_creation',
   'like_creation',
+  'follow_user',
+  'unfollow_user',
   'admin_action'
 ];
 

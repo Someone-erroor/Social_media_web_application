@@ -80,6 +80,24 @@ const userSchema = new Schema(
     tokenVersion: {
       type: Number,
       default: 0
+    },
+    followers: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
+    },
+    following: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
     }
   },
   {
