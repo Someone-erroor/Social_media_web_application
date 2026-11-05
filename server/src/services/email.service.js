@@ -20,8 +20,20 @@ let forceTestOutbox = env.isTest;
  * @returns {object|null} Transporter instance or null
  */
 const createTransporter = () => {
-  if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASS) {
+  if (!env.SMTP_USER || !env.SMTP_PASS) {
     return null;
+  }
+  const isGmail = env.SMTP_HOST === 'smtp.gmail.com' || (env.SMTP_USER && env.SMTP_USER.endsWith('@gmail.com'));
+  if (isGmail) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: env.SMTP_USER,
+        pass: env.SMTP_PASS
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000
+    });
   }
   const port = env.SMTP_PORT || 587;
   const secure = env.SMTP_SECURE || port === 465;
@@ -33,8 +45,8 @@ const createTransporter = () => {
       user: env.SMTP_USER,
       pass: env.SMTP_PASS
     },
-    connectionTimeout: 8000,
-    greetingTimeout: 8000
+    connectionTimeout: 10000,
+    greetingTimeout: 10000
   });
 };
 
