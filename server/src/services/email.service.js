@@ -217,7 +217,7 @@ export const sendMail = async ({ to, subject, html, text }) => {
  * @returns {Promise<object>} Send result
  */
 export const sendVerificationEmail = async ({ to, name, token }) => {
-  const verificationUrl = `${env.CLIENT_URL}/verify-email?token=${encodeURIComponent(token)}`;
+  const verificationUrl = `${env.CLIENT_URL}/verify-email?token=${encodeURIComponent(token)}&email=${encodeURIComponent(to)}`;
   const template = getVerificationEmailTemplate({
     name,
     verificationUrl

@@ -32,7 +32,7 @@ function VerifyEmailContent() {
     let ignore = false;
     if (token) {
       authService
-        .verifyEmail({ token })
+        .verifyEmail({ token, email: emailParam })
         .then((res) => {
           if (!ignore) {
             setVerified(true);
@@ -55,21 +55,22 @@ function VerifyEmailContent() {
     return () => {
       ignore = true;
     };
-  }, [token]);
+  }, [token, emailParam]);
 
   // Automatic redirect to sign in once verified
   useEffect(() => {
     if (verified) {
+      const activeEmail = resendEmail || emailParam;
       const redirectTimer = setTimeout(() => {
         const destination = `${ROUTES.PUBLIC.LOGIN}?verified=true${
-          emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''
+          activeEmail ? `&email=${encodeURIComponent(activeEmail)}` : ''
         }`;
         router.push(destination);
       }, 2500);
 
       return () => clearTimeout(redirectTimer);
     }
-  }, [verified, emailParam, router]);
+  }, [verified, emailParam, resendEmail, router]);
 
   const handleResend = async (e) => {
     e.preventDefault();
@@ -83,7 +84,12 @@ function VerifyEmailContent() {
 
     try {
       const res = await authService.resendVerification({ email: resendEmail.trim() });
-      setResendStatus(res.message || 'A verification link has been sent to your email address.');
+      if (res?.alreadyVerified) {
+        setVerified(true);
+        setSuccessMessage(res.message || 'This account is already verified! You can sign in immediately.');
+      } else {
+        setResendStatus(res.message || 'A verification link has been sent to your email address.');
+      }
     } catch (err) {
       setResendStatus(err.message || 'Failed to resend verification email.');
     } finally {

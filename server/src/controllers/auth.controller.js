@@ -112,11 +112,14 @@ export const verifyEmail = async (req, res, next) => {
       });
     }
 
-    const { user } = await verifyEmailService(sanitized.token);
+    const { user, alreadyVerified } = await verifyEmailService(sanitized.token, sanitized.email);
 
     return res.status(200).json({
       success: true,
-      message: 'Email verified successfully. You can now sign in.',
+      alreadyVerified: Boolean(alreadyVerified),
+      message: alreadyVerified
+        ? 'Your email is already verified. You can now sign in.'
+        : 'Email verified successfully. You can now sign in.',
       user
     });
   } catch (error) {
@@ -150,6 +153,7 @@ export const resendVerification = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
+      alreadyVerified: Boolean(result.alreadyVerified),
       message: result.message
     });
   } catch (error) {

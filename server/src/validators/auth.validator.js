@@ -113,7 +113,7 @@ export const validateLoginInput = (input = {}) => {
  */
 export const validateVerifyEmailInput = (input = {}) => {
   const errors = [];
-  const { token } = input;
+  const { token, email } = input;
 
   if (!token || typeof token !== 'string' || token.trim() === '') {
     errors.push('Verification token is required.');
@@ -123,7 +123,8 @@ export const validateVerifyEmailInput = (input = {}) => {
     isValid: errors.length === 0,
     errors,
     sanitized: {
-      token: token ? token.trim() : ''
+      token: token ? token.trim() : '',
+      email: email && typeof email === 'string' ? email.trim().toLowerCase() : undefined
     }
   };
 };

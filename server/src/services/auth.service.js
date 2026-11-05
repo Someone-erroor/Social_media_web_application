@@ -178,11 +178,13 @@ export const registerAdminUser = async ({ fullName, email, password }) => {
 
 /**
  * Validates a raw email verification token, updates user status, and clears token records.
+ * If the user's account is already verified or the token was already redeemed, returns safe user state gracefully.
  *
  * @param {string} rawToken - Unhashed verification token from URL
- * @returns {Promise<{ user: object }>} Updated user safe representation
+ * @param {string} [email] - Optional email address to verify status if token was already cleared
+ * @returns {Promise<{ user: object, alreadyVerified?: boolean }>} Updated user safe representation
  */
-export const verifyEmail = async (rawToken) => {
+export const verifyEmail = async (rawToken, email = null) => {
   if (!rawToken || typeof rawToken !== 'string') {
     const error = new Error('Verification token is required.');
     error.status = 400;
@@ -191,57 +193,81 @@ export const verifyEmail = async (rawToken) => {
 
   const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
 
-  const user = await User.findOne({
-    verificationTokenHash: tokenHash,
-    verificationTokenExpiresAt: { $gt: new Date() }
+  // 1. Look for user matching tokenHash
+  let user = await User.findOne({
+    verificationTokenHash: tokenHash
   }).select('+verificationTokenHash +verificationTokenExpiresAt');
 
-  if (!user) {
-    const error = new Error('Invalid or expired verification token.');
-    error.status = 400;
-    throw error;
+  if (user) {
+    // If the account was already confirmed
+    if (user.isEmailVerified) {
+      return { user: toSafeUser(user), alreadyVerified: true };
+    }
+
+    // If token has passed the 24-hour expiration window
+    if (user.verificationTokenExpiresAt && user.verificationTokenExpiresAt < new Date()) {
+      const error = new Error('This verification link has expired. Please request a new verification link below.');
+      error.status = 400;
+      throw error;
+    }
+
+    // Valid active token: activate account
+    user.isEmailVerified = true;
+    user.verificationTokenHash = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await user.save();
+
+    try {
+      const auditLog = new ActivityLog({
+        actor: user._id,
+        action: 'email_verification',
+        targetType: 'User',
+        targetId: user._id,
+        metadata: {
+          verifiedAt: new Date().toISOString()
+        }
+      });
+      await auditLog.save();
+    } catch (auditErr) {
+      console.error(`[ActivityLog] Failed to record verification audit: ${auditErr.message}`);
+    }
+
+    return { user: toSafeUser(user), alreadyVerified: false };
   }
 
-  // Prevent duplicate verification actions if already marked verified
-  if (user.isEmailVerified) {
-    return { user: toSafeUser(user) };
+  // 2. If tokenHash wasn't found (e.g. already redeemed and cleared), check if email is provided and already verified
+  if (email && typeof email === 'string') {
+    const existingUser = await User.findOne({ email: email.trim().toLowerCase() });
+    if (existingUser && existingUser.isEmailVerified) {
+      return { user: toSafeUser(existingUser), alreadyVerified: true };
+    }
   }
 
-  user.isEmailVerified = true;
-  user.verificationTokenHash = undefined;
-  user.verificationTokenExpiresAt = undefined;
-  await user.save();
-
-  try {
-    const auditLog = new ActivityLog({
-      actor: user._id,
-      action: 'email_verification',
-      targetType: 'User',
-      targetId: user._id,
-      metadata: {
-        verifiedAt: new Date().toISOString()
-      }
-    });
-    await auditLog.save();
-  } catch (auditErr) {
-    console.error(`[ActivityLog] Failed to record verification audit: ${auditErr.message}`);
-  }
-
-  return { user: toSafeUser(user) };
+  const error = new Error('Invalid or expired verification token.');
+  error.status = 400;
+  throw error;
 };
 
 /**
  * Resends an email verification message without exposing account existence.
+ * If the account is already verified, provides explicit notification so users know they can sign in immediately.
  *
  * @param {string} email - Normalized email
- * @returns {Promise<{ message: string }>} Generic response message
+ * @returns {Promise<{ message: string, alreadyVerified?: boolean }>} Response message
  */
 export const resendVerificationEmail = async (email) => {
   const genericMessage = 'If an account exists with this email, a verification link has been sent.';
 
-  const user = await User.findOne({ email }).select('+verificationTokenHash +verificationTokenExpiresAt');
-  if (!user || user.isEmailVerified || user.accountStatus === 'suspended') {
+  const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+verificationTokenHash +verificationTokenExpiresAt');
+  if (!user || user.accountStatus === 'suspended') {
     return { message: genericMessage };
+  }
+
+  if (user.isEmailVerified) {
+    return {
+      message: 'This account email is already verified! You can sign in immediately.',
+      alreadyVerified: true
+    };
   }
 
   const rawToken = crypto.randomBytes(32).toString('hex');
