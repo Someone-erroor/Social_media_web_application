@@ -148,6 +148,39 @@ export const initSocketServer = (httpServer) => {
       socket.join(roomName);
     });
 
+    // Conversation Room & Real-Time Messaging Events
+    socket.on('join_conversation', (conversationId) => {
+      if (conversationId) {
+        socket.join(`conversation_${conversationId}`);
+      }
+    });
+
+    socket.on('leave_conversation', (conversationId) => {
+      if (conversationId) {
+        socket.leave(`conversation_${conversationId}`);
+      }
+    });
+
+    // Ephemeral typing indicators (not stored in database)
+    socket.on('typing_start', ({ conversationId }) => {
+      if (conversationId) {
+        socket.to(`conversation_${conversationId}`).emit('user_typing', {
+          conversationId,
+          userId: user._id,
+          fullName: user.fullName
+        });
+      }
+    });
+
+    socket.on('typing_stop', ({ conversationId }) => {
+      if (conversationId) {
+        socket.to(`conversation_${conversationId}`).emit('user_stopped_typing', {
+          conversationId,
+          userId: user._id
+        });
+      }
+    });
+
     socket.on('disconnect', () => {
       // Disconnection handled cleanly
     });

@@ -282,3 +282,105 @@ export const handleAdminDeleteComment = async (req, res, next) => {
   }
 };
 
+/**
+ * Lists reports for moderation review.
+ * GET /api/admin/reports
+ */
+export const handleGetAdminReports = async (req, res, next) => {
+  try {
+    const { status, category, targetType, page, limit } = req.query;
+    const { getAdminReports } = await import('../services/admin.service.js');
+    const result = await getAdminReports({ status, category, targetType, page, limit });
+    return res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Updates a report's status.
+ * PATCH /api/admin/reports/:reportId/status
+ */
+export const handleUpdateReportStatus = async (req, res, next) => {
+  try {
+    const { reportId } = req.params;
+    const { status, resolutionNotes } = req.body;
+    const { updateReportStatus } = await import('../services/admin.service.js');
+    const result = await updateReportStatus({
+      reportId,
+      status,
+      resolutionNotes,
+      adminUserId: req.user._id
+    });
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+
+/**
+ * Executes a moderation action.
+ * POST /api/admin/moderation
+ */
+export const handleApplyModerationAction = async (req, res, next) => {
+  try {
+    const { action, targetType, targetId, reason } = req.body;
+    const { applyModerationAction } = await import('../services/admin.service.js');
+    const result = await applyModerationAction({
+      action,
+      targetType,
+      targetId,
+      reason,
+      adminUserId: req.user._id
+    });
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+
+/**
+ * Lists appeals.
+ * GET /api/admin/appeals
+ */
+export const handleGetAdminAppeals = async (req, res, next) => {
+  try {
+    const { status, page, limit } = req.query;
+    const { getAdminAppeals } = await import('../services/admin.service.js');
+    const result = await getAdminAppeals({ status, page, limit });
+    return res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Resolves an appeal.
+ * PATCH /api/admin/appeals/:appealId
+ */
+export const handleReviewAdminAppeal = async (req, res, next) => {
+  try {
+    const { appealId } = req.params;
+    const { status, reviewNotes } = req.body;
+    const { reviewAdminAppeal } = await import('../services/admin.service.js');
+    const result = await reviewAdminAppeal({
+      appealId,
+      status,
+      reviewNotes,
+      adminUserId: req.user._id
+    });
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+

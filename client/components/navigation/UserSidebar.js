@@ -19,6 +19,11 @@ export default function UserSidebar() {
   const navItems = [
     { label: 'Feed', href: ROUTES.USER.FEED, icon: 'feed' },
     { label: 'Explore', href: ROUTES.USER.EXPLORE, icon: 'explore' },
+    { label: 'Messages', href: ROUTES.USER.MESSAGES, icon: 'message' },
+    { label: 'Looply Play', href: ROUTES.USER.PLAY, icon: 'play' },
+    { label: 'Time Capsule', href: ROUTES.USER.TIME_CAPSULE, icon: 'vault' },
+    { label: 'Circles', href: ROUTES.USER.CIRCLES, icon: 'circles' },
+    { label: 'Global Events', href: ROUTES.USER.EVENTS, icon: 'events' },
     { label: 'Notifications', href: ROUTES.USER.NOTIFICATIONS, icon: 'notifications' },
     { label: 'Profile', href: ROUTES.USER.PROFILE, icon: 'profile' },
     { label: 'AI Assistant', href: ROUTES.USER.ASSISTANT, icon: 'assistant' },

@@ -98,6 +98,37 @@ const userSchema = new Schema(
         }
       ],
       default: []
+    },
+    isPrivate: {
+      type: Boolean,
+      default: false
+    },
+    blockedUsers: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
+    },
+    followRequests: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
+    },
+    sentFollowRequests: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }
+      ],
+      default: []
     }
   },
   {

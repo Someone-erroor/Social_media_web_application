@@ -38,6 +38,19 @@ export const followUser = async (currentUserId, targetUserId) => {
     throw error;
   }
 
+  // Safety check: blocking relationships
+  if ((targetUser.blockedUsers || []).some((id) => id.toString() === currentUserId.toString())) {
+    const error = new Error('Unable to follow this user.');
+    error.status = 403;
+    throw error;
+  }
+
+  if ((currentUser.blockedUsers || []).some((id) => id.toString() === targetUserId.toString())) {
+    const error = new Error('You have blocked this user. Unblock them first.');
+    error.status = 400;
+    throw error;
+  }
+
   const alreadyFollowing = (targetUser.followers || []).some(
     (id) => id.toString() === currentUserId.toString()
   );
@@ -50,6 +63,12 @@ export const followUser = async (currentUserId, targetUserId) => {
       followingCount: currentUser.following?.length || 0,
       message: 'You are already following this user.'
     };
+  }
+
+  // Phase 2: If target account is private, create a follow request instead of immediate following
+  if (targetUser.isPrivate) {
+    const { sendFollowRequest } = await import('./privacy.service.js');
+    return sendFollowRequest(currentUserId, targetUserId);
   }
 
   // Atomic update to guarantee dual-sided relationship consistency
@@ -306,12 +325,21 @@ export const getFollowStatus = async (targetUserId, currentUserId = null) => {
   const isFollowing =
     !isOwnProfile &&
     (targetUser.followers || []).some((id) => id.toString() === currentUserId.toString());
+  const isPending =
+    !isOwnProfile &&
+    (targetUser.followRequests || []).some((id) => id.toString() === currentUserId.toString());
+
+  const currentUser = currentUserId ? await User.findById(currentUserId).select('blockedUsers') : null;
+  const isBlocked = currentUser ? (currentUser.blockedUsers || []).some((id) => id.toString() === targetUserId.toString()) : false;
 
   return {
     success: true,
     isFollowing,
+    isPending,
     isOwnProfile,
-    canFollow: !isOwnProfile,
+    canFollow: !isOwnProfile && !isBlocked,
+    isPrivate: Boolean(targetUser.isPrivate),
+    isBlocked,
     followersCount,
     followingCount
   };

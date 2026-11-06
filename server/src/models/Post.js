@@ -19,6 +19,11 @@ const postSchema = new Schema(
       trim: true,
       minlength: [1, 'Post content cannot be empty'],
       maxlength: [1000, 'Post content cannot exceed 1000 characters']
+    },
+    circle: {
+      type: Schema.Types.ObjectId,
+      ref: 'Circle',
+      default: null
     }
   },
   {

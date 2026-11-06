@@ -9,6 +9,7 @@ import PostCard from '@/components/posts/PostCard';
 import { postService } from '@/services/postService';
 
 export default function FeedPage() {
+  const [feedMode, setFeedMode] = useState('following'); // 'following' | 'latest' | 'explore'
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -17,8 +18,11 @@ export default function FeedPage() {
 
   useEffect(() => {
     let ignore = false;
+    setLoading(true);
+    setErrorMessage('');
+
     postService
-      .getFeed({ page: 1, limit: 10 })
+      .getFeed({ page: 1, limit: 10, mode: feedMode })
       .then((res) => {
         if (!ignore && res?.success) {
           setPosts(res.posts || []);
@@ -39,7 +43,7 @@ export default function FeedPage() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [feedMode]);
 
   const handlePostCreated = (newPost) => {
     setPosts((prev) => [newPost, ...prev]);
@@ -63,7 +67,7 @@ export default function FeedPage() {
     const nextPage = pagination.page + 1;
 
     postService
-      .getFeed({ page: nextPage, limit: 10 })
+      .getFeed({ page: nextPage, limit: 10, mode: feedMode })
       .then((res) => {
         if (res?.success) {
           setPosts((prev) => [...prev, ...(res.posts || [])]);
@@ -82,7 +86,7 @@ export default function FeedPage() {
     setLoading(true);
     setErrorMessage('');
     postService
-      .getFeed({ page: 1, limit: 10 })
+      .getFeed({ page: 1, limit: 10, mode: feedMode })
       .then((res) => {
         if (res?.success) {
           setPosts(res.posts || []);
@@ -106,6 +110,43 @@ export default function FeedPage() {
 
       {/* Real Post Composer */}
       <PostComposer onPostCreated={handlePostCreated} />
+
+      {/* User-Controlled Feed Modes */}
+      <div className="flex items-center gap-2 border-b border-[#263640] pb-2 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setFeedMode('following')}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            feedMode === 'following'
+              ? 'bg-[#19D3E3] text-[#080D12] shadow-sm shadow-[#19D3E3]/20'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+          }`}
+        >
+          Following
+        </button>
+        <button
+          type="button"
+          onClick={() => setFeedMode('latest')}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            feedMode === 'latest'
+              ? 'bg-[#19D3E3] text-[#080D12] shadow-sm shadow-[#19D3E3]/20'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+          }`}
+        >
+          Latest
+        </button>
+        <button
+          type="button"
+          onClick={() => setFeedMode('explore')}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            feedMode === 'explore'
+              ? 'bg-[#19D3E3] text-[#080D12] shadow-sm shadow-[#19D3E3]/20'
+              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+          }`}
+        >
+          Explore Discovery
+        </button>
+      </div>
 
       {/* Error state */}
       {errorMessage && (

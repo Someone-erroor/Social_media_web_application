@@ -88,6 +88,21 @@ export const getPublicProfileById = async (targetUserId, currentUserId = null) =
   const isFollowing = currentUserId
     ? !isOwnProfile && (user.followers || []).some((id) => id.toString() === currentUserId.toString())
     : false;
+  const isPending = currentUserId
+    ? !isOwnProfile && (user.followRequests || []).some((id) => id.toString() === currentUserId.toString())
+    : false;
+
+  const isBlockedByTarget = currentUserId && (user.blockedUsers || []).some((id) => id.toString() === currentUserId.toString());
+  if (isBlockedByTarget) {
+    const error = new Error('You cannot view this profile.');
+    error.status = 403;
+    throw error;
+  }
+
+  const currentUser = currentUserId ? await User.findById(currentUserId).select('blockedUsers') : null;
+  const hasBlockedTarget = currentUser ? (currentUser.blockedUsers || []).some((id) => id.toString() === targetUserId.toString()) : false;
+
+  const canViewContent = !user.isPrivate || isOwnProfile || isFollowing;
 
   return {
     _id: user._id,
@@ -99,8 +114,12 @@ export const getPublicProfileById = async (targetUserId, currentUserId = null) =
     followersCount,
     followingCount,
     isFollowing,
+    isPending,
     isOwnProfile,
-    canFollow: currentUserId ? !isOwnProfile : false,
+    canFollow: currentUserId ? (!isOwnProfile && !hasBlockedTarget) : false,
+    isPrivate: Boolean(user.isPrivate),
+    canViewContent,
+    hasBlockedTarget,
     createdAt: user.createdAt
   };
 };

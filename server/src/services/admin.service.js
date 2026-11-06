@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
-import { User, Post, Comment, Like, Notification, ActivityLog } from '../models/index.js';
+import { User, Post, Comment, Like, Notification, ActivityLog, Report, Appeal } from '../models/index.js';
 
 const SAFE_USER_FIELDS = 'fullName email role accountStatus isEmailVerified profile.avatarUrl profile.bio createdAt updatedAt';
 
 /**
- * Computes platform-wide statistics from real database collections. (Phase 11)
+ * Computes platform-wide statistics from real database collections. (Phase 11 & Phase 4)
  *
  * @returns {Promise<object>} Dashboard metrics summary
  */
@@ -25,7 +25,12 @@ export const getDashboardStats = async () => {
     newRegistrationsThisWeek,
     totalPosts,
     totalComments,
-    totalLikes
+    totalLikes,
+    totalReports,
+    pendingReports,
+    resolvedReports,
+    totalAppeals,
+    pendingAppeals
   ] = await Promise.all([
     User.countDocuments({}),
     User.countDocuments({ accountStatus: 'active' }),
@@ -35,7 +40,12 @@ export const getDashboardStats = async () => {
     User.countDocuments({ createdAt: { $gte: startOfWeek } }),
     Post.countDocuments({}),
     Comment.countDocuments({}),
-    Like.countDocuments({})
+    Like.countDocuments({}),
+    Report.countDocuments({}),
+    Report.countDocuments({ status: { $in: ['pending', 'under_review'] } }),
+    Report.countDocuments({ status: 'resolved' }),
+    Appeal.countDocuments({}),
+    Appeal.countDocuments({ status: 'pending' })
   ]);
 
   const dbState = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
@@ -53,6 +63,13 @@ export const getDashboardStats = async () => {
       posts: totalPosts,
       comments: totalComments,
       likes: totalLikes
+    },
+    safety: {
+      totalReports,
+      pendingReports,
+      resolvedReports,
+      totalAppeals,
+      pendingAppeals
     },
     system: {
       databaseStatus: dbState,
@@ -484,4 +501,218 @@ export const adminDeleteComment = async ({ commentId, adminUserId }) => {
   } catch (auditErr) {
     console.error(`[ActivityLog] Failed to log admin comment deletion: ${auditErr.message}`);
   }
+};
+
+/**
+ * Retrieves reports with filtering and pagination.
+ */
+export const getAdminReports = async ({ status, category, targetType, page = 1, limit = 20 }) => {
+  const pageNum = Math.max(1, Number.parseInt(page, 10) || 1);
+  const limitNum = Math.min(50, Math.max(1, Number.parseInt(limit, 10) || 20));
+  const skip = (pageNum - 1) * limitNum;
+
+  const query = {};
+  if (status && status !== 'all') query.status = status;
+  if (category && category !== 'all') query.category = category;
+  if (targetType && targetType !== 'all') query.targetType = targetType;
+
+  const [reports, total] = await Promise.all([
+    Report.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .populate('reporter', 'fullName email')
+      .populate('resolvedBy', 'fullName email'),
+    Report.countDocuments(query)
+  ]);
+
+  return {
+    reports,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum) || 1
+    }
+  };
+};
+
+/**
+ * Updates a report's moderation status.
+ */
+export const updateReportStatus = async ({ reportId, status, resolutionNotes, adminUserId }) => {
+  const report = await Report.findById(reportId);
+  if (!report) {
+    const error = new Error('Report not found.');
+    error.status = 404;
+    throw error;
+  }
+
+  report.status = status;
+  report.resolutionNotes = (resolutionNotes || '').trim();
+  report.resolvedBy = adminUserId;
+  report.resolvedAt = new Date();
+  await report.save();
+
+  try {
+    const auditLog = new ActivityLog({
+      actor: adminUserId,
+      action: 'moderation_action',
+      targetType: 'Report',
+      targetId: reportId,
+      metadata: {
+        newStatus: status,
+        resolutionNotes: report.resolutionNotes
+      }
+    });
+    await auditLog.save();
+  } catch (err) {
+    console.error(`[ActivityLog] Update report status: ${err.message}`);
+  }
+
+  return {
+    success: true,
+    report,
+    message: `Report status updated to ${status}.`
+  };
+};
+
+/**
+ * Performs a moderation action (warning, suspension, content removal).
+ */
+export const applyModerationAction = async ({ action, targetType, targetId, reason, adminUserId }) => {
+  if (!reason || reason.trim().length < 3) {
+    const error = new Error('Moderation action requires a clear reason.');
+    error.status = 400;
+    throw error;
+  }
+
+  if (action === 'warn_user' && targetType === 'User') {
+    const notification = new Notification({
+      recipient: targetId,
+      actor: adminUserId,
+      type: 'moderation_warning',
+      message: `Moderation Notice: You have been issued an official warning. Reason: ${reason}`
+    });
+    await notification.save();
+  } else if (action === 'suspend_user' && targetType === 'User') {
+    await User.findByIdAndUpdate(targetId, { accountStatus: 'suspended' });
+  } else if (action === 'restore_user' && targetType === 'User') {
+    await User.findByIdAndUpdate(targetId, { accountStatus: 'active' });
+  } else if (action === 'delete_post' && targetType === 'Post') {
+    await Post.findByIdAndDelete(targetId);
+  } else if (action === 'delete_comment' && targetType === 'Comment') {
+    await Comment.findByIdAndDelete(targetId);
+  } else {
+    const error = new Error('Unsupported moderation action or target type combination.');
+    error.status = 400;
+    throw error;
+  }
+
+  // Audit record
+  try {
+    const auditLog = new ActivityLog({
+      actor: adminUserId,
+      action: 'moderation_action',
+      targetType,
+      targetId,
+      metadata: { action, reason }
+    });
+    await auditLog.save();
+  } catch (err) {
+    console.error(`[ActivityLog] Moderation action: ${err.message}`);
+  }
+
+  return {
+    success: true,
+    message: `Moderation action "${action}" completed successfully.`
+  };
+};
+
+/**
+ * Retrieves appeals for administrators.
+ */
+export const getAdminAppeals = async ({ status, page = 1, limit = 20 }) => {
+  const pageNum = Math.max(1, Number.parseInt(page, 10) || 1);
+  const limitNum = Math.min(50, Math.max(1, Number.parseInt(limit, 10) || 20));
+  const skip = (pageNum - 1) * limitNum;
+
+  const query = {};
+  if (status && status !== 'all') query.status = status;
+
+  const [appeals, total] = await Promise.all([
+    Appeal.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .populate('user', 'fullName email accountStatus')
+      .populate('reviewedBy', 'fullName email'),
+    Appeal.countDocuments(query)
+  ]);
+
+  return {
+    appeals,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum) || 1
+    }
+  };
+};
+
+/**
+ * Reviews and resolves a user appeal.
+ */
+export const reviewAdminAppeal = async ({ appealId, status, reviewNotes, adminUserId }) => {
+  const appeal = await Appeal.findById(appealId);
+  if (!appeal) {
+    const error = new Error('Appeal not found.');
+    error.status = 404;
+    throw error;
+  }
+
+  appeal.status = status;
+  appeal.reviewNotes = (reviewNotes || '').trim();
+  appeal.reviewedBy = adminUserId;
+  appeal.reviewedAt = new Date();
+  await appeal.save();
+
+  // If accepted and was account suspension, restore user
+  if (status === 'accepted' && appeal.actionType === 'account_suspension') {
+    await User.findByIdAndUpdate(appeal.user, { accountStatus: 'active' });
+  }
+
+  // Notify user
+  try {
+    const notification = new Notification({
+      recipient: appeal.user,
+      actor: adminUserId,
+      type: 'system',
+      message: `Your appeal has been ${status}. ${appeal.reviewNotes ? `Notes: ${appeal.reviewNotes}` : ''}`
+    });
+    await notification.save();
+  } catch (err) {
+    console.error(`[Notification] Appeal notice: ${err.message}`);
+  }
+
+  // Audit log
+  try {
+    const auditLog = new ActivityLog({
+      actor: adminUserId,
+      action: 'appeal_resolution',
+      targetType: 'Appeal',
+      targetId: appealId,
+      metadata: { status, reviewNotes: appeal.reviewNotes }
+    });
+    await auditLog.save();
+  } catch (err) {
+    console.error(`[ActivityLog] Appeal resolution: ${err.message}`);
+  }
+
+  return {
+    success: true,
+    appeal,
+    message: `Appeal marked as ${status}.`
+  };
 };

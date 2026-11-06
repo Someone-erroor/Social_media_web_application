@@ -8,6 +8,14 @@ import commentRoutes from './comment.routes.js';
 import notificationRoutes from './notification.routes.js';
 import aiRoutes from './ai.routes.js';
 import feedRoutes from './feed.routes.js';
+import privacyRoutes from './privacy.routes.js';
+import safetyRoutes from './safety.routes.js';
+import messageRoutes from './message.routes.js';
+import playRoutes from './play.routes.js';
+import timeCapsuleRoutes from './timeCapsule.routes.js';
+import circleRoutes from './circle.routes.js';
+import eventRoutes from './event.routes.js';
+import memoryRoutes from './memory.routes.js';
 import devRoutes from './dev.routes.js';
 import { getExplore } from '../controllers/post.controller.js';
 
@@ -26,6 +34,30 @@ router.use('/admin', adminRoutes);
 router.use('/profile', profileRoutes);
 router.use('/profiles', profileRoutes);
 router.use('/users', profileRoutes);
+
+// Privacy & Follow Requests
+router.use('/privacy', privacyRoutes);
+
+// Safety & Blocking & Reports
+router.use('/safety', safetyRoutes);
+
+// Real-Time Direct Messaging
+router.use('/messages', messageRoutes);
+
+// Looply Play Games
+router.use('/play', playRoutes);
+
+// Time Capsule
+router.use('/time-capsules', timeCapsuleRoutes);
+
+// Circles
+router.use('/circles', circleRoutes);
+
+// Global Mystery Events
+router.use('/events', eventRoutes);
+
+// Friendship Memories
+router.use('/memories', memoryRoutes);
 
 // Mount post management routes at /posts (accessible via /api/posts)
 router.use('/posts', postRoutes);

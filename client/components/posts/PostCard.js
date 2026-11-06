@@ -11,6 +11,7 @@ import { postService } from '@/services/postService';
 import { aiService } from '@/services/aiService';
 import DiscussionSummaryPanel from '@/components/ai/DiscussionSummaryPanel';
 import { ROUTES } from '@/lib/routes';
+import ReportModal from '@/components/safety/ReportModal';
 
 function formatTimestamp(dateString) {
   if (!dateString) return '';
@@ -43,6 +44,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Like interaction state (Phase 10)
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
@@ -315,39 +317,63 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
               >
                 {authorName}
               </Link>
-              <span className="text-xs text-[#9BAAB4]">
-                {formatTimestamp(post.createdAt)}
-                {post.updatedAt && post.updatedAt !== post.createdAt && ' (edited)'}
-              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-[#9BAAB4]">
+                  {formatTimestamp(post.createdAt)}
+                  {post.updatedAt && post.updatedAt !== post.createdAt && ' (edited)'}
+                </span>
+                {post.recommendationBadge && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#19D3E3]/10 text-[#19D3E3] border border-[#19D3E3]/20">
+                    <Icon name="sparkles" className="w-2.5 h-2.5" />
+                    {post.recommendationBadge}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Owner Controls */}
-          {isOwner && !isEditing && (
-            <div className="flex items-center gap-1 shrink-0">
-              <button
-                type="button"
-                onClick={() => {
-                  setEditContent(post.content);
-                  setIsEditing(true);
-                  setShowConfirmDelete(false);
-                }}
-                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#1D2A35] transition-colors" aria-label="Edit post"
-                title="Edit post"
-              >
-                <Icon name="edit" className="w-4 h-4" />
-              </button>
+          {/* Post Actions: Owner Controls or Report */}
+          <div className="flex items-center gap-1 shrink-0">
+            {isOwner && !isEditing && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditContent(post.content);
+                    setIsEditing(true);
+                    setShowConfirmDelete(false);
+                  }}
+                  className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#1D2A35] transition-colors"
+                  aria-label="Edit post"
+                  title="Edit post"
+                >
+                  <Icon name="edit" className="w-4 h-4" />
+                </button>
 
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmDelete(true)}
+                  className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#9BAAB4] hover:text-[#FF5C70] hover:bg-[#FF5C70]/10 transition-colors"
+                  aria-label="Delete post"
+                  title="Delete post"
+                >
+                  <Icon name="trash" className="w-4 h-4" />
+                </button>
+              </>
+            )}
+
+            {!isOwner && user && (
               <button
                 type="button"
-                onClick={() => setShowConfirmDelete(true)}
-                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#9BAAB4] hover:text-[#FF5C70] hover:bg-[#FF5C70]/10 transition-colors" aria-label="Delete post"
-                title="Delete post"
+                onClick={() => setShowReportModal(true)}
+                className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg text-[#9BAAB4] hover:text-[#FF5C70] hover:bg-[#FF5C70]/10 transition-colors"
+                aria-label="Report post"
+                title="Report post"
               >
-                <Icon name="trash" className="w-4 h-4" />
+                <Icon name="flag" className="w-4 h-4" />
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Delete Confirmation Box */}
@@ -663,6 +689,14 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
           </div>
         )}
       </CardContent>
+
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        targetType="post"
+        targetId={post._id}
+        targetName={authorName}
+      />
     </Card>
   );
 }

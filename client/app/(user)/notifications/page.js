@@ -35,6 +35,21 @@ function getNotificationIcon(type) {
       return <Icon name="heart" className="w-4 h-4 text-red-500 fill-red-500" />;
     case 'post_comment':
       return <Icon name="comments" className="w-4 h-4 text-[#19D3E3]" />;
+    case 'follow':
+    case 'follow_request_accepted':
+      return <Icon name="users" className="w-4 h-4 text-[#10B981]" />;
+    case 'follow_request':
+      return <Icon name="clock" className="w-4 h-4 text-amber-400" />;
+    case 'message':
+      return <Icon name="message" className="w-4 h-4 text-[#19D3E3]" />;
+    case 'circle_invite':
+      return <Icon name="circles" className="w-4 h-4 text-[#19D3E3]" />;
+    case 'time_capsule_unlocked':
+      return <Icon name="vault" className="w-4 h-4 text-amber-400" />;
+    case 'game_challenge':
+      return <Icon name="play" className="w-4 h-4 text-[#19D3E3]" />;
+    case 'moderation_warning':
+      return <Icon name="alertCircle" className="w-4 h-4 text-[#FF5C70]" />;
     case 'login_alert':
       return <Icon name="lock" className="w-4 h-4 text-amber-400" />;
     default:

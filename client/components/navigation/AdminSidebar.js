@@ -31,6 +31,8 @@ export default function AdminSidebar() {
 
   const navItems = [
     { label: 'Overview', href: ROUTES.ADMIN.DASHBOARD, icon: 'dashboard' },
+    { label: 'Safety Reports', href: ROUTES.ADMIN.REPORTS, icon: 'flag' },
+    { label: 'Appeals', href: ROUTES.ADMIN.APPEALS, icon: 'shield' },
     { label: 'User Management', href: ROUTES.ADMIN.USERS, icon: 'users' },
     { label: 'Post Moderation', href: ROUTES.ADMIN.POSTS, icon: 'posts' },
     { label: 'Comment Moderation', href: ROUTES.ADMIN.COMMENTS, icon: 'comments' },

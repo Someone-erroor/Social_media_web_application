@@ -256,6 +256,7 @@ export function NotificationProvider({ children }) {
         loading,
         error,
         isConnected,
+        socket: socketRef.current,
         markAsRead,
         markAllAsRead,
         refreshNotifications

@@ -22,8 +22,21 @@ const notificationSchema = new Schema(
       type: String,
       required: [true, 'Notification type is required'],
       enum: {
-        values: ['login_alert', 'post_like', 'post_comment', 'system'],
-        message: 'Notification type must be one of: login_alert, post_like, post_comment, system'
+        values: [
+          'login_alert',
+          'post_like',
+          'post_comment',
+          'follow',
+          'follow_request',
+          'follow_request_accepted',
+          'message',
+          'circle_invite',
+          'time_capsule_unlocked',
+          'game_challenge',
+          'moderation_warning',
+          'system'
+        ],
+        message: 'Invalid notification type'
       }
     },
     message: {
@@ -34,7 +47,7 @@ const notificationSchema = new Schema(
     },
     resourceType: {
       type: String,
-      enum: ['Post', 'Comment', 'User', 'System', null],
+      enum: ['Post', 'Comment', 'User', 'Conversation', 'TimeCapsule', 'Circle', 'GameChallenge', 'GlobalEvent', 'System', null],
       default: null
     },
     resourceId: {

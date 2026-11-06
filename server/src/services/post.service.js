@@ -137,12 +137,39 @@ export const getMyPosts = async ({ authorId, page, limit, skip }) => {
  * @param {number} params.skip - Query offset
  * @returns {Promise<{ posts: object[], pagination: object }>}
  */
-export const getUserPosts = async ({ userId, page = 1, limit = 10, skip = 0 }) => {
-  // 1. Verify author account exists and is active (not suspended or deleted)
-  const targetUser = await User.findById(userId).select('accountStatus');
+export const getUserPosts = async ({ userId, viewerId = null, page = 1, limit = 10, skip = 0 }) => {
+  // 1. Verify author account exists, is active, and privacy allows viewing
+  const targetUser = await User.findById(userId).select('accountStatus isPrivate followers blockedUsers');
   if (!targetUser || targetUser.accountStatus === 'suspended') {
     return {
       posts: [],
+      pagination: {
+        total: 0,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: 1
+      }
+    };
+  }
+
+  // Blocking restriction
+  if (viewerId && (targetUser.blockedUsers || []).some((id) => id.toString() === viewerId.toString())) {
+    return {
+      posts: [],
+      isBlocked: true,
+      pagination: { total: 0, page: Number(page), limit: Number(limit), totalPages: 1 }
+    };
+  }
+
+  // Privacy enforcement: private accounts require following or ownership
+  const isOwn = viewerId && viewerId.toString() === userId.toString();
+  const isFollower = viewerId && (targetUser.followers || []).some((id) => id.toString() === viewerId.toString());
+  if (targetUser.isPrivate && !isOwn && !isFollower) {
+    return {
+      posts: [],
+      isPrivate: true,
+      canViewPosts: false,
+      message: 'This account is private. Follow this account to see their posts.',
       pagination: {
         total: 0,
         page: Number(page),
@@ -197,7 +224,45 @@ export const getUserPosts = async ({ userId, page = 1, limit = 10, skip = 0 }) =
  * @param {number} params.skip - Query offset
  * @returns {Promise<{ posts: object[], pagination: object }>}
  */
-export const getFeed = async ({ page = 1, limit = 10, skip = 0 }) => {
+export const getFeed = async ({ userId = null, mode = 'latest', page = 1, limit = 10, skip = 0 }) => {
+  let currentUser = null;
+  let followingIds = [];
+  let blockedIds = [];
+
+  if (userId) {
+    currentUser = await User.findById(userId).select('following blockedUsers');
+    if (currentUser) {
+      followingIds = (currentUser.following || []).map((id) => id);
+      blockedIds = (currentUser.blockedUsers || []).map((id) => id);
+    }
+  }
+
+  const matchConditions = {
+    'authorDoc.accountStatus': 'active'
+  };
+
+  if (blockedIds.length > 0) {
+    matchConditions['authorDoc._id'] = { $nin: blockedIds };
+  }
+
+  // User-Controlled Feed modes:
+  if (mode === 'following') {
+    matchConditions['authorDoc._id'] = { $in: followingIds };
+  } else if (mode === 'explore') {
+    matchConditions['authorDoc.isPrivate'] = { $ne: true };
+  } else {
+    // 'latest' mode: hide private accounts unless viewer is author or following them
+    if (userId) {
+      matchConditions.$or = [
+        { 'authorDoc.isPrivate': { $ne: true } },
+        { 'authorDoc._id': new mongoose.Types.ObjectId(userId) },
+        { 'authorDoc._id': { $in: followingIds } }
+      ];
+    } else {
+      matchConditions['authorDoc.isPrivate'] = { $ne: true };
+    }
+  }
+
   const matchStages = [
     {
       $lookup: {
@@ -208,20 +273,17 @@ export const getFeed = async ({ page = 1, limit = 10, skip = 0 }) => {
       }
     },
     { $unwind: '$authorDoc' },
-    {
-      $match: {
-        'authorDoc.accountStatus': 'active'
-      }
-    }
+    { $match: matchConditions }
   ];
 
-  const [countResult, posts] = await Promise.all([
+  const sortStage = mode === 'explore'
+    ? { $sort: { likesCount: -1, commentsCount: -1, createdAt: -1 } }
+    : { $sort: { createdAt: -1 } };
+
+  const [countResult, rawPosts] = await Promise.all([
     Post.aggregate([...matchStages, { $count: 'total' }]),
     Post.aggregate([
       ...matchStages,
-      { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit },
       {
         $lookup: {
           from: 'likes',
@@ -242,6 +304,7 @@ export const getFeed = async ({ page = 1, limit = 10, skip = 0 }) => {
         $project: {
           _id: 1,
           content: 1,
+          circle: 1,
           createdAt: 1,
           updatedAt: 1,
           likesCount: { $size: '$likes' },
@@ -250,6 +313,7 @@ export const getFeed = async ({ page = 1, limit = 10, skip = 0 }) => {
             _id: '$authorDoc._id',
             fullName: '$authorDoc.fullName',
             role: '$authorDoc.role',
+            isPrivate: '$authorDoc.isPrivate',
             profile: {
               avatarUrl: '$authorDoc.profile.avatarUrl',
               bio: '$authorDoc.profile.bio'
@@ -257,14 +321,30 @@ export const getFeed = async ({ page = 1, limit = 10, skip = 0 }) => {
             createdAt: '$authorDoc.createdAt'
           }
         }
-      }
+      },
+      sortStage,
+      { $skip: skip },
+      { $limit: limit }
     ])
   ]);
 
   const total = countResult.length > 0 ? countResult[0].total : 0;
 
+  const reasonMap = {
+    following: 'Following — Chronological from creators you follow',
+    explore: 'Explore — Trending discussions across Looply',
+    latest: 'Latest — Real-time community timeline'
+  };
+
+  const posts = rawPosts.map((p) => ({
+    ...p,
+    feedMode: mode,
+    recommendationReason: reasonMap[mode] || reasonMap.latest
+  }));
+
   return {
     posts,
+    mode,
     pagination: {
       total,
       page: Number(page),
@@ -274,18 +354,8 @@ export const getFeed = async ({ page = 1, limit = 10, skip = 0 }) => {
   };
 };
 
-/**
- * Retrieves recent public posts for the explore/discovery view.
- * Excludes posts from suspended accounts or deleted users.
- *
- * @param {object} params
- * @param {number} params.page - Current page
- * @param {number} params.limit - Page size
- * @param {number} params.skip - Query offset
- * @returns {Promise<{ posts: object[], pagination: object }>}
- */
-export const getExplorePosts = async ({ page, limit, skip }) => {
-  return getFeed({ page, limit, skip });
+export const getExplorePosts = async ({ userId = null, page, limit, skip }) => {
+  return getFeed({ userId, mode: 'explore', page, limit, skip });
 };
 
 /**

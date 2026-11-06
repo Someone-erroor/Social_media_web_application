@@ -20,6 +20,16 @@ export const ACTIVITY_ACTIONS = [
   'like_creation',
   'follow_user',
   'unfollow_user',
+  'block_user',
+  'unblock_user',
+  'report_creation',
+  'moderation_action',
+  'appeal_submission',
+  'appeal_resolution',
+  'time_capsule_creation',
+  'game_challenge_creation',
+  'circle_creation',
+  'global_event_creation',
   'admin_action'
 ];
 

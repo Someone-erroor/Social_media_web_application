@@ -131,6 +131,7 @@ export const getUserPosts = async (req, res, next) => {
 
     const result = await getUserPostsService({
       userId,
+      viewerId: req.user?._id || null,
       page: pagination.page,
       limit: pagination.limit,
       skip: pagination.skip
@@ -153,8 +154,13 @@ export const getUserPosts = async (req, res, next) => {
 export const getFeed = async (req, res, next) => {
   try {
     const pagination = validatePaginationQuery(req.query);
+    const mode = ['following', 'explore', 'latest'].includes(req.query.mode)
+      ? req.query.mode
+      : 'latest';
 
     const result = await getFeedService({
+      userId: req.user?._id || null,
+      mode,
       page: pagination.page,
       limit: pagination.limit,
       skip: pagination.skip
@@ -162,6 +168,7 @@ export const getFeed = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
+      mode: result.mode,
       posts: result.posts,
       pagination: result.pagination
     });
@@ -179,6 +186,7 @@ export const getExplore = async (req, res, next) => {
     const pagination = validatePaginationQuery(req.query);
 
     const result = await getExploreService({
+      userId: req.user?._id || null,
       page: pagination.page,
       limit: pagination.limit,
       skip: pagination.skip
@@ -186,6 +194,7 @@ export const getExplore = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
+      mode: 'explore',
       posts: result.posts,
       pagination: result.pagination
     });

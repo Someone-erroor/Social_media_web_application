@@ -11,7 +11,7 @@ import { aiService } from '@/services/aiService';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/routes';
 
-export default function PostComposer({ onPostCreated }) {
+export default function PostComposer({ onPostCreated, defaultCircleId = null }) {
   const { user } = useAuth();
   const [content, setContent] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -68,7 +68,10 @@ export default function PostComposer({ onPostCreated }) {
     setLoading(true);
 
     try {
-      const res = await postService.createPost({ content: trimmed });
+      const res = await postService.createPost({
+        content: trimmed,
+        circle: defaultCircleId || undefined
+      });
       setContent('');
       setAiMode(null);
       if (onPostCreated && res.post) {

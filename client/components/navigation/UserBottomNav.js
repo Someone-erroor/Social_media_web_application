@@ -16,7 +16,8 @@ export default function UserBottomNav() {
   const navItems = [
     { label: 'Feed', href: ROUTES.USER.FEED, icon: 'feed' },
     { label: 'Explore', href: ROUTES.USER.EXPLORE, icon: 'explore' },
-    { label: 'Assistant', href: ROUTES.USER.ASSISTANT, icon: 'assistant' },
+    { label: 'Messages', href: ROUTES.USER.MESSAGES, icon: 'message' },
+    { label: 'Play', href: ROUTES.USER.PLAY, icon: 'play' },
     { label: 'Alerts', href: ROUTES.USER.NOTIFICATIONS, icon: 'notifications' },
     { label: 'Profile', href: ROUTES.USER.PROFILE, icon: 'profile' }
   ];

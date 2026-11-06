@@ -23,6 +23,14 @@ export const ROUTES = {
   USER: {
     FEED: '/feed',
     EXPLORE: '/explore',
+    MESSAGES: '/messages',
+    PLAY: '/play',
+    TIME_CAPSULE: '/time-capsule',
+    CIRCLES: '/circles',
+    CIRCLE_DETAIL: (slug) => `/circles/${slug}`,
+    EVENTS: '/events',
+    EVENT_DETAIL: (eventId) => `/events/${eventId}`,
+    MEMORIES: (userId) => `/memories/${userId}`,
     PROFILE: '/profile',
     PROFILE_EDIT: '/profile/edit',
     USER_PROFILE: (userId) => `/profile/${userId}`,
@@ -34,6 +42,8 @@ export const ROUTES = {
   // Administrator Experience Routes
   ADMIN: {
     DASHBOARD: '/admin',
+    REPORTS: '/admin/reports',
+    APPEALS: '/admin/appeals',
     USERS: '/admin/users',
     POSTS: '/admin/posts',
     COMMENTS: '/admin/comments',
@@ -57,6 +67,11 @@ export const ROUTE_METADATA = {
 
   [ROUTES.USER.FEED]: { title: 'Feed', scope: 'user', description: 'Social media home feed' },
   [ROUTES.USER.EXPLORE]: { title: 'Explore', scope: 'user', description: 'Discover trending posts and creators' },
+  [ROUTES.USER.MESSAGES]: { title: 'Direct Messages', scope: 'user', description: 'Real-time encrypted direct messaging' },
+  [ROUTES.USER.PLAY]: { title: 'Looply Play', scope: 'user', description: 'Interactive social games and challenges' },
+  [ROUTES.USER.TIME_CAPSULE]: { title: 'Time Capsule', scope: 'user', description: 'Future memories vault' },
+  [ROUTES.USER.CIRCLES]: { title: 'Circles', scope: 'user', description: 'Interest-based communities' },
+  [ROUTES.USER.EVENTS]: { title: 'Global Mystery Events', scope: 'user', description: 'Platform-wide interactive mystery events' },
   [ROUTES.USER.PROFILE]: { title: 'Profile', scope: 'user', description: 'Personal user profile' },
   [ROUTES.USER.PROFILE_EDIT]: { title: 'Edit Profile', scope: 'user', description: 'Edit profile information' },
   [ROUTES.USER.NOTIFICATIONS]: { title: 'Notifications', scope: 'user', description: 'Activity notifications' },
@@ -64,6 +79,8 @@ export const ROUTE_METADATA = {
   [ROUTES.USER.SETTINGS]: { title: 'Settings', scope: 'user', description: 'Account settings and preferences' },
 
   [ROUTES.ADMIN.DASHBOARD]: { title: 'Admin Overview', scope: 'admin', description: 'Administrative dashboard' },
+  [ROUTES.ADMIN.REPORTS]: { title: 'Trust & Safety Reports', scope: 'admin', description: 'Community report moderation' },
+  [ROUTES.ADMIN.APPEALS]: { title: 'Moderation Appeals', scope: 'admin', description: 'User appeal management' },
   [ROUTES.ADMIN.USERS]: { title: 'User Management', scope: 'admin', description: 'User account administration' },
   [ROUTES.ADMIN.POSTS]: { title: 'Post Moderation', scope: 'admin', description: 'Content moderation' },
   [ROUTES.ADMIN.COMMENTS]: { title: 'Comment Moderation', scope: 'admin', description: 'Comment oversight' },

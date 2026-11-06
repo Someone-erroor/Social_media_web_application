@@ -50,4 +50,26 @@ router.delete('/posts/:postId', handleAdminDeletePost);
 router.get('/comments', handleGetAdminComments);
 router.delete('/comments/:commentId', handleAdminDeleteComment);
 
+// Phase 4: Trust & Safety Admin Center
+router.get('/reports', async (req, res, next) => {
+  const { handleGetAdminReports } = await import('../controllers/admin.controller.js');
+  return handleGetAdminReports(req, res, next);
+});
+router.patch('/reports/:reportId/status', async (req, res, next) => {
+  const { handleUpdateReportStatus } = await import('../controllers/admin.controller.js');
+  return handleUpdateReportStatus(req, res, next);
+});
+router.post('/moderation', async (req, res, next) => {
+  const { handleApplyModerationAction } = await import('../controllers/admin.controller.js');
+  return handleApplyModerationAction(req, res, next);
+});
+router.get('/appeals', async (req, res, next) => {
+  const { handleGetAdminAppeals } = await import('../controllers/admin.controller.js');
+  return handleGetAdminAppeals(req, res, next);
+});
+router.patch('/appeals/:appealId', async (req, res, next) => {
+  const { handleReviewAdminAppeal } = await import('../controllers/admin.controller.js');
+  return handleReviewAdminAppeal(req, res, next);
+});
+
 export default router;

@@ -21,19 +21,24 @@ import { useAuth } from '@/context/AuthContext';
 export default function FollowButton({
   userId,
   isFollowing = false,
+  isPending = false,
   onFollowChange,
   disabled = false,
   className = ''
 }) {
   const { user } = useAuth();
   const [following, setFollowing] = useState(isFollowing);
+  const [pending, setPending] = useState(isPending);
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Synchronize state if parent changes isFollowing
+  // Synchronize state if parent changes isFollowing or isPending
   if (isFollowing !== following && !loading) {
     setFollowing(isFollowing);
+  }
+  if (isPending !== pending && !loading) {
+    setPending(isPending);
   }
 
   const handleToggleFollow = async (e) => {
@@ -49,30 +54,45 @@ export default function FollowButton({
 
     setLoading(true);
     setErrorMessage('');
-    const previousState = following;
+    const previousFollowing = following;
+    const previousPending = pending;
 
     try {
-      if (previousState) {
+      if (previousFollowing) {
         // Currently following -> Unfollow
         const res = await profileService.unfollowUser(userId);
         if (res?.success) {
           setFollowing(false);
+          setPending(false);
           onFollowChange?.(false, res);
         } else {
           throw new Error(res?.message || 'Failed to unfollow user.');
         }
+      } else if (previousPending) {
+        // Currently requested -> Cancel request
+        const res = await profileService.unfollowUser(userId);
+        setFollowing(false);
+        setPending(false);
+        onFollowChange?.(false, res);
       } else {
         // Currently not following -> Follow
         const res = await profileService.followUser(userId);
         if (res?.success) {
-          setFollowing(true);
-          onFollowChange?.(true, res);
+          if (res.isPending) {
+            setPending(true);
+            setFollowing(false);
+          } else {
+            setFollowing(true);
+            setPending(false);
+          }
+          onFollowChange?.(!res.isPending, res);
         } else {
           throw new Error(res?.message || 'Failed to follow user.');
         }
       }
     } catch (err) {
-      setFollowing(previousState);
+      setFollowing(previousFollowing);
+      setPending(previousPending);
       setErrorMessage(err.message || 'Action could not be completed.');
     } finally {
       setLoading(false);
@@ -83,15 +103,25 @@ export default function FollowButton({
     <div className="inline-flex flex-col items-end">
       <Button
         type="button"
-        variant={following ? (isHovered ? 'danger' : 'outline') : 'primary'}
+        variant={
+          following
+            ? isHovered
+              ? 'danger'
+              : 'outline'
+            : pending
+            ? isHovered
+              ? 'danger'
+              : 'outline'
+            : 'primary'
+        }
         size="sm"
         disabled={loading || disabled}
         onClick={handleToggleFollow}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`font-semibold min-w-[105px] transition-all duration-200 ${className}`}
-        aria-label={following ? 'Unfollow this user' : 'Follow this user'}
-        aria-pressed={following}
+        aria-label={following ? 'Unfollow this user' : pending ? 'Cancel follow request' : 'Follow this user'}
+        aria-pressed={following || pending}
       >
         {loading ? (
           <span className="flex items-center gap-1.5">
@@ -108,6 +138,18 @@ export default function FollowButton({
             <span className="flex items-center gap-1.5 text-[#19D3E3]">
               <Icon name="check" className="w-3.5 h-3.5 text-[#19D3E3]" />
               <span>Following</span>
+            </span>
+          )
+        ) : pending ? (
+          isHovered ? (
+            <span className="flex items-center gap-1 text-[#FF5C70]">
+              <Icon name="close" className="w-3.5 h-3.5" />
+              <span>Cancel</span>
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-[#FFB800]">
+              <Icon name="clock" className="w-3.5 h-3.5 text-[#FFB800]" />
+              <span>Requested</span>
             </span>
           )
         ) : (

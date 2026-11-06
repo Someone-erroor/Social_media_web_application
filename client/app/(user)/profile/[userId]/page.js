@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import Card, { CardContent } from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
@@ -11,13 +12,17 @@ import EmptyState from '@/components/ui/EmptyState';
 import PostCard from '@/components/posts/PostCard';
 import FollowButton from '@/components/profile/FollowButton';
 import UserListModal from '@/components/profile/UserListModal';
+import ReportModal from '@/components/safety/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { profileService } from '@/services/profileService';
 import { postService } from '@/services/postService';
+import { messageService } from '@/services/messageService';
+import { safetyService } from '@/services/safetyService';
 import { ROUTES } from '@/lib/routes';
 
 export default function UserProfilePage() {
   const params = useParams();
+  const router = useRouter();
   const userId = params?.userId;
   const { user: currentUser } = useAuth();
 
@@ -33,8 +38,18 @@ export default function UserProfilePage() {
   const [userListType, setUserListType] = useState('followers');
   const [userListUsers, setUserListUsers] = useState([]);
   const [userListLoading, setUserListLoading] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const isOwnProfile = currentUser && (currentUser._id === userId || currentUser.id === userId);
+
+  const handleStartMessage = async () => {
+    try {
+      await messageService.getOrCreateConversation(userId);
+      router.push(ROUTES.USER.MESSAGES);
+    } catch {
+      router.push(ROUTES.USER.MESSAGES);
+    }
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -218,11 +233,43 @@ export default function UserProfilePage() {
                       Edit Profile
                     </Button>
                   ) : (
-                    <FollowButton
-                      userId={userId}
-                      isFollowing={Boolean(profile.isFollowing)}
-                      onFollowChange={handleFollowChange}
-                    />
+                    <div className="flex items-center gap-2">
+                      <FollowButton
+                        userId={userId}
+                        isFollowing={Boolean(profile.isFollowing)}
+                        isPending={Boolean(profile.isPending)}
+                        onFollowChange={handleFollowChange}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleStartMessage}
+                        className="flex items-center gap-1.5"
+                      >
+                        <Icon name="message" className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Message</span>
+                      </Button>
+                      <Link href={ROUTES.USER.MEMORIES(userId)}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="px-2"
+                          title="Friendship Memories"
+                        >
+                          <Icon name="sparkles" className="w-4 h-4 text-[#19D3E3]" />
+                        </Button>
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setShowReportModal(true)}
+                        className="p-2 rounded-lg text-[#9BAAB4] hover:text-[#FF5C70] hover:bg-[#FF5C70]/10 transition-colors"
+                        title="Report User"
+                      >
+                        <Icon name="flag" className="w-4 h-4" />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -283,7 +330,17 @@ export default function UserProfilePage() {
               Posts by {profile.fullName} ({posts.length})
             </h2>
 
-            {postsError ? (
+            {profile.isPrivate && !profile.isFollowing && !isOwnProfile ? (
+              <div className="p-8 rounded-2xl bg-[#151F29] border border-[#263640] text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-[#19D3E3]/15 text-[#19D3E3] flex items-center justify-center mx-auto">
+                  <Icon name="lock" className="w-6 h-6" />
+                </div>
+                <h3 className="text-sm font-bold text-[#F4F8FA]">This Account is Private</h3>
+                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto">
+                  Follow {profile.fullName} to view their photos, posts, and community activity.
+                </p>
+              </div>
+            ) : postsError ? (
               <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
                 {postsError}
               </div>
@@ -315,6 +372,15 @@ export default function UserProfilePage() {
             users={userListUsers}
             loading={userListLoading}
             profileName={profile.fullName}
+          />
+
+          {/* Safety Report Modal */}
+          <ReportModal
+            isOpen={showReportModal}
+            onClose={() => setShowReportModal(false)}
+            targetType="user"
+            targetId={userId}
+            targetName={profile.fullName}
           />
         </>
       )}
