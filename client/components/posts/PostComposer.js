@@ -366,11 +366,10 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
               <button
                 type="button"
                 onClick={() => setAiMode(aiMode === 'generate' ? null : 'generate')}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
-                  aiMode === 'generate'
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${aiMode === 'generate'
                     ? 'bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 font-semibold'
                     : 'bg-[#101A22] border border-[#263640] hover:border-[#19D3E3]/40 text-[#9BAAB4] hover:text-[#19D3E3]'
-                }`}
+                  }`}
                 title="Draft a post with Gemini AI"
               >
                 <Icon name="sparkles" className="w-3.5 h-3.5 text-[#19D3E3]" />
@@ -381,11 +380,10 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                 type="button"
                 onClick={() => setAiMode(aiMode === 'improve' ? null : 'improve')}
                 disabled={!content.trim()}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
-                  aiMode === 'improve'
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${aiMode === 'improve'
                     ? 'bg-[#FF6F61]/15 text-[#FF6F61] border border-[#FF6F61]/30 font-semibold'
                     : 'bg-[#101A22] border border-[#263640] hover:border-[#FF6F61]/40 text-[#9BAAB4] hover:text-[#FF6F61] disabled:opacity-40 disabled:hover:bg-[#101A22] disabled:hover:text-[#9BAAB4] disabled:cursor-not-allowed'
-                }`}
+                  }`}
                 title={content.trim() ? "Improve draft with Gemini AI" : "Write text to enable AI polish"}
               >
                 <Icon name="sparkles" className="w-3.5 h-3.5 text-[#FF6F61]" />
@@ -393,13 +391,12 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
               </button>
 
               <span
-                className={`text-[11px] font-medium ml-2 ${
-                  isOverLimit
+                className={`text-[11px] font-medium ml-2 ${isOverLimit
                     ? 'text-[#FF5C70] font-bold'
                     : charCount > 900
-                    ? 'text-[#F5B942]'
-                    : 'text-[#9BAAB4]'
-                }`}
+                      ? 'text-[#F5B942]'
+                      : 'text-[#9BAAB4]'
+                  }`}
               >
                 {charCount} / 1000
               </span>
