@@ -16,18 +16,28 @@ async function seedDemoUsers() {
   const accounts = [
     {
       email: 'admin@looply.com',
+      password: 'Password@123',
+      fullName: 'Looply Administrator',
+      role: 'admin',
+      bio: 'Platform Lead Administrator with full platform controls.'
+    },
+    {
+      email: 'admin@looply.social',
+      password: 'Admin@1234',
       fullName: 'Looply Administrator',
       role: 'admin',
       bio: 'Platform Lead Administrator with full platform controls.'
     },
     {
       email: 'demo@looply.com',
+      password: 'Password@123',
       fullName: 'Demo Explorer',
       role: 'user',
       bio: 'Demo community creator exploring Looply features.'
     },
     {
       email: 'user@looply.com',
+      password: 'Password@123',
       fullName: 'Looply Demo User',
       role: 'user',
       bio: 'Standard demo user for social posting and interactions.'
@@ -37,6 +47,7 @@ async function seedDemoUsers() {
   console.log('[3/4] Provisioning demo accounts...');
 
   for (const acc of accounts) {
+    const hashedPassword = await bcrypt.hash(acc.password, 12);
     const result = await usersCollection.updateOne(
       { email: acc.email },
       {
@@ -70,7 +81,7 @@ async function seedDemoUsers() {
     );
 
     console.log(
-      `✓ [${acc.role.toUpperCase()}] ${acc.email} -> password: "${sharedPassword}" (${result.upsertedCount ? 'Created' : 'Updated'})`
+      `✓ [${acc.role.toUpperCase()}] ${acc.email} -> password: "${acc.password}" (${result.upsertedCount ? 'Created' : 'Updated'})`
     );
   }
 

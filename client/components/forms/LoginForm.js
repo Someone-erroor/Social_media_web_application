@@ -67,8 +67,16 @@ export default function LoginForm() {
   };
 
   const handleFillDemoAdmin = () => {
-    setEmail('admin@looply.social');
-    setPassword('Admin@1234');
+    setEmail('admin@looply.com');
+    setPassword('Password@123');
+    setFieldErrors({});
+    setErrorMessage('');
+    setIsCreateAdmin(false);
+  };
+
+  const handleFillDemoUser = () => {
+    setEmail('demo@looply.com');
+    setPassword('Password@123');
     setFieldErrors({});
     setErrorMessage('');
     setIsCreateAdmin(false);
@@ -148,25 +156,37 @@ export default function LoginForm() {
       </CardHeader>
 
       <CardContent className="space-y-4 pt-4">
-        {/* Demo Admin Quick-Fill Banner (Visible in Admin Mode) */}
-        {isAdminMode && !isCreateAdmin && (
+        {/* Demo Quick-Fill Helper Banner */}
+        {!isCreateAdmin && (
           <div className="p-3 rounded-xl bg-[#101A22] border border-[#19D3E3]/40 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-[#19D3E3] flex items-center gap-1.5">
-                <Icon name="shield" className="w-3.5 h-3.5 shrink-0" />
-                Demo Admin Credentials
+                <Icon name="sparkles" className="w-3.5 h-3.5 shrink-0" />
+                Demo Credentials (Pre-Verified)
               </span>
-              <button
-                type="button"
-                onClick={handleFillDemoAdmin}
-                className="text-[11px] font-bold text-[#080D12] bg-[#19D3E3] hover:bg-[#00B8C8] px-2.5 py-1 rounded-lg transition-colors cursor-pointer shadow-xs"
-              >
-                Auto-Fill Demo
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleFillDemoUser}
+                  className="text-[10px] font-bold text-[#080D12] bg-[#19D3E3] hover:bg-[#00B8C8] px-2.5 py-1 rounded-md transition-colors cursor-pointer shadow-xs"
+                >
+                  Fill User
+                </button>
+                <button
+                  type="button"
+                  onClick={handleFillDemoAdmin}
+                  className="text-[10px] font-bold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/40 hover:bg-[#19D3E3]/25 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
+                >
+                  Fill Admin
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] font-mono text-[#9BAAB4]">
-              <div>Email: <span className="text-[#F4F8FA] font-semibold">admin@looply.social</span></div>
-              <div>Password: <span className="text-[#F4F8FA] font-semibold">Admin@1234</span></div>
+              <div>User: <span className="text-[#F4F8FA] font-semibold">demo@looply.com</span></div>
+              <div>Admin: <span className="text-[#F4F8FA] font-semibold">admin@looply.com</span></div>
+              <div className="sm:col-span-2 text-[10px] text-[#9BAAB4]">
+                Password: <span className="text-[#F4F8FA] font-semibold">Password@123</span>
+              </div>
             </div>
           </div>
         )}
