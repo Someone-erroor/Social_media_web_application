@@ -1,11 +1,25 @@
 import { apiClient } from './api';
 
 export const privacyService = {
-  async updatePrivacy(isPrivate) {
+  async getPrivacySettings() {
+    return apiClient('/privacy/settings', {
+      method: 'GET'
+    });
+  },
+
+  async updatePrivacySettings({ isPrivate }) {
     return apiClient('/privacy/settings', {
       method: 'PATCH',
       body: JSON.stringify({ isPrivate })
     });
+  },
+
+  async updatePrivacy(isPrivate) {
+    return this.updatePrivacySettings({ isPrivate });
+  },
+
+  async getPendingFollowRequests() {
+    return this.getPendingRequests();
   },
 
   async getPendingRequests() {

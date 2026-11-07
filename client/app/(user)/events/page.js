@@ -81,8 +81,10 @@ export default function EventsPage() {
     }
   };
 
-  const hasSolved = selectedEvent?.solvers?.some(
-    (s) => (s.user?._id || s.user) === user?._id
+  const hasSolved = Boolean(
+    selectedEvent?.hasSolved ||
+    selectedEvent?.solvers?.some((s) => (s.user?._id || s.user) === user?._id) ||
+    selectedEvent?.submissions?.some((s) => (s.user?._id || s.user) === user?._id && s.isCorrect)
   );
 
   return (

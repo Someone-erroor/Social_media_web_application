@@ -76,9 +76,18 @@ export const listChallenges = async ({ gameType, page = 1, limit = 20 }) => {
     GameChallenge.countDocuments(query)
   ]);
 
+  const formattedChallenges = challenges.map((c) => {
+    const obj = c.toObject ? c.toObject() : { ...c };
+    const gd = obj.gameData || {};
+    obj.prompt = obj.prompt || gd.prompt || (gd.questions?.[0]?.question) || gd.emojis || gd.imageUrl || obj.description || '';
+    obj.options = obj.options || gd.options || gd.statements || (gd.questions?.[0]?.options) || [];
+    obj.hint = obj.hint || gd.hint || '';
+    return obj;
+  });
+
   return {
     success: true,
-    challenges,
+    challenges: formattedChallenges,
     pagination: {
       total,
       page: pageNum,
@@ -112,9 +121,15 @@ export const getChallengeById = async (challengeId, currentUserId = null) => {
     ? challenge.participants.find(p => p.user?._id.toString() === currentUserId.toString())
     : null;
 
+  const challengeObj = challenge.toObject ? challenge.toObject() : { ...challenge };
+  const gd = challengeObj.gameData || {};
+  challengeObj.prompt = challengeObj.prompt || gd.prompt || (gd.questions?.[0]?.question) || gd.emojis || gd.imageUrl || challengeObj.description || '';
+  challengeObj.options = challengeObj.options || gd.options || gd.statements || (gd.questions?.[0]?.options) || [];
+  challengeObj.hint = challengeObj.hint || gd.hint || '';
+
   return {
     success: true,
-    challenge,
+    challenge: challengeObj,
     hasParticipated: Boolean(userParticipation),
     userScore: userParticipation ? userParticipation.score : null
   };

@@ -56,11 +56,9 @@ export default function MemoriesPage({ params }) {
         <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] max-w-md mx-auto">
           {error || 'Unable to retrieve friendship history.'}
         </div>
-        <Link href={ROUTES.USER.USER_PROFILE(targetUserId)}>
-          <Button type="button" variant="outline" size="sm">
-            Back to Profile
-          </Button>
-        </Link>
+        <Button href={ROUTES.USER.USER_PROFILE(targetUserId)} variant="outline" size="sm">
+          Back to Profile
+        </Button>
       </div>
     );
   }

@@ -25,6 +25,13 @@ export const playService = {
       method: 'POST',
       body: JSON.stringify({ userAnswers })
     });
+  },
+
+  async playChallenge(challengeId, payload) {
+    return apiClient(`/play/challenges/${challengeId}/answer`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
   }
 };
 

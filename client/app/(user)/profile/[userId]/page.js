@@ -250,17 +250,15 @@ export default function UserProfilePage() {
                         <Icon name="message" className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">Message</span>
                       </Button>
-                      <Link href={ROUTES.USER.MEMORIES(userId)}>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="px-2"
-                          title="Friendship Memories"
-                        >
-                          <Icon name="sparkles" className="w-4 h-4 text-[#19D3E3]" />
-                        </Button>
-                      </Link>
+                      <Button
+                        href={ROUTES.USER.MEMORIES(userId)}
+                        variant="ghost"
+                        size="sm"
+                        className="px-2"
+                        title="Friendship Memories"
+                      >
+                        <Icon name="sparkles" className="w-4 h-4 text-[#19D3E3]" />
+                      </Button>
                       <button
                         type="button"
                         onClick={() => setShowReportModal(true)}

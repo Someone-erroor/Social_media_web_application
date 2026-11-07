@@ -83,6 +83,7 @@ export default function TimeCapsulePage() {
       const res = await timeCapsuleService.createCapsule({
         title: title.trim(),
         message: message.trim(),
+        unlockDate: targetDate.toISOString(),
         unlockAt: targetDate.toISOString()
       });
       if (res?.success) {

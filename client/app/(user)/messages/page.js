@@ -107,8 +107,11 @@ export default function MessagesPage() {
       socket.emit('join_conversation', { conversationId: activeConversation._id });
 
       const handleNewMessage = (payload) => {
-        if (payload?.conversationId === activeConversation._id) {
-          setMessages((prev) => [...prev, payload.message]);
+        if (payload?.conversationId === activeConversation._id && payload?.message?._id) {
+          setMessages((prev) => {
+            if (prev.some((m) => m._id === payload.message._id)) return prev;
+            return [...prev, payload.message];
+          });
           scrollToBottom();
         }
       };

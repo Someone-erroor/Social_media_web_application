@@ -1,4 +1,5 @@
 import {
+  getPrivacySettings as getPrivacySettingsService,
   updatePrivacySettings as updatePrivacySettingsService,
   sendFollowRequest as sendFollowRequestService,
   cancelFollowRequest as cancelFollowRequestService,
@@ -6,6 +7,15 @@ import {
   rejectFollowRequest as rejectFollowRequestService,
   getPendingFollowRequests as getPendingFollowRequestsService
 } from '../services/privacy.service.js';
+
+export const getPrivacySettings = async (req, res, next) => {
+  try {
+    const result = await getPrivacySettingsService(req.user._id);
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const updatePrivacy = async (req, res, next) => {
   try {
@@ -79,6 +89,7 @@ export const getPendingRequests = async (req, res, next) => {
 };
 
 export default {
+  getPrivacySettings,
   updatePrivacy,
   sendFollowRequest,
   cancelFollowRequest,

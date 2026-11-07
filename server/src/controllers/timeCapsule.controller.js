@@ -7,13 +7,14 @@ import {
 
 export const createCapsule = async (req, res, next) => {
   try {
-    const { title, message, mediaUrl, unlockDate, isShared, recipients } = req.body;
+    const { title, message, mediaUrl, unlockDate, unlockAt, isShared, recipients } = req.body;
+    const finalUnlockDate = unlockDate || unlockAt;
     const result = await createTimeCapsuleService({
       creatorId: req.user._id,
       title,
       message,
       mediaUrl,
-      unlockDate,
+      unlockDate: finalUnlockDate,
       isShared,
       recipients
     });

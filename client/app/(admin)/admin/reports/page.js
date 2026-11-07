@@ -252,13 +252,13 @@ export default function AdminReportsPage() {
                   className="w-full px-3 py-2 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] focus:outline-hidden focus:border-[#19D3E3]"
                 >
                   <option value="none">No immediate automated action</option>
-                  {selectedReport.targetType === 'post' && (
+                  {selectedReport.targetType?.toLowerCase() === 'post' && (
                     <option value="delete_post">Delete Post Permanently</option>
                   )}
-                  {selectedReport.targetType === 'comment' && (
+                  {selectedReport.targetType?.toLowerCase() === 'comment' && (
                     <option value="delete_comment">Delete Comment Permanently</option>
                   )}
-                  {selectedReport.targetType === 'user' && (
+                  {selectedReport.targetType?.toLowerCase() === 'user' && (
                     <>
                       <option value="warn_user">Issue Official Warning</option>
                       <option value="suspend_user">Suspend Account</option>

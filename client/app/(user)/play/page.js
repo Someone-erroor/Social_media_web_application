@@ -13,7 +13,7 @@ import { playService } from '@/services/playService';
 const GAME_TYPES = [
   { id: 'all', label: 'All Games', icon: 'play' },
   { id: 'who_knows_me', label: 'Who Knows Me Better?', icon: 'users', desc: 'Test how well your friends really know your preferences' },
-  { id: 'two_truths_and_a_lie', label: 'Two Truths & a Lie', icon: 'sparkles', desc: 'Two real facts, one clever lie. Can they spot it?' },
+  { id: 'two_truths_and_lie', label: 'Two Truths & a Lie', icon: 'sparkles', desc: 'Two real facts, one clever lie. Can they spot it?' },
   { id: 'emoji_challenge', label: 'Emoji Challenge', icon: 'assistant', desc: 'Decode movie, song, or phrase puzzles from emojis' },
   { id: 'picture_mystery', label: 'Picture Mystery', icon: 'eye', desc: 'Unravel riddles and secret visual clues' }
 ];
@@ -444,7 +444,7 @@ export default function PlayPage() {
                   className="w-full px-3 py-2 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] focus:outline-hidden focus:border-[#19D3E3]"
                 >
                   <option value="who_knows_me">Who Knows Me Better?</option>
-                  <option value="two_truths_and_a_lie">Two Truths and a Lie</option>
+                  <option value="two_truths_and_lie">Two Truths and a Lie</option>
                   <option value="emoji_challenge">Emoji Challenge</option>
                   <option value="picture_mystery">Picture Mystery</option>
                 </select>

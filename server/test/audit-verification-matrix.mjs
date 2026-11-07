@@ -246,6 +246,15 @@ async function runAuditMatrix() {
     assert.strictEqual(aliceViewApprovedData.post.content, 'Bob secret private journal post');
     recordPass('Approved follower can now access private post successfully');
 
+    // 4. Privacy settings retrieval & toggle verification
+    const privSettingsRes = await fetch(`${baseUrl}/privacy/settings`, {
+      headers: authHeaders(bob)
+    });
+    const privSettingsData = await privSettingsRes.json();
+    assert.strictEqual(privSettingsRes.status, 200);
+    assert.strictEqual(privSettingsData.settings.isPrivate, true);
+    recordPass('Privacy settings endpoint correctly reflects account private status');
+
     // -------------------------------------------------------------------------
     // PART 4: SAFETY, BLOCKING & REPORTING
     // -------------------------------------------------------------------------

@@ -3,6 +3,28 @@ import { isValidObjectId } from '../validators/profile.validator.js';
 import { sendNotificationToUser } from './socket.service.js';
 
 /**
+ * Retrieves a user's current privacy settings.
+ *
+ * @param {string} userId
+ * @returns {Promise<object>}
+ */
+export const getPrivacySettings = async (userId) => {
+  const user = await User.findById(userId).select('isPrivate');
+  if (!user) {
+    const error = new Error('User not found.');
+    error.status = 404;
+    throw error;
+  }
+
+  return {
+    success: true,
+    settings: {
+      isPrivate: Boolean(user.isPrivate)
+    }
+  };
+};
+
+/**
  * Updates a user's privacy settings.
  *
  * @param {string} userId
@@ -23,6 +45,9 @@ export const updatePrivacySettings = async (userId, { isPrivate }) => {
   return {
     success: true,
     isPrivate: user.isPrivate,
+    settings: {
+      isPrivate: user.isPrivate
+    },
     message: `Account is now ${user.isPrivate ? 'private' : 'public'}.`
   };
 };

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth.middleware.js';
 import {
+  getPrivacySettings,
   updatePrivacy,
   sendFollowRequest,
   cancelFollowRequest,
@@ -15,6 +16,7 @@ const router = Router();
 router.use(authenticate);
 
 // Settings
+router.get('/settings', getPrivacySettings);
 router.patch('/settings', updatePrivacy);
 
 // Pending follow requests for current user

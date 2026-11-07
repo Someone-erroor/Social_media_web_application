@@ -94,11 +94,9 @@ export default function CircleDetailPage({ params }) {
         <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] max-w-md mx-auto">
           {error || 'Circle not found.'}
         </div>
-        <Link href={ROUTES.USER.CIRCLES}>
-          <Button type="button" variant="outline" size="sm">
-            Back to Circles
-          </Button>
-        </Link>
+        <Button href={ROUTES.USER.CIRCLES} variant="outline" size="sm">
+          Back to Circles
+        </Button>
       </div>
     );
   }

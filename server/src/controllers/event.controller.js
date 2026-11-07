@@ -30,8 +30,8 @@ export const getEvent = async (req, res, next) => {
 export const submitAnswer = async (req, res, next) => {
   try {
     const { eventId } = req.params;
-    const { answer } = req.body;
-    const result = await submitEventAnswerService(eventId, req.user._id, answer);
+    const rawAnswer = typeof req.body.answer === 'object' && req.body.answer !== null ? req.body.answer.answer : req.body.answer;
+    const result = await submitEventAnswerService(eventId, req.user._id, rawAnswer);
     return res.status(200).json(result);
   } catch (error) {
     if (error.status === 400) {
