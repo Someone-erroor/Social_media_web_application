@@ -129,6 +129,7 @@ export const getAvailableContacts = async (currentUserId, searchQuery = '') => {
 
   const query = {
     _id: { $nin: [...blockedIds, currentUserId] },
+    blockedUsers: { $ne: currentUserId },
     accountStatus: { $ne: 'suspended' }
   };
 

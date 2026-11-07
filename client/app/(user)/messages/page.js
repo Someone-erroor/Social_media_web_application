@@ -463,7 +463,7 @@ export default function MessagesPage() {
             </h1>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-semibold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/30 px-2 py-0.5 rounded-full hidden sm:inline-block">
-                E2EE Active
+                AES-256 Protected
               </span>
               <button
                 type="button"
@@ -624,11 +624,11 @@ export default function MessagesPage() {
                 </div>
               </div>
 
-              {/* E2EE Protocol Badge */}
+              {/* Cryptographic Protocol Badge */}
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#19D3E3]/10 border border-[#19D3E3]/20 text-[#19D3E3] text-[11px] font-semibold">
                 <Icon name="lock" className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">AES-GCM 256-bit E2EE</span>
-                <span className="sm:hidden">E2EE</span>
+                <span className="hidden sm:inline">AES-GCM 256-bit Encrypted</span>
+                <span className="sm:hidden">AES-256</span>
               </div>
             </div>
 
