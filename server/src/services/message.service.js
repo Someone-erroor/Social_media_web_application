@@ -190,15 +190,18 @@ export const getMessages = async (conversationId, currentUserId, { page = 1, lim
   const limitNum = Math.min(100, Math.max(1, Number.parseInt(limit, 10) || 50));
   const skip = (pageNum - 1) * limitNum;
 
-  const [messages, total] = await Promise.all([
+  const [messagesDesc, total] = await Promise.all([
     Message.find({ conversation: conversationId })
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum)
       .populate('sender', '_id fullName profile.avatarUrl')
       .populate('recipient', '_id fullName profile.avatarUrl'),
     Message.countDocuments({ conversation: conversationId })
   ]);
+
+  // Reverse back to chronological order (oldest to newest) for proper chat stream display
+  const messages = messagesDesc.reverse();
 
   return {
     success: true,
@@ -289,14 +292,13 @@ export const sendMessage = async ({ conversationId, senderId, content, isEncrypt
         conversationId: convIdStr
       };
 
-      // 1. Emit to active conversation room (reaches participants currently viewing this chat)
-      io.to(`conversation_${convIdStr}`).emit('new_message', payload);
-
-      // 2. Emit to recipient's personal user room (reaches recipient even if not inside conversation room)
-      io.to(`user_${recipientId.toString()}`).emit('new_message', payload);
-
-      // 3. Emit to sender's user room (syncs sender's other tabs or sessions)
-      io.to(`user_${senderId.toString()}`).emit('new_message', payload);
+      // Emit chained to conversation room, recipient user room, and sender user room.
+      // Chaining .to() calls ensures Socket.IO deduplicates client sockets across rooms,
+      // so each connected client receives the 'new_message' event exactly once.
+      io.to(`conversation_${convIdStr}`)
+        .to(`user_${recipientId.toString()}`)
+        .to(`user_${senderId.toString()}`)
+        .emit('new_message', payload);
     }
   } catch (err) {
     console.error(`[Socket Error] Message dispatch: ${err.message}`);

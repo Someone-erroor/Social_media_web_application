@@ -63,7 +63,14 @@ export default function MemoriesPage({ params }) {
     );
   }
 
-  const { targetUser, connection, mutualCircles, sharedGames, milestones } = milestonesData;
+  const targetUser = milestonesData?.targetUser || milestonesData?.user || null;
+  const connection = milestonesData?.connection || {
+    isFollowing: Boolean(milestonesData?.isFollowing),
+    daysConnected: 1
+  };
+  const mutualCircles = milestonesData?.mutualCircles || [];
+  const sharedGames = milestonesData?.sharedGames || [];
+  const milestones = milestonesData?.milestones || [];
 
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
@@ -98,7 +105,7 @@ export default function MemoriesPage({ params }) {
             <div className="ring-4 ring-[#101A22] rounded-full">
               <Avatar
                 name={targetUser?.fullName || 'Friend'}
-                src={targetUser?.avatarUrl}
+                src={targetUser?.avatarUrl || targetUser?.profile?.avatarUrl}
                 size="lg"
               />
             </div>

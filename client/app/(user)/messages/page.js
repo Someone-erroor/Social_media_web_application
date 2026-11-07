@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
@@ -10,15 +11,19 @@ import { useNotifications } from '@/context/NotificationContext';
 import { messageService } from '@/services/messageService';
 import { deriveConversationKey, encryptMessage, decryptMessage } from '@/lib/crypto';
 
-export default function MessagesPage() {
+function MessagesContent() {
   const { user } = useAuth();
   const { socket } = useNotifications();
+  const searchParams = useSearchParams();
+  const queryUserId = searchParams.get('userId');
+  const queryConvId = searchParams.get('conversationId');
 
   const [conversations, setConversations] = useState([]);
   const [activeTab, setActiveTab] = useState('chats'); // 'chats' | 'requests'
   const [activeConversation, setActiveConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [decryptedCache, setDecryptedCache] = useState({});
+  const [cryptoKey, setCryptoKey] = useState(null);
   const [messageInput, setMessageInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [partnerTyping, setPartnerTyping] = useState(false);
@@ -40,9 +45,8 @@ export default function MessagesPage() {
   const searchTimeoutRef = useRef(null);
   const activeConversationRef = useRef(activeConversation);
 
-  useEffect(() => {
-    activeConversationRef.current = activeConversation;
-  }, [activeConversation]);
+  // Synchronously keep ref aligned with current active conversation
+  activeConversationRef.current = activeConversation;
 
   // Scroll to bottom of message list
   const scrollToBottom = () => {
@@ -65,6 +69,9 @@ export default function MessagesPage() {
     [user?._id]
   );
 
+  // Helper for consistent ID comparisons
+  const getMsgId = (m) => (m?._id?.toString?.() || m?._id || m?.id?.toString?.() || m?.id || '').toString();
+
   // Fetch all user conversations
   const fetchConversations = useCallback(async () => {
     try {
@@ -83,6 +90,40 @@ export default function MessagesPage() {
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
+
+  // Support direct conversation selection or creation from URL query parameters (?userId=... or ?conversationId=...)
+  useEffect(() => {
+    if (!queryUserId && !queryConvId) return;
+
+    if (queryConvId && conversations.length > 0) {
+      const match = conversations.find((c) => (c._id?.toString?.() || c._id) === queryConvId);
+      if (match) {
+        setActiveConversation(match);
+        setActiveTab(match.status === 'pending_request' ? 'requests' : 'chats');
+        return;
+      }
+    }
+
+    if (queryUserId) {
+      messageService
+        .getOrCreateConversation(queryUserId)
+        .then((res) => {
+          if (res?.success && res.conversation) {
+            const conv = res.conversation;
+            setConversations((prev) => {
+              const exists = prev.some(
+                (c) => (c._id?.toString?.() || c._id) === (conv._id?.toString?.() || conv._id)
+              );
+              if (exists) return prev;
+              return [conv, ...prev];
+            });
+            setActiveConversation(conv);
+            setActiveTab('chats');
+          }
+        })
+        .catch(() => {});
+    }
+  }, [queryUserId, queryConvId, conversations]);
 
   // Fetch contacts for the New Chat selector
   const fetchContacts = useCallback(async (query = '') => {
@@ -143,10 +184,11 @@ export default function MessagesPage() {
     }
   };
 
-  // Derive E2EE key whenever active conversation changes
+  // Derive Client-Side AES-GCM key whenever active conversation changes
   useEffect(() => {
-    if (!activeConversation) {
+    if (!activeConversation?._id) {
       cryptoKeyRef.current = null;
+      setCryptoKey(null);
       return;
     }
 
@@ -156,18 +198,19 @@ export default function MessagesPage() {
       .then((key) => {
         if (!ignore) {
           cryptoKeyRef.current = key;
+          setCryptoKey(key);
         }
       })
       .catch((err) => {
-        console.warn('E2EE key derivation notice:', err);
+        console.warn('Crypto key derivation notice:', err);
       });
 
     return () => {
       ignore = true;
     };
-  }, [activeConversation]);
+  }, [activeConversation?._id]);
 
-  // Fetch messages and decrypt them
+  // Fetch messages for active conversation
   const fetchMessages = useCallback(async (conversationId) => {
     if (!conversationId) return;
     try {
@@ -184,50 +227,70 @@ export default function MessagesPage() {
     }
   }, []);
 
-  // Persistent real-time Socket.IO listeners for incoming messages & typing
+  // Persistent real-time Socket.IO listeners with auto-rejoin on reconnect & instant duplicate prevention
   useEffect(() => {
     if (!socket) return;
 
     const handleNewMessage = (payload) => {
-      if (!payload?.message?._id) return;
+      if (!payload?.message) return;
+
+      const incomingMsg = payload.message;
+      const incomingId = getMsgId(incomingMsg);
+      if (!incomingId) return;
 
       const incomingConvId = (
         payload.conversationId?._id ||
         payload.conversationId ||
-        payload.message?.conversation?._id ||
-        payload.message?.conversation ||
+        incomingMsg.conversation?._id ||
+        incomingMsg.conversation ||
         ''
       ).toString();
 
       const currentConvId = (activeConversationRef.current?._id || '').toString();
 
-      // If incoming message belongs to open chat, immediately append
+      // If incoming message belongs to open chat, immediately append with strict duplicate check
       if (incomingConvId && incomingConvId === currentConvId) {
         setMessages((prev) => {
-          if (prev.some((m) => m._id === payload.message._id)) return prev;
-          return [...prev, payload.message];
+          if (prev.some((m) => getMsgId(m) === incomingId)) return prev;
+          return [...prev, incomingMsg];
         });
+
+        // Decrypt immediately if crypto key is already ready
+        if (incomingMsg.isEncrypted && incomingMsg.iv && cryptoKeyRef.current) {
+          decryptMessage(incomingMsg.content, incomingMsg.iv, cryptoKeyRef.current)
+            .then((plaintext) => {
+              setDecryptedCache((prev) => ({ ...prev, [incomingId]: plaintext }));
+            })
+            .catch(() => {});
+        }
+
         scrollToBottom();
         messageService.markAsRead(currentConvId).catch(() => {});
       }
 
       // Update sidebar conversation list snippet & unread count
-      setConversations((prev) =>
-        prev.map((c) => {
-          if (c._id.toString() === incomingConvId) {
-            return {
-              ...c,
-              lastMessage: payload.message,
-              lastMessageSnippet: payload.message.isEncrypted
-                ? '🔒 Encrypted message'
-                : payload.message.content,
-              lastMessageAt: payload.message.createdAt || new Date().toISOString(),
-              unreadCount: incomingConvId === currentConvId ? 0 : (c.unreadCount || 0) + 1
-            };
-          }
-          return c;
-        })
-      );
+      setConversations((prev) => {
+        const exists = prev.some((c) => (c._id?.toString?.() || c._id) === incomingConvId);
+        if (exists) {
+          return prev.map((c) => {
+            if ((c._id?.toString?.() || c._id) === incomingConvId) {
+              return {
+                ...c,
+                lastMessage: incomingMsg,
+                lastMessageSnippet: incomingMsg.isEncrypted
+                  ? '🔒 Encrypted message'
+                  : incomingMsg.content,
+                lastMessageAt: incomingMsg.createdAt || new Date().toISOString(),
+                unreadCount: incomingConvId === currentConvId ? 0 : (c.unreadCount || 0) + 1
+              };
+            }
+            return c;
+          });
+        }
+        // If message is for a new conversation not yet in sidebar, refresh conversation list
+        fetchConversations();
+        return prev;
+      });
     };
 
     const handleTypingStart = (payload) => {
@@ -246,11 +309,22 @@ export default function MessagesPage() {
       }
     };
 
+    // Auto-rejoin active conversation room upon socket reconnect
+    const handleRejoin = () => {
+      const convId = activeConversationRef.current?._id;
+      if (convId && socket) {
+        socket.emit('join_conversation', convId);
+        socket.emit('join_conversation', { conversationId: convId });
+      }
+    };
+
     socket.on('new_message', handleNewMessage);
     socket.on('typing_start', handleTypingStart);
     socket.on('typing_stop', handleTypingStop);
     socket.on('user_typing', handleTypingStart);
     socket.on('user_stopped_typing', handleTypingStop);
+    socket.on('connect', handleRejoin);
+    socket.on('reconnect', handleRejoin);
 
     return () => {
       socket.off('new_message', handleNewMessage);
@@ -258,8 +332,10 @@ export default function MessagesPage() {
       socket.off('typing_stop', handleTypingStop);
       socket.off('user_typing', handleTypingStart);
       socket.off('user_stopped_typing', handleTypingStop);
+      socket.off('connect', handleRejoin);
+      socket.off('reconnect', handleRejoin);
     };
-  }, [socket, user?._id]);
+  }, [socket, user?._id, fetchConversations]);
 
   // When active conversation changes, load messages & join conversation room
   useEffect(() => {
@@ -278,19 +354,18 @@ export default function MessagesPage() {
     }
   }, [activeConversation?._id, socket, fetchMessages]);
 
-  // Resilient live background sync interval (picks up any messages in real time even if socket hiccups)
+  // Resilient live background sync interval (guarantees real-time sync across side-by-side or blurred windows)
   useEffect(() => {
     if (!activeConversation?._id) return;
 
+    const convId = activeConversation._id;
     const syncInterval = setInterval(async () => {
-      if (typeof document !== 'undefined' && document.hidden) return;
-
       try {
-        const res = await messageService.getMessages(activeConversation._id, 1, 30);
+        const res = await messageService.getMessages(convId, 1, 50);
         if (res?.success && Array.isArray(res.messages)) {
           setMessages((prev) => {
-            const existingIds = new Set(prev.map((m) => m._id));
-            const newOnes = res.messages.filter((m) => !existingIds.has(m._id));
+            const existingIds = new Set(prev.map((m) => getMsgId(m)));
+            const newOnes = res.messages.filter((m) => !existingIds.has(getMsgId(m)));
             if (newOnes.length === 0) return prev;
             return [...prev, ...newOnes];
           });
@@ -298,7 +373,7 @@ export default function MessagesPage() {
       } catch {
         // Silent sync
       }
-    }, 2500);
+    }, 2000);
 
     return () => clearInterval(syncInterval);
   }, [activeConversation?._id]);
@@ -307,16 +382,17 @@ export default function MessagesPage() {
     scrollToBottom();
   }, [messages, partnerTyping]);
 
-  // Decrypt encrypted messages using derived key
+  // Decrypt encrypted messages as soon as crypto key and messages are available
   useEffect(() => {
-    if (!cryptoKeyRef.current || messages.length === 0) return;
+    if (!cryptoKey || messages.length === 0) return;
 
     let ignore = false;
     messages.forEach((msg) => {
-      if (msg.isEncrypted && msg.iv && !decryptedCache[msg._id]) {
-        decryptMessage(msg.content, msg.iv, cryptoKeyRef.current).then((plaintext) => {
+      const msgId = getMsgId(msg);
+      if (msg.isEncrypted && msg.iv && !decryptedCache[msgId]) {
+        decryptMessage(msg.content, msg.iv, cryptoKey).then((plaintext) => {
           if (!ignore) {
-            setDecryptedCache((prev) => ({ ...prev, [msg._id]: plaintext }));
+            setDecryptedCache((prev) => ({ ...prev, [msgId]: plaintext }));
           }
         });
       }
@@ -325,7 +401,7 @@ export default function MessagesPage() {
     return () => {
       ignore = true;
     };
-  }, [messages, decryptedCache]);
+  }, [messages, cryptoKey, decryptedCache]);
 
   // Typing event handler
   const handleInputChange = (e) => {
@@ -346,12 +422,14 @@ export default function MessagesPage() {
     }
   };
 
-  // Send message with E2EE
+  // Send message with Client-Side AES-GCM 256-bit encryption
   const handleSendMessage = async (e) => {
     e?.preventDefault();
     const text = messageInput.trim();
     if (!text || !activeConversation || sending) return;
 
+    // Immediately clear input and lock sending to eliminate accidental double-transmissions
+    setMessageInput('');
     setSending(true);
     try {
       let contentToSend = text;
@@ -365,7 +443,7 @@ export default function MessagesPage() {
           ivToSend = encResult.iv;
           isEncrypted = true;
         } catch (encErr) {
-          console.warn('E2EE encryption fallback to plaintext:', encErr);
+          console.warn('Encryption fallback to plaintext:', encErr);
         }
       }
 
@@ -375,14 +453,14 @@ export default function MessagesPage() {
         iv: ivToSend
       });
 
-      if (res?.success) {
-        setMessageInput('');
+      if (res?.success && res.message) {
+        const sentId = getMsgId(res.message);
         setMessages((prev) => {
-          if (prev.some((m) => m._id === res.message._id)) return prev;
+          if (prev.some((m) => getMsgId(m) === sentId)) return prev;
           return [...prev, res.message];
         });
         if (isEncrypted) {
-          setDecryptedCache((prev) => ({ ...prev, [res.message._id]: text }));
+          setDecryptedCache((prev) => ({ ...prev, [sentId]: text }));
         }
         if (socket) {
           socket.emit('typing_stop', { conversationId: activeConversation._id, userId: user?._id });
@@ -393,7 +471,7 @@ export default function MessagesPage() {
         // Update local conversation preview in sidebar
         setConversations((prev) =>
           prev.map((c) => {
-            if (c._id.toString() === activeConversation._id.toString()) {
+            if ((c._id?.toString?.() || c._id) === (activeConversation._id?.toString?.() || activeConversation._id)) {
               return {
                 ...c,
                 lastMessage: res.message,
@@ -406,6 +484,8 @@ export default function MessagesPage() {
         );
       }
     } catch (err) {
+      // Restore message text to input on failure so user doesn't lose content
+      setMessageInput(text);
       setError(err.message || 'Failed to send message.');
     } finally {
       setSending(false);
@@ -680,14 +760,17 @@ export default function MessagesPage() {
                 </div>
               ) : (
                 messages.map((msg) => {
-                  const isMine = msg.sender?._id === user?._id || msg.sender === user?._id;
+                  const msgId = getMsgId(msg);
+                  const senderId = (msg.sender?._id || msg.sender)?.toString();
+                  const currentUserId = user?._id?.toString();
+                  const isMine = senderId === currentUserId;
                   const displayContent = msg.isEncrypted
-                    ? decryptedCache[msg._id] || 'Decrypting...'
+                    ? decryptedCache[msgId] || 'Decrypting...'
                     : msg.content;
 
                   return (
                     <div
-                      key={msg._id}
+                      key={msgId || Math.random().toString()}
                       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                     >
                       <div
@@ -705,7 +788,7 @@ export default function MessagesPage() {
                         >
                           {msg.isEncrypted && <Icon name="lock" className="w-2.5 h-2.5" />}
                           <span>
-                            {new Date(msg.createdAt).toLocaleTimeString([], {
+                            {new Date(msg.createdAt || Date.now()).toLocaleTimeString([], {
                               hour: '2-digit',
                               minute: '2-digit'
                             })}
@@ -912,5 +995,19 @@ export default function MessagesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-[calc(100vh-8.5rem)] flex items-center justify-center text-xs text-[#9BAAB4] bg-[#101A22] rounded-2xl border border-[#263640]">
+          Loading messages...
+        </div>
+      }
+    >
+      <MessagesContent />
+    </Suspense>
   );
 }

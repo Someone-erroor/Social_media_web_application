@@ -93,18 +93,36 @@ export const getFriendshipMemories = async (currentUserId, targetUserId) => {
     });
   }
 
+  const sinceDate = targetUser.createdAt || new Date();
+  const daysConnected = Math.max(1, Math.floor((Date.now() - new Date(sinceDate).getTime()) / (1000 * 60 * 60 * 24)));
+
+  const connection = {
+    isFollowing,
+    isFollower,
+    sinceDate,
+    daysConnected
+  };
+
+  const userPayload = {
+    _id: targetUser._id,
+    fullName: targetUser.fullName,
+    avatarUrl: targetUser.profile?.avatarUrl || '',
+    profile: targetUser.profile
+  };
+
   return {
     success: true,
-    user: {
-      _id: targetUser._id,
-      fullName: targetUser.fullName,
-      profile: targetUser.profile
-    },
+    user: userPayload,
+    targetUser: userPayload,
+    connection,
     isFollowing,
+    isFollower,
     mutualCirclesCount: mutualCircles.length,
     mutualCircles,
     sharedGamesCount: sharedGames.length,
+    sharedGames,
     sharedCapsulesCount: sharedCapsules.length,
+    sharedCapsules,
     milestones
   };
 };

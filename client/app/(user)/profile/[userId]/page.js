@@ -44,10 +44,15 @@ export default function UserProfilePage() {
 
   const handleStartMessage = async () => {
     try {
-      await messageService.getOrCreateConversation(userId);
-      router.push(ROUTES.USER.MESSAGES);
+      const res = await messageService.getOrCreateConversation(userId);
+      const convId = res?.conversation?._id || '';
+      if (convId) {
+        router.push(`${ROUTES.USER.MESSAGES}?conversationId=${convId}&userId=${userId}`);
+      } else {
+        router.push(`${ROUTES.USER.MESSAGES}?userId=${userId}`);
+      }
     } catch {
-      router.push(ROUTES.USER.MESSAGES);
+      router.push(`${ROUTES.USER.MESSAGES}?userId=${userId}`);
     }
   };
 
