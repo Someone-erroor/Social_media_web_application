@@ -27,14 +27,38 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
 
+  // New Chat Modal & Contact Discovery States
+  const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [contacts, setContacts] = useState([]);
+  const [contactSearch, setContactSearch] = useState('');
+  const [loadingContacts, setLoadingContacts] = useState(false);
+  const [startingChatWithId, setStartingChatWithId] = useState(null);
+
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const cryptoKeyRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
   // Scroll to bottom of message list
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Helper to extract the other user from a conversation
+  const getOtherUser = useCallback(
+    (conv) => {
+      if (!conv) return null;
+      if (conv.otherUser) return conv.otherUser;
+      if (Array.isArray(conv.participants)) {
+        return conv.participants.find((p) => {
+          const pid = p?._id || p;
+          return pid?.toString() !== user?._id?.toString();
+        });
+      }
+      return null;
+    },
+    [user?._id]
+  );
 
   // Fetch all user conversations
   const fetchConversations = useCallback(async () => {
@@ -54,6 +78,65 @@ export default function MessagesPage() {
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
+
+  // Fetch contacts for the New Chat selector
+  const fetchContacts = useCallback(async (query = '') => {
+    try {
+      setLoadingContacts(true);
+      const res = await messageService.getContacts(query);
+      if (res?.success) {
+        setContacts(res.contacts || []);
+      }
+    } catch (err) {
+      console.warn('Failed to load contacts for messaging:', err);
+    } finally {
+      setLoadingContacts(false);
+    }
+  }, []);
+
+  const openNewChatModal = () => {
+    setShowNewChatModal(true);
+    setContactSearch('');
+    fetchContacts('');
+  };
+
+  const handleContactSearchChange = (e) => {
+    const val = e.target.value;
+    setContactSearch(val);
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchContacts(val);
+    }, 300);
+  };
+
+  // Start or open a conversation with a selected contact
+  const handleSelectContact = async (targetContact) => {
+    if (!targetContact?._id) return;
+    try {
+      setStartingChatWithId(targetContact._id);
+      const res = await messageService.getOrCreateConversation(targetContact._id);
+      if (res?.success && res.conversation) {
+        const conv = res.conversation;
+        if (!conv.otherUser) {
+          conv.otherUser = targetContact;
+        }
+        setConversations((prev) => {
+          const exists = prev.some((c) => c._id === conv._id);
+          if (exists) {
+            return prev.map((c) => (c._id === conv._id ? { ...c, ...conv } : c));
+          }
+          return [conv, ...prev];
+        });
+        setActiveTab('chats');
+        setActiveConversation(conv);
+        setShowNewChatModal(false);
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to start conversation.');
+    } finally {
+      setStartingChatWithId(null);
+    }
+  };
 
   // Derive E2EE key whenever active conversation changes
   useEffect(() => {
@@ -87,7 +170,6 @@ export default function MessagesPage() {
       const res = await messageService.getMessages(conversationId);
       if (res?.success) {
         setMessages(res.messages || []);
-        // Automatically mark as read
         messageService.markAsRead(conversationId).catch(() => {});
       }
     } catch (err) {
@@ -246,34 +328,55 @@ export default function MessagesPage() {
     }
   };
 
-  // Filter conversations
-  const directChats = conversations.filter((c) => c.status === 'accepted');
-  const messageRequests = conversations.filter(
-    (c) => c.status === 'pending' && c.initiatedBy?._id !== user?._id
+  // Filter conversations with complete status compatibility
+  const directChats = conversations.filter(
+    (c) =>
+      c.status === 'active' ||
+      c.status === 'accepted' ||
+      (c.status === 'pending_request' && (c.initiatedBy?._id === user?._id || c.initiatedBy === user?._id))
   );
+
+  const messageRequests = conversations.filter(
+    (c) =>
+      (c.status === 'pending_request' || c.status === 'pending') &&
+      c.initiatedBy?._id !== user?._id &&
+      c.initiatedBy !== user?._id
+  );
+
   const displayedConversations = activeTab === 'chats' ? directChats : messageRequests;
 
   // Active recipient
-  const recipient = activeConversation?.participants?.find((p) => p._id !== user?._id);
+  const recipient = getOtherUser(activeConversation);
 
   return (
-    <div className="h-[calc(100vh-8.5rem)] flex rounded-2xl bg-[#101A22] border border-[#263640] overflow-hidden shadow-xl animate-fade-in">
+    <div className="h-[calc(100vh-8.5rem)] flex rounded-2xl bg-[#101A22] border border-[#263640] overflow-hidden shadow-xl animate-fade-in relative">
       {/* Left Sidebar: Conversations List */}
       <div
         className={`w-full md:w-80 border-r border-[#263640] flex flex-col bg-[#101A22] ${
           activeConversation ? 'hidden md:flex' : 'flex'
         }`}
       >
-        {/* Header & Tabs */}
+        {/* Header, Action & Tabs */}
         <div className="p-4 border-b border-[#263640] space-y-3">
           <div className="flex items-center justify-between">
             <h1 className="text-base font-bold text-[#F4F8FA] flex items-center gap-2">
               <Icon name="message" className="w-5 h-5 text-[#19D3E3]" />
               Messages
             </h1>
-            <span className="text-[10px] font-semibold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/30 px-2 py-0.5 rounded-full">
-              E2EE Active
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/30 px-2 py-0.5 rounded-full hidden sm:inline-block">
+                E2EE Active
+              </span>
+              <button
+                type="button"
+                onClick={openNewChatModal}
+                className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#19D3E3] text-[#080D12] hover:bg-[#19D3E3]/90 transition-all flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer"
+                title="Start New Chat"
+              >
+                <Icon name="plus" className="w-3.5 h-3.5" />
+                <span>New Chat</span>
+              </button>
+            </div>
           </div>
 
           <div className="flex rounded-xl bg-[#151F29] p-1 border border-[#263640]">
@@ -317,14 +420,26 @@ export default function MessagesPage() {
               ))}
             </div>
           ) : displayedConversations.length === 0 ? (
-            <div className="p-6 text-center text-xs text-[#9BAAB4]">
-              {activeTab === 'chats'
-                ? 'No active direct chats yet. Follow creators or visit profiles to start a conversation.'
-                : 'No pending message requests.'}
+            <div className="p-6 text-center text-xs text-[#9BAAB4] flex flex-col items-center gap-3">
+              <p>
+                {activeTab === 'chats'
+                  ? 'No active direct chats yet.'
+                  : 'No pending message requests.'}
+              </p>
+              {activeTab === 'chats' && (
+                <button
+                  type="button"
+                  onClick={openNewChatModal}
+                  className="px-3.5 py-1.5 rounded-xl bg-[#19D3E3]/15 border border-[#19D3E3]/30 text-[#19D3E3] text-xs font-semibold hover:bg-[#19D3E3]/25 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Icon name="plus" className="w-3.5 h-3.5" />
+                  <span>Start New Chat</span>
+                </button>
+              )}
             </div>
           ) : (
             displayedConversations.map((conv) => {
-              const otherUser = conv.participants?.find((p) => p._id !== user?._id);
+              const otherUser = getOtherUser(conv);
               const isSelected = activeConversation?._id === conv._id;
 
               return (
@@ -332,7 +447,7 @@ export default function MessagesPage() {
                   key={conv._id}
                   type="button"
                   onClick={() => setActiveConversation(conv)}
-                  className={`w-full p-3.5 flex items-center gap-3 text-left transition-colors ${
+                  className={`w-full p-3.5 flex items-center gap-3 text-left transition-colors cursor-pointer ${
                     isSelected
                       ? 'bg-[#19D3E3]/10 border-l-4 border-[#19D3E3]'
                       : 'hover:bg-[#151F29]'
@@ -358,9 +473,16 @@ export default function MessagesPage() {
                           : ''}
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#9BAAB4] truncate mt-0.5">
-                      {conv.lastMessageSnippet || 'Start conversation...'}
-                    </p>
+                    <div className="flex items-center justify-between gap-1 mt-0.5">
+                      <p className="text-[11px] text-[#9BAAB4] truncate">
+                        {conv.lastMessageSnippet || 'Start conversation...'}
+                      </p>
+                      {conv.unreadCount > 0 && (
+                        <span className="shrink-0 px-1.5 py-0.2 rounded-full bg-[#19D3E3] text-[#080D12] text-[9px] font-bold">
+                          {conv.unreadCount}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </button>
               );
@@ -389,7 +511,7 @@ export default function MessagesPage() {
                   <Icon name="arrowLeft" className="w-5 h-5" />
                 </button>
                 <Avatar
-                  name={recipient.fullName}
+                  name={recipient.fullName || 'User'}
                   src={recipient?.profile?.avatarUrl}
                   size="sm"
                   status="online"
@@ -413,8 +535,9 @@ export default function MessagesPage() {
             </div>
 
             {/* Message Request Warning Banner */}
-            {activeConversation.status === 'pending' &&
-              activeConversation.initiatedBy?._id !== user?._id && (
+            {(activeConversation.status === 'pending_request' || activeConversation.status === 'pending') &&
+              activeConversation.initiatedBy?._id !== user?._id &&
+              activeConversation.initiatedBy !== user?._id && (
                 <div className="p-3 bg-[#FFB800]/10 border-b border-[#FFB800]/30 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2 text-[#FFB800]">
                     <Icon name="alertCircle" className="w-4 h-4 shrink-0" />
@@ -435,7 +558,7 @@ export default function MessagesPage() {
                       type="button"
                       size="sm"
                       variant="outline"
-                      onClick={() => handleRequestResponse('reject')}
+                      onClick={() => handleRequestResponse('decline')}
                     >
                       Decline
                     </Button>
@@ -490,7 +613,7 @@ export default function MessagesPage() {
                             })}
                           </span>
                           {isMine && (
-                            <span>{msg.readBy?.length > 1 ? '• Read' : '• Sent'}</span>
+                            <span>{msg.readBy?.length > 1 || msg.readAt ? '• Read' : '• Sent'}</span>
                           )}
                         </div>
                       </div>
@@ -534,17 +657,162 @@ export default function MessagesPage() {
             </form>
           </>
         ) : (
-          <div className="h-full flex items-center justify-center p-6">
-            <EmptyState
-              icon="message"
-              title="Encrypted Direct Messages"
-              description="Choose a contact from the list or start a conversation from a creator profile."
-              badgeText="AES-GCM Protected"
-            />
+          <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+            <div className="max-w-md w-full flex flex-col items-center space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-[#151F29] border border-[#263640] flex items-center justify-center text-[#19D3E3] shadow-lg">
+                <Icon name="lock" className="w-8 h-8 text-[#19D3E3]" />
+              </div>
+              <div>
+                <span className="text-[10px] font-semibold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  Web Crypto AES-GCM 256-bit
+                </span>
+                <h2 className="text-lg font-bold text-[#F4F8FA] mt-2">End-to-End Encrypted Messaging</h2>
+                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto mt-1 leading-relaxed">
+                  Select an existing conversation from the list or start a direct, client-side encrypted conversation with any community member.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
+                onClick={openNewChatModal}
+                className="flex items-center gap-2 shadow-md hover:shadow-cyan-500/20 cursor-pointer"
+              >
+                <Icon name="plus" className="w-4 h-4" />
+                <span>Start New Encrypted Chat</span>
+              </Button>
+            </div>
           </div>
         )}
       </div>
+
+      {/* New Chat & User Discovery Modal */}
+      {showNewChatModal && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-md bg-[#101A22] border border-[#263640] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            {/* Modal Header */}
+            <div className="p-4 border-b border-[#263640] flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#19D3E3]/15 flex items-center justify-center text-[#19D3E3]">
+                  <Icon name="lock" className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-[#F4F8FA]">Start Encrypted Chat</h2>
+                  <p className="text-[10px] text-[#9BAAB4]">AES-GCM 256-Bit Client Encryption</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowNewChatModal(false)}
+                className="p-1 rounded-lg text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29] transition-colors cursor-pointer"
+                aria-label="Close modal"
+              >
+                <Icon name="close" className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="p-3 border-b border-[#263640] bg-[#080D12]">
+              <div className="relative">
+                <Icon
+                  name="search"
+                  className="w-4 h-4 text-[#9BAAB4] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                />
+                <input
+                  type="text"
+                  placeholder="Search members by name or email..."
+                  value={contactSearch}
+                  onChange={handleContactSearchChange}
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] placeholder-[#9BAAB4] focus:outline-hidden focus:border-[#19D3E3]"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* Contacts Scroll Area */}
+            <div className="flex-1 overflow-y-auto divide-y divide-[#263640]/50 p-2 max-h-[380px]">
+              {loadingContacts ? (
+                <div className="p-6 space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3 animate-pulse">
+                      <div className="w-9 h-9 rounded-full bg-[#151F29]" />
+                      <div className="flex-1 space-y-1.5">
+                        <div className="w-24 h-3 bg-[#151F29] rounded" />
+                        <div className="w-36 h-2 bg-[#151F29]/60 rounded" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : contacts.length === 0 ? (
+                <div className="p-8 text-center text-xs text-[#9BAAB4] space-y-1">
+                  <Icon name="users" className="w-8 h-8 text-[#9BAAB4]/60 mx-auto mb-2" />
+                  <p className="font-semibold text-[#F4F8FA]">No community members found</p>
+                  <p className="text-[11px]">Try searching with a different name or email.</p>
+                </div>
+              ) : (
+                contacts.map((contact) => (
+                  <div
+                    key={contact._id}
+                    className="p-2.5 rounded-xl hover:bg-[#151F29] transition-colors flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Avatar
+                        name={contact.fullName || 'User'}
+                        src={contact.avatarUrl}
+                        size="sm"
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs font-semibold text-[#F4F8FA] truncate">
+                            {contact.fullName}
+                          </p>
+                          {contact.role === 'admin' && (
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-sm bg-[#FF453A]/20 text-[#FF453A] font-bold">
+                              Admin
+                            </span>
+                          )}
+                          {contact.isFollowing && (
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-sm bg-[#19D3E3]/15 text-[#19D3E3] font-medium">
+                              Following
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-[#9BAAB4] truncate">
+                          {contact.bio || contact.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleSelectContact(contact)}
+                      disabled={startingChatWithId === contact._id}
+                      className="shrink-0 text-xs py-1 px-3 flex items-center gap-1 cursor-pointer"
+                    >
+                      {startingChatWithId === contact._id ? (
+                        'Starting...'
+                      ) : (
+                        <>
+                          <Icon name="lock" className="w-3 h-3" />
+                          <span>Chat</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Security Note Footer */}
+            <div className="p-3 bg-[#080D12] border-t border-[#263640] flex items-center gap-2 text-[10px] text-[#9BAAB4]">
+              <Icon name="shield" className="w-4 h-4 text-[#19D3E3] shrink-0" />
+              <span>Web Crypto AES-GCM 256-bit encryption protects all messages before transmission.</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

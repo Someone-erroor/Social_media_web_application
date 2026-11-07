@@ -1,6 +1,13 @@
 import { apiClient } from './api';
 
 export const messageService = {
+  async getContacts(search = '') {
+    const query = search ? `?search=${encodeURIComponent(search)}` : '';
+    return apiClient(`/messages/contacts${query}`, {
+      method: 'GET'
+    });
+  },
+
   async getOrCreateConversation(targetUserId) {
     return apiClient(`/messages/conversations/${targetUserId}`, {
       method: 'POST'

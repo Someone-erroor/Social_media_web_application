@@ -1,11 +1,22 @@
 import {
   getOrCreateConversation as getOrCreateConversationService,
   listConversations as listConversationsService,
+  getAvailableContacts as getAvailableContactsService,
   getMessages as getMessagesService,
   sendMessage as sendMessageService,
   markMessagesRead as markMessagesReadService,
   respondToMessageRequest as respondToMessageRequestService
 } from '../services/message.service.js';
+
+export const getContacts = async (req, res, next) => {
+  try {
+    const { search } = req.query;
+    const result = await getAvailableContactsService(req.user._id, search || '');
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getOrCreateConversation = async (req, res, next) => {
   try {
@@ -88,6 +99,7 @@ export const respondRequest = async (req, res, next) => {
 };
 
 export default {
+  getContacts,
   getOrCreateConversation,
   listConversations,
   getMessages,

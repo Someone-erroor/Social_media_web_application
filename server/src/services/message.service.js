@@ -101,6 +101,7 @@ export const listConversations = async (currentUserId) => {
 
       return {
         _id: conv._id,
+        participants: conv.participants,
         otherUser,
         status: conv.status,
         initiatedBy: conv.initiatedBy,
@@ -113,6 +114,51 @@ export const listConversations = async (currentUserId) => {
   );
 
   return { success: true, conversations: enriched };
+};
+
+/**
+ * Retrieves available contacts that the current user can start a conversation with.
+ *
+ * @param {string} currentUserId - The authenticated user ID
+ * @param {string} searchQuery - Optional search term matching fullName or email
+ * @returns {Promise<object>} List of contacts
+ */
+export const getAvailableContacts = async (currentUserId, searchQuery = '') => {
+  const currentUser = await User.findById(currentUserId).select('blockedUsers following');
+  const blockedIds = (currentUser?.blockedUsers || []).map((id) => id.toString());
+
+  const query = {
+    _id: { $nin: [...blockedIds, currentUserId] },
+    accountStatus: { $ne: 'suspended' }
+  };
+
+  if (searchQuery && searchQuery.trim()) {
+    const escaped = searchQuery.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    query.$or = [
+      { fullName: { $regex: escaped, $options: 'i' } },
+      { email: { $regex: escaped, $options: 'i' } }
+    ];
+  }
+
+  const users = await User.find(query)
+    .select('_id fullName email profile.avatarUrl profile.bio role createdAt')
+    .sort({ createdAt: -1 })
+    .limit(40);
+
+  const followingSet = new Set((currentUser?.following || []).map((id) => id.toString()));
+
+  return {
+    success: true,
+    contacts: users.map((u) => ({
+      _id: u._id,
+      fullName: u.fullName,
+      email: u.email,
+      avatarUrl: u.profile?.avatarUrl || '',
+      bio: u.profile?.bio || '',
+      isFollowing: followingSet.has(u._id.toString()),
+      role: u.role
+    }))
+  };
 };
 
 /**
@@ -286,20 +332,22 @@ export const respondToMessageRequest = async (conversationId, currentUserId, act
 
   if (action === 'accept') {
     conversation.status = 'active';
-  } else if (action === 'decline') {
+  } else if (action === 'decline' || action === 'reject') {
     conversation.status = 'declined';
   } else {
-    const error = new Error('Action must be either accept or decline.');
+    const error = new Error('Action must be either accept, decline, or reject.');
     error.status = 400;
     throw error;
   }
 
   await conversation.save();
+  await conversation.populate('participants', '_id fullName profile email');
 
   return {
     success: true,
+    conversation,
     status: conversation.status,
-    message: `Message request ${action}ed.`
+    message: `Message request ${action === 'accept' ? 'accepted' : 'declined'}.`
   };
 };
 
