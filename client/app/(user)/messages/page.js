@@ -449,9 +449,9 @@ export default function MessagesPage() {
               ) : messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-[#9BAAB4]">
                   <Icon name="lock" className="w-8 h-8 text-[#19D3E3]" />
-                  <p className="text-xs font-semibold text-[#F4F8FA]">End-to-End Encrypted</p>
+                  <p className="text-xs font-semibold text-[#F4F8FA]">Client-Side Encrypted (AES-GCM 256-bit)</p>
                   <p className="text-[11px] max-w-xs">
-                    Messages are encrypted on your device. Only you and {recipient.fullName} can read them.
+                    Messages are encrypted in your browser using Web Crypto AES-GCM 256-bit before leaving your device.
                   </p>
                 </div>
               ) : (

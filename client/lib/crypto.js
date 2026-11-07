@@ -1,6 +1,6 @@
 /**
- * Client-Side End-to-End Encryption (E2EE) Utility for Looply
- * Built on native W3C Web Crypto API (AES-GCM 256-bit).
+ * Client-Side Encryption Utility for Looply (AES-GCM 256-bit)
+ * Built on native W3C Web Crypto API.
  */
 
 const encoder = new TextEncoder();

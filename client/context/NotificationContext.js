@@ -14,6 +14,7 @@ export function NotificationProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [socketInstance, setSocketInstance] = useState(null);
   const socketRef = useRef(null);
 
   // Keep ref synchronized with notifications state outside render
@@ -110,6 +111,7 @@ export function NotificationProvider({ children }) {
     });
 
     socketRef.current = socket;
+    setSocketInstance(socket);
 
     socket.on('connect', () => {
       setIsConnected(true);
@@ -177,6 +179,7 @@ export function NotificationProvider({ children }) {
       socket.off('admin_login_alert', handleIncomingNotification);
       socket.disconnect();
       socketRef.current = null;
+      setSocketInstance(null);
       setIsConnected(false);
     };
   }, [isAuthenticated, user]);
@@ -256,7 +259,7 @@ export function NotificationProvider({ children }) {
         loading,
         error,
         isConnected,
-        socket: socketRef.current,
+        socket: socketInstance || socketRef.current,
         markAsRead,
         markAllAsRead,
         refreshNotifications

@@ -52,7 +52,7 @@ export const createPost = async ({ authorId, content }) => {
  * @param {string} postId - Post ID
  * @returns {Promise<object>} Populated post document
  */
-export const getPostById = async (postId) => {
+export const getPostById = async (postId, viewerId = null, viewerRole = null) => {
   const post = await Post.findById(postId).populate('author', SAFE_AUTHOR_FIELDS);
   if (!post || !post.author) {
     const error = new Error('Post not found.');
@@ -60,12 +60,49 @@ export const getPostById = async (postId) => {
     throw error;
   }
 
-  // Ensure author account is active and not suspended
-  const authorUser = await User.findById(post.author._id || post.author).select('accountStatus');
+  // Ensure author account is active and retrieve privacy/blocking configuration
+  const authorUser = await User.findById(post.author._id || post.author).select('accountStatus isPrivate followers blockedUsers');
   if (!authorUser || authorUser.accountStatus === 'suspended') {
     const error = new Error('Post not found.');
     error.status = 404;
     throw error;
+  }
+
+  // Blocking relationship check: posts are invisible across blocked relationships
+  if (viewerId) {
+    const authorBlockedViewer = (authorUser.blockedUsers || []).some(
+      (id) => id.toString() === viewerId.toString()
+    );
+    if (authorBlockedViewer) {
+      const error = new Error('Post not found.');
+      error.status = 404;
+      throw error;
+    }
+
+    const viewerUser = await User.findById(viewerId).select('blockedUsers');
+    const viewerBlockedAuthor = (viewerUser?.blockedUsers || []).some(
+      (id) => id.toString() === authorUser._id.toString()
+    );
+    if (viewerBlockedAuthor) {
+      const error = new Error('Post not found.');
+      error.status = 404;
+      throw error;
+    }
+  }
+
+  // Privacy protection: enforce follower access for private accounts
+  if (authorUser.isPrivate) {
+    const isAuthor = viewerId && authorUser._id.toString() === viewerId.toString();
+    const isAdmin = viewerRole === 'admin';
+    const isFollower = viewerId && (authorUser.followers || []).some(
+      (id) => id.toString() === viewerId.toString()
+    );
+
+    if (!isAuthor && !isAdmin && !isFollower) {
+      const error = new Error('This account is private. Follow this user to see their posts.');
+      error.status = 403;
+      throw error;
+    }
   }
 
   const [likesCount, commentsCount] = await Promise.all([

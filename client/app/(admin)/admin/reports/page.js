@@ -62,10 +62,11 @@ export default function AdminReportsPage() {
 
       // 2. Optionally Apply Moderation Action
       if (moderationAction !== 'none') {
+        const rawTargetId = selectedReport.reportedTarget?._id || selectedReport.reportedTarget || selectedReport.targetId;
         await adminService.applyModerationAction({
           action: moderationAction,
           targetType: selectedReport.targetType,
-          targetId: selectedReport.targetId,
+          targetId: rawTargetId,
           reason: resolutionNotes.trim() || `Moderation action taken on report ${selectedReport._id}`
         });
       }
@@ -181,10 +182,10 @@ export default function AdminReportsPage() {
 
                 <div className="p-3 rounded-xl bg-[#101A22] border border-[#263640] space-y-1">
                   <p className="text-xs text-[#F4F8FA]">
-                    <strong>Reason:</strong> {report.reason || 'No description provided.'}
+                    <strong>Reason / Details:</strong> {report.explanation || report.reason || 'No description provided.'}
                   </p>
                   <p className="text-[10px] text-[#9BAAB4]">
-                    Reported by: {report.reporter?.fullName || report.reporter?.email || 'User'} •{' '}
+                    Target: <code className="text-[#19D3E3] font-mono">{String(report.reportedTarget?._id || report.reportedTarget || report.targetId || 'N/A')}</code> • Reported by: {report.reporter?.fullName || report.reporter?.email || 'User'} •{' '}
                     {new Date(report.createdAt).toLocaleString([], {
                       month: 'short',
                       day: 'numeric',

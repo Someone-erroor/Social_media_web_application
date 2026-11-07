@@ -6,12 +6,13 @@ import Icon from '@/components/ui/Icon';
 import { safetyService } from '@/services/safetyService';
 
 const REPORT_CATEGORIES = [
-  { id: 'spam', label: 'Spam or Scam', desc: 'Misleading links, bot activity, repetitive content' },
-  { id: 'harassment', label: 'Harassment & Bullying', desc: 'Personal attacks, threats, or intimidation' },
+  { id: 'spam', label: 'Spam or Scam', desc: 'Misleading links, bot activity, or deceptive content' },
+  { id: 'harassment', label: 'Harassment', desc: 'Personal attacks, targeted nuisance, or offensive behavior' },
+  { id: 'bullying', label: 'Bullying', desc: 'Intimidation, shaming, or persistent hostility' },
   { id: 'hate_speech', label: 'Hate Speech', desc: 'Discrimination based on identity, race, or religion' },
-  { id: 'violence', label: 'Violence & Harm', desc: 'Dangerous content, self-harm, or graphic threats' },
-  { id: 'inappropriate_content', label: 'Inappropriate Content', desc: 'Explicit, NSFW, or infringing material' },
-  { id: 'other', label: 'Other Safety Concern', desc: 'Any other violation of Looply guidelines' }
+  { id: 'threats', label: 'Threats & Harm', desc: 'Direct threats of physical harm, violence, or danger' },
+  { id: 'impersonation', label: 'Impersonation', desc: 'Pretending to be another person or organization' },
+  { id: 'other', label: 'Other Safety Concern', desc: 'Any other violation of Looply community guidelines' }
 ];
 
 export default function ReportModal({
@@ -36,9 +37,17 @@ export default function ReportModal({
     setLoading(true);
     setError('');
 
+    // Normalize targetType to PascalCase (User, Post, Comment, Message)
+    const normalizedTarget = (targetType || 'post').toLowerCase();
+    const formattedTargetType =
+      normalizedTarget === 'user' ? 'User'
+      : normalizedTarget === 'comment' ? 'Comment'
+      : normalizedTarget === 'message' ? 'Message'
+      : 'Post';
+
     try {
       await safetyService.reportContent({
-        targetType,
+        targetType: formattedTargetType,
         targetId,
         category,
         reason: reason.trim()

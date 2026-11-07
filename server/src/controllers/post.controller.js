@@ -70,7 +70,7 @@ export const getPostById = async (req, res, next) => {
       });
     }
 
-    const post = await getPostByIdService(postId);
+    const post = await getPostByIdService(postId, req.user?._id, req.user?.role);
 
     return res.status(200).json({
       success: true,
@@ -79,6 +79,12 @@ export const getPostById = async (req, res, next) => {
   } catch (error) {
     if (error.status === 404) {
       return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+    if (error.status === 403) {
+      return res.status(403).json({
         success: false,
         message: error.message
       });

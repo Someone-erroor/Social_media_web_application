@@ -1,5 +1,6 @@
-import { User, ActivityLog } from '../models/index.js';
+import { User, ActivityLog, Notification } from '../models/index.js';
 import { isValidObjectId } from '../validators/profile.validator.js';
+import { sendNotificationToUser } from './socket.service.js';
 
 /**
  * Follow a target user.
@@ -97,6 +98,22 @@ export const followUser = async (currentUserId, targetUserId) => {
     await auditLog.save();
   } catch (auditErr) {
     console.error(`[ActivityLog Error] Failed to log follow action: ${auditErr.message}`);
+  }
+
+  // Create real-time notification for target user
+  try {
+    const notification = new Notification({
+      recipient: targetUserId,
+      actor: currentUserId,
+      type: 'follow',
+      message: `${currentUser.fullName} started following you.`,
+      resourceType: 'User',
+      resourceId: currentUserId
+    });
+    await notification.save();
+    sendNotificationToUser(targetUserId, notification);
+  } catch (notifErr) {
+    console.error(`[Notification Error] Follow: ${notifErr.message}`);
   }
 
   return {

@@ -26,6 +26,17 @@ export const safetyService = {
     });
   },
 
+  async reportContent({ targetType, targetId, reportedTarget, category, reason, explanation }) {
+    const finalTarget = reportedTarget || targetId;
+    const finalExplanation = explanation !== undefined ? explanation : reason;
+    return this.reportItem({
+      reportedTarget: finalTarget,
+      targetType,
+      category,
+      explanation: finalExplanation
+    });
+  },
+
   async submitAppeal({ actionType, reason }) {
     return apiClient('/safety/appeals', {
       method: 'POST',

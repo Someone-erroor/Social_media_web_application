@@ -25,8 +25,8 @@ router.post('/', requireAuth, createPost);
 // Retrieve posts authored by current user
 router.get('/mine', requireAuth, getMyPosts);
 
-// Single post retrieval
-router.get('/:postId', getPostById);
+// Single post retrieval (optionalAuth identifies viewer for privacy checks)
+router.get('/:postId', optionalAuth, getPostById);
 
 // Post modification (author ownership enforced)
 router.patch('/:postId', requireAuth, updatePost);
