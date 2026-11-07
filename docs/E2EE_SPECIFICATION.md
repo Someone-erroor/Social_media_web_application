@@ -1,7 +1,9 @@
-# Looply End-to-End Encryption (E2EE) Architectural Specification
+# Looply Client-Side Messaging Encryption Specification
 
-## 1. Overview & Threat Model
-Looply Direct Messaging provides an optional End-to-End Encryption (E2EE) layer designed to protect private user communications from eavesdropping, server compromise, network interception, and unauthorized inspection.
+## 1. Overview & Current Scope
+Looply Direct Messaging provides client-side encryption designed to protect private user communications from eavesdropping, server database dumps, and network interception.
+
+> **Honesty Notice:** Current encryption operates client-side via native W3C Web Crypto AES-GCM 256-bit with PBKDF2 conversation derivation over authenticated HTTPS transport. Full asymmetric ratchet-based End-to-End Encryption (such as Signal X3DH / Double Ratchet) is planned for future platform iterations. All messaging claims in the UI strictly reflect "Client-Side AES-GCM 256-bit Encryption".
 
 ### Threat Model
 - **Adversary Capability:** An attacker with access to the database or intermediate proxies (e.g. cloud database dump, packet sniffer, or rogue backend service).

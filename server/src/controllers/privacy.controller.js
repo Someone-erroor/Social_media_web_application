@@ -46,7 +46,7 @@ export const cancelFollowRequest = async (req, res, next) => {
     const result = await cancelFollowRequestService(req.user._id, userId);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({ success: false, message: error.message });
     }
     next(error);
@@ -59,7 +59,7 @@ export const acceptFollowRequest = async (req, res, next) => {
     const result = await acceptFollowRequestService(req.user._id, requesterId);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({ success: false, message: error.message });
     }
     next(error);
@@ -72,7 +72,7 @@ export const rejectFollowRequest = async (req, res, next) => {
     const result = await rejectFollowRequestService(req.user._id, requesterId);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({ success: false, message: error.message });
     }
     next(error);

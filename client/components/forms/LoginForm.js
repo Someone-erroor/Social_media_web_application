@@ -429,7 +429,7 @@ export default function LoginForm() {
             </div>
           ) : (
             <p className="text-[11px] text-center text-[#9BAAB4]">
-              Protected by end-to-end secure session authentication
+              Protected by secure session authentication and bcrypt password hashing
             </p>
           )}
         </form>

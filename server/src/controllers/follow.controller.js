@@ -16,7 +16,7 @@ export const followUser = async (req, res, next) => {
     const result = await followUserService(req.user._id, userId);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({
         success: false,
         message: error.message
@@ -37,7 +37,7 @@ export const unfollowUser = async (req, res, next) => {
     const result = await unfollowUserService(req.user._id, userId);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({
         success: false,
         message: error.message
@@ -57,7 +57,7 @@ export const getFollowers = async (req, res, next) => {
     const result = await getFollowersService(userId, req.user?._id || null);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({
         success: false,
         message: error.message
@@ -77,7 +77,7 @@ export const getFollowing = async (req, res, next) => {
     const result = await getFollowingService(userId, req.user?._id || null);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({
         success: false,
         message: error.message
@@ -97,7 +97,7 @@ export const getFollowStatus = async (req, res, next) => {
     const result = await getFollowStatusService(userId, req.user?._id || null);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({
         success: false,
         message: error.message

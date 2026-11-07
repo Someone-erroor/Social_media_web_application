@@ -374,7 +374,7 @@ export default function RegisterForm() {
           </Button>
 
           <p className="text-[11px] text-center text-[#9BAAB4]">
-            Protected by end-to-end secure registration validation
+            Protected by secure registration validation and bcrypt hashing
           </p>
         </form>
 

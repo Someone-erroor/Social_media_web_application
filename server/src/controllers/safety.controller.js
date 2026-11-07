@@ -12,7 +12,7 @@ export const blockUser = async (req, res, next) => {
     const result = await blockUserService(req.user._id, userId);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({ success: false, message: error.message });
     }
     next(error);
@@ -25,7 +25,7 @@ export const unblockUser = async (req, res, next) => {
     const result = await unblockUserService(req.user._id, userId);
     return res.status(200).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({ success: false, message: error.message });
     }
     next(error);
@@ -37,6 +37,9 @@ export const getBlockedUsers = async (req, res, next) => {
     const result = await getBlockedUsersService(req.user._id);
     return res.status(200).json(result);
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
     next(error);
   }
 };
@@ -53,7 +56,7 @@ export const createReport = async (req, res, next) => {
     });
     return res.status(201).json(result);
   } catch (error) {
-    if (error.status === 400 || error.status === 404) {
+    if (error.status) {
       return res.status(error.status).json({ success: false, message: error.message });
     }
     next(error);
@@ -70,8 +73,8 @@ export const submitAppeal = async (req, res, next) => {
     });
     return res.status(201).json(result);
   } catch (error) {
-    if (error.status === 400) {
-      return res.status(400).json({ success: false, message: error.message });
+    if (error.status) {
+      return res.status(error.status).json({ success: false, message: error.message });
     }
     next(error);
   }

@@ -764,7 +764,7 @@ export default function MessagesPage() {
                 <span className="text-[10px] font-semibold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                   Web Crypto AES-GCM 256-bit
                 </span>
-                <h2 className="text-lg font-bold text-[#F4F8FA] mt-2">End-to-End Encrypted Messaging</h2>
+                <h2 className="text-lg font-bold text-[#F4F8FA] mt-2">Client-Side Encrypted Messaging</h2>
                 <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto mt-1 leading-relaxed">
                   Select an existing conversation from the list or start a direct, client-side encrypted conversation with any community member.
                 </p>
