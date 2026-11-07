@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import { AUTH_COOKIE_NAME } from '../config/jwt.js';
 import User from '../models/User.js';
+import { corsOptions } from '../config/cors.js';
 
 let ioInstance = null;
 
@@ -112,10 +113,7 @@ export const initSocketServer = (httpServer) => {
   }
 
   ioInstance = new SocketIOServer(httpServer, {
-    cors: {
-      origin: env.CLIENT_ORIGINS,
-      credentials: true
-    },
+    cors: corsOptions,
     pingTimeout: 20000,
     pingInterval: 25000
   });
@@ -135,6 +133,16 @@ export const initSocketServer = (httpServer) => {
       socket.join('admin_room');
     }
 
+    const parseConvId = (data) => {
+      if (!data) return null;
+      if (typeof data === 'string') return data.trim();
+      if (typeof data === 'object') {
+        const id = data.conversationId || data.id || data._id;
+        return id ? id.toString().trim() : null;
+      }
+      return null;
+    };
+
     // Prevent client from joining administrative rooms manually
     socket.on('join_room', (roomName) => {
       if (roomName === 'admin_room' && user.role !== 'admin') {
@@ -149,35 +157,43 @@ export const initSocketServer = (httpServer) => {
     });
 
     // Conversation Room & Real-Time Messaging Events
-    socket.on('join_conversation', (conversationId) => {
-      if (conversationId) {
-        socket.join(`conversation_${conversationId}`);
+    socket.on('join_conversation', (data) => {
+      const convId = parseConvId(data);
+      if (convId) {
+        socket.join(`conversation_${convId}`);
       }
     });
 
-    socket.on('leave_conversation', (conversationId) => {
-      if (conversationId) {
-        socket.leave(`conversation_${conversationId}`);
+    socket.on('leave_conversation', (data) => {
+      const convId = parseConvId(data);
+      if (convId) {
+        socket.leave(`conversation_${convId}`);
       }
     });
 
-    // Ephemeral typing indicators (not stored in database)
-    socket.on('typing_start', ({ conversationId }) => {
-      if (conversationId) {
-        socket.to(`conversation_${conversationId}`).emit('user_typing', {
-          conversationId,
+    // Ephemeral typing indicators (broadcast to conversation participants)
+    socket.on('typing_start', (data) => {
+      const convId = parseConvId(data);
+      if (convId) {
+        const payload = {
+          conversationId: convId,
           userId: user._id,
           fullName: user.fullName
-        });
+        };
+        socket.to(`conversation_${convId}`).emit('user_typing', payload);
+        socket.to(`conversation_${convId}`).emit('typing_start', payload);
       }
     });
 
-    socket.on('typing_stop', ({ conversationId }) => {
-      if (conversationId) {
-        socket.to(`conversation_${conversationId}`).emit('user_stopped_typing', {
-          conversationId,
+    socket.on('typing_stop', (data) => {
+      const convId = parseConvId(data);
+      if (convId) {
+        const payload = {
+          conversationId: convId,
           userId: user._id
-        });
+        };
+        socket.to(`conversation_${convId}`).emit('user_stopped_typing', payload);
+        socket.to(`conversation_${convId}`).emit('typing_stop', payload);
       }
     });
 

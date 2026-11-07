@@ -278,14 +278,24 @@ export const sendMessage = async ({ conversationId, senderId, content, isEncrypt
 
   await message.populate('sender', '_id fullName profile.avatarUrl');
 
-  // Real-time Socket.IO emission to recipient
+  // Real-time Socket.IO emission to conversation room and user rooms
   try {
     const io = getIO();
     if (io) {
-      io.to(`user_${recipientId.toString()}`).emit('new_message', {
+      const convIdStr = conversationId.toString();
+      const payload = {
         message,
-        conversationId
-      });
+        conversationId: convIdStr
+      };
+
+      // 1. Emit to active conversation room (reaches participants currently viewing this chat)
+      io.to(`conversation_${convIdStr}`).emit('new_message', payload);
+
+      // 2. Emit to recipient's personal user room (reaches recipient even if not inside conversation room)
+      io.to(`user_${recipientId.toString()}`).emit('new_message', payload);
+
+      // 3. Emit to sender's user room (syncs sender's other tabs or sessions)
+      io.to(`user_${senderId.toString()}`).emit('new_message', payload);
     }
   } catch (err) {
     console.error(`[Socket Error] Message dispatch: ${err.message}`);

@@ -28,6 +28,9 @@ export function AuthProvider({ children }) {
       .then((data) => {
         if (isMounted) {
           if (data?.success && data?.user) {
+            if (data?.token) {
+              try { localStorage.setItem('looply_token', data.token); } catch {}
+            }
             setUser(data.user);
           } else {
             setUser(null);
@@ -54,6 +57,9 @@ export function AuthProvider({ children }) {
     try {
       const data = await authService.getMe();
       if (data?.success && data?.user) {
+        if (data?.token) {
+          try { localStorage.setItem('looply_token', data.token); } catch {}
+        }
         setUser(data.user);
       } else {
         setUser(null);

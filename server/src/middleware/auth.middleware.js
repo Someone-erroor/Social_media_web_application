@@ -88,8 +88,9 @@ export const requireAuth = async (req, res, next) => {
       });
     }
 
-    // 6. Attach authoritative user from database to request
+    // 6. Attach authoritative user and session token from database to request
     req.user = toSafeUser(user);
+    req.token = token;
     next();
   } catch (error) {
     if (error.status === 403) {

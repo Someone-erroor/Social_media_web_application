@@ -296,7 +296,8 @@ export const resetPassword = async (req, res, next) => {
 export const getMe = async (req, res) => {
   return res.status(200).json({
     success: true,
-    user: req.user
+    user: req.user,
+    token: req.token || undefined
   });
 };
 

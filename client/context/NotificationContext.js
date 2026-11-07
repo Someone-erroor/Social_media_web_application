@@ -95,19 +95,20 @@ export function NotificationProvider({ children }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const socketUrl = apiUrl.replace(/\/api\/?$/, '');
 
-    let authToken = null;
-    if (typeof window !== 'undefined') {
-      try { authToken = localStorage.getItem('looply_token'); } catch {}
-    }
-
     const socket = io(socketUrl, {
       withCredentials: true,
-      auth: authToken ? { token: authToken } : undefined,
+      auth: (cb) => {
+        let token = null;
+        if (typeof window !== 'undefined') {
+          try { token = localStorage.getItem('looply_token'); } catch {}
+        }
+        cb(token ? { token } : {});
+      },
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1500
+      reconnectionAttempts: 20,
+      reconnectionDelay: 1000
     });
 
     socketRef.current = socket;

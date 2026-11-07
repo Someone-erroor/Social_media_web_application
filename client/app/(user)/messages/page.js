@@ -38,6 +38,11 @@ export default function MessagesPage() {
   const typingTimeoutRef = useRef(null);
   const cryptoKeyRef = useRef(null);
   const searchTimeoutRef = useRef(null);
+  const activeConversationRef = useRef(activeConversation);
+
+  useEffect(() => {
+    activeConversationRef.current = activeConversation;
+  }, [activeConversation]);
 
   // Scroll to bottom of message list
   const scrollToBottom = () => {
@@ -179,49 +184,124 @@ export default function MessagesPage() {
     }
   }, []);
 
-  // When active conversation changes, load messages & join socket room
+  // Persistent real-time Socket.IO listeners for incoming messages & typing
   useEffect(() => {
-    if (!activeConversation) return;
+    if (!socket) return;
+
+    const handleNewMessage = (payload) => {
+      if (!payload?.message?._id) return;
+
+      const incomingConvId = (
+        payload.conversationId?._id ||
+        payload.conversationId ||
+        payload.message?.conversation?._id ||
+        payload.message?.conversation ||
+        ''
+      ).toString();
+
+      const currentConvId = (activeConversationRef.current?._id || '').toString();
+
+      // If incoming message belongs to open chat, immediately append
+      if (incomingConvId && incomingConvId === currentConvId) {
+        setMessages((prev) => {
+          if (prev.some((m) => m._id === payload.message._id)) return prev;
+          return [...prev, payload.message];
+        });
+        scrollToBottom();
+        messageService.markAsRead(currentConvId).catch(() => {});
+      }
+
+      // Update sidebar conversation list snippet & unread count
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c._id.toString() === incomingConvId) {
+            return {
+              ...c,
+              lastMessage: payload.message,
+              lastMessageSnippet: payload.message.isEncrypted
+                ? '🔒 Encrypted message'
+                : payload.message.content,
+              lastMessageAt: payload.message.createdAt || new Date().toISOString(),
+              unreadCount: incomingConvId === currentConvId ? 0 : (c.unreadCount || 0) + 1
+            };
+          }
+          return c;
+        })
+      );
+    };
+
+    const handleTypingStart = (payload) => {
+      const incomingConvId = (payload?.conversationId || '').toString();
+      const currentConvId = (activeConversationRef.current?._id || '').toString();
+      if (incomingConvId === currentConvId && payload?.userId !== user?._id) {
+        setPartnerTyping(true);
+      }
+    };
+
+    const handleTypingStop = (payload) => {
+      const incomingConvId = (payload?.conversationId || '').toString();
+      const currentConvId = (activeConversationRef.current?._id || '').toString();
+      if (incomingConvId === currentConvId && payload?.userId !== user?._id) {
+        setPartnerTyping(false);
+      }
+    };
+
+    socket.on('new_message', handleNewMessage);
+    socket.on('typing_start', handleTypingStart);
+    socket.on('typing_stop', handleTypingStop);
+    socket.on('user_typing', handleTypingStart);
+    socket.on('user_stopped_typing', handleTypingStop);
+
+    return () => {
+      socket.off('new_message', handleNewMessage);
+      socket.off('typing_start', handleTypingStart);
+      socket.off('typing_stop', handleTypingStop);
+      socket.off('user_typing', handleTypingStart);
+      socket.off('user_stopped_typing', handleTypingStop);
+    };
+  }, [socket, user?._id]);
+
+  // When active conversation changes, load messages & join conversation room
+  useEffect(() => {
+    if (!activeConversation?._id) return;
 
     fetchMessages(activeConversation._id);
 
     if (socket) {
+      socket.emit('join_conversation', activeConversation._id);
       socket.emit('join_conversation', { conversationId: activeConversation._id });
 
-      const handleNewMessage = (payload) => {
-        if (payload?.conversationId === activeConversation._id && payload?.message?._id) {
-          setMessages((prev) => {
-            if (prev.some((m) => m._id === payload.message._id)) return prev;
-            return [...prev, payload.message];
-          });
-          scrollToBottom();
-        }
-      };
-
-      const handleTypingStart = (payload) => {
-        if (payload?.conversationId === activeConversation._id && payload?.userId !== user?._id) {
-          setPartnerTyping(true);
-        }
-      };
-
-      const handleTypingStop = (payload) => {
-        if (payload?.conversationId === activeConversation._id && payload?.userId !== user?._id) {
-          setPartnerTyping(false);
-        }
-      };
-
-      socket.on('new_message', handleNewMessage);
-      socket.on('typing_start', handleTypingStart);
-      socket.on('typing_stop', handleTypingStop);
-
       return () => {
+        socket.emit('leave_conversation', activeConversation._id);
         socket.emit('leave_conversation', { conversationId: activeConversation._id });
-        socket.off('new_message', handleNewMessage);
-        socket.off('typing_start', handleTypingStart);
-        socket.off('typing_stop', handleTypingStop);
       };
     }
-  }, [activeConversation, socket, user?._id, fetchMessages]);
+  }, [activeConversation?._id, socket, fetchMessages]);
+
+  // Resilient live background sync interval (picks up any messages in real time even if socket hiccups)
+  useEffect(() => {
+    if (!activeConversation?._id) return;
+
+    const syncInterval = setInterval(async () => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+
+      try {
+        const res = await messageService.getMessages(activeConversation._id, 1, 30);
+        if (res?.success && Array.isArray(res.messages)) {
+          setMessages((prev) => {
+            const existingIds = new Set(prev.map((m) => m._id));
+            const newOnes = res.messages.filter((m) => !existingIds.has(m._id));
+            if (newOnes.length === 0) return prev;
+            return [...prev, ...newOnes];
+          });
+        }
+      } catch {
+        // Silent sync
+      }
+    }, 2500);
+
+    return () => clearInterval(syncInterval);
+  }, [activeConversation?._id]);
 
   useEffect(() => {
     scrollToBottom();
@@ -297,7 +377,10 @@ export default function MessagesPage() {
 
       if (res?.success) {
         setMessageInput('');
-        setMessages((prev) => [...prev, res.message]);
+        setMessages((prev) => {
+          if (prev.some((m) => m._id === res.message._id)) return prev;
+          return [...prev, res.message];
+        });
         if (isEncrypted) {
           setDecryptedCache((prev) => ({ ...prev, [res.message._id]: text }));
         }
@@ -306,6 +389,21 @@ export default function MessagesPage() {
         }
         setIsTyping(false);
         scrollToBottom();
+
+        // Update local conversation preview in sidebar
+        setConversations((prev) =>
+          prev.map((c) => {
+            if (c._id.toString() === activeConversation._id.toString()) {
+              return {
+                ...c,
+                lastMessage: res.message,
+                lastMessageSnippet: isEncrypted ? '🔒 Encrypted message' : text,
+                lastMessageAt: res.message.createdAt || new Date().toISOString()
+              };
+            }
+            return c;
+          })
+        );
       }
     } catch (err) {
       setError(err.message || 'Failed to send message.');
