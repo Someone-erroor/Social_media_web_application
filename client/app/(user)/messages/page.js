@@ -13,7 +13,7 @@ import { deriveConversationKey, encryptMessage, decryptMessage } from '@/lib/cry
 
 function MessagesContent() {
   const { user } = useAuth();
-  const { socket } = useNotifications();
+  const { socket, isUserOnline } = useNotifications();
   const searchParams = useSearchParams();
   const queryUserId = searchParams.get('userId');
   const queryConvId = searchParams.get('conversationId');
@@ -318,7 +318,25 @@ function MessagesContent() {
       }
     };
 
+    const handleMessagesRead = (payload) => {
+      const incomingConvId = (payload?.conversationId || '').toString();
+      const currentConvId = (activeConversationRef.current?._id || '').toString();
+      if (incomingConvId && incomingConvId === currentConvId) {
+        setMessages((prev) =>
+          prev.map((m) => {
+            const senderId = (m.sender?._id || m.sender)?.toString();
+            const currentUserId = user?._id?.toString();
+            if (!m.readAt && senderId === currentUserId) {
+              return { ...m, readAt: payload.readAt || new Date().toISOString() };
+            }
+            return m;
+          })
+        );
+      }
+    };
+
     socket.on('new_message', handleNewMessage);
+    socket.on('messages_read', handleMessagesRead);
     socket.on('typing_start', handleTypingStart);
     socket.on('typing_stop', handleTypingStop);
     socket.on('user_typing', handleTypingStart);
@@ -328,6 +346,7 @@ function MessagesContent() {
 
     return () => {
       socket.off('new_message', handleNewMessage);
+      socket.off('messages_read', handleMessagesRead);
       socket.off('typing_start', handleTypingStart);
       socket.off('typing_stop', handleTypingStop);
       socket.off('user_typing', handleTypingStart);
@@ -619,6 +638,7 @@ function MessagesContent() {
             displayedConversations.map((conv) => {
               const otherUser = getOtherUser(conv);
               const isSelected = activeConversation?._id === conv._id;
+              const isOtherOnline = isUserOnline ? isUserOnline(otherUser?._id) : false;
 
               return (
                 <button
@@ -635,7 +655,7 @@ function MessagesContent() {
                     name={otherUser?.fullName || 'User'}
                     src={otherUser?.profile?.avatarUrl}
                     size="md"
-                    status="online"
+                    status={isOtherOnline ? 'online' : 'offline'}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -688,20 +708,32 @@ function MessagesContent() {
                 >
                   <Icon name="arrowLeft" className="w-5 h-5" />
                 </button>
-                <Avatar
-                  name={recipient.fullName || 'User'}
-                  src={recipient?.profile?.avatarUrl}
-                  size="sm"
-                  status="online"
-                />
-                <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-[#F4F8FA] leading-tight">
-                    {recipient.fullName}
-                  </h2>
-                  <p className="text-[11px] text-[#9BAAB4]">
-                    {recipient.username ? `@${recipient.username}` : recipient.email}
-                  </p>
-                </div>
+                {(() => {
+                  const isRecipientOnline = isUserOnline ? isUserOnline(recipient?._id) : false;
+                  return (
+                    <>
+                      <Avatar
+                        name={recipient.fullName || 'User'}
+                        src={recipient?.profile?.avatarUrl}
+                        size="sm"
+                        status={isRecipientOnline ? 'online' : 'offline'}
+                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-xs sm:text-sm font-bold text-[#F4F8FA] leading-tight">
+                            {recipient.fullName}
+                          </h2>
+                          <span className={`text-[10px] font-medium ${isRecipientOnline ? 'text-[#19D3E3]' : 'text-[#9BAAB4]'}`}>
+                            • {isRecipientOnline ? 'Online' : 'Offline'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#9BAAB4]">
+                          {recipient.username ? `@${recipient.username}` : recipient.email}
+                        </p>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               {/* Cryptographic Protocol Badge */}

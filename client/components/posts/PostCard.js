@@ -62,6 +62,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [submittingEditComment, setSubmittingEditComment] = useState(false);
   const [commentErrorMessage, setCommentErrorMessage] = useState('');
+  const [reportingComment, setReportingComment] = useState(null);
 
   // AI Discussion Summary state (Phase 15)
   const [showSummary, setShowSummary] = useState(false);
@@ -624,7 +625,7 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                     setEditingCommentId(comment._id);
                                     setEditCommentContent(comment.content);
                                   }}
-                                  className="text-[#9BAAB4] hover:text-[#19D3E3] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Edit comment"
+                                  className="text-[#9BAAB4] hover:text-[#19D3E3] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center cursor-pointer" aria-label="Edit comment"
                                   title="Edit comment"
                                 >
                                   <Icon name="edit" className="w-3 h-3" />
@@ -632,10 +633,23 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteComment(comment._id)}
-                                  className="text-[#9BAAB4] hover:text-[#FF5C70] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center" aria-label="Delete comment"
+                                  className="text-[#9BAAB4] hover:text-[#FF5C70] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center cursor-pointer" aria-label="Delete comment"
                                   title="Delete comment"
                                 >
                                   <Icon name="trash" className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
+                            {!isCommentOwner && user && !isEditingThis && (
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setReportingComment(comment)}
+                                  className="text-[#9BAAB4] hover:text-[#FFB800] p-1 min-w-[24px] min-h-[24px] flex items-center justify-center cursor-pointer"
+                                  aria-label="Report comment"
+                                  title="Report comment"
+                                >
+                                  <Icon name="flag" className="w-3 h-3" />
                                 </button>
                               </div>
                             )}
@@ -696,6 +710,14 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
         targetType="post"
         targetId={post._id}
         targetName={authorName}
+      />
+
+      <ReportModal
+        isOpen={Boolean(reportingComment)}
+        onClose={() => setReportingComment(null)}
+        targetType="comment"
+        targetId={reportingComment?._id}
+        targetName={`comment by ${reportingComment?.author?.fullName || 'User'}`}
       />
     </Card>
   );

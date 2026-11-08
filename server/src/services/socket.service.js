@@ -6,6 +6,14 @@ import User from '../models/User.js';
 import { corsOptions } from '../config/cors.js';
 
 let ioInstance = null;
+const onlineUsersMap = new Map(); // userId (string) -> Set of active socket IDs
+
+/**
+ * Returns array of currently connected online user IDs.
+ *
+ * @returns {string[]}
+ */
+export const getOnlineUserIds = () => Array.from(onlineUsersMap.keys());
 
 /**
  * Extracts authentication token from socket handshake (cookie or auth object/header).
@@ -123,10 +131,28 @@ export const initSocketServer = (httpServer) => {
 
   ioInstance.on('connection', (socket) => {
     const user = socket.data.user;
-    const userRoom = `user_${user._id}`;
+    const userIdStr = user._id.toString();
+    const userRoom = `user_${userIdStr}`;
 
     // Join personal notification room
     socket.join(userRoom);
+
+    // Online Presence Tracking: Register active socket
+    const existingSockets = onlineUsersMap.get(userIdStr);
+    if (!existingSockets) {
+      onlineUsersMap.set(userIdStr, new Set([socket.id]));
+      // Notify all connected clients of newly online user
+      ioInstance.emit('user_status_change', { userId: userIdStr, status: 'online' });
+    } else {
+      existingSockets.add(socket.id);
+    }
+
+    // Send current list of online users to the freshly connected socket
+    socket.emit('online_users_list', Array.from(onlineUsersMap.keys()));
+
+    socket.on('get_online_users', () => {
+      socket.emit('online_users_list', Array.from(onlineUsersMap.keys()));
+    });
 
     // Join admin room strictly if authoritative role is admin
     if (user.role === 'admin') {
@@ -198,7 +224,16 @@ export const initSocketServer = (httpServer) => {
     });
 
     socket.on('disconnect', () => {
-      // Disconnection handled cleanly
+      // Online Presence Tracking: Deregister disconnecting socket
+      const userSockets = onlineUsersMap.get(userIdStr);
+      if (userSockets) {
+        userSockets.delete(socket.id);
+        if (userSockets.size === 0) {
+          onlineUsersMap.delete(userIdStr);
+          // User is fully offline (all sessions/tabs closed)
+          ioInstance?.emit('user_status_change', { userId: userIdStr, status: 'offline' });
+        }
+      }
     });
   });
 
@@ -216,6 +251,7 @@ export const getIO = () => ioInstance;
  * Closes the active Socket.IO server instance.
  */
 export const closeSocketServer = async () => {
+  onlineUsersMap.clear();
   if (ioInstance) {
     await new Promise((resolve) => {
       ioInstance.close(() => {

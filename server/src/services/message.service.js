@@ -321,11 +321,16 @@ export const markMessagesRead = async (conversationId, currentUserId) => {
     const senderId = conversation.participants.find(id => id.toString() !== currentUserId.toString());
     const io = getIO();
     if (io && senderId) {
-      io.to(`user_${senderId.toString()}`).emit('messages_read', {
-        conversationId,
-        readBy: currentUserId,
-        readAt: new Date()
-      });
+      const convIdStr = conversationId.toString();
+      const readAtTime = new Date().toISOString();
+      // Chained emission to active conversation room and sender's user room
+      io.to(`conversation_${convIdStr}`)
+        .to(`user_${senderId.toString()}`)
+        .emit('messages_read', {
+          conversationId: convIdStr,
+          readBy: currentUserId.toString(),
+          readAt: readAtTime
+        });
     }
   }
 

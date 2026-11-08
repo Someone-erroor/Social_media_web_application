@@ -14,6 +14,7 @@ export function NotificationProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
   const [socketInstance, setSocketInstance] = useState(null);
   const socketRef = useRef(null);
 
@@ -50,6 +51,7 @@ export function NotificationProvider({ children }) {
       }
       Promise.resolve().then(() => {
         setIsConnected(false);
+        setOnlineUsers(new Set());
         setNotifications([]);
         setUnreadCount(0);
         setError(null);
@@ -167,8 +169,31 @@ export function NotificationProvider({ children }) {
       setUnreadCount((c) => c + 1);
     };
 
+    // Online Presence Event Listeners
+    const handleOnlineUsersList = (ids) => {
+      if (Array.isArray(ids)) {
+        setOnlineUsers(new Set(ids.map((id) => id.toString())));
+      }
+    };
+
+    const handleUserStatusChange = (payload) => {
+      if (!payload?.userId) return;
+      const targetId = payload.userId.toString();
+      setOnlineUsers((prev) => {
+        const next = new Set(prev);
+        if (payload.status === 'online') {
+          next.add(targetId);
+        } else {
+          next.delete(targetId);
+        }
+        return next;
+      });
+    };
+
     socket.on('notification', handleIncomingNotification);
     socket.on('admin_login_alert', handleIncomingNotification);
+    socket.on('online_users_list', handleOnlineUsersList);
+    socket.on('user_status_change', handleUserStatusChange);
 
     return () => {
       ignore = true;
@@ -178,6 +203,8 @@ export function NotificationProvider({ children }) {
       socket.off('reconnect');
       socket.off('notification', handleIncomingNotification);
       socket.off('admin_login_alert', handleIncomingNotification);
+      socket.off('online_users_list', handleOnlineUsersList);
+      socket.off('user_status_change', handleUserStatusChange);
       socket.disconnect();
       socketRef.current = null;
       setSocketInstance(null);
@@ -260,6 +287,8 @@ export function NotificationProvider({ children }) {
         loading,
         error,
         isConnected,
+        onlineUsers,
+        isUserOnline: (userId) => (userId ? onlineUsers.has(userId.toString()) : false),
         socket: socketInstance || socketRef.current,
         markAsRead,
         markAllAsRead,
