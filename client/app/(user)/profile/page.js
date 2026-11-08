@@ -141,7 +141,7 @@ export default function ProfilePage() {
       />
 
       {profileError && (
-        <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between gap-3">
+        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between gap-3">
           <span>{profileError}</span>
           <Button
             size="sm"
@@ -151,7 +151,7 @@ export default function ProfilePage() {
               setProfileError('');
               setReloadTrigger((n) => n + 1);
             }}
-            className="text-xs text-[#FF6F61] hover:bg-[#FF6F61]/10"
+            className="text-xs text-[#FF6257] hover:bg-[#FF6257]/10"
           >
             Retry
           </Button>
@@ -159,12 +159,12 @@ export default function ProfilePage() {
       )}
 
       {/* Profile Header Card */}
-      <Card className="overflow-hidden border-[#263640] bg-[#151F29] shadow-lg shadow-black/40">
-        <div className="h-28 bg-gradient-to-r from-[#19D3E3]/80 via-[#101A22] to-[#FF6F61]/80" />
+      <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] shadow-xl shadow-black/50">
+        <div className="h-28 bg-gradient-to-r from-[#FF6257]/80 via-[#17151D] to-[#B9A8F5]/80" />
 
         <CardContent className="relative pt-0 pb-6 px-6">
           <div className="-mt-12 mb-4 flex items-end justify-between">
-            <div className="rounded-full ring-4 ring-[#101A22] bg-[#101A22]">
+            <div className="rounded-full ring-4 ring-[#17151D] bg-[#17151D]">
               <Avatar
                 name={profile?.fullName || 'User'}
                 src={profile?.profile?.avatarUrl}
@@ -186,40 +186,40 @@ export default function ProfilePage() {
           <div className="space-y-3">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-[#F4F8FA]">
+                <h1 className="text-xl font-black text-[#F6F2EA] font-display">
                   {profile?.fullName || 'Creator'}
                 </h1>
-                <Badge variant={profile?.role === 'admin' ? 'danger' : 'primary'}>
+                <Badge variant={profile?.role === 'admin' ? 'coral' : 'lime'}>
                   {profile?.role === 'admin' ? 'Admin' : 'Member'}
                 </Badge>
               </div>
-              <p className="text-xs text-[#9BAAB4]">{profile?.email}</p>
+              <p className="text-xs text-[#777580] font-mono">{profile?.email}</p>
             </div>
 
-            <p className="text-sm text-[#9BAAB4] max-w-xl">
+            <p className="text-sm text-[#777580] max-w-xl">
               {profile?.profile?.bio ? (
                 profile.profile.bio
               ) : (
-                <span className="italic text-[#9BAAB4]">
+                <span className="italic text-[#777580]">
                   No bio added yet.{' '}
-                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-[#19D3E3] underline">
+                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-[#FF6257] underline">
                     Add a bio
                   </Link>
                 </span>
               )}
             </p>
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#9BAAB4] pt-1">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#777580] pt-1">
               <span className="flex items-center gap-1.5">
-                <Icon name="calendar" className="w-3.5 h-3.5 text-[#9BAAB4]" />
+                <Icon name="calendar" className="w-3.5 h-3.5 text-[#777580]" />
                 Joined {memberSince}
               </span>
               <span className="flex items-center gap-1.5">
-                <Icon name="mail" className="w-3.5 h-3.5 text-[#9BAAB4]" />
+                <Icon name="mail" className="w-3.5 h-3.5 text-[#777580]" />
                 {profile?.isEmailVerified ? (
-                  <span className="text-emerald-400 font-medium">Email Verified</span>
+                  <span className="text-[#D5F36A] font-semibold">Email Verified</span>
                 ) : (
-                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-amber-400 hover:underline">
+                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-[#FBBF24] hover:underline font-medium">
                     Unverified (Verify now)
                   </Link>
                 )}
@@ -227,14 +227,14 @@ export default function ProfilePage() {
             </div>
 
             {/* Follower / Following Metrics Bar */}
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-t border-[#263640] text-xs">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-t border-[#2D2938] text-xs">
               <button
                 type="button"
                 onClick={handleOpenFollowers}
-                className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                className="flex items-center gap-1.5 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
                 title="View your followers"
               >
-                <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                <span className="font-bold text-[#F6F2EA] text-sm group-hover:text-[#FF6257] font-display">
                   {profile?.followersCount ?? 0}
                 </span>
                 <span>Followers</span>
@@ -243,10 +243,10 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={handleOpenFollowing}
-                className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                className="flex items-center gap-1.5 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
                 title="View who you are following"
               >
-                <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                <span className="font-bold text-[#F6F2EA] text-sm group-hover:text-[#FF6257] font-display">
                   {profile?.followingCount ?? 0}
                 </span>
                 <span>Following</span>
@@ -258,7 +258,7 @@ export default function ProfilePage() {
 
       {/* Publications Section */}
       <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-[#F4F8FA]">
+        <h2 className="text-sm font-bold text-[#F6F2EA] font-display">
           Your Posts ({posts.length})
         </h2>
 
@@ -267,24 +267,24 @@ export default function ProfilePage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="p-5 rounded-2xl bg-[#151F29] border border-[#263640] shadow-xs space-y-3 animate-pulse"
+                className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-sm space-y-3 animate-pulse"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1D2A35]" />
+                  <div className="w-10 h-10 rounded-full bg-[#24202E]" />
                   <div className="space-y-1.5 flex-1">
-                    <div className="w-28 h-3.5 bg-[#1D2A35] rounded" />
-                    <div className="w-16 h-2.5 bg-[#1D2A35]/60 rounded" />
+                    <div className="w-28 h-3.5 bg-[#24202E]" />
+                    <div className="w-16 h-2.5 bg-[#24202E]/60 rounded" />
                   </div>
                 </div>
                 <div className="space-y-2 pt-1">
-                  <div className="w-full h-3 bg-[#1D2A35] rounded" />
-                  <div className="w-4/5 h-3 bg-[#1D2A35]/60 rounded" />
+                  <div className="w-full h-3 bg-[#24202E] rounded" />
+                  <div className="w-4/5 h-3 bg-[#24202E]/60 rounded" />
                 </div>
               </div>
             ))}
           </div>
         ) : postsError ? (
-          <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
+          <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
             {postsError}
           </div>
         ) : posts.length === 0 ? (

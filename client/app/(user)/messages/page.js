@@ -546,44 +546,44 @@ function MessagesContent() {
   const recipient = getOtherUser(activeConversation);
 
   return (
-    <div className="h-[calc(100vh-8.5rem)] flex rounded-2xl bg-[#101A22] border border-[#263640] overflow-hidden shadow-xl animate-fade-in relative">
+    <div className="h-[calc(100vh-8.5rem)] flex rounded-2xl bg-[#1E1B26] border border-[#2D2938] overflow-hidden shadow-2xl animate-fade-in relative">
       {/* Left Sidebar: Conversations List */}
       <div
-        className={`w-full md:w-80 border-r border-[#263640] flex flex-col bg-[#101A22] ${
+        className={`w-full md:w-80 border-r border-[#2D2938] flex flex-col bg-[#17151D] ${
           activeConversation ? 'hidden md:flex' : 'flex'
         }`}
       >
         {/* Header, Action & Tabs */}
-        <div className="p-4 border-b border-[#263640] space-y-3">
+        <div className="p-4 border-b border-[#2D2938] space-y-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-base font-bold text-[#F4F8FA] flex items-center gap-2">
-              <Icon name="message" className="w-5 h-5 text-[#19D3E3]" />
+            <h1 className="text-base font-bold text-[#F6F2EA] flex items-center gap-2 font-display">
+              <Icon name="message" className="w-5 h-5 text-[#FF6257]" />
               Messages
             </h1>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-semibold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/30 px-2 py-0.5 rounded-full hidden sm:inline-block">
-                AES-256 Protected
+              <span className="text-[10px] font-semibold text-[#D5F36A] bg-[#D5F36A]/10 border border-[#D5F36A]/30 px-2 py-0.5 rounded-full hidden sm:inline-block">
+                E2EE Active
               </span>
               <button
                 type="button"
                 onClick={openNewChatModal}
-                className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#19D3E3] text-[#080D12] hover:bg-[#19D3E3]/90 transition-all flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer"
+                className="px-2.5 py-1 text-xs font-bold rounded-lg bg-[#FF6257] text-[#17151D] hover:bg-[#FF8178] transition-all flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer font-display"
                 title="Start New Chat"
               >
-                <Icon name="plus" className="w-3.5 h-3.5" />
+                <Icon name="plus" className="w-3.5 h-3.5 text-[#17151D]" />
                 <span>New Chat</span>
               </button>
             </div>
           </div>
 
-          <div className="flex rounded-xl bg-[#151F29] p-1 border border-[#263640]">
+          <div className="flex rounded-xl bg-[#1E1B26] p-1 border border-[#2D2938]">
             <button
               type="button"
               onClick={() => setActiveTab('chats')}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
                 activeTab === 'chats'
-                  ? 'bg-[#19D3E3] text-[#080D12]'
-                  : 'text-[#9BAAB4] hover:text-[#F4F8FA]'
+                  ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-sm'
+                  : 'text-[#777580] hover:text-[#F6F2EA]'
               }`}
             >
               Direct Chats ({directChats.length})
@@ -593,8 +593,8 @@ function MessagesContent() {
               onClick={() => setActiveTab('requests')}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
                 activeTab === 'requests'
-                  ? 'bg-[#19D3E3] text-[#080D12]'
-                  : 'text-[#9BAAB4] hover:text-[#F4F8FA]'
+                  ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-sm'
+                  : 'text-[#777580] hover:text-[#F6F2EA]'
               }`}
             >
               Requests ({messageRequests.length})
@@ -603,31 +603,31 @@ function MessagesContent() {
         </div>
 
         {/* Conversations Scroll Area */}
-        <div className="flex-1 overflow-y-auto divide-y divide-[#263640]">
+        <div className="flex-1 overflow-y-auto divide-y divide-[#2D2938]">
           {loadingConversations ? (
             <div className="p-4 space-y-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex items-center gap-3 animate-pulse">
-                  <div className="w-10 h-10 rounded-full bg-[#151F29]" />
+                  <div className="w-10 h-10 rounded-full bg-[#24202E]" />
                   <div className="flex-1 space-y-1.5">
-                    <div className="w-24 h-3 bg-[#151F29] rounded" />
-                    <div className="w-36 h-2.5 bg-[#151F29]/60 rounded" />
+                    <div className="w-24 h-3 bg-[#24202E] rounded" />
+                    <div className="w-36 h-2.5 bg-[#24202E]/60 rounded" />
                   </div>
                 </div>
               ))}
             </div>
           ) : displayedConversations.length === 0 ? (
-            <div className="p-6 text-center text-xs text-[#9BAAB4] flex flex-col items-center gap-3">
+            <div className="p-6 text-center text-xs text-[#777580] flex flex-col items-center gap-3">
               <p>
                 {activeTab === 'chats'
-                  ? 'No active direct chats yet.'
+                  ? 'No active direct chats yet. Follow creators or visit profiles to start a conversation.'
                   : 'No pending message requests.'}
               </p>
               {activeTab === 'chats' && (
                 <button
                   type="button"
                   onClick={openNewChatModal}
-                  className="px-3.5 py-1.5 rounded-xl bg-[#19D3E3]/15 border border-[#19D3E3]/30 text-[#19D3E3] text-xs font-semibold hover:bg-[#19D3E3]/25 transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#FF6257]/15 border border-[#FF6257]/30 text-[#FF6257] text-xs font-semibold hover:bg-[#FF6257]/25 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Icon name="plus" className="w-3.5 h-3.5" />
                   <span>Start New Chat</span>
@@ -647,8 +647,8 @@ function MessagesContent() {
                   onClick={() => setActiveConversation(conv)}
                   className={`w-full p-3.5 flex items-center gap-3 text-left transition-colors cursor-pointer ${
                     isSelected
-                      ? 'bg-[#19D3E3]/10 border-l-4 border-[#19D3E3]'
-                      : 'hover:bg-[#151F29]'
+                      ? 'bg-[#FF6257]/10 border-l-4 border-[#FF6257]'
+                      : 'hover:bg-[#1E1B26]'
                   }`}
                 >
                   <Avatar
@@ -659,10 +659,10 @@ function MessagesContent() {
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold text-[#F4F8FA] truncate">
+                      <p className="text-xs font-bold text-[#F6F2EA] truncate font-display">
                         {otherUser?.fullName || 'User'}
                       </p>
-                      <span className="text-[10px] text-[#9BAAB4]">
+                      <span className="text-[10px] text-[#777580]">
                         {conv.lastMessageAt
                           ? new Date(conv.lastMessageAt).toLocaleDateString([], {
                               month: 'short',
@@ -672,11 +672,11 @@ function MessagesContent() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-1 mt-0.5">
-                      <p className="text-[11px] text-[#9BAAB4] truncate">
+                      <p className="text-[11px] text-[#777580] truncate">
                         {conv.lastMessageSnippet || 'Start conversation...'}
                       </p>
                       {conv.unreadCount > 0 && (
-                        <span className="shrink-0 px-1.5 py-0.2 rounded-full bg-[#19D3E3] text-[#080D12] text-[9px] font-bold">
+                        <span className="shrink-0 px-1.5 py-0.2 rounded-full bg-[#FF6257] text-[#17151D] text-[9px] font-bold">
                           {conv.unreadCount}
                         </span>
                       )}
@@ -691,19 +691,19 @@ function MessagesContent() {
 
       {/* Right Area: Active Chat Panel */}
       <div
-        className={`flex-1 flex flex-col bg-[#080D12] ${
+        className={`flex-1 flex flex-col bg-[#110F17] ${
           !activeConversation ? 'hidden md:flex' : 'flex'
         }`}
       >
         {activeConversation && recipient ? (
           <>
             {/* Active Chat Header */}
-            <div className="h-16 px-4 sm:px-6 border-b border-[#263640] bg-[#101A22] flex items-center justify-between">
+            <div className="h-16 px-4 sm:px-6 border-b border-[#2D2938] bg-[#17151D] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setActiveConversation(null)}
-                  className="md:hidden text-[#9BAAB4] hover:text-[#F4F8FA] p-1"
+                  className="md:hidden text-[#777580] hover:text-[#F6F2EA] p-1"
                   aria-label="Back to conversations"
                 >
                   <Icon name="arrowLeft" className="w-5 h-5" />
@@ -720,14 +720,14 @@ function MessagesContent() {
                       />
                       <div>
                         <div className="flex items-center gap-2">
-                          <h2 className="text-xs sm:text-sm font-bold text-[#F4F8FA] leading-tight">
+                          <h2 className="text-xs sm:text-sm font-bold text-[#F6F2EA] leading-tight font-display">
                             {recipient.fullName}
                           </h2>
-                          <span className={`text-[10px] font-medium ${isRecipientOnline ? 'text-[#19D3E3]' : 'text-[#9BAAB4]'}`}>
+                          <span className={`text-[10px] font-semibold ${isRecipientOnline ? 'text-[#D5F36A]' : 'text-[#777580]'}`}>
                             • {isRecipientOnline ? 'Online' : 'Offline'}
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#9BAAB4]">
+                        <p className="text-[11px] text-[#777580] font-mono">
                           {recipient.username ? `@${recipient.username}` : recipient.email}
                         </p>
                       </div>
@@ -737,9 +737,9 @@ function MessagesContent() {
               </div>
 
               {/* Cryptographic Protocol Badge */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#19D3E3]/10 border border-[#19D3E3]/20 text-[#19D3E3] text-[11px] font-semibold">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-[#D5F36A] text-[11px] font-semibold">
                 <Icon name="lock" className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">AES-GCM 256-bit Encrypted</span>
+                <span className="hidden sm:inline">AES-GCM 256-bit E2EE</span>
                 <span className="sm:hidden">AES-256</span>
               </div>
             </div>
@@ -748,11 +748,11 @@ function MessagesContent() {
             {(activeConversation.status === 'pending_request' || activeConversation.status === 'pending') &&
               activeConversation.initiatedBy?._id !== user?._id &&
               activeConversation.initiatedBy !== user?._id && (
-                <div className="p-3 bg-[#FFB800]/10 border-b border-[#FFB800]/30 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-                  <div className="flex items-center gap-2 text-[#FFB800]">
+                <div className="p-3 bg-[#F59E0B]/10 border-b border-[#F59E0B]/30 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2 text-[#FBBF24]">
                     <Icon name="alertCircle" className="w-4 h-4 shrink-0" />
                     <span>
-                      <strong>{recipient.fullName}</strong> sent you a message request.
+                      <strong className="text-[#F6F2EA]">{recipient.fullName}</strong> sent you a message request.
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -779,14 +779,14 @@ function MessagesContent() {
             {/* Messages Scroll Area */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
               {loadingMessages ? (
-                <div className="p-8 text-center text-xs text-[#9BAAB4]">
+                <div className="p-8 text-center text-xs text-[#777580]">
                   Decrypting secure message stream...
                 </div>
               ) : messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-[#9BAAB4]">
-                  <Icon name="lock" className="w-8 h-8 text-[#19D3E3]" />
-                  <p className="text-xs font-semibold text-[#F4F8FA]">Client-Side Encrypted (AES-GCM 256-bit)</p>
-                  <p className="text-[11px] max-w-xs">
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-[#777580]">
+                  <Icon name="lock" className="w-8 h-8 text-[#FF6257]" />
+                  <p className="text-xs font-bold text-[#F6F2EA] font-display">Client-Side Encrypted (AES-GCM 256-bit)</p>
+                  <p className="text-[11px] max-w-xs leading-relaxed">
                     Messages are encrypted in your browser using Web Crypto AES-GCM 256-bit before leaving your device.
                   </p>
                 </div>
@@ -806,16 +806,16 @@ function MessagesContent() {
                       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                     >
                       <div
-                        className={`max-w-[75%] sm:max-w-md px-3.5 py-2.5 rounded-2xl text-xs break-words shadow-xs ${
+                        className={`max-w-[75%] sm:max-w-md px-3.5 py-2.5 rounded-2xl text-xs break-words shadow-sm ${
                           isMine
-                            ? 'bg-[#19D3E3]/20 border border-[#19D3E3]/30 text-[#F4F8FA] rounded-br-xs'
-                            : 'bg-[#151F29] border border-[#263640] text-[#F4F8FA] rounded-bl-xs'
+                            ? 'bg-[#FF6257] text-white rounded-br-xs shadow-md shadow-[#FF6257]/15'
+                            : 'bg-[#1E1B26] border border-[#2D2938] text-[#F6F2EA] rounded-bl-xs'
                         }`}
                       >
                         <p className="whitespace-pre-wrap">{displayContent}</p>
                         <div
                           className={`flex items-center gap-1.5 mt-1 text-[9px] ${
-                            isMine ? 'text-[#19D3E3]/80 justify-end' : 'text-[#9BAAB4]'
+                            isMine ? 'text-white/80 justify-end' : 'text-[#777580]'
                           }`}
                         >
                           {msg.isEncrypted && <Icon name="lock" className="w-2.5 h-2.5" />}
@@ -837,8 +837,8 @@ function MessagesContent() {
 
               {/* Partner Typing Indicator */}
               {partnerTyping && (
-                <div className="flex items-center gap-1.5 text-xs text-[#9BAAB4] italic py-1 animate-pulse">
-                  <span className="w-2 h-2 rounded-full bg-[#19D3E3]" />
+                <div className="flex items-center gap-1.5 text-xs text-[#777580] italic py-1 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-[#D5F36A]" />
                   <span>{recipient.fullName} is typing...</span>
                 </div>
               )}
@@ -849,14 +849,14 @@ function MessagesContent() {
             {/* Input Composer */}
             <form
               onSubmit={handleSendMessage}
-              className="p-3 sm:p-4 border-t border-[#263640] bg-[#101A22] flex items-center gap-2.5"
+              className="p-3 sm:p-4 border-t border-[#2D2938] bg-[#17151D] flex items-center gap-2.5"
             >
               <input
                 type="text"
                 value={messageInput}
                 onChange={handleInputChange}
                 placeholder={`Encrypted message to ${recipient.fullName}...`}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] placeholder-[#9BAAB4] focus:outline-hidden focus:border-[#19D3E3]"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-[#1E1B26] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257]"
                 disabled={sending}
               />
               <Button
@@ -872,16 +872,16 @@ function MessagesContent() {
         ) : (
           <div className="h-full flex flex-col items-center justify-center p-6 text-center">
             <div className="max-w-md w-full flex flex-col items-center space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-[#151F29] border border-[#263640] flex items-center justify-center text-[#19D3E3] shadow-lg">
-                <Icon name="lock" className="w-8 h-8 text-[#19D3E3]" />
+              <div className="w-16 h-16 rounded-2xl bg-[#1E1B26] border border-[#2D2938] flex items-center justify-center text-[#FF6257] shadow-xl">
+                <Icon name="lock" className="w-8 h-8 text-[#FF6257]" />
               </div>
               <div>
-                <span className="text-[10px] font-semibold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                  Web Crypto AES-GCM 256-bit
+                <span className="text-[10px] font-semibold text-[#D5F36A] bg-[#D5F36A]/10 border border-[#D5F36A]/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  AES-GCM PROTECTED
                 </span>
-                <h2 className="text-lg font-bold text-[#F4F8FA] mt-2">Client-Side Encrypted Messaging</h2>
-                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto mt-1 leading-relaxed">
-                  Select an existing conversation from the list or start a direct, client-side encrypted conversation with any community member.
+                <h2 className="text-lg font-bold text-[#F6F2EA] mt-2 font-display">Encrypted Direct Messages</h2>
+                <p className="text-xs text-[#777580] max-w-sm mx-auto mt-1 leading-relaxed">
+                  Choose a contact from the list or start a conversation from a creator profile.
                 </p>
               </div>
               <Button
@@ -889,7 +889,7 @@ function MessagesContent() {
                 variant="primary"
                 size="md"
                 onClick={openNewChatModal}
-                className="flex items-center gap-2 shadow-md hover:shadow-cyan-500/20 cursor-pointer"
+                className="flex items-center gap-2 shadow-lg hover:shadow-coral-500/20 cursor-pointer"
               >
                 <Icon name="plus" className="w-4 h-4" />
                 <span>Start New Encrypted Chat</span>
@@ -901,23 +901,23 @@ function MessagesContent() {
 
       {/* New Chat & User Discovery Modal */}
       {showNewChatModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-md bg-[#101A22] border border-[#263640] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        <div className="fixed inset-0 z-50 bg-[#110F17]/85 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-md bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
             {/* Modal Header */}
-            <div className="p-4 border-b border-[#263640] flex items-center justify-between">
+            <div className="p-4 border-b border-[#2D2938] flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#19D3E3]/15 flex items-center justify-center text-[#19D3E3]">
+                <div className="w-8 h-8 rounded-lg bg-[#FF6257]/15 flex items-center justify-center text-[#FF6257]">
                   <Icon name="lock" className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-[#F4F8FA]">Start Encrypted Chat</h2>
-                  <p className="text-[10px] text-[#9BAAB4]">AES-GCM 256-Bit Client Encryption</p>
+                  <h2 className="text-sm font-bold text-[#F6F2EA] font-display">Start Encrypted Chat</h2>
+                  <p className="text-[10px] text-[#777580]">AES-GCM 256-Bit Client Encryption</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowNewChatModal(false)}
-                className="p-1 rounded-lg text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-[#777580] hover:text-[#F6F2EA] hover:bg-[#24202E] transition-colors cursor-pointer"
                 aria-label="Close modal"
               >
                 <Icon name="close" className="w-5 h-5" />
@@ -925,48 +925,48 @@ function MessagesContent() {
             </div>
 
             {/* Search Input */}
-            <div className="p-3 border-b border-[#263640] bg-[#080D12]">
+            <div className="p-3 border-b border-[#2D2938] bg-[#17151D]">
               <div className="relative">
                 <Icon
                   name="search"
-                  className="w-4 h-4 text-[#9BAAB4] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  className="w-4 h-4 text-[#777580] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
                 />
                 <input
                   type="text"
                   placeholder="Search members by name or email..."
                   value={contactSearch}
                   onChange={handleContactSearchChange}
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] placeholder-[#9BAAB4] focus:outline-hidden focus:border-[#19D3E3]"
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#1E1B26] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257]"
                   autoFocus
                 />
               </div>
             </div>
 
             {/* Contacts Scroll Area */}
-            <div className="flex-1 overflow-y-auto divide-y divide-[#263640]/50 p-2 max-h-[380px]">
+            <div className="flex-1 overflow-y-auto divide-y divide-[#2D2938]/60 p-2 max-h-[380px]">
               {loadingContacts ? (
                 <div className="p-6 space-y-3">
                   {[1, 2, 3].map((i) => (
                     <div key={i} className="flex items-center gap-3 animate-pulse">
-                      <div className="w-9 h-9 rounded-full bg-[#151F29]" />
+                      <div className="w-9 h-9 rounded-full bg-[#24202E]" />
                       <div className="flex-1 space-y-1.5">
-                        <div className="w-24 h-3 bg-[#151F29] rounded" />
-                        <div className="w-36 h-2 bg-[#151F29]/60 rounded" />
+                        <div className="w-24 h-3 bg-[#24202E] rounded" />
+                        <div className="w-36 h-2 bg-[#24202E]/60 rounded" />
                       </div>
                     </div>
                   ))}
                 </div>
               ) : contacts.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#9BAAB4] space-y-1">
-                  <Icon name="users" className="w-8 h-8 text-[#9BAAB4]/60 mx-auto mb-2" />
-                  <p className="font-semibold text-[#F4F8FA]">No community members found</p>
+                <div className="p-8 text-center text-xs text-[#777580] space-y-1">
+                  <Icon name="users" className="w-8 h-8 text-[#777580]/60 mx-auto mb-2" />
+                  <p className="font-bold text-[#F6F2EA] font-display">No community members found</p>
                   <p className="text-[11px]">Try searching with a different name or email.</p>
                 </div>
               ) : (
                 contacts.map((contact) => (
                   <div
                     key={contact._id}
-                    className="p-2.5 rounded-xl hover:bg-[#151F29] transition-colors flex items-center justify-between gap-3"
+                    className="p-2.5 rounded-xl hover:bg-[#24202E] transition-colors flex items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <Avatar
@@ -976,21 +976,21 @@ function MessagesContent() {
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <p className="text-xs font-semibold text-[#F4F8FA] truncate">
+                          <p className="text-xs font-semibold text-[#F6F2EA] truncate">
                             {contact.fullName}
                           </p>
                           {contact.role === 'admin' && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded-sm bg-[#FF453A]/20 text-[#FF453A] font-bold">
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-sm bg-[#B9A8F5]/20 text-[#B9A8F5] font-bold">
                               Admin
                             </span>
                           )}
                           {contact.isFollowing && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded-sm bg-[#19D3E3]/15 text-[#19D3E3] font-medium">
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-sm bg-[#FF6257]/15 text-[#FF6257] font-medium">
                               Following
                             </span>
                           )}
                         </div>
-                        <p className="text-[10px] text-[#9BAAB4] truncate">
+                        <p className="text-[10px] text-[#777580] truncate font-mono">
                           {contact.bio || contact.email}
                         </p>
                       </div>
@@ -1019,8 +1019,8 @@ function MessagesContent() {
             </div>
 
             {/* Security Note Footer */}
-            <div className="p-3 bg-[#080D12] border-t border-[#263640] flex items-center gap-2 text-[10px] text-[#9BAAB4]">
-              <Icon name="shield" className="w-4 h-4 text-[#19D3E3] shrink-0" />
+            <div className="p-3 bg-[#17151D] border-t border-[#2D2938] flex items-center gap-2 text-[10px] text-[#777580]">
+              <Icon name="shield" className="w-4 h-4 text-[#D5F36A] shrink-0" />
               <span>Web Crypto AES-GCM 256-bit encryption protects all messages before transmission.</span>
             </div>
           </div>
@@ -1034,7 +1034,7 @@ export default function MessagesPage() {
   return (
     <Suspense
       fallback={
-        <div className="h-[calc(100vh-8.5rem)] flex items-center justify-center text-xs text-[#9BAAB4] bg-[#101A22] rounded-2xl border border-[#263640]">
+        <div className="h-[calc(100vh-8.5rem)] flex items-center justify-center text-xs text-[#777580] bg-[#1E1B26] rounded-2xl border border-[#2D2938]">
           Loading messages...
         </div>
       }

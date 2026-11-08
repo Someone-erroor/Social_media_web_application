@@ -6,9 +6,9 @@ import Icon from '@/components/ui/Icon';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * Mobile Bottom Navigation for User Experience (Dark Neon Theme)
+ * Mobile Bottom Navigation for User Experience (Editorial Expression Theme)
  * Fixed to the bottom of the viewport on mobile devices (<768px).
- * Dark graphite background (#101A22), neon cyan active state (#19D3E3).
+ * Midnight Ink background (#17151D), Electric Coral active state (#FF6257), Warm Ivory text (#F6F2EA).
  */
 export default function UserBottomNav() {
   const pathname = usePathname();
@@ -24,7 +24,7 @@ export default function UserBottomNav() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 bg-[#101A22]/95 backdrop-blur-md border-t border-[#263640] z-30 px-2 py-1.5 shadow-2xl"
+      className="md:hidden fixed bottom-0 inset-x-0 bg-[#17151D]/95 backdrop-blur-md border-t border-[#2D2938] z-30 px-2 py-1.5 shadow-2xl"
       aria-label="Mobile Navigation"
     >
       <div className="flex items-center justify-around">
@@ -40,14 +40,14 @@ export default function UserBottomNav() {
               href={item.href}
               className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium transition-colors ${
                 isActive
-                  ? 'text-[#19D3E3] font-semibold'
-                  : 'text-[#9BAAB4] hover:text-[#F4F8FA]'
+                  ? 'text-[#FF6257] font-bold'
+                  : 'text-[#777580] hover:text-[#F6F2EA]'
               }`}
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon
                 name={item.icon}
-                className={`w-5 h-5 mb-0.5 ${isActive ? 'text-[#19D3E3]' : 'text-[#9BAAB4]'}`}
+                className={`w-5 h-5 mb-0.5 ${isActive ? 'text-[#FF6257]' : 'text-[#777580]'}`}
               />
               <span>{item.label}</span>
             </Link>

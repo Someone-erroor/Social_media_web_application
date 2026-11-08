@@ -9,9 +9,9 @@ import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * Admin Sidebar Navigation for Looply (Dark Neon Theme)
+ * Admin Sidebar Navigation for Looply (Editorial Expression Theme)
  * Features a compact mobile header with accessible navigation drawer on mobile (<768px)
- * and keeps the dedicated fixed dark sidebar unchanged on desktop (768px+).
+ * and keeps the dedicated fixed Midnight Ink sidebar unchanged on desktop (768px+).
  */
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -42,7 +42,7 @@ export default function AdminSidebar() {
 
   const renderNavLinks = (isMobile = false) => (
     <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto" aria-label="Admin Navigation">
-      <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-[#9BAAB4]">
+      <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-[#777580] font-display">
         Platform Management
       </div>
 
@@ -59,15 +59,15 @@ export default function AdminSidebar() {
             onClick={() => isMobile && setMobileDrawerOpen(false)}
             className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
               isActive
-                ? 'bg-[#19D3E3] text-[#080D12] font-bold shadow-md shadow-[#19D3E3]/20'
-                : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+                ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
+                : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
             }`}
             aria-current={isActive ? 'page' : undefined}
           >
             <Icon
               name={item.icon}
               className={`w-5 h-5 shrink-0 ${
-                isActive ? 'text-[#080D12]' : 'text-[#9BAAB4] group-hover:text-[#F4F8FA]'
+                isActive ? 'text-[#17151D]' : 'text-[#777580] group-hover:text-[#F6F2EA]'
               }`}
             />
             <span>{item.label}</span>
@@ -78,15 +78,15 @@ export default function AdminSidebar() {
   );
 
   const renderFooter = (isMobile = false) => (
-    <div className="p-4 border-t border-[#263640] space-y-3">
-      <div className="px-3 py-2.5 rounded-xl bg-[#151F29] border border-[#263640]">
-        <div className="flex items-center justify-between text-xs text-[#F4F8FA] font-medium">
+    <div className="p-4 border-t border-[#2D2938] space-y-3">
+      <div className="px-3 py-2.5 rounded-xl bg-[#1E1B26] border border-[#2D2938]">
+        <div className="flex items-center justify-between text-xs text-[#F6F2EA] font-medium">
           <span>Admin Clearance</span>
-          <span className="text-[10px] font-mono text-[#19D3E3] bg-[#080D12] px-1.5 py-0.5 rounded border border-[#263640]">
+          <span className="text-[10px] font-mono text-[#D5F36A] bg-[#110F17] px-1.5 py-0.5 rounded border border-[#2D2938]">
             Administrator
           </span>
         </div>
-        <p className="mt-1 text-[11px] text-[#9BAAB4]">
+        <p className="mt-1 text-[11px] text-[#777580]">
           Management Console &bull; Platform Administration
         </p>
       </div>
@@ -94,7 +94,7 @@ export default function AdminSidebar() {
       <Link
         href={ROUTES.USER.FEED}
         onClick={() => isMobile && setMobileDrawerOpen(false)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#9BAAB4] hover:text-[#19D3E3] hover:bg-[#151F29] transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#777580] hover:text-[#FF6257] hover:bg-[#1E1B26] transition-colors"
       >
         <Icon name="arrowLeft" className="w-4 h-4" />
         <span>Return to User Feed</span>
@@ -103,7 +103,7 @@ export default function AdminSidebar() {
       <button
         type="button"
         onClick={logout}
-        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#FF5C70] hover:bg-[#FF5C70]/10 transition-colors"
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors"
       >
         <Icon name="close" className="w-4 h-4" />
         <span>Sign Out Session</span>
@@ -114,18 +114,18 @@ export default function AdminSidebar() {
   return (
     <>
       {/* Mobile Top Navigation Bar (<768px) */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-[#101A22] border-b border-[#263640]">
+      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-[#17151D] border-b border-[#2D2938]">
         <Logo showTagline={false} href={ROUTES.ADMIN.DASHBOARD} />
 
         <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30">
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
             Admin
           </span>
 
           <button
             type="button"
             onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-            className="p-2 rounded-lg text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29] focus:outline-none focus:ring-2 focus:ring-[#19D3E3]"
+            className="p-2 rounded-lg text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26] focus:outline-none focus:ring-2 focus:ring-[#FF6257]"
             aria-label="Toggle admin navigation menu"
             aria-expanded={mobileDrawerOpen}
           >
@@ -136,7 +136,7 @@ export default function AdminSidebar() {
 
       {/* Mobile Dropdown Drawer (<768px) */}
       {mobileDrawerOpen && (
-        <div className="md:hidden fixed inset-x-0 top-16 z-30 bg-[#101A22] border-b border-[#263640] shadow-2xl animate-fade-in flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="md:hidden fixed inset-x-0 top-16 z-30 bg-[#17151D] border-b border-[#2D2938] shadow-2xl animate-fade-in flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
           {renderNavLinks(true)}
           {renderFooter(true)}
         </div>
@@ -144,13 +144,13 @@ export default function AdminSidebar() {
 
       {/* Desktop Fixed Left Sidebar (>=768px) */}
       <aside
-        className="hidden md:flex md:w-64 flex-col fixed inset-y-0 left-0 border-r border-[#263640] bg-[#101A22] z-30"
+        className="hidden md:flex md:w-64 flex-col fixed inset-y-0 left-0 border-r border-[#2D2938] bg-[#17151D] z-30"
         aria-label="Admin Sidebar"
       >
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-[#263640]">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-[#2D2938]">
           <Logo showTagline={false} href={ROUTES.ADMIN.DASHBOARD} />
-          <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider rounded bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30">
+          <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider rounded bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30">
             Ops
           </span>
         </div>

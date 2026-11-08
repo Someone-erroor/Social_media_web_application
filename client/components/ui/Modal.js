@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import Icon from './Icon';
 
 /**
- * Accessible Modal dialog for Looply (Dark Neon Theme)
+ * Accessible Modal dialog for Looply (Editorial Expression Theme)
  * Supports keyboard escape closing, focus trapping, screen-reader attributes,
  * and responsive sizing across all mobile and desktop viewports.
  */
@@ -91,7 +91,7 @@ export default function Modal({
     >
       {/* Dark semi-transparent backdrop */}
       <div
-        className="fixed inset-0 bg-[#080D12]/80 backdrop-blur-xs transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-[#110F17]/85 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -99,18 +99,18 @@ export default function Modal({
       {/* Modal Dialog Card */}
       <div
         ref={modalRef}
-        className={`relative w-full ${sizeClasses} bg-[#151F29] rounded-2xl border border-[#263640] shadow-2xl shadow-black/80 overflow-hidden z-10 animate-slide-up my-8 ${className}`}
+        className={`relative w-full ${sizeClasses} bg-[#1E1B26] rounded-2xl border border-[#2D2938] shadow-2xl shadow-black/90 overflow-hidden z-10 animate-slide-up my-8 ${className}`}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-[#263640]">
+        <div className="flex items-start justify-between p-5 border-b border-[#2D2938]">
           <div>
             {title && (
-              <h3 id="modal-title" className="text-base font-bold text-[#F4F8FA] tracking-tight">
+              <h3 id="modal-title" className="text-base font-bold text-[#F6F2EA] font-display tracking-tight">
                 {title}
               </h3>
             )}
             {description && (
-              <p id="modal-description" className="text-xs text-[#9BAAB4] mt-0.5">
+              <p id="modal-description" className="text-xs text-[#777580] mt-0.5">
                 {description}
               </p>
             )}
@@ -118,7 +118,7 @@ export default function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-[#9BAAB4] hover:text-[#F4F8FA] rounded-lg hover:bg-[#1D2A35] transition-colors focus:outline-none focus:ring-2 focus:ring-[#19D3E3]"
+            className="p-1.5 text-[#777580] hover:text-[#F6F2EA] rounded-lg hover:bg-[#24202E] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6257]"
             aria-label="Close dialog"
           >
             <Icon name="close" className="w-5 h-5" />
@@ -126,7 +126,7 @@ export default function Modal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 max-h-[75vh] overflow-y-auto text-[#F4F8FA]">
+        <div className="p-5 max-h-[75vh] overflow-y-auto text-[#F6F2EA]">
           {children}
         </div>
       </div>

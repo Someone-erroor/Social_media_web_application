@@ -109,23 +109,21 @@ export default function UserProfilePage() {
     setPosts((prev) => prev.filter((p) => p._id !== postId));
   };
 
-  const handleFollowChange = useCallback((isFollowing, result) => {
+  const handleFollowChange = (newFollowStatus, res) => {
     setProfile((prev) => {
       if (!prev) return prev;
+      const currentCount = prev.followersCount ?? 0;
       return {
         ...prev,
-        isFollowing,
-        followersCount:
-          typeof result?.followersCount === 'number'
-            ? result.followersCount
-            : isFollowing
-            ? (prev.followersCount || 0) + 1
-            : Math.max(0, (prev.followersCount || 1) - 1)
+        isFollowing: newFollowStatus,
+        isPending: Boolean(res?.isPending),
+        followersCount: newFollowStatus ? currentCount + 1 : Math.max(0, currentCount - 1)
       };
     });
-  }, []);
+  };
 
   const handleOpenFollowers = async () => {
+    if (!userId) return;
     setUserListType('followers');
     setUserListModalOpen(true);
     setUserListLoading(true);
@@ -140,6 +138,7 @@ export default function UserProfilePage() {
   };
 
   const handleOpenFollowing = async () => {
+    if (!userId) return;
     setUserListType('following');
     setUserListModalOpen(true);
     setUserListLoading(true);
@@ -163,28 +162,22 @@ export default function UserProfilePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={profile ? profile.fullName : 'Member Profile'}
-        description="Community presence on Looply"
-        action={
-          <Button
-            href={ROUTES.USER.FEED}
-            variant="ghost"
-            size="sm"
-            icon={<Icon name="arrowLeft" className="w-4 h-4" />}
-          >
-            Back to Feed
-          </Button>
+        title={profile ? profile.fullName : 'Profile'}
+        description={
+          profile
+            ? `Explore ${profile.fullName}'s presence, activity, and thoughts on Looply`
+            : 'Viewing member profile on Looply'
         }
       />
 
       {loading ? (
-        <Card className="overflow-hidden border-[#263640] bg-[#151F29] animate-pulse">
-          <div className="h-28 bg-[#1D2A35]" />
+        <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] animate-pulse">
+          <div className="h-28 bg-[#24202E]" />
           <CardContent className="pt-0 pb-6 px-6">
-            <div className="-mt-12 mb-4 w-24 h-24 rounded-full bg-[#1D2A35] ring-4 ring-[#101A22]" />
+            <div className="-mt-12 mb-4 w-24 h-24 rounded-full bg-[#24202E] ring-4 ring-[#17151D]" />
             <div className="space-y-2">
-              <div className="w-48 h-5 bg-[#1D2A35] rounded" />
-              <div className="w-64 h-3 bg-[#1D2A35]/60 rounded" />
+              <div className="w-48 h-5 bg-[#24202E] rounded" />
+              <div className="w-64 h-3 bg-[#24202E]/60 rounded" />
             </div>
           </CardContent>
         </Card>
@@ -215,12 +208,12 @@ export default function UserProfilePage() {
       ) : (
         <>
           {/* Profile Header Card */}
-          <Card className="overflow-hidden border-[#263640] bg-[#151F29] shadow-lg shadow-black/40">
-            <div className="h-28 bg-gradient-to-r from-[#19D3E3]/60 via-[#101A22] to-[#FF6F61]/60" />
+          <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] shadow-xl shadow-black/50">
+            <div className="h-28 bg-gradient-to-r from-[#FF6257]/70 via-[#17151D] to-[#B9A8F5]/70" />
 
             <CardContent className="relative pt-0 pb-6 px-6">
               <div className="-mt-12 mb-4 flex items-end justify-between gap-3">
-                <div className="rounded-full ring-4 ring-[#101A22] bg-[#101A22]">
+                <div className="rounded-full ring-4 ring-[#17151D] bg-[#17151D]">
                   <Avatar
                     name={profile.fullName}
                     src={profile.profile?.avatarUrl}
@@ -259,15 +252,15 @@ export default function UserProfilePage() {
                         href={ROUTES.USER.MEMORIES(userId)}
                         variant="ghost"
                         size="sm"
-                        className="px-2"
+                        className="px-2 text-[#B9A8F5] hover:text-[#D5F36A]"
                         title="Friendship Memories"
                       >
-                        <Icon name="sparkles" className="w-4 h-4 text-[#19D3E3]" />
+                        <Icon name="sparkles" className="w-4 h-4 text-[#B9A8F5]" />
                       </Button>
                       <button
                         type="button"
                         onClick={() => setShowReportModal(true)}
-                        className="p-2 rounded-lg text-[#9BAAB4] hover:text-[#FF5C70] hover:bg-[#FF5C70]/10 transition-colors"
+                        className="p-2 rounded-lg text-[#777580] hover:text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors"
                         title="Report User"
                       >
                         <Icon name="flag" className="w-4 h-4" />
@@ -279,33 +272,33 @@ export default function UserProfilePage() {
 
               <div className="space-y-3">
                 <div>
-                  <h1 className="text-xl font-bold text-[#F4F8FA]">
+                  <h1 className="text-xl font-black text-[#F6F2EA] font-display">
                     {profile.fullName}
                   </h1>
                   {memberSince && (
-                    <p className="text-xs text-[#9BAAB4]">Member since {memberSince}</p>
+                    <p className="text-xs text-[#777580]">Member since {memberSince}</p>
                   )}
                 </div>
 
                 {profile.profile?.bio ? (
-                  <p className="text-sm text-[#9BAAB4] max-w-xl leading-relaxed">
+                  <p className="text-sm text-[#777580] max-w-xl leading-relaxed">
                     {profile.profile.bio}
                   </p>
                 ) : (
-                  <p className="text-xs italic text-[#9BAAB4]">
+                  <p className="text-xs italic text-[#777580]">
                     This member has not written a bio yet.
                   </p>
                 )}
 
                 {/* Follower / Following Metrics Bar */}
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-t border-[#263640] text-xs">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-t border-[#2D2938] text-xs">
                   <button
                     type="button"
                     onClick={handleOpenFollowers}
-                    className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                    className="flex items-center gap-1.5 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
                     title="View followers"
                   >
-                    <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                    <span className="font-bold text-[#F6F2EA] text-sm group-hover:text-[#FF6257] font-display">
                       {profile.followersCount ?? 0}
                     </span>
                     <span>Followers</span>
@@ -314,10 +307,10 @@ export default function UserProfilePage() {
                   <button
                     type="button"
                     onClick={handleOpenFollowing}
-                    className="flex items-center gap-1.5 text-[#9BAAB4] hover:text-[#19D3E3] transition-colors cursor-pointer group py-1"
+                    className="flex items-center gap-1.5 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
                     title="View following"
                   >
-                    <span className="font-bold text-[#F4F8FA] text-sm group-hover:text-[#19D3E3]">
+                    <span className="font-bold text-[#F6F2EA] text-sm group-hover:text-[#FF6257] font-display">
                       {profile.followingCount ?? 0}
                     </span>
                     <span>Following</span>
@@ -329,22 +322,22 @@ export default function UserProfilePage() {
 
           {/* User Posts Section */}
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-[#F4F8FA]">
+            <h2 className="text-sm font-bold text-[#F6F2EA] font-display">
               Posts by {profile.fullName} ({posts.length})
             </h2>
 
             {profile.isPrivate && !profile.isFollowing && !isOwnProfile ? (
-              <div className="p-8 rounded-2xl bg-[#151F29] border border-[#263640] text-center space-y-3">
-                <div className="w-12 h-12 rounded-full bg-[#19D3E3]/15 text-[#19D3E3] flex items-center justify-center mx-auto">
+              <div className="p-8 rounded-2xl bg-[#1E1B26] border border-[#2D2938] text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center mx-auto">
                   <Icon name="lock" className="w-6 h-6" />
                 </div>
-                <h3 className="text-sm font-bold text-[#F4F8FA]">This Account is Private</h3>
-                <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto">
+                <h3 className="text-sm font-bold text-[#F6F2EA] font-display">This Account is Private</h3>
+                <p className="text-xs text-[#777580] max-w-sm mx-auto">
                   Follow {profile.fullName} to view their photos, posts, and community activity.
                 </p>
               </div>
             ) : postsError ? (
-              <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
+              <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
                 {postsError}
               </div>
             ) : posts.length === 0 ? (

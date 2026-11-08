@@ -12,9 +12,9 @@ import Icon from '@/components/ui/Icon';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * UserShell Layout Component for Looply (Dark Neon Theme)
+ * UserShell Layout Component for Looply (Editorial Expression Theme)
  * Modern 3-column layout on desktop, responsive top header and bottom nav on mobile.
- * Deep dark background (#080D12), elevated dark cards (#151F29), electric cyan accents.
+ * Deep Midnight Ink background (#110F17), elevated cards (#1E1B26), Electric Coral & Soft Lavender accents.
  */
 export default function UserShell({ children, showSidePanel = true }) {
   const { user, loading, isAuthenticated } = useAuth();
@@ -28,10 +28,10 @@ export default function UserShell({ children, showSidePanel = true }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080D12] flex items-center justify-center">
+      <div className="min-h-screen bg-[#110F17] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-[#263640] border-t-[#19D3E3] rounded-full animate-spin" />
-          <p className="text-xs text-[#9BAAB4] font-medium">Loading Looply...</p>
+          <div className="w-10 h-10 border-3 border-[#2D2938] border-t-[#FF6257] rounded-full animate-spin" />
+          <p className="text-xs text-[#777580] font-medium tracking-wide">Loading Looply...</p>
         </div>
       </div>
     );
@@ -42,7 +42,7 @@ export default function UserShell({ children, showSidePanel = true }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#080D12] text-[#F4F8FA] flex flex-col antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#110F17] text-[#F6F2EA] flex flex-col antialiased overflow-x-hidden selection:bg-[#FF6257] selection:text-[#17151D]">
       {/* Desktop Left Sidebar Navigation */}
       <UserSidebar />
 
@@ -71,9 +71,9 @@ export default function UserShell({ children, showSidePanel = true }) {
                       <CardTitle>Discover Topics</CardTitle>
                       <Link
                         href={ROUTES.USER.EXPLORE}
-                        className="text-xs font-semibold text-[#19D3E3] hover:text-[#00B8C8] transition-colors"
+                        className="text-xs font-semibold text-[#FF6257] hover:text-[#FF8178] transition-colors"
                       >
-                        View all
+                        view all
                       </Link>
                     </div>
                   </CardHeader>
@@ -89,10 +89,10 @@ export default function UserShell({ children, showSidePanel = true }) {
                         href={ROUTES.USER.EXPLORE}
                         className="flex items-center justify-between group py-1"
                       >
-                        <span className="text-sm font-medium text-[#F4F8FA] group-hover:text-[#19D3E3] transition-colors">
+                        <span className="text-sm font-medium text-[#F6F2EA] group-hover:text-[#FF6257] transition-colors">
                           {item.topic}
                         </span>
-                        <span className="text-[11px] text-[#9BAAB4] font-medium">
+                        <span className="text-[11px] text-[#777580] font-medium">
                           {item.posts}
                         </span>
                       </Link>
@@ -101,20 +101,20 @@ export default function UserShell({ children, showSidePanel = true }) {
                 </Card>
 
                 {/* AI Assistant Teaser Card */}
-                <Card className="bg-gradient-to-br from-[#151F29] via-[#1D2A35] to-[#151F29] border border-[#19D3E3]/30 shadow-lg shadow-[#19D3E3]/5">
+                <Card className="bg-gradient-to-br from-[#1E1B26] via-[#24202E] to-[#1E1B26] border border-[#B9A8F5]/30 shadow-lg shadow-[#B9A8F5]/5">
                   <CardContent className="space-y-3 p-5">
-                    <div className="flex items-center gap-2 text-[#19D3E3]">
-                      <Icon name="sparkles" className="w-5 h-5 text-[#19D3E3]" />
-                      <span className="text-xs font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-[#B9A8F5]">
+                      <Icon name="sparkles" className="w-5 h-5 text-[#B9A8F5]" />
+                      <span className="text-xs font-bold uppercase tracking-wider font-display">
                         AI Assistant
                       </span>
                     </div>
-                    <p className="text-xs text-[#9BAAB4] leading-relaxed">
+                    <p className="text-xs text-[#777580] leading-relaxed">
                       Brainstorm posts, rewrite drafts, and summarize discussion threads with Google Gemini AI.
                     </p>
                     <Link
                       href={ROUTES.USER.ASSISTANT}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#19D3E3] hover:text-[#00B8C8] transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#B9A8F5] hover:text-[#D5F36A] transition-colors"
                     >
                       <span>Explore Assistant</span>
                       <Icon name="chevronRight" className="w-3.5 h-3.5" />
@@ -123,21 +123,21 @@ export default function UserShell({ children, showSidePanel = true }) {
                 </Card>
 
                 {/* Community Guidelines Card */}
-                <div className="px-3 text-xs text-[#9BAAB4] space-y-2">
+                <div className="px-3 text-xs text-[#777580] space-y-2">
                   <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    <Link href={ROUTES.PUBLIC.HOME} className="hover:underline hover:text-[#F4F8FA] text-[#9BAAB4]">
+                    <Link href={ROUTES.PUBLIC.HOME} className="hover:underline hover:text-[#F6F2EA] text-[#777580]">
                       About Looply
                     </Link>
                     <span>&bull;</span>
-                    <Link href={ROUTES.PUBLIC.PRIVACY} className="hover:underline hover:text-[#F4F8FA] text-[#9BAAB4]">
+                    <Link href={ROUTES.PUBLIC.PRIVACY} className="hover:underline hover:text-[#F6F2EA] text-[#777580]">
                       Privacy
                     </Link>
                     <span>&bull;</span>
-                    <Link href={ROUTES.PUBLIC.TERMS} className="hover:underline hover:text-[#F4F8FA] text-[#9BAAB4]">
+                    <Link href={ROUTES.PUBLIC.TERMS} className="hover:underline hover:text-[#F6F2EA] text-[#777580]">
                       Terms
                     </Link>
                   </div>
-                  <p className="text-[11px] text-[#9BAAB4]">
+                  <p className="text-[11px] text-[#777580]">
                     &copy; {new Date().getFullYear()} Looply. Connect. Share. Express.
                   </p>
                 </div>

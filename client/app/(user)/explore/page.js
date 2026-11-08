@@ -109,14 +109,14 @@ export default function ExplorePage() {
 
       {/* Category Tag Pills */}
       <div className="space-y-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-[#9BAAB4]">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-[#777580] font-display">
           Suggested Topics
         </h2>
         <div className="flex flex-wrap gap-2">
           {topics.map((topic) => (
             <span
               key={topic}
-              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-[#151F29] border border-[#263640] text-[#F4F8FA] hover:bg-[#1D2A35] hover:text-[#19D3E3] hover:border-[#19D3E3]/50 transition-colors cursor-pointer"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-[#1E1B26] border border-[#2D2938] text-[#F6F2EA] hover:bg-[#24202E] hover:text-[#FF6257] hover:border-[#FF6257]/50 transition-colors cursor-pointer"
             >
               #{topic}
             </span>
@@ -126,7 +126,7 @@ export default function ExplorePage() {
 
       {/* Error state */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
           <span>{errorMessage}</span>
           <Button
             type="button"
@@ -141,7 +141,7 @@ export default function ExplorePage() {
 
       {/* Posts Section */}
       <div className="space-y-4 pt-2">
-        <h2 className="text-sm font-semibold text-[#F4F8FA]">
+        <h2 className="text-sm font-bold text-[#F6F2EA] font-display">
           Recent Discussions
         </h2>
 
@@ -150,18 +150,18 @@ export default function ExplorePage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="p-5 rounded-2xl bg-[#151F29] border border-[#263640] shadow-md shadow-black/20 space-y-3 animate-pulse"
+                className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-sm space-y-3 animate-pulse"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1D2A35]" />
+                  <div className="w-10 h-10 rounded-full bg-[#24202E]" />
                   <div className="space-y-1.5 flex-1">
-                    <div className="w-28 h-3.5 bg-[#1D2A35] rounded" />
-                    <div className="w-16 h-2.5 bg-[#1D2A35] rounded" />
+                    <div className="w-28 h-3.5 bg-[#24202E] rounded" />
+                    <div className="w-16 h-2.5 bg-[#24202E] rounded" />
                   </div>
                 </div>
                 <div className="space-y-2 pt-1">
-                  <div className="w-full h-3 bg-[#1D2A35] rounded" />
-                  <div className="w-3/4 h-3 bg-[#1D2A35] rounded" />
+                  <div className="w-full h-3 bg-[#24202E] rounded" />
+                  <div className="w-3/4 h-3 bg-[#24202E] rounded" />
                 </div>
               </div>
             ))}

@@ -123,7 +123,7 @@ export default function ProfileEditPage() {
       />
 
       {fetchError && (
-        <div className="p-4 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between gap-3">
+        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between gap-3">
           <span>{fetchError}</span>
           <Button
             size="sm"
@@ -133,7 +133,7 @@ export default function ProfileEditPage() {
               setFetchError('');
               setReloadTrigger((n) => n + 1);
             }}
-            className="text-xs text-[#FF6F61] hover:bg-[#FF6F61]/10"
+            className="text-xs text-[#FF6257] hover:bg-[#FF6257]/10"
           >
             Retry
           </Button>
@@ -141,26 +141,26 @@ export default function ProfileEditPage() {
       )}
 
       {fetchLoading ? (
-        <Card className="border-[#263640] bg-[#151F29] animate-pulse">
+        <Card className="border-[#2D2938] bg-[#1E1B26] animate-pulse">
           <CardHeader className="space-y-2">
-            <div className="h-5 w-40 bg-[#1D2A35] rounded" />
-            <div className="h-3 w-64 bg-[#1D2A35]/60 rounded" />
+            <div className="h-5 w-40 bg-[#24202E] rounded" />
+            <div className="h-3 w-64 bg-[#24202E]/60 rounded" />
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-full bg-[#1D2A35]" />
+              <div className="w-16 h-16 rounded-full bg-[#24202E]" />
               <div className="space-y-1.5 flex-1">
-                <div className="h-3.5 w-28 bg-[#1D2A35] rounded" />
-                <div className="h-2.5 w-48 bg-[#1D2A35]/60 rounded" />
+                <div className="h-3.5 w-28 bg-[#24202E] rounded" />
+                <div className="h-2.5 w-48 bg-[#24202E]/60 rounded" />
               </div>
             </div>
-            <div className="h-10 bg-[#1D2A35]/50 rounded-xl" />
-            <div className="h-10 bg-[#1D2A35]/50 rounded-xl" />
-            <div className="h-24 bg-[#1D2A35]/50 rounded-xl" />
+            <div className="h-10 bg-[#24202E]/50 rounded-xl" />
+            <div className="h-10 bg-[#24202E]/50 rounded-xl" />
+            <div className="h-24 bg-[#24202E]/50 rounded-xl" />
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-[#263640] bg-[#151F29]">
+        <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
           <CardHeader>
             <CardTitle>Profile Details</CardTitle>
             <CardDescription>
@@ -169,116 +169,117 @@ export default function ProfileEditPage() {
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-6">
-            {errorMessage && (
-              <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
-                {errorMessage}
-              </div>
-            )}
+            <CardContent className="space-y-6">
+              {errorMessage && (
+                <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+                  {errorMessage}
+                </div>
+              )}
 
-            {successMessage && (
-              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400">
-                {successMessage}
-              </div>
-            )}
+              {successMessage && (
+                <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center gap-2">
+                  <Icon name="check" className="w-4 h-4 text-[#D5F36A]" />
+                  <span>{successMessage}</span>
+                </div>
+              )}
 
-            {/* Avatar Preview */}
-            <div className="flex items-center gap-5">
-              <Avatar
-                name={fullName || 'User'}
-                src={avatarUrl.trim()}
-                size="xl"
-              />
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#F4F8FA]">Avatar Preview</p>
-                <p className="text-[11px] text-[#9BAAB4]">
-                  Provide a direct image URL (JPEG, PNG, or WebP) below.
-                </p>
+              {/* Avatar Preview */}
+              <div className="flex items-center gap-5">
+                <Avatar
+                  name={fullName || 'User'}
+                  src={avatarUrl.trim()}
+                  size="xl"
+                />
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-[#F6F2EA] font-display">Avatar Preview</p>
+                  <p className="text-[11px] text-[#777580]">
+                    Provide a direct image URL (JPEG, PNG, or WebP) below.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Avatar URL Field */}
-            <FormField
-              id="avatar-url"
-              label="Avatar Image URL"
-              helperText="Optional link to a public image URL starting with http:// or https://"
-            >
-              <Input
+              {/* Avatar URL Field */}
+              <FormField
                 id="avatar-url"
-                type="url"
-                placeholder="https://example.com/avatar.jpg"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                disabled={loading}
-              />
-            </FormField>
+                label="Avatar Image URL"
+                helperText="Optional link to a public image URL starting with http:// or https://"
+              >
+                <Input
+                  id="avatar-url"
+                  type="url"
+                  placeholder="https://example.com/avatar.jpg"
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  disabled={loading}
+                />
+              </FormField>
 
-            {/* Display Name Field */}
-            <FormField id="edit-name" label="Display Name" required>
-              <Input
-                id="edit-name"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your full name"
-                disabled={loading}
-                required
-              />
-            </FormField>
+              {/* Display Name Field */}
+              <FormField id="edit-name" label="Display Name" required>
+                <Input
+                  id="edit-name"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your full name"
+                  disabled={loading}
+                  required
+                />
+              </FormField>
 
-            {/* Email Field (Read-only) */}
-            <FormField
-              id="edit-email"
-              label="Email Address"
-              helperText="Your email cannot be edited from this form."
-            >
-              <Input
+              {/* Email Field (Read-only) */}
+              <FormField
                 id="edit-email"
-                type="email"
-                value={user?.email || ''}
-                disabled
-                className="bg-[#101A22] text-[#9BAAB4] border-[#263640] cursor-not-allowed"
-              />
-            </FormField>
+                label="Email Address"
+                helperText="Your email cannot be edited from this form."
+              >
+                <Input
+                  id="edit-email"
+                  type="email"
+                  value={user?.email || ''}
+                  disabled
+                  className="bg-[#110F17] text-[#777580] border-[#2D2938] cursor-not-allowed"
+                />
+              </FormField>
 
-            {/* Biography Field */}
-            <FormField
-              id="edit-bio"
-              label="Biography"
-              helperText={`${bio.length}/250 characters`}
-            >
-              <textarea
+              {/* Biography Field */}
+              <FormField
                 id="edit-bio"
-                rows={3}
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell the community about yourself, your interests, or what you're working on..."
-                disabled={loading}
-                className="w-full resize-none rounded-xl border border-[#263640] bg-[#101A22] p-3 text-sm text-[#F4F8FA] placeholder-[#9BAAB4] focus:outline-none focus:border-[#19D3E3]"
-              />
-            </FormField>
-          </CardContent>
+                label="Biography"
+                helperText={`${bio.length}/250 characters`}
+              >
+                <textarea
+                  id="edit-bio"
+                  rows={3}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="Tell the community about yourself, your interests, or what you're working on..."
+                  disabled={loading}
+                  className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#17151D] p-3 text-sm text-[#F6F2EA] placeholder-[#777580] focus:outline-none focus:border-[#FF6257]"
+                />
+              </FormField>
+            </CardContent>
 
-          <CardFooter className="flex items-center justify-end gap-3 border-t border-[#263640] pt-4">
-            <Button
-              href={ROUTES.USER.PROFILE}
-              variant="outline"
-              size="md"
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              size="md"
-              disabled={loading}
-            >
-              {loading ? 'Saving Changes...' : 'Save Changes'}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+            <CardFooter className="flex items-center justify-end gap-3 border-t border-[#2D2938] pt-4">
+              <Button
+                href={ROUTES.USER.PROFILE}
+                variant="outline"
+                size="md"
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                disabled={loading}
+              >
+                {loading ? 'Saving Changes...' : 'Save Changes'}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
       )}
     </div>
   );

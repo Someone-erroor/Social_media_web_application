@@ -103,17 +103,15 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
         length: aiLength
       });
 
-      if (res.generatedContent) {
-        setContent(res.generatedContent);
-        setSuccessNotice('AI draft loaded into composer! Review and edit before publishing.');
+      if (res?.success && res.content) {
+        setContent(res.content);
+        setSuccessNotice('Draft generated with Gemini AI! Review and edit before posting.');
         setAiMode(null);
-        setAiTopic('');
-        setAiContext('');
       } else {
-        setErrorMessage(res.message || 'AI generation failed to return content.');
+        setErrorMessage(res?.message || 'Failed to generate post draft.');
       }
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to generate post with AI.');
+      setErrorMessage(err.message || 'Error occurred while communicating with Gemini AI.');
     } finally {
       setAiLoading(false);
     }
@@ -126,7 +124,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
 
     const trimmed = content.trim();
     if (!trimmed) {
-      setErrorMessage('Please write some content first before asking AI to improve it.');
+      setErrorMessage('Please enter some text in the composer first.');
       return;
     }
 
@@ -138,46 +136,44 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
         instructions: aiInstructions.trim() || undefined
       });
 
-      if (res.improvedContent) {
-        setContent(res.improvedContent);
-        setSuccessNotice('Post improved with AI! Review and edit before publishing.');
+      if (res?.success && res.improved) {
+        setContent(res.improved);
+        setSuccessNotice('Draft polished with Gemini AI!');
         setAiMode(null);
-        setAiInstructions('');
       } else {
-        setErrorMessage(res.message || 'AI improvement failed to return content.');
+        setErrorMessage(res?.message || 'Failed to improve post draft.');
       }
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to improve post with AI.');
+      setErrorMessage(err.message || 'Error occurred while communicating with Gemini AI.');
     } finally {
       setAiLoading(false);
     }
   };
 
   return (
-    <Card className="border-[#263640] bg-[#151F29] shadow-md transition-all duration-300 hover:border-[#19D3E3]/40 hover:shadow-lg hover:shadow-[#19D3E3]/5">
-      <CardContent className="p-4 sm:p-5 space-y-3">
+    <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
+      <CardContent className="p-4 sm:p-5 space-y-4">
+        {/* Email Verification Banner */}
         {isUnverified && (
-          <div className="p-3 rounded-xl bg-[#F5B942]/10 border border-[#F5B942]/30 text-xs text-[#F5B942] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon name="alertCircle" className="w-4 h-4 text-[#F5B942] shrink-0" />
-              <span>Your email is not verified yet. Verify to publish posts.</span>
-            </div>
+          <div className="p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
+            <span>Your email address is unverified. Verify your email to create posts.</span>
             <Link
-              href={ROUTES.PUBLIC.VERIFY_EMAIL}
-              className="font-semibold underline hover:text-[#F4F8FA] ml-2 shrink-0"
+              href={ROUTES.AUTH.VERIFY_EMAIL}
+              className="underline font-semibold hover:text-[#F6F2EA] ml-2"
             >
-              Verify now
+              Verify Email
             </Link>
           </div>
         )}
 
+        {/* Dynamic Alerts */}
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
             <span>{errorMessage}</span>
             <button
               type="button"
               onClick={() => setErrorMessage('')}
-              className="text-[#9BAAB4] hover:text-[#F4F8FA] ml-2 font-bold"
+              className="text-[#777580] hover:text-[#F6F2EA] ml-2 font-bold"
             >
               ×
             </button>
@@ -185,15 +181,15 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
         )}
 
         {successNotice && (
-          <div className="p-3 rounded-xl bg-[#32D583]/10 border border-[#32D583]/30 text-xs text-[#32D583] flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Icon name="check" className="w-4 h-4 text-[#32D583] shrink-0" />
+              <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
               <span>{successNotice}</span>
             </div>
             <button
               type="button"
               onClick={() => setSuccessNotice('')}
-              className="text-[#9BAAB4] hover:text-[#F4F8FA] ml-2 font-bold"
+              className="text-[#777580] hover:text-[#F6F2EA] ml-2 font-bold"
             >
               ×
             </button>
@@ -216,23 +212,23 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                 placeholder="What is happening? Share your thoughts..."
                 rows={3}
                 disabled={loading || aiLoading}
-                className="w-full resize-none rounded-xl border border-[#263640] bg-[#101A22] p-3 text-sm text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#19D3E3] transition-colors"
+                className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#17151D] p-3 text-sm text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#FF6257] transition-colors"
               />
             </div>
           </div>
 
           {/* AI Helper Drawers */}
           {aiMode === 'generate' && (
-            <div className="p-3.5 rounded-xl bg-[#101A22] border border-[#19D3E3]/30 space-y-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#B9A8F5]/30 space-y-3 text-xs animate-fade-in">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-[#F4F8FA] flex items-center gap-1.5">
-                  <Icon name="sparkles" className="w-4 h-4 text-[#19D3E3]" />
+                <span className="font-bold text-[#F6F2EA] flex items-center gap-1.5 font-display">
+                  <Icon name="sparkles" className="w-4 h-4 text-[#B9A8F5]" />
                   Generate Post with Gemini AI
                 </span>
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-[#9BAAB4] hover:text-[#F4F8FA] font-bold"
+                  className="text-[#777580] hover:text-[#F6F2EA] font-bold"
                 >
                   ✕
                 </button>
@@ -247,7 +243,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                   onChange={(e) => setAiTopic(e.target.value)}
                   maxLength={200}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-[#263640] bg-[#151F29] px-3 py-2 text-xs text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#19D3E3]"
+                  className="w-full rounded-lg border border-[#2D2938] bg-[#1E1B26] px-3 py-2 text-xs text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#B9A8F5]"
                 />
 
                 <input
@@ -258,7 +254,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                   onChange={(e) => setAiContext(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-[#263640] bg-[#151F29] px-3 py-2 text-xs text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#19D3E3]"
+                  className="w-full rounded-lg border border-[#2D2938] bg-[#1E1B26] px-3 py-2 text-xs text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#B9A8F5]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -267,7 +263,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                     aria-label="AI tone of voice"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-[#263640] bg-[#151F29] px-2.5 py-1.5 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
+                    className="flex-1 rounded-lg border border-[#2D2938] bg-[#1E1B26] px-2.5 py-1.5 text-xs text-[#F6F2EA] focus:outline-none focus:border-[#B9A8F5]"
                   >
                     <option value="casual">Tone: Casual</option>
                     <option value="professional">Tone: Professional</option>
@@ -278,25 +274,25 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
 
                   <select
                     value={aiLength}
-                    aria-label="Target length"
+                    aria-label="AI post length"
                     onChange={(e) => setAiLength(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-[#263640] bg-[#151F29] px-2.5 py-1.5 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
+                    className="flex-1 rounded-lg border border-[#2D2938] bg-[#1E1B26] px-2.5 py-1.5 text-xs text-[#F6F2EA] focus:outline-none focus:border-[#B9A8F5]"
                   >
-                    <option value="short">Length: Short (&lt; 150 chars)</option>
-                    <option value="medium">Length: Medium (150-400 chars)</option>
-                    <option value="long">Length: Long (400-800 chars)</option>
+                    <option value="short">Length: Short</option>
+                    <option value="medium">Length: Medium</option>
+                    <option value="long">Length: Long</option>
                   </select>
 
                   <Button
                     type="button"
-                    variant="primary"
+                    variant="lavender"
                     size="sm"
                     onClick={handleAiGenerate}
                     disabled={aiLoading || !aiTopic.trim()}
                     className="shrink-0"
                   >
-                    {aiLoading ? 'Drafting...' : 'Draft'}
+                    {aiLoading ? 'Generating...' : 'Generate'}
                   </Button>
                 </div>
               </div>
@@ -304,16 +300,16 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
           )}
 
           {aiMode === 'improve' && (
-            <div className="p-3.5 rounded-xl bg-[#101A22] border border-[#FF6F61]/30 space-y-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#FF6257]/30 space-y-3 text-xs animate-fade-in">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-[#F4F8FA] flex items-center gap-1.5">
-                  <Icon name="sparkles" className="w-4 h-4 text-[#FF6F61]" />
-                  Improve Post with Gemini AI
+                <span className="font-bold text-[#F6F2EA] flex items-center gap-1.5 font-display">
+                  <Icon name="sparkles" className="w-4 h-4 text-[#FF6257]" />
+                  Improve Draft with Gemini AI
                 </span>
                 <button
                   type="button"
                   onClick={() => setAiMode(null)}
-                  className="text-[#9BAAB4] hover:text-[#F4F8FA] font-bold"
+                  className="text-[#777580] hover:text-[#F6F2EA] font-bold"
                 >
                   ✕
                 </button>
@@ -328,7 +324,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                   onChange={(e) => setAiInstructions(e.target.value)}
                   maxLength={300}
                   disabled={aiLoading}
-                  className="w-full rounded-lg border border-[#263640] bg-[#151F29] px-3 py-2 text-xs text-[#F4F8FA] placeholder:text-[#9BAAB4] focus:outline-none focus:border-[#FF6F61]"
+                  className="w-full rounded-lg border border-[#2D2938] bg-[#1E1B26] px-3 py-2 text-xs text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#FF6257]"
                 />
 
                 <div className="flex items-center gap-2">
@@ -337,7 +333,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                     aria-label="Target improvement tone"
                     onChange={(e) => setAiTone(e.target.value)}
                     disabled={aiLoading}
-                    className="flex-1 rounded-lg border border-[#263640] bg-[#151F29] px-2.5 py-1.5 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#FF6F61]"
+                    className="flex-1 rounded-lg border border-[#2D2938] bg-[#1E1B26] px-2.5 py-1.5 text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
                   >
                     <option value="insightful">Tone: Insightful</option>
                     <option value="casual">Tone: Casual</option>
@@ -348,7 +344,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
 
                   <Button
                     type="button"
-                    variant="coral"
+                    variant="primary"
                     size="sm"
                     onClick={handleAiImprove}
                     disabled={aiLoading || !content.trim()}
@@ -361,18 +357,18 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
             </div>
           )}
 
-          <div className="pt-2 border-t border-[#263640] flex items-center justify-between gap-3 text-xs text-[#9BAAB4]">
+          <div className="pt-2 border-t border-[#2D2938] flex items-center justify-between gap-3 text-xs text-[#777580]">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setAiMode(aiMode === 'generate' ? null : 'generate')}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${aiMode === 'generate'
-                    ? 'bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 font-semibold'
-                    : 'bg-[#101A22] border border-[#263640] hover:border-[#19D3E3]/40 text-[#9BAAB4] hover:text-[#19D3E3]'
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${aiMode === 'generate'
+                    ? 'bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30'
+                    : 'bg-[#17151D] border border-[#2D2938] hover:border-[#B9A8F5]/40 text-[#777580] hover:text-[#B9A8F5]'
                   }`}
                 title="Draft a post with Gemini AI"
               >
-                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#19D3E3]" />
+                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#B9A8F5]" />
                 <span>AI Draft</span>
               </button>
 
@@ -380,22 +376,22 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                 type="button"
                 onClick={() => setAiMode(aiMode === 'improve' ? null : 'improve')}
                 disabled={!content.trim()}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${aiMode === 'improve'
-                    ? 'bg-[#FF6F61]/15 text-[#FF6F61] border border-[#FF6F61]/30 font-semibold'
-                    : 'bg-[#101A22] border border-[#263640] hover:border-[#FF6F61]/40 text-[#9BAAB4] hover:text-[#FF6F61] disabled:opacity-40 disabled:hover:bg-[#101A22] disabled:hover:text-[#9BAAB4] disabled:cursor-not-allowed'
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${aiMode === 'improve'
+                    ? 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30'
+                    : 'bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/40 text-[#777580] hover:text-[#FF6257] disabled:opacity-40 disabled:hover:bg-[#17151D] disabled:hover:text-[#777580] disabled:cursor-not-allowed'
                   }`}
                 title={content.trim() ? "Improve draft with Gemini AI" : "Write text to enable AI polish"}
               >
-                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#FF6F61]" />
+                <Icon name="sparkles" className="w-3.5 h-3.5 text-[#FF6257]" />
                 <span>AI Polish</span>
               </button>
 
               <span
                 className={`text-[11px] font-medium ml-2 ${isOverLimit
-                    ? 'text-[#FF5C70] font-bold'
+                    ? 'text-[#FF6257] font-bold'
                     : charCount > 900
-                      ? 'text-[#F5B942]'
-                      : 'text-[#9BAAB4]'
+                      ? 'text-[#D5F36A]'
+                      : 'text-[#777580]'
                   }`}
               >
                 {charCount} / 1000

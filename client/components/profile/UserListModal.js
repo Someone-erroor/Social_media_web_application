@@ -10,15 +10,7 @@ import Input from '@/components/ui/Input';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * Reusable modal for inspecting Followers and Following user lists.
- *
- * @param {object} props
- * @param {boolean} props.isOpen - Whether the modal dialog is open
- * @param {function} props.onClose - Modal close handler
- * @param {'followers'|'following'} props.type - List type
- * @param {Array<object>} props.users - List of users
- * @param {boolean} props.loading - Loading indicator
- * @param {string} props.profileName - Name of the profile owner
+ * Reusable modal for inspecting Followers and Following user lists (Editorial Expression Theme).
  */
 export default function UserListModal({
   isOpen,
@@ -72,12 +64,12 @@ export default function UserListModal({
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3 rounded-xl bg-[#101A22] border border-[#263640] animate-pulse"
+                className="flex items-center gap-3 p-3 rounded-xl bg-[#17151D] border border-[#2D2938] animate-pulse"
               >
-                <div className="w-10 h-10 rounded-full bg-[#1D2A35]" />
+                <div className="w-10 h-10 rounded-full bg-[#24202E]" />
                 <div className="space-y-1.5 flex-1">
-                  <div className="w-32 h-3.5 bg-[#1D2A35] rounded" />
-                  <div className="w-48 h-2.5 bg-[#1D2A35]/60 rounded" />
+                  <div className="w-32 h-3.5 bg-[#24202E] rounded" />
+                  <div className="w-48 h-2.5 bg-[#24202E]/60 rounded" />
                 </div>
               </div>
             ))}
@@ -109,7 +101,7 @@ export default function UserListModal({
                 key={item._id}
                 href={ROUTES.USER.USER_PROFILE(item._id)}
                 onClick={onClose}
-                className="flex items-center justify-between p-3 rounded-xl bg-[#101A22] border border-[#263640] hover:border-[#19D3E3]/40 hover:bg-[#1D2A35] transition-all group"
+                className="flex items-center justify-between p-3 rounded-xl bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/40 hover:bg-[#24202E] transition-all group"
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <Avatar
@@ -118,15 +110,15 @@ export default function UserListModal({
                     size="md"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-[#F4F8FA] group-hover:text-[#19D3E3] transition-colors truncate">
+                    <p className="text-sm font-bold text-[#F6F2EA] group-hover:text-[#FF6257] font-display transition-colors truncate">
                       {item.fullName}
                     </p>
                     {item.profile?.bio ? (
-                      <p className="text-xs text-[#9BAAB4] truncate max-w-sm">
+                      <p className="text-xs text-[#777580] truncate max-w-sm">
                         {item.profile.bio}
                       </p>
                     ) : (
-                      <p className="text-[11px] text-[#9BAAB4]/60 italic">
+                      <p className="text-[11px] text-[#777580]/60 italic">
                         Member
                       </p>
                     )}
@@ -134,7 +126,7 @@ export default function UserListModal({
                 </div>
 
                 <div className="shrink-0 pl-2">
-                  <span className="text-xs font-semibold text-[#19D3E3] group-hover:underline flex items-center gap-1">
+                  <span className="text-xs font-semibold text-[#FF6257] group-hover:underline flex items-center gap-1">
                     <span>View</span>
                     <Icon name="arrowRight" className="w-3 h-3" />
                   </span>
@@ -147,4 +139,3 @@ export default function UserListModal({
     </Modal>
   );
 }
-

@@ -1,23 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --looply-bg: #080D12;
-  --looply-sidebar: #101A22;
-  --looply-surface: #151F29;
-  --looply-surface-raised: #1D2A35;
-  --looply-surface-hover: #23333E;
+  /* ==========================================================================
+     LOOPLY OFFICIAL GLOBAL COLOUR SYSTEM (EDITORIAL EXPRESSION)
+     ========================================================================== */
+  --midnight-ink: #17151D;
+  --warm-ivory: #F6F2EA;
+  --electric-coral: #FF6257;
+  --acid-lime: #D5F36A;
+  --soft-lavender: #B9A8F5;
+  --slate: #777580;
+  --pure-white: #FFFFFF;
 
-  --looply-cyan: #19D3E3;
-  --looply-cyan-strong: #00B8C8;
-  --looply-coral: #FF6F61;
+  /* Semantic Theme Mappings */
+  --looply-bg: #110F17;              /* Deep Midnight Ink floor */
+  --looply-sidebar: #17151D;         /* Midnight Ink surface */
+  --looply-surface: #1E1B26;         /* Elevated rich card surface */
+  --looply-surface-raised: #262230;  /* Secondary raised elevation */
+  --looply-surface-hover: #2F2A3D;   /* Hover interaction state */
 
-  --looply-text: #F4F8FA;
-  --looply-muted: #9BAAB4;
-  --looply-border: #263640;
+  --looply-border: #2D2938;          /* Refined subtle editorial border */
+  --looply-border-hover: #433D52;    /* Interactive border highlight */
 
-  --looply-success: #32D583;
-  --looply-warning: #F5B942;
-  --looply-danger: #FF5C70;
+  --looply-coral: #FF6257;           /* Electric Coral primary action */
+  --looply-coral-hover: #FF4D40;
+  --looply-coral-glow: rgba(255, 98, 87, 0.22);
+
+  --looply-lime: #D5F36A;            /* Acid Lime interactive highlight */
+  --looply-lime-glow: rgba(213, 243, 106, 0.25);
+
+  --looply-lavender: #B9A8F5;        /* Soft Lavender secondary accent */
+  --looply-lavender-glow: rgba(185, 168, 245, 0.2);
+
+  --looply-text: #F6F2EA;            /* Warm Ivory primary text */
+  --looply-text-bright: #FFFFFF;     /* Pure White emphasis */
+  --looply-muted: #777580;           /* Slate metadata and secondary */
+  --looply-muted-light: #A3A0AC;     /* Intermediate slate for readability */
+
+  --looply-success: #D5F36A;         /* Acid Lime for success/online */
+  --looply-warning: #FFB84D;
+  --looply-danger: #FF6257;          /* Electric Coral for danger */
 
   --background: var(--looply-bg);
   --foreground: var(--looply-text);
@@ -26,19 +48,32 @@
 }
 
 @theme inline {
+  --color-midnight-ink: #17151D;
+  --color-warm-ivory: #F6F2EA;
+  --color-electric-coral: #FF6257;
+  --color-acid-lime: #D5F36A;
+  --color-soft-lavender: #B9A8F5;
+  --color-slate: #777580;
+  --color-pure-white: #FFFFFF;
+
   --color-looply-bg: var(--looply-bg);
   --color-looply-sidebar: var(--looply-sidebar);
   --color-looply-surface: var(--looply-surface);
   --color-looply-surface-raised: var(--looply-surface-raised);
   --color-looply-surface-hover: var(--looply-surface-hover);
 
-  --color-looply-cyan: var(--looply-cyan);
-  --color-looply-cyan-strong: var(--looply-cyan-strong);
+  --color-looply-border: var(--looply-border);
+  --color-looply-border-hover: var(--looply-border-hover);
+
   --color-looply-coral: var(--looply-coral);
+  --color-looply-coral-hover: var(--looply-coral-hover);
+  --color-looply-lime: var(--looply-lime);
+  --color-looply-lavender: var(--looply-lavender);
 
   --color-looply-text: var(--looply-text);
+  --color-looply-text-bright: var(--looply-text-bright);
   --color-looply-muted: var(--looply-muted);
-  --color-looply-border: var(--looply-border);
+  --color-looply-muted-light: var(--looply-muted-light);
 
   --color-looply-success: var(--looply-success);
   --color-looply-warning: var(--looply-warning);
@@ -47,44 +82,48 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Syne", "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 body {
   background: var(--looply-bg);
   color: var(--looply-text);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   min-height: 100vh;
+  letter-spacing: -0.011em;
 }
 
-/* Accessible focus outline indicator using Electric Cyan */
+/* Accessible focus outline indicator using Electric Coral */
 :focus-visible {
-  outline: 2px solid #19D3E3;
+  outline: 2px solid var(--electric-coral);
   outline-offset: 2px;
 }
 
-/* Refined custom scrollbar for dark theme */
+/* Editorial Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #080D12;
+  background: #110F17;
 }
 ::-webkit-scrollbar-thumb {
-  background: #263640;
+  background: #2D2938;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #1D2A35;
+  background: #433D52;
 }
 
-/* Advanced Gen Z UI Animations & Micro-Interactions (Phase 17/18) */
+/* ==========================================================================
+   EDITORIAL ANIMATIONS & MICRO-INTERACTIONS
+   ========================================================================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -95,7 +134,7 @@ body {
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -103,131 +142,87 @@ body {
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(0.8deg);
-  }
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(1);
-    filter: blur(48px);
-  }
-  50% {
-    opacity: 0.65;
-    transform: scale(1.06);
-    filter: blur(56px);
-  }
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 @keyframes heartPop {
   0% {
     transform: scale(1);
   }
-  45% {
-    transform: scale(1.3);
+  40% {
+    transform: scale(1.35) rotate(-4deg);
+  }
+  75% {
+    transform: scale(0.95) rotate(2deg);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
 }
 
-@keyframes badgePulse {
+@keyframes burstPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 98, 87, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 98, 87, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 98, 87, 0);
+  }
+}
+
+@keyframes limeGlow {
   0%, 100% {
-    transform: scale(1);
+    box-shadow: 0 0 8px rgba(213, 243, 106, 0.2);
   }
   50% {
-    transform: scale(1.06);
-  }
-}
-
-@keyframes shimmerSweep {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(200%);
+    box-shadow: 0 0 16px rgba(213, 243, 106, 0.45);
   }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-.animate-float-slow {
-  animation: floatSlow 6s ease-in-out infinite;
-}
-
-.animate-glow-pulse {
-  animation: glowPulse 5s ease-in-out infinite;
-}
-
-.animate-gradient-shift {
-  background-size: 200% 200%;
-  animation: gradientShift 6s ease infinite;
+  animation: slideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-heart-pop {
   animation: heartPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.animate-badge-pulse {
-  animation: badgePulse 2s ease-in-out infinite;
+.animate-burst-pulse {
+  animation: burstPulse 0.4s ease-out;
+}
+
+.animate-lime-glow {
+  animation: limeGlow 2.5s ease-in-out infinite;
+}
+
+/* Editorial Typography Utility Classes */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
 }
 
 /* Reusable Interactive Micro-Interactions */
 .interactive-card {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .interactive-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(25, 211, 227, 0.4);
-  box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.6), 0 0 16px -2px rgba(25, 211, 227, 0.15);
+  border-color: #433D52;
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 .interactive-button {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .interactive-button:hover {
-  transform: translateY(-1.5px);
+  transform: translateY(-1px);
 }
 .interactive-button:active {
   transform: translateY(0) scale(0.98);

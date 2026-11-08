@@ -11,9 +11,9 @@ import Icon from '@/components/ui/Icon';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * AdminShell Layout Component for Looply (Dark Neon Theme)
+ * AdminShell Layout Component for Looply (Editorial Expression Theme)
  * Distinct high-contrast administrative workspace.
- * Deep dark background (#080D12), elevated graphite cards, electric cyan active indicators.
+ * Deep dark background (#110F17), elevated Midnight Ink cards (#1E1B26), Electric Coral active indicators.
  * If user is unauthenticated or lacks admin role, presents dedicated admin clearance guidance.
  */
 export default function AdminShell({ children }) {
@@ -28,10 +28,10 @@ export default function AdminShell({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080D12] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#110F17] flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-[#263640] border-t-[#19D3E3] rounded-full animate-spin" />
-          <p className="text-xs text-[#9BAAB4] font-medium">Verifying Administrator Access...</p>
+          <div className="w-10 h-10 border-3 border-[#2D2938] border-t-[#FF6257] rounded-full animate-spin" />
+          <p className="text-xs text-[#777580] font-medium">Verifying Administrator Access...</p>
         </div>
       </div>
     );
@@ -45,25 +45,25 @@ export default function AdminShell({ children }) {
   // If logged in as standard user without admin privileges
   if (user?.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-[#080D12] flex items-center justify-center p-4">
-        <Card className="max-w-md w-full p-6 sm:p-8 text-center space-y-5 bg-[#151F29] border-[#263640] shadow-2xl shadow-black/60">
-          <div className="w-16 h-16 rounded-2xl bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 mx-auto flex items-center justify-center shadow-lg shadow-[#19D3E3]/10">
+      <div className="min-h-screen bg-[#110F17] flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-6 sm:p-8 text-center space-y-5 bg-[#1E1B26] border-[#2D2938] shadow-2xl shadow-black/80">
+          <div className="w-16 h-16 rounded-2xl bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 mx-auto flex items-center justify-center shadow-lg shadow-[#FF6257]/10">
             <Icon name="shield" className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
-            <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#FF6F61]/15 text-[#FF6F61] border border-[#FF6F61]/30">
+            <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
               Clearance Required
             </span>
-            <h2 className="text-lg sm:text-xl font-bold text-[#F4F8FA] tracking-tight">
+            <h2 className="text-lg sm:text-xl font-bold text-[#F6F2EA] font-display tracking-tight">
               Administrator Access Required
             </h2>
-            <p className="text-xs text-[#9BAAB4] leading-relaxed">
+            <p className="text-xs text-[#777580] leading-relaxed">
               You are currently signed in as{' '}
-              <strong className="text-[#F4F8FA] font-semibold">{user.fullName || 'Member'}</strong>{' '}
-              (<span className="font-mono text-[#19D3E3]">{user.email}</span>), which is a standard member account.
+              <strong className="text-[#F6F2EA] font-semibold">{user.fullName || 'Member'}</strong>{' '}
+              (<span className="font-mono text-[#B9A8F5]">{user.email}</span>), which is a standard member account.
             </p>
-            <p className="text-xs text-[#9BAAB4] leading-relaxed">
+            <p className="text-xs text-[#777580] leading-relaxed">
               The Looply Administration Console is reserved strictly for platform administrators.
             </p>
           </div>
@@ -97,15 +97,15 @@ export default function AdminShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#080D12] text-[#F4F8FA] flex flex-col antialiased">
-      {/* Admin Sidebar Navigation */}
+    <div className="min-h-screen bg-[#110F17] text-[#F6F2EA] flex flex-col antialiased selection:bg-[#FF6257] selection:text-[#17151D]">
+      {/* Sidebar Navigation */}
       <AdminSidebar />
 
-      {/* Main Administrative Content Area */}
+      {/* Main Experience Area (Offset by sidebar width on desktop) */}
       <div className="flex-1 md:pl-64 flex flex-col min-w-0">
         <AdminHeader />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </main>
       </div>

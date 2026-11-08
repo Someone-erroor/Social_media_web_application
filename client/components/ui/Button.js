@@ -1,8 +1,9 @@
 import Link from 'next/link';
 
 /**
- * Reusable Button Component for Looply (Dark Neon Theme)
- * Supports semantic button and Next.js Link variants, accessible focus rings, and states.
+ * Reusable Button Component for Looply (Editorial Expression)
+ * Uses Electric Coral primary action, Warm Ivory typography, Midnight Ink surfaces,
+ * Acid Lime highlights, and Soft Lavender accents with accessible focus and spring transitions.
  */
 export default function Button({
   children,
@@ -17,27 +18,32 @@ export default function Button({
   ...props
 }) {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#080D12] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:active:scale-100 select-none rounded-xl cursor-pointer';
+    'inline-flex items-center justify-center font-medium transition-all duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#110F17] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:active:scale-100 select-none rounded-xl cursor-pointer tracking-tight';
 
   const sizeClasses = {
-    sm: 'text-xs px-3 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2 gap-2',
-    lg: 'text-base px-5 py-2.5 gap-2.5'
+    xs: 'text-[11px] px-2.5 py-1 gap-1 rounded-lg',
+    sm: 'text-xs px-3.5 py-1.5 gap-1.5',
+    md: 'text-sm px-4.5 py-2 gap-2',
+    lg: 'text-base px-6 py-2.5 gap-2.5 rounded-2xl'
   };
 
   const variantClasses = {
     primary:
-      'bg-[#19D3E3] text-[#080D12] font-bold hover:bg-[#00B8C8] hover:shadow-lg hover:shadow-[#19D3E3]/30 active:bg-[#009da9] focus:ring-[#19D3E3] shadow-md shadow-[#19D3E3]/15 border border-transparent',
+      'bg-[#FF6257] text-[#17151D] font-bold hover:bg-[#FF4D40] hover:shadow-lg hover:shadow-[#FF6257]/25 active:bg-[#e0382d] focus:ring-[#FF6257] shadow-sm border border-transparent',
     secondary:
-      'bg-[#151F29] text-[#F4F8FA] font-medium border border-[#19D3E3]/40 hover:border-[#19D3E3] hover:bg-[#1D2A35] hover:shadow-md hover:shadow-[#19D3E3]/10 active:bg-[#23333E] focus:ring-[#19D3E3]',
+      'bg-[#1E1B26] text-[#F6F2EA] font-semibold border border-[#2D2938] hover:border-[#B9A8F5]/60 hover:bg-[#262230] hover:text-white focus:ring-[#B9A8F5] shadow-xs',
     outline:
-      'bg-transparent text-[#F4F8FA] font-medium border border-[#263640] hover:bg-[#151F29] hover:border-[#19D3E3]/60 hover:shadow-sm active:bg-[#1D2A35] focus:ring-[#19D3E3]',
+      'bg-transparent text-[#F6F2EA] font-medium border border-[#2D2938] hover:bg-[#1E1B26] hover:border-[#FF6257]/60 active:bg-[#262230] focus:ring-[#FF6257]',
     ghost:
-      'bg-transparent text-[#9BAAB4] font-medium hover:bg-[#151F29] hover:text-[#19D3E3] active:bg-[#1D2A35] focus:ring-[#19D3E3] border border-transparent',
-    coral:
-      'bg-[#FF6F61] text-[#080D12] font-bold hover:bg-[#e85a4d] hover:shadow-lg hover:shadow-[#FF6F61]/30 active:bg-[#d4483b] focus:ring-[#FF6F61] shadow-md shadow-[#FF6F61]/20 border border-transparent',
+      'bg-transparent text-[#777580] font-medium hover:bg-[#1E1B26] hover:text-[#F6F2EA] active:bg-[#262230] focus:ring-[#FF6257] border border-transparent',
+    lime:
+      'bg-[#D5F36A] text-[#17151D] font-bold hover:bg-[#c6e655] hover:shadow-md hover:shadow-[#D5F36A]/20 focus:ring-[#D5F36A] border border-transparent',
+    lavender:
+      'bg-[#B9A8F5] text-[#17151D] font-bold hover:bg-[#a692ec] hover:shadow-md hover:shadow-[#B9A8F5]/20 focus:ring-[#B9A8F5] border border-transparent',
     danger:
-      'bg-[#FF5C70] text-[#080D12] font-bold hover:bg-[#e64358] hover:shadow-md hover:shadow-[#FF5C70]/30 active:bg-[#cf3247] focus:ring-[#FF5C70] shadow-sm border border-transparent'
+      'bg-[#FF6257] text-[#FFFFFF] font-bold hover:bg-[#e64338] hover:shadow-md hover:shadow-[#FF6257]/25 active:bg-[#c93228] focus:ring-[#FF6257] shadow-xs border border-transparent',
+    coral:
+      'bg-[#FF6257] text-[#17151D] font-bold hover:bg-[#FF4D40] hover:shadow-lg hover:shadow-[#FF6257]/25 active:bg-[#e0382d] focus:ring-[#FF6257] shadow-sm border border-transparent'
   };
 
   const combinedClasses = `${baseClasses} ${sizeClasses[size] || sizeClasses.md} ${

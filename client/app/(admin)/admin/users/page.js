@@ -170,7 +170,7 @@ export default function AdminUsersPage() {
         title="User Management"
         description="Search, inspect, and moderate registered accounts and permissions"
         badge={
-          <Badge variant="primary" size="sm">
+          <Badge variant="lavender" size="sm">
             Live Directory
           </Badge>
         }
@@ -189,12 +189,12 @@ export default function AdminUsersPage() {
 
       {/* Success Banner */}
       {successNotice && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="check" className="w-4 h-4 text-emerald-400 shrink-0" />
+            <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
             <span>{successNotice}</span>
           </div>
-          <button type="button" onClick={() => setSuccessNotice('')} className="text-emerald-400 hover:text-white font-bold">
+          <button type="button" onClick={() => setSuccessNotice('')} className="text-[#D5F36A] hover:text-white font-bold">
             ✕
           </button>
         </div>
@@ -202,9 +202,9 @@ export default function AdminUsersPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
           <span>{error}</span>
-          <button type="button" onClick={() => setError('')} className="text-[#FF6F61] hover:text-white">
+          <button type="button" onClick={() => setError('')} className="text-[#FF6257] hover:text-white">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -212,13 +212,13 @@ export default function AdminUsersPage() {
 
       {/* Create Administrator Inline Card / Modal */}
       {showCreateModal && (
-        <Card className="p-5 border-[#19D3E3]/40 bg-[#151F29] shadow-xl space-y-4">
-          <div className="flex items-center justify-between border-b border-[#263640] pb-3">
+        <Card className="p-5 border-[#2D2938] bg-[#1E1B26] shadow-xl space-y-4">
+          <div className="flex items-center justify-between border-b border-[#2D2938] pb-3">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-[#19D3E3]/15 text-[#19D3E3]">
+              <span className="p-1.5 rounded-lg bg-[#B9A8F5]/15 text-[#B9A8F5]">
                 <Icon name="shield" className="w-4 h-4" />
               </span>
-              <h3 className="text-sm font-bold text-[#F4F8FA]">Create Platform Administrator</h3>
+              <h3 className="text-sm font-bold text-[#F6F2EA]">Create Platform Administrator</h3>
             </div>
             <button
               type="button"
@@ -226,21 +226,21 @@ export default function AdminUsersPage() {
                 setShowCreateModal(false);
                 setCreateError('');
               }}
-              className="text-[#9BAAB4] hover:text-white font-bold"
+              className="text-[#777580] hover:text-white font-bold"
             >
               ✕
             </button>
           </div>
 
           {createError && (
-            <div className="p-3 rounded-lg bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61]">
+            <div className="p-3 rounded-lg bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
               {createError}
             </div>
           )}
 
           <form onSubmit={handleCreateAdminSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label htmlFor="create-admin-name" className="block text-[11px] font-medium text-[#9BAAB4] mb-1">
+              <label htmlFor="create-admin-name" className="block text-[11px] font-medium text-[#777580] mb-1">
                 Admin Full Name *
               </label>
               <Input
@@ -255,7 +255,7 @@ export default function AdminUsersPage() {
             </div>
 
             <div>
-              <label htmlFor="create-admin-email" className="block text-[11px] font-medium text-[#9BAAB4] mb-1">
+              <label htmlFor="create-admin-email" className="block text-[11px] font-medium text-[#777580] mb-1">
                 Admin Email / ID *
               </label>
               <Input
@@ -270,7 +270,7 @@ export default function AdminUsersPage() {
             </div>
 
             <div>
-              <label htmlFor="create-admin-pass" className="block text-[11px] font-medium text-[#9BAAB4] mb-1">
+              <label htmlFor="create-admin-pass" className="block text-[11px] font-medium text-[#777580] mb-1">
                 Password (min 8 chars) *
               </label>
               <Input
@@ -328,7 +328,7 @@ export default function AdminUsersPage() {
             value={accountStatus}
             onChange={(e) => setAccountStatus(e.target.value)}
             aria-label="Filter by account status"
-            className="rounded-xl border border-[#263640] bg-[#101A22] px-3 py-2 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
+            className="rounded-xl border border-[#2D2938] bg-[#17151D] px-3 py-2 text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -339,7 +339,7 @@ export default function AdminUsersPage() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
             aria-label="Filter by user role"
-            className="rounded-xl border border-[#263640] bg-[#101A22] px-3 py-2 text-xs text-[#F4F8FA] focus:outline-none focus:border-[#19D3E3]"
+            className="rounded-xl border border-[#2D2938] bg-[#17151D] px-3 py-2 text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
           >
             <option value="">All Roles</option>
             <option value="user">User</option>
@@ -392,10 +392,10 @@ export default function AdminUsersPage() {
       )}
 
       {/* Table Container */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-[#1E1B26] border-[#2D2938]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#F4F8FA]">
-            <thead className="bg-[#101A22] border-b border-[#263640] text-[#9BAAB4] uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#F6F2EA]">
+            <thead className="bg-[#17151D] border-b border-[#2D2938] text-[#777580] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">User</th>
                 <th scope="col" className="px-5 py-3.5">Email</th>
@@ -405,10 +405,10 @@ export default function AdminUsersPage() {
                 <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#263640]">
+            <tbody className="divide-y divide-[#2D2938]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#9BAAB4] font-medium">
+                  <td colSpan={6} className="py-8 text-center text-[#777580] font-medium">
                     Loading users directory...
                   </td>
                 </tr>
@@ -431,7 +431,7 @@ export default function AdminUsersPage() {
                   const isSuspended = targetUser.accountStatus === 'suspended';
 
                   return (
-                    <tr key={targetUser._id} className="hover:bg-[#1D2A35]/50 transition-colors">
+                    <tr key={targetUser._id} className="hover:bg-[#17151D]/60 transition-colors">
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -439,17 +439,17 @@ export default function AdminUsersPage() {
                             src={targetUser.profile?.avatarUrl}
                             size="sm"
                           />
-                          <span className="font-semibold text-[#F4F8FA]">
+                          <span className="font-semibold text-[#F6F2EA]">
                             {targetUser.fullName}
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#9BAAB4]">
+                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#777580]">
                         {targetUser.email}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <Badge variant={targetUser.role === 'admin' ? 'primary' : 'neutral'} size="sm">
+                          <Badge variant={targetUser.role === 'admin' ? 'lavender' : 'neutral'} size="sm">
                             {targetUser.role}
                           </Badge>
                           {!isCurrentAdmin && (
@@ -457,7 +457,7 @@ export default function AdminUsersPage() {
                               type="button"
                               disabled={actionLoadingId === targetUser._id}
                               onClick={() => handleRoleChange(targetUser._id, targetUser.role === 'admin' ? 'user' : 'admin')}
-                              className="text-[10px] text-[#19D3E3] hover:underline font-semibold cursor-pointer disabled:opacity-40"
+                              className="text-[10px] text-[#FF6257] hover:underline font-semibold cursor-pointer disabled:opacity-40"
                               title={targetUser.role === 'admin' ? 'Demote to standard user' : 'Promote to administrator'}
                             >
                               {targetUser.role === 'admin' ? 'Demote' : 'Promote'}
@@ -470,12 +470,12 @@ export default function AdminUsersPage() {
                           {isSuspended ? 'Suspended' : 'Active'}
                         </Badge>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-[#9BAAB4]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
                         {formatDate(targetUser.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
                         {isCurrentAdmin ? (
-                          <span className="text-[11px] text-[#9BAAB4] italic">Current Session</span>
+                          <span className="text-[11px] text-[#777580] italic">Current Session</span>
                         ) : (
                           <Button
                             type="button"
@@ -504,7 +504,7 @@ export default function AdminUsersPage() {
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-[#263640] bg-[#101A22] text-xs text-[#9BAAB4]">
+          <div className="flex items-center justify-between p-4 border-t border-[#2D2938] bg-[#17151D] text-xs text-[#777580]">
             <span>
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total members)
             </span>

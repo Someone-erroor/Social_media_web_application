@@ -32,28 +32,28 @@ function formatTimestamp(dateString) {
 function getNotificationIcon(type) {
   switch (type) {
     case 'post_like':
-      return <Icon name="heart" className="w-4 h-4 text-red-500 fill-red-500" />;
+      return <Icon name="heart" className="w-4 h-4 text-[#FF6257] fill-[#FF6257]" />;
     case 'post_comment':
-      return <Icon name="comments" className="w-4 h-4 text-[#19D3E3]" />;
+      return <Icon name="comments" className="w-4 h-4 text-[#B9A8F5]" />;
     case 'follow':
     case 'follow_request_accepted':
-      return <Icon name="users" className="w-4 h-4 text-[#10B981]" />;
+      return <Icon name="users" className="w-4 h-4 text-[#D5F36A]" />;
     case 'follow_request':
-      return <Icon name="clock" className="w-4 h-4 text-amber-400" />;
+      return <Icon name="clock" className="w-4 h-4 text-[#FBBF24]" />;
     case 'message':
-      return <Icon name="message" className="w-4 h-4 text-[#19D3E3]" />;
+      return <Icon name="message" className="w-4 h-4 text-[#FF6257]" />;
     case 'circle_invite':
-      return <Icon name="circles" className="w-4 h-4 text-[#19D3E3]" />;
+      return <Icon name="circles" className="w-4 h-4 text-[#B9A8F5]" />;
     case 'time_capsule_unlocked':
-      return <Icon name="vault" className="w-4 h-4 text-amber-400" />;
+      return <Icon name="vault" className="w-4 h-4 text-[#D5F36A]" />;
     case 'game_challenge':
-      return <Icon name="play" className="w-4 h-4 text-[#19D3E3]" />;
+      return <Icon name="play" className="w-4 h-4 text-[#D5F36A]" />;
     case 'moderation_warning':
-      return <Icon name="alertCircle" className="w-4 h-4 text-[#FF5C70]" />;
+      return <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257]" />;
     case 'login_alert':
-      return <Icon name="lock" className="w-4 h-4 text-amber-400" />;
+      return <Icon name="lock" className="w-4 h-4 text-[#FBBF24]" />;
     default:
-      return <Icon name="notifications" className="w-4 h-4 text-[#9BAAB4]" />;
+      return <Icon name="notifications" className="w-4 h-4 text-[#777580]" />;
   }
 }
 
@@ -100,7 +100,7 @@ export default function NotificationsPage() {
           title="Notifications"
           description="Real-time alerts, post reactions, and community interactions"
           badge={
-            <Badge variant={isConnected ? 'success' : 'neutral'} size="sm">
+            <Badge variant={isConnected ? 'lime' : 'neutral'} size="sm">
               {isConnected ? 'Real-time Connected' : 'Sync Active'}
             </Badge>
           }
@@ -133,23 +133,23 @@ export default function NotificationsPage() {
       </div>
 
       {(contextError || errorNotice) && (
-        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6F61] shrink-0" />
+            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257] shrink-0" />
             <span>{contextError || errorNotice}</span>
           </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-medium underline hover:text-[#FFA096]"
+              className="font-medium underline hover:text-[#FF8178]"
             >
               Retry
             </button>
             <button
               type="button"
               onClick={() => setErrorNotice('')}
-              className="text-[#FF6F61] hover:text-[#FFA096] font-bold"
+              className="text-[#FF6257] hover:text-[#FF8178] font-bold"
             >
               ✕
             </button>
@@ -158,17 +158,17 @@ export default function NotificationsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#263640] pb-2 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-3 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => {
             setFilter('all');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
             filter === 'all'
-              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
+              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           All ({notifications.length})
@@ -179,10 +179,10 @@ export default function NotificationsPage() {
             setFilter('unread');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
             filter === 'unread'
-              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
+              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           Unread ({unreadCount})
@@ -193,10 +193,10 @@ export default function NotificationsPage() {
             setFilter('likes');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
             filter === 'likes'
-              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
+              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           Likes
@@ -207,10 +207,10 @@ export default function NotificationsPage() {
             setFilter('comments');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
             filter === 'comments'
-              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#1D2A35]'
+              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           Comments
@@ -221,11 +221,11 @@ export default function NotificationsPage() {
       {loading && notifications.length === 0 ? (
         <div className="space-y-3 animate-pulse">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-4 rounded-xl border border-[#263640] bg-[#151F29] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#1D2A35] shrink-0" />
+            <div key={i} className="p-4 rounded-xl border border-[#2D2938] bg-[#1E1B26] flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#24202E] shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 w-3/4 bg-[#1D2A35] rounded" />
-                <div className="h-2 w-1/4 bg-[#1D2A35]/60 rounded" />
+                <div className="h-3 w-3/4 bg-[#24202E] rounded" />
+                <div className="h-2 w-1/4 bg-[#24202E]/60 rounded" />
               </div>
             </div>
           ))}
@@ -252,8 +252,8 @@ export default function NotificationsPage() {
                 key={notif._id}
                 className={`transition-colors ${
                   isUnread
-                    ? 'bg-[#151F29] border-[#19D3E3]/40 shadow-xs'
-                    : 'bg-[#151F29]/70 border-[#263640] hover:bg-[#1D2A35]/50'
+                    ? 'bg-[#1E1B26] border-[#FF6257]/40 shadow-sm'
+                    : 'bg-[#1E1B26]/70 border-[#2D2938] hover:bg-[#24202E]/60'
                 }`}
               >
                 <div className="p-4 flex items-start justify-between gap-3 text-xs">
@@ -264,16 +264,16 @@ export default function NotificationsPage() {
                         src={actor.profile?.avatarUrl}
                         size="md"
                       />
-                      <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-[#101A22] border border-[#263640] shadow-xs">
+                      <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-[#17151D] border border-[#2D2938] shadow-xs">
                         {getNotificationIcon(notif.type)}
                       </span>
                     </div>
 
                     <div className="min-w-0 space-y-0.5">
-                      <p className="text-[#F4F8FA] leading-snug">
+                      <p className="text-[#F6F2EA] leading-snug">
                         {notif.message}
                       </p>
-                      <span className="text-[11px] text-[#9BAAB4] block font-mono">
+                      <span className="text-[11px] text-[#777580] block font-mono">
                         {formatTimestamp(notif.createdAt)}
                       </span>
                     </div>
@@ -283,7 +283,7 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       onClick={() => markAsRead(notif._id)}
-                      className="shrink-0 p-1.5 rounded-lg text-[#19D3E3] hover:bg-[#19D3E3]/10 transition-colors text-[11px] font-semibold"
+                      className="shrink-0 p-1.5 rounded-lg text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors text-[11px] font-semibold"
                       title="Mark as read"
                     >
                       Mark read
@@ -296,7 +296,7 @@ export default function NotificationsPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="pt-3 flex items-center justify-between text-xs text-[#9BAAB4]">
+            <div className="pt-3 flex items-center justify-between text-xs text-[#777580]">
               <span>
                 Page {page} of {totalPages}
               </span>

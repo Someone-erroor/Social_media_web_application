@@ -118,29 +118,29 @@ export default function RegisterForm() {
 
   if (registeredState) {
     return (
-      <Card className="shadow-2xl shadow-black/50 border-[#263640] bg-[#151F29]">
-        <CardHeader className="text-center pb-2 border-b border-[#263640]">
-          <CardTitle className="text-xl font-bold text-[#F4F8FA]">Account Registration</CardTitle>
-          <CardDescription className="text-xs text-[#9BAAB4]">
+      <Card className="shadow-2xl shadow-black/50 border-[#2D2938] bg-[#1E1B26]">
+        <CardHeader className="text-center pb-2 border-b border-[#2D2938]">
+          <CardTitle className="text-xl font-bold font-display text-[#F6F2EA]">Account Registration</CardTitle>
+          <CardDescription className="text-xs text-[#777580]">
             Complete email verification to activate your Looply account
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6 pt-4 text-[#F4F8FA]" data-testid="registration-success-state">
+        <CardContent className="space-y-6 pt-4 text-[#F6F2EA]" data-testid="registration-success-state">
           <div className="space-y-4 text-center">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center shadow-sm shadow-[#19D3E3]/20">
-              <Icon name="mail" className="w-7 h-7" />
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 flex items-center justify-center shadow-sm shadow-[#FF6257]/20">
+              <Icon name="mail" className="w-7 h-7 text-[#FF6257]" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-lg font-bold text-[#F4F8FA]">
+              <h3 className="text-lg font-bold font-display text-[#F6F2EA]">
                 Verification Email Dispatched!
               </h3>
-              <p className="text-xs text-[#9BAAB4] max-w-sm mx-auto leading-relaxed">
-                We sent a secure verification link to <strong className="text-[#19D3E3] font-semibold">{registeredState.email}</strong>.
+              <p className="text-xs text-[#777580] max-w-sm mx-auto leading-relaxed">
+                We sent a secure verification link to <strong className="text-[#FF6257] font-semibold">{registeredState.email}</strong>.
               </p>
-              <div className="p-3.5 rounded-xl bg-[#101A22] border border-[#263640] text-xs text-[#9BAAB4] text-left space-y-1.5 max-w-sm mx-auto">
-                <p className="font-semibold text-[#F4F8FA]">What to do next:</p>
-                <ol className="list-decimal list-inside space-y-1 text-[#9BAAB4]">
+              <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#777580] text-left space-y-1.5 max-w-sm mx-auto">
+                <p className="font-semibold text-[#F6F2EA]">What to do next:</p>
+                <ol className="list-decimal list-inside space-y-1 text-[#777580]">
                   <li>Check your email inbox (and spam/junk folder).</li>
                   <li>Click the confirmation link to activate your account.</li>
                   <li>Once verified, sign in to start exploring Looply!</li>
@@ -153,7 +153,7 @@ export default function RegisterForm() {
                 variant="primary"
                 size="md"
                 data-testid="continue-to-login-btn"
-                className="w-full sm:w-auto font-bold shadow-md shadow-[#19D3E3]/20"
+                className="w-full sm:w-auto font-bold shadow-md shadow-[#FF6257]/20"
               >
                 Go to Verification Page &rarr;
               </Button>
@@ -161,7 +161,7 @@ export default function RegisterForm() {
                 href={ROUTES.PUBLIC.LOGIN}
                 variant="ghost"
                 size="md"
-                className="w-full sm:w-auto text-xs text-[#9BAAB4] hover:text-[#F4F8FA]"
+                className="w-full sm:w-auto text-xs text-[#777580] hover:text-[#F6F2EA]"
               >
                 Back to Sign In
               </Button>
@@ -173,10 +173,10 @@ export default function RegisterForm() {
   }
 
   return (
-    <Card className="shadow-md border-[#263640] bg-[#151F29]">
-      <CardHeader className="text-center pb-2 border-b border-[#263640]">
-        <CardTitle className="text-xl font-bold text-[#F4F8FA]">Create your account</CardTitle>
-        <CardDescription>
+    <Card className="shadow-md border-[#2D2938] bg-[#1E1B26]">
+      <CardHeader className="text-center pb-2 border-b border-[#2D2938]">
+        <CardTitle className="text-xl font-bold font-display text-[#F6F2EA]">Create your account</CardTitle>
+        <CardDescription className="text-xs text-[#777580]">
           Join Looply today to share ideas, discover creators, and build meaningful connections
         </CardDescription>
       </CardHeader>
@@ -185,9 +185,9 @@ export default function RegisterForm() {
         {errorMessage && (
           <div
             role="alert"
-            className="flex items-start gap-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"
+            className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-[#FF6257] text-xs"
           >
-            <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+            <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-[#FF6257]" />
             <div className="flex-1 font-medium">{errorMessage}</div>
           </div>
         )}
@@ -265,7 +265,7 @@ export default function RegisterForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="p-1 min-w-[24px] min-h-[24px] text-[#9BAAB4] hover:text-[#F4F8FA] focus:outline-none flex items-center justify-center transition-colors"
+                  className="p-1 min-w-[24px] min-h-[24px] text-[#777580] hover:text-[#F6F2EA] focus:outline-none flex items-center justify-center transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -299,7 +299,7 @@ export default function RegisterForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  className="p-1 min-w-[24px] min-h-[24px] text-[#9BAAB4] hover:text-[#F4F8FA] focus:outline-none flex items-center justify-center transition-colors"
+                  className="p-1 min-w-[24px] min-h-[24px] text-[#777580] hover:text-[#F6F2EA] focus:outline-none flex items-center justify-center transition-colors"
                   aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showConfirmPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -309,7 +309,7 @@ export default function RegisterForm() {
           </FormField>
 
           <div>
-            <div className="flex items-start gap-2.5 text-xs text-[#9BAAB4]">
+            <div className="flex items-start gap-2.5 text-xs text-[#777580]">
               <input
                 id="terms"
                 type="checkbox"
@@ -319,21 +319,21 @@ export default function RegisterForm() {
                   if (fieldErrors.terms) setFieldErrors((prev) => ({ ...prev, terms: null }));
                 }}
                 disabled={loading}
-                className="mt-0.5 w-4 h-4 rounded border-[#263640] bg-[#101A22] text-[#19D3E3] focus:ring-[#19D3E3]"
+                className="mt-0.5 w-4 h-4 rounded border-[#2D2938] bg-[#17151D] text-[#FF6257] focus:ring-[#FF6257]"
               />
               <label htmlFor="terms" className="cursor-pointer select-none leading-relaxed">
                 I agree to the Looply{' '}
-                <Link href={ROUTES.PUBLIC.TERMS} target="_blank" className="text-[#19D3E3] hover:underline font-medium">
+                <Link href={ROUTES.PUBLIC.TERMS} target="_blank" className="text-[#FF6257] hover:underline font-medium">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank" className="text-[#19D3E3] hover:underline font-medium">
+                <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank" className="text-[#FF6257] hover:underline font-medium">
                   Privacy Policy
                 </Link>.
               </label>
             </div>
             {fieldErrors.terms && (
-              <p className="mt-1 text-xs text-[#FF5C70] font-medium">{fieldErrors.terms}</p>
+              <p className="mt-1 text-xs text-[#FF6257] font-medium">{fieldErrors.terms}</p>
             )}
           </div>
 
@@ -341,13 +341,13 @@ export default function RegisterForm() {
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full flex items-center justify-center gap-2 shadow-md shadow-[#19D3E3]/20"
+            className="w-full flex items-center justify-center gap-2 shadow-md shadow-[#FF6257]/20"
             disabled={loading}
           >
             {loading ? (
               <>
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#080D12]"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#110F17]"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -373,16 +373,16 @@ export default function RegisterForm() {
             )}
           </Button>
 
-          <p className="text-[11px] text-center text-[#9BAAB4]">
+          <p className="text-[11px] text-center text-[#777580]">
             Protected by secure registration validation and bcrypt hashing
           </p>
         </form>
 
-        <div className="pt-4 border-t border-[#263640] text-center text-xs text-[#9BAAB4]">
+        <div className="pt-4 border-t border-[#2D2938] text-center text-xs text-[#777580]">
           Already have an account?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-[#19D3E3] hover:text-[#00B8C8] hover:underline"
+            className="font-semibold text-[#FF6257] hover:underline"
           >
             Sign in
           </Link>

@@ -126,20 +126,20 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="shadow-2xl shadow-black/50 border-[#263640] bg-[#151F29]">
+    <Card className="shadow-2xl shadow-black/50 border-[#2D2938] bg-[#1E1B26]">
       <CardHeader className="text-center pb-2">
         {isAdminMode ? (
           <div className="flex flex-col items-center gap-1.5 pb-1">
-            <div className="w-12 h-12 rounded-2xl bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30 flex items-center justify-center mb-1 shadow-sm shadow-[#19D3E3]/15">
-              <Icon name="shield" className="w-6 h-6 text-[#19D3E3]" />
+            <div className="w-12 h-12 rounded-2xl bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30 flex items-center justify-center mb-1 shadow-sm shadow-[#B9A8F5]/15">
+              <Icon name="shield" className="w-6 h-6 text-[#B9A8F5]" />
             </div>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#19D3E3] bg-[#101A22] border border-[#19D3E3]/30 px-2 py-0.5 rounded">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#B9A8F5] bg-[#17151D] border border-[#B9A8F5]/30 px-2 py-0.5 rounded">
               Administrator Portal
             </span>
-            <CardTitle className="text-xl font-bold text-[#F4F8FA]">
+            <CardTitle className="text-xl font-bold font-display text-[#F6F2EA]">
               {isCreateAdmin ? 'Create Administrator' : 'Admin Sign In'}
             </CardTitle>
-            <CardDescription className="text-xs text-[#9BAAB4]">
+            <CardDescription className="text-xs text-[#777580]">
               {isCreateAdmin
                 ? 'Create a new administrator ID & password for immediate platform control'
                 : 'Enter administrator ID and password to access platform controls'}
@@ -147,8 +147,8 @@ export default function LoginForm() {
           </div>
         ) : (
           <div className="text-center pb-1">
-            <CardTitle className="text-xl font-bold text-[#F4F8FA]">Welcome back</CardTitle>
-            <CardDescription className="text-xs text-[#9BAAB4]">
+            <CardTitle className="text-xl font-bold font-display text-[#F6F2EA]">Welcome back</CardTitle>
+            <CardDescription className="text-xs text-[#777580]">
               Enter your credentials to access your Looply social feed
             </CardDescription>
           </div>
@@ -158,9 +158,9 @@ export default function LoginForm() {
       <CardContent className="space-y-4 pt-4">
         {/* Demo Quick-Fill Helper Banner */}
         {!isCreateAdmin && (
-          <div className="p-3 rounded-xl bg-[#101A22] border border-[#19D3E3]/40 space-y-2">
+          <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-[#19D3E3] flex items-center gap-1.5">
+              <span className="font-semibold text-[#FF6257] flex items-center gap-1.5">
                 <Icon name="sparkles" className="w-3.5 h-3.5 shrink-0" />
                 Demo Credentials (Pre-Verified)
               </span>
@@ -168,24 +168,24 @@ export default function LoginForm() {
                 <button
                   type="button"
                   onClick={handleFillDemoUser}
-                  className="text-[10px] font-bold text-[#080D12] bg-[#19D3E3] hover:bg-[#00B8C8] px-2.5 py-1 rounded-md transition-colors cursor-pointer shadow-xs"
+                  className="text-[10px] font-bold text-[#110F17] bg-[#FF6257] hover:opacity-90 px-2.5 py-1 rounded-md transition-all cursor-pointer shadow-xs"
                 >
                   Fill User
                 </button>
                 <button
                   type="button"
                   onClick={handleFillDemoAdmin}
-                  className="text-[10px] font-bold text-[#19D3E3] bg-[#19D3E3]/15 border border-[#19D3E3]/40 hover:bg-[#19D3E3]/25 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
+                  className="text-[10px] font-bold text-[#B9A8F5] bg-[#B9A8F5]/15 border border-[#B9A8F5]/40 hover:bg-[#B9A8F5]/25 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
                 >
                   Fill Admin
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] font-mono text-[#9BAAB4]">
-              <div>User: <span className="text-[#F4F8FA] font-semibold">demo@looply.com</span></div>
-              <div>Admin: <span className="text-[#F4F8FA] font-semibold">admin@looply.com</span></div>
-              <div className="sm:col-span-2 text-[10px] text-[#9BAAB4]">
-                Password: <span className="text-[#F4F8FA] font-semibold">Password@123</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] font-mono text-[#777580]">
+              <div>User: <span className="text-[#F6F2EA] font-semibold">demo@looply.com</span></div>
+              <div>Admin: <span className="text-[#F6F2EA] font-semibold">admin@looply.com</span></div>
+              <div className="sm:col-span-2 text-[10px] text-[#777580]">
+                Password: <span className="text-[#F6F2EA] font-semibold">Password@123</span>
               </div>
             </div>
           </div>
@@ -194,14 +194,14 @@ export default function LoginForm() {
         {errorMessage && (
           <div
             role="alert"
-            className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-[#FF6F61] text-xs"
+            className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-[#FF6257] text-xs"
           >
-            <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-[#FF6F61]" />
+            <Icon name="alertCircle" className="w-4 h-4 shrink-0 mt-0.5 text-[#FF6257]" />
             <div className="flex-1 font-medium">
               {errorMessage}
               {errorMessage.toLowerCase().includes('verify') && (
                 <div className="mt-1.5">
-                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="underline font-semibold text-[#19D3E3] hover:text-[#5FE8F5]">
+                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="underline font-semibold text-[#FF6257] hover:opacity-80">
                     Go to email verification &rarr;
                   </Link>
                 </div>
@@ -211,8 +211,8 @@ export default function LoginForm() {
         )}
 
         {successMessage && (
-          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 flex items-center gap-2">
-            <Icon name="check" className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="p-3 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center gap-2">
+            <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
@@ -291,7 +291,7 @@ export default function LoginForm() {
                   type="button"
                   tabIndex="-1"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="p-1 min-w-[24px] min-h-[24px] text-[#9BAAB4] hover:text-[#F4F8FA] focus:outline-none flex items-center justify-center transition-colors"
+                  className="p-1 min-w-[24px] min-h-[24px] text-[#777580] hover:text-[#F6F2EA] focus:outline-none flex items-center justify-center transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   <Icon name={showPassword ? 'eyeOff' : 'eye'} className="w-4 h-4" />
@@ -328,7 +328,7 @@ export default function LoginForm() {
 
           {!isCreateAdmin && (
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-[#9BAAB4]">
+              <div className="flex items-center gap-2 text-[#777580]">
                 <input
                   id="login-remember-me"
                   type="checkbox"
@@ -336,7 +336,7 @@ export default function LoginForm() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   disabled={loading}
                   aria-label="Remember me on this device"
-                  className="w-4 h-4 rounded border-[#263640] bg-[#101A22] text-[#19D3E3] focus:ring-[#19D3E3] cursor-pointer"
+                  className="w-4 h-4 rounded border-[#2D2938] bg-[#17151D] text-[#FF6257] focus:ring-[#FF6257] cursor-pointer"
                 />
                 <label htmlFor="login-remember-me" className="cursor-pointer select-none">
                   Remember me
@@ -345,7 +345,7 @@ export default function LoginForm() {
 
               <Link
                 href={ROUTES.PUBLIC.FORGOT_PASSWORD}
-                className="font-medium text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
+                className="font-medium text-[#FF6257] hover:underline"
               >
                 Forgot password?
               </Link>
@@ -356,13 +356,13 @@ export default function LoginForm() {
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full flex items-center justify-center gap-2 shadow-md shadow-[#19D3E3]/20"
+            className="w-full flex items-center justify-center gap-2 shadow-md shadow-[#FF6257]/20"
             disabled={loading}
           >
             {loading ? (
               <>
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#080D12]"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#110F17]"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -403,13 +403,13 @@ export default function LoginForm() {
                     setErrorMessage('');
                     setFieldErrors({});
                   }}
-                  className="text-[#19D3E3] hover:underline font-semibold cursor-pointer"
+                  className="text-[#B9A8F5] hover:underline font-semibold cursor-pointer"
                 >
                   &larr; Already have an Admin account? Sign In
                 </button>
               ) : (
                 <div className="space-y-1.5">
-                  <p className="text-[11px] text-[#9BAAB4]">
+                  <p className="text-[11px] text-[#777580]">
                     Need a new administrator login?
                   </p>
                   <button
@@ -419,7 +419,7 @@ export default function LoginForm() {
                       setErrorMessage('');
                       setFieldErrors({});
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#19D3E3] bg-[#101A22] border border-[#19D3E3]/40 hover:bg-[#151F29] transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#B9A8F5] bg-[#17151D] border border-[#B9A8F5]/40 hover:bg-[#1E1B26] transition-all cursor-pointer"
                   >
                     <Icon name="shield" className="w-3.5 h-3.5" />
                     <span>Create New Administrator ID &amp; Password</span>
@@ -428,17 +428,17 @@ export default function LoginForm() {
               )}
             </div>
           ) : (
-            <p className="text-[11px] text-center text-[#9BAAB4]">
+            <p className="text-[11px] text-center text-[#777580]">
               Protected by secure session authentication and bcrypt password hashing
             </p>
           )}
         </form>
 
-        <div className="pt-4 border-t border-[#263640] text-center text-xs text-[#9BAAB4]">
+        <div className="pt-4 border-t border-[#2D2938] text-center text-xs text-[#777580]">
           {isAdminMode ? (
             <Link
               href={ROUTES.PUBLIC.LOGIN}
-              className="font-medium text-[#9BAAB4] hover:text-[#F4F8FA] hover:underline"
+              className="font-medium text-[#777580] hover:text-[#F6F2EA] hover:underline"
             >
               &larr; Return to Standard User Login
             </Link>
@@ -447,7 +447,7 @@ export default function LoginForm() {
               Don&apos;t have an account?{' '}
               <Link
                 href={ROUTES.PUBLIC.REGISTER}
-                className="font-semibold text-[#19D3E3] hover:text-[#5FE8F5] hover:underline"
+                className="font-semibold text-[#FF6257] hover:underline"
               >
                 Create an account
               </Link>

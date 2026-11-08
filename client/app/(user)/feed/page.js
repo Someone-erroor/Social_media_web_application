@@ -112,14 +112,14 @@ export default function FeedPage() {
       <PostComposer onPostCreated={handlePostCreated} />
 
       {/* User-Controlled Feed Modes */}
-      <div className="flex items-center gap-2 border-b border-[#263640] pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-3 overflow-x-auto">
         <button
           type="button"
           onClick={() => setFeedMode('following')}
           className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
             feedMode === 'following'
-              ? 'bg-[#19D3E3] text-[#080D12] shadow-sm shadow-[#19D3E3]/20'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+              ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           Following
@@ -129,8 +129,8 @@ export default function FeedPage() {
           onClick={() => setFeedMode('latest')}
           className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
             feedMode === 'latest'
-              ? 'bg-[#19D3E3] text-[#080D12] shadow-sm shadow-[#19D3E3]/20'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+              ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           Latest
@@ -140,8 +140,8 @@ export default function FeedPage() {
           onClick={() => setFeedMode('explore')}
           className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
             feedMode === 'explore'
-              ? 'bg-[#19D3E3] text-[#080D12] shadow-sm shadow-[#19D3E3]/20'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+              ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           Explore Discovery
@@ -150,7 +150,7 @@ export default function FeedPage() {
 
       {/* Error state */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
           <span>{errorMessage}</span>
           <Button
             type="button"
@@ -169,18 +169,18 @@ export default function FeedPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-5 rounded-2xl bg-[#151F29] border border-[#263640] shadow-xs space-y-3 animate-pulse"
+              className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-sm space-y-3 animate-pulse"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#1D2A35]" />
+                <div className="w-10 h-10 rounded-full bg-[#24202E]" />
                 <div className="space-y-1.5 flex-1">
-                  <div className="w-28 h-3.5 bg-[#1D2A35] rounded" />
-                  <div className="w-16 h-2.5 bg-[#1D2A35]/60 rounded" />
+                  <div className="w-28 h-3.5 bg-[#24202E] rounded" />
+                  <div className="w-16 h-2.5 bg-[#24202E]/60 rounded" />
                 </div>
               </div>
               <div className="space-y-2 pt-1">
-                <div className="w-full h-3 bg-[#1D2A35] rounded" />
-                <div className="w-4/5 h-3 bg-[#1D2A35]/60 rounded" />
+                <div className="w-full h-3 bg-[#24202E] rounded" />
+                <div className="w-4/5 h-3 bg-[#24202E]/60 rounded" />
               </div>
             </div>
           ))}

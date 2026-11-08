@@ -82,8 +82,8 @@ export default function CircleDetailPage({ params }) {
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse p-4">
-        <div className="h-32 rounded-2xl bg-[#151F29]" />
-        <div className="h-24 rounded-2xl bg-[#151F29]" />
+        <div className="h-32 rounded-2xl bg-[#1E1B26] border border-[#2D2938]" />
+        <div className="h-24 rounded-2xl bg-[#1E1B26] border border-[#2D2938]" />
       </div>
     );
   }
@@ -91,7 +91,7 @@ export default function CircleDetailPage({ params }) {
   if (error || !circle) {
     return (
       <div className="p-8 text-center space-y-4">
-        <div className="p-4 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70] max-w-md mx-auto">
+        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] max-w-md mx-auto">
           {error || 'Circle not found.'}
         </div>
         <Button href={ROUTES.USER.CIRCLES} variant="outline" size="sm">
@@ -106,26 +106,26 @@ export default function CircleDetailPage({ params }) {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Circle Banner Header */}
-      <div className="p-6 rounded-2xl bg-[#101A22] border border-[#263640] relative overflow-hidden space-y-4">
+      <div className="p-6 rounded-2xl bg-[#1E1B26] border border-[#2D2938] relative overflow-hidden space-y-4 shadow-xl">
         <div className="flex items-center justify-between gap-4">
           <Link
             href={ROUTES.USER.CIRCLES}
-            className="inline-flex items-center gap-1.5 text-xs text-[#9BAAB4] hover:text-[#19D3E3] transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-[#777580] hover:text-[#FF6257] transition-colors"
           >
             <Icon name="arrowLeft" className="w-4 h-4" />
             All Circles
           </Link>
-          <span className="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30">
+          <span className="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30">
             {circle.category}
           </span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
           <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-[#F4F8FA]">
+            <h1 className="text-xl sm:text-2xl font-black text-[#F6F2EA] font-display">
               {circle.name}
             </h1>
-            <p className="text-xs text-[#9BAAB4] max-w-xl leading-relaxed">
+            <p className="text-xs text-[#777580] max-w-xl leading-relaxed">
               {circle.description}
             </p>
           </div>
@@ -135,15 +135,15 @@ export default function CircleDetailPage({ params }) {
             variant={isMember ? 'outline' : 'primary'}
             size="md"
             onClick={handleJoinLeave}
-            className="self-start sm:self-auto shrink-0"
+            className="self-start sm:self-auto shrink-0 shadow-lg shadow-coral-500/10"
           >
             {isMember ? 'Leave Circle' : 'Join Circle'}
           </Button>
         </div>
 
-        <div className="pt-3 border-t border-[#263640] flex items-center gap-4 text-xs text-[#9BAAB4]">
+        <div className="pt-3 border-t border-[#2D2938] flex items-center gap-4 text-xs text-[#777580]">
           <span className="flex items-center gap-1.5">
-            <Icon name="users" className="w-4 h-4 text-[#19D3E3]" />
+            <Icon name="users" className="w-4 h-4 text-[#D5F36A]" />
             {circle.membersCount || circle.members?.length || 1} Community Members
           </span>
           <span>•</span>
@@ -155,7 +155,7 @@ export default function CircleDetailPage({ params }) {
       {isMember ? (
         <PostComposer onPostCreated={handlePostCreated} defaultCircleId={circle._id} />
       ) : (
-        <div className="p-4 rounded-xl bg-[#151F29] border border-[#263640] flex items-center justify-between text-xs text-[#9BAAB4]">
+        <div className="p-4 rounded-xl bg-[#1E1B26] border border-[#2D2938] flex items-center justify-between text-xs text-[#777580]">
           <span>Join this circle to contribute to discussions and share posts.</span>
           <Button type="button" size="sm" variant="primary" onClick={handleJoinLeave}>
             Join Now
@@ -165,15 +165,15 @@ export default function CircleDetailPage({ params }) {
 
       {/* Circle Discussion Feed */}
       <div className="space-y-4">
-        <h2 className="text-sm font-bold text-[#F4F8FA] flex items-center gap-2">
-          <Icon name="feed" className="w-4 h-4 text-[#19D3E3]" />
+        <h2 className="text-sm font-bold text-[#F6F2EA] font-display flex items-center gap-2">
+          <Icon name="feed" className="w-4 h-4 text-[#FF6257]" />
           Circle Discussions ({posts.length})
         </h2>
 
         {loadingPosts ? (
           <div className="space-y-3">
             {[1, 2].map((i) => (
-              <div key={i} className="p-5 rounded-2xl bg-[#151F29] border border-[#263640] animate-pulse h-28" />
+              <div key={i} className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse h-28" />
             ))}
           </div>
         ) : posts.length === 0 ? (
@@ -197,4 +197,3 @@ export default function CircleDetailPage({ params }) {
     </div>
   );
 }
-

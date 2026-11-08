@@ -106,9 +106,9 @@ export default function AdminNotificationsPage() {
       </div>
 
       {(contextError || actionError) && (
-        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6F61] shrink-0" />
+            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257] shrink-0" />
             <span>{contextError || actionError}</span>
           </div>
           <div className="flex items-center gap-3">
@@ -122,7 +122,7 @@ export default function AdminNotificationsPage() {
             <button
               type="button"
               onClick={() => setActionError('')}
-              className="text-[#FF6F61] hover:text-white font-bold"
+              className="text-[#FF6257] hover:text-white font-bold"
             >
               ✕
             </button>
@@ -131,7 +131,7 @@ export default function AdminNotificationsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#263640] pb-2 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-2 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => {
@@ -140,8 +140,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'all'
-              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+              ? 'bg-[#FF6257] text-[#110F17] font-semibold shadow-xs'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           All Notifications ({notifications.length})
@@ -154,8 +154,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'login_alerts'
-              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+              ? 'bg-[#FF6257] text-[#110F17] font-semibold shadow-xs'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           User Login Events ({loginAlerts.length})
@@ -168,8 +168,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'unread'
-              ? 'bg-[#19D3E3] text-[#080D12] font-semibold shadow-xs'
-              : 'text-[#9BAAB4] hover:text-[#F4F8FA] hover:bg-[#151F29]'
+              ? 'bg-[#FF6257] text-[#110F17] font-semibold shadow-xs'
+              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
           Unread ({unreadCount})
@@ -177,7 +177,7 @@ export default function AdminNotificationsPage() {
       </div>
 
       {/* Alerts Table / Feed */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-[#1E1B26] border-[#2D2938]">
         <CardHeader>
           <CardTitle>User Authentication Event Log</CardTitle>
           <CardDescription>
@@ -188,7 +188,7 @@ export default function AdminNotificationsPage() {
         {loading && notifications.length === 0 ? (
           <div className="p-6 space-y-3 animate-pulse">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-10 bg-[#101A22] rounded-lg w-full" />
+              <div key={i} className="h-10 bg-[#17151D] rounded-lg w-full" />
             ))}
           </div>
         ) : displayedAlerts.length === 0 ? (
@@ -202,8 +202,8 @@ export default function AdminNotificationsPage() {
         ) : (
           <div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#F4F8FA]">
-                <thead className="bg-[#101A22] border-b border-[#263640] text-[#9BAAB4] uppercase tracking-wider font-semibold">
+              <table className="w-full text-left text-xs text-[#F6F2EA]">
+                <thead className="bg-[#17151D] border-b border-[#2D2938] text-[#777580] uppercase tracking-wider font-semibold">
                   <tr>
                     <th scope="col" className="px-5 py-3.5">User</th>
                     <th scope="col" className="px-5 py-3.5">Email</th>
@@ -212,7 +212,7 @@ export default function AdminNotificationsPage() {
                     <th scope="col" className="px-5 py-3.5 text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#263640]">
+                <tbody className="divide-y divide-[#2D2938]">
                   {paginatedAlerts.map((alert) => {
                     const actor = alert.actor || {};
                     const isUnread = !alert.readAt;
@@ -221,7 +221,7 @@ export default function AdminNotificationsPage() {
                       <tr
                         key={alert._id}
                         className={`transition-colors ${
-                          isUnread ? 'bg-[#19D3E3]/10 font-medium' : 'hover:bg-[#1D2A35]/50'
+                          isUnread ? 'bg-[#FF6257]/10 font-medium' : 'hover:bg-[#17151D]/60'
                         }`}
                       >
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -231,12 +231,12 @@ export default function AdminNotificationsPage() {
                               src={actor.profile?.avatarUrl}
                               size="sm"
                             />
-                            <span className="font-semibold text-[#F4F8FA]">
+                            <span className="font-semibold text-[#F6F2EA]">
                               {actor.fullName || 'Unknown Member'}
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#9BAAB4]">
+                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#777580]">
                           {actor.email || '—'}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -247,7 +247,7 @@ export default function AdminNotificationsPage() {
                             {alert.type === 'login_alert' ? 'Login Success' : alert.type}
                           </Badge>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap text-[#9BAAB4]">
+                        <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
                           {formatTimestamp(alert.createdAt)}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -255,12 +255,12 @@ export default function AdminNotificationsPage() {
                             <button
                               type="button"
                               onClick={() => markAsRead(alert._id)}
-                              className="text-[#19D3E3] hover:text-[#5FE8F5] font-semibold"
+                              className="text-[#FF6257] hover:underline font-semibold"
                             >
                               Mark read
                             </button>
                           ) : (
-                            <span className="text-[#9BAAB4] italic">Read</span>
+                            <span className="text-[#777580] italic">Read</span>
                           )}
                         </td>
                       </tr>
@@ -271,7 +271,7 @@ export default function AdminNotificationsPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="p-4 border-t border-[#263640] flex items-center justify-between text-xs text-[#9BAAB4] bg-[#101A22]">
+              <div className="p-4 border-t border-[#2D2938] flex items-center justify-between text-xs text-[#777580] bg-[#17151D]">
                 <span>
                   Page {page} of {totalPages}
                 </span>

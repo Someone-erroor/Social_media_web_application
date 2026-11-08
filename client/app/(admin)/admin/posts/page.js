@@ -95,7 +95,7 @@ export default function AdminPostsPage() {
         title="Post Moderation"
         description="Inspect all platform publications, monitor engagement, and moderate inappropriate content"
         badge={
-          <Badge variant="primary" size="sm">
+          <Badge variant="lavender" size="sm">
             Live Feed Moderation
           </Badge>
         }
@@ -103,12 +103,12 @@ export default function AdminPostsPage() {
 
       {/* Success Alert */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="check" className="w-4 h-4 text-emerald-400 shrink-0" />
+            <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
             <span>{successMessage}</span>
           </div>
-          <button type="button" onClick={() => setSuccessMessage('')} className="text-emerald-400 hover:text-white">
+          <button type="button" onClick={() => setSuccessMessage('')} className="text-[#D5F36A] hover:text-white">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -116,9 +116,9 @@ export default function AdminPostsPage() {
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6F61]/10 border border-[#FF6F61]/30 text-xs text-[#FF6F61] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
           <span>{error}</span>
-          <button type="button" onClick={() => setError('')} className="text-[#FF6F61] hover:text-white">
+          <button type="button" onClick={() => setError('')} className="text-[#FF6257] hover:text-white">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -143,10 +143,10 @@ export default function AdminPostsPage() {
       </div>
 
       {/* Table Container */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-[#1E1B26] border-[#2D2938]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#F4F8FA]">
-            <thead className="bg-[#101A22] border-b border-[#263640] text-[#9BAAB4] uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#F6F2EA]">
+            <thead className="bg-[#17151D] border-b border-[#2D2938] text-[#777580] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">Author</th>
                 <th scope="col" className="px-5 py-3.5">Content Preview</th>
@@ -156,10 +156,10 @@ export default function AdminPostsPage() {
                 <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#263640]">
+            <tbody className="divide-y divide-[#2D2938]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#9BAAB4] font-medium">
+                  <td colSpan={6} className="py-8 text-center text-[#777580] font-medium">
                     Loading posts for moderation...
                   </td>
                 </tr>
@@ -180,7 +180,7 @@ export default function AdminPostsPage() {
                   const isConfirming = confirmDeleteId === post._id;
 
                   return (
-                    <tr key={post._id} className="hover:bg-[#1D2A35]/50 transition-colors">
+                    <tr key={post._id} className="hover:bg-[#17151D]/60 transition-colors">
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -189,27 +189,27 @@ export default function AdminPostsPage() {
                             size="sm"
                           />
                           <div>
-                            <span className="font-semibold text-[#F4F8FA] block">
+                            <span className="font-semibold text-[#F6F2EA] block">
                               {author.fullName || 'Unknown'}
                             </span>
-                            <span className="text-[10px] text-[#9BAAB4] font-mono">
+                            <span className="text-[10px] text-[#777580] font-mono">
                               {author.email || '—'}
                             </span>
                           </div>
                         </div>
                       </td>
                       <td className="px-5 py-3.5 max-w-xs sm:max-w-md">
-                        <p className="line-clamp-2 text-[#F4F8FA] break-words">
+                        <p className="line-clamp-2 text-[#F6F2EA] break-words">
                           {post.content}
                         </p>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono text-[#9BAAB4]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono text-[#D5F36A]">
                         {post.likesCount ?? 0}
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono text-[#9BAAB4]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono text-[#B9A8F5]">
                         {post.commentsCount ?? 0}
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-[#9BAAB4]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
                         {formatDate(post.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -254,7 +254,7 @@ export default function AdminPostsPage() {
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-[#263640] bg-[#101A22] text-xs text-[#9BAAB4]">
+          <div className="flex items-center justify-between p-4 border-t border-[#2D2938] bg-[#17151D] text-xs text-[#777580]">
             <span>
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total posts)
             </span>

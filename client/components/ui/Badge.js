@@ -1,6 +1,6 @@
 /**
- * Reusable Badge Component for Looply (Dark Neon Theme)
- * Status pills and descriptive tags with dark neon accents.
+ * Reusable Badge Component for Looply (Editorial Expression Theme)
+ * Status pills and descriptive tags with Electric Coral, Acid Lime, and Soft Lavender accents.
  */
 export default function Badge({
   children,
@@ -18,13 +18,15 @@ export default function Badge({
   };
 
   const variantClasses = {
-    neutral: 'bg-[#1D2A35] text-[#F4F8FA] border border-[#263640]',
-    primary: 'bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/35 font-semibold',
-    coral: 'bg-[#FF6F61]/15 text-[#FF6F61] border border-[#FF6F61]/35 font-semibold',
-    success: 'bg-[#32D583]/15 text-[#32D583] border border-[#32D583]/35 font-medium',
-    warning: 'bg-[#F5B942]/15 text-[#F5B942] border border-[#F5B942]/35 font-medium',
-    danger: 'bg-[#FF5C70]/15 text-[#FF5C70] border border-[#FF5C70]/35 font-semibold',
-    outline: 'bg-transparent text-[#9BAAB4] border border-[#263640]'
+    neutral: 'bg-[#24202E] text-[#F6F2EA] border border-[#2D2938]',
+    primary: 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/35 font-semibold',
+    coral: 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/35 font-semibold',
+    lime: 'bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/35 font-semibold',
+    lavender: 'bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/35 font-semibold',
+    success: 'bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/35 font-semibold',
+    warning: 'bg-[#F59E0B]/15 text-[#FBBF24] border border-[#F59E0B]/35 font-medium',
+    danger: 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/35 font-semibold',
+    outline: 'bg-transparent text-[#777580] border border-[#2D2938]'
   };
 
   return (

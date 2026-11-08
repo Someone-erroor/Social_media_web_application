@@ -101,28 +101,27 @@ export default function TimeCapsulePage() {
   };
 
   const handleDelete = async (capsuleId) => {
-    if (!window.confirm('Are you sure you want to delete this time capsule?')) return;
     try {
       await timeCapsuleService.deleteCapsule(capsuleId);
       setCapsules((prev) => prev.filter((c) => c._id !== capsuleId));
     } catch (err) {
-      setError(err.message || 'Failed to delete time capsule.');
+      setError(err.message || 'Failed to delete capsule.');
     }
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader
-          title="Time Capsule Vault"
-          description="Lock thoughts, letters, and predictions to be unlocked on a future date"
+          title="Looply Time Capsule"
+          description="Lock thoughts, predictions, and media to automatically unseal at a future milestone"
         />
         <Button
           type="button"
           variant="primary"
           size="md"
           onClick={() => setShowCreateModal(true)}
-          className="self-start sm:self-auto flex items-center gap-2"
+          className="self-start sm:self-auto flex items-center gap-2 shadow-lg shadow-coral-500/10"
         >
           <Icon name="vault" className="w-4 h-4" />
           Seal a Capsule
@@ -130,7 +129,7 @@ export default function TimeCapsulePage() {
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70]">
+        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
           {error}
         </div>
       )}
@@ -138,10 +137,10 @@ export default function TimeCapsulePage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="p-6 rounded-2xl bg-[#151F29] border border-[#263640] animate-pulse space-y-3">
-              <div className="w-24 h-4 bg-[#1D2A35] rounded" />
-              <div className="w-3/4 h-5 bg-[#1D2A35] rounded" />
-              <div className="w-full h-12 bg-[#1D2A35] rounded" />
+            <div key={i} className="p-6 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse space-y-3">
+              <div className="w-24 h-4 bg-[#24202E] rounded" />
+              <div className="w-3/4 h-5 bg-[#24202E] rounded" />
+              <div className="w-full h-12 bg-[#24202E] rounded" />
             </div>
           ))}
         </div>
@@ -160,10 +159,10 @@ export default function TimeCapsulePage() {
             return (
               <Card
                 key={capsule._id}
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-300 shadow-xl ${
                   isUnlocked
-                    ? 'bg-[#151F29] border-[#19D3E3]/40 shadow-lg shadow-[#19D3E3]/5'
-                    : 'bg-[#101A22] border-[#263640]'
+                    ? 'bg-[#1E1B26] border-[#D5F36A]/40 shadow-lg shadow-[#D5F36A]/5'
+                    : 'bg-[#17151D] border-[#2D2938]'
                 }`}
               >
                 <CardContent className="p-5 space-y-4">
@@ -172,8 +171,8 @@ export default function TimeCapsulePage() {
                     <span
                       className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         isUnlocked
-                          ? 'bg-[#19D3E3]/15 text-[#19D3E3] border border-[#19D3E3]/30'
-                          : 'bg-[#FFB800]/15 text-[#FFB800] border border-[#FFB800]/30'
+                          ? 'bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30'
+                          : 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30'
                       }`}
                     >
                       <Icon name={isUnlocked ? 'sparkles' : 'lock'} className="w-3 h-3" />
@@ -183,7 +182,7 @@ export default function TimeCapsulePage() {
                     <button
                       type="button"
                       onClick={() => handleDelete(capsule._id)}
-                      className="text-[#9BAAB4] hover:text-[#FF5C70] p-1 rounded-lg transition-colors"
+                      className="text-[#777580] hover:text-[#FF6257] p-1 rounded-lg transition-colors cursor-pointer"
                       title="Delete Capsule"
                     >
                       <Icon name="trash" className="w-3.5 h-3.5" />
@@ -192,10 +191,10 @@ export default function TimeCapsulePage() {
 
                   {/* Title */}
                   <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-[#F4F8FA] line-clamp-1">
+                    <h3 className="text-sm font-bold text-[#F6F2EA] font-display line-clamp-1">
                       {capsule.title}
                     </h3>
-                    <p className="text-[11px] text-[#9BAAB4]">
+                    <p className="text-[11px] text-[#777580]">
                       Target date: {new Date(capsule.unlockAt).toLocaleDateString([], {
                         month: 'short',
                         day: 'numeric',
@@ -208,27 +207,27 @@ export default function TimeCapsulePage() {
 
                   {/* Vault Content: Revealed vs Locked */}
                   {isUnlocked ? (
-                    <div className="p-3.5 rounded-xl bg-[#151F29] border border-[#19D3E3]/20 space-y-2">
-                      <p className="text-xs text-[#F4F8FA] whitespace-pre-wrap leading-relaxed">
+                    <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#D5F36A]/20 space-y-2">
+                      <p className="text-xs text-[#F6F2EA] whitespace-pre-wrap leading-relaxed">
                         {capsule.message || 'Sealed message revealed.'}
                       </p>
-                      <p className="text-[10px] text-[#19D3E3] font-medium pt-1">
+                      <p className="text-[10px] text-[#D5F36A] font-semibold pt-1">
                         ✨ Unsealed and readable forever
                       </p>
                     </div>
                   ) : (
-                    <div className="p-4 rounded-xl bg-[#080D12] border border-[#263640] text-center space-y-2">
-                      <Icon name="lock" className="w-6 h-6 text-[#FFB800] mx-auto animate-pulse" />
-                      <p className="text-xs font-semibold text-[#F4F8FA]">
+                    <div className="p-4 rounded-xl bg-[#110F17] border border-[#2D2938] text-center space-y-2">
+                      <Icon name="lock" className="w-6 h-6 text-[#FF6257] mx-auto animate-pulse" />
+                      <p className="text-xs font-bold text-[#F6F2EA] font-display">
                         {formatCountdown(capsule.unlockAt)}
                       </p>
-                      <p className="text-[10px] text-[#9BAAB4]">
+                      <p className="text-[10px] text-[#777580] leading-relaxed">
                         Content is securely locked by backend protocol until the target date.
                       </p>
                     </div>
                   )}
 
-                  <div className="pt-2 border-t border-[#263640] flex items-center justify-between text-[11px] text-[#9BAAB4]">
+                  <div className="pt-2 border-t border-[#2D2938] flex items-center justify-between text-[11px] text-[#777580]">
                     <span>Sealed {new Date(capsule.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
                     <span>By {capsule.creator?.fullName || user?.fullName}</span>
                   </div>
@@ -244,23 +243,23 @@ export default function TimeCapsulePage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#080D12]/80 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
         >
-          <div className="w-full max-w-md bg-[#101A22] border border-[#263640] rounded-2xl shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#263640]">
+          <div className="w-full max-w-md bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#19D3E3]/15 flex items-center justify-center text-[#19D3E3]">
+                <div className="w-8 h-8 rounded-lg bg-[#FF6257]/15 flex items-center justify-center text-[#FF6257]">
                   <Icon name="vault" className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-[#F4F8FA]">Seal a Time Capsule</h2>
-                  <p className="text-[11px] text-[#9BAAB4]">Lock a memory to open in the future</p>
+                  <h2 className="text-sm font-bold text-[#F6F2EA] font-display">Seal a Time Capsule</h2>
+                  <p className="text-[11px] text-[#777580]">Lock a memory to open in the future</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-[#9BAAB4] hover:text-[#F4F8FA] p-1 rounded-lg hover:bg-[#151F29]"
+                className="text-[#777580] hover:text-[#F6F2EA] p-1 rounded-lg hover:bg-[#24202E]"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -268,42 +267,42 @@ export default function TimeCapsulePage() {
 
             <form onSubmit={handleCreate} className="space-y-4">
               {createError && (
-                <div className="p-3 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70]">
+                <div className="p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
                   {createError}
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#9BAAB4]">Capsule Title</label>
+                <label className="text-xs font-bold text-[#F6F2EA] font-display">Capsule Title</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Letter to My 2027 Self"
-                  className="w-full px-3 py-2 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] focus:outline-hidden focus:border-[#19D3E3]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257]"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#9BAAB4]">Unlock Date & Time</label>
+                <label className="text-xs font-bold text-[#F6F2EA] font-display">Unlock Date &amp; Time</label>
                 <input
                   type="datetime-local"
                   value={unlockAt}
                   onChange={(e) => setUnlockAt(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] focus:outline-hidden focus:border-[#19D3E3]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-hidden focus:border-[#FF6257]"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#9BAAB4]">Sealed Message / Reflection</label>
+                <label className="text-xs font-bold text-[#F6F2EA] font-display">Sealed Message / Reflection</label>
                 <textarea
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="What do you want to remember or say when this unseals?..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#151F29] border border-[#263640] text-xs text-[#F4F8FA] focus:outline-hidden focus:border-[#19D3E3]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257]"
                   required
                 />
               </div>
@@ -333,4 +332,3 @@ export default function TimeCapsulePage() {
     </div>
   );
 }
-

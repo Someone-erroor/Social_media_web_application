@@ -7,16 +7,9 @@ import { profileService } from '@/services/profileService';
 import { useAuth } from '@/context/AuthContext';
 
 /**
- * Production-ready Follow / Unfollow Button
+ * Production-ready Follow / Unfollow Button (Editorial Expression Theme)
  * Handles asynchronous relationship toggling, optimistic feedback, loading states,
  * and error rollback.
- *
- * @param {object} props
- * @param {string} props.userId - Target user ID
- * @param {boolean} props.isFollowing - Current follow status
- * @param {function} [props.onFollowChange] - Callback invoked when status changes: (isFollowing, result) => void
- * @param {boolean} [props.disabled] - External disabled state
- * @param {string} [props.className] - Additional classes
  */
 export default function FollowButton({
   userId,
@@ -130,25 +123,25 @@ export default function FollowButton({
           </span>
         ) : following ? (
           isHovered ? (
-            <span className="flex items-center gap-1 text-[#FF5C70]">
+            <span className="flex items-center gap-1 text-[#FF6257]">
               <Icon name="close" className="w-3.5 h-3.5" />
               <span>Unfollow</span>
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 text-[#19D3E3]">
-              <Icon name="check" className="w-3.5 h-3.5 text-[#19D3E3]" />
+            <span className="flex items-center gap-1.5 text-[#D5F36A]">
+              <Icon name="check" className="w-3.5 h-3.5 text-[#D5F36A]" />
               <span>Following</span>
             </span>
           )
         ) : pending ? (
           isHovered ? (
-            <span className="flex items-center gap-1 text-[#FF5C70]">
+            <span className="flex items-center gap-1 text-[#FF6257]">
               <Icon name="close" className="w-3.5 h-3.5" />
               <span>Cancel</span>
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 text-[#FFB800]">
-              <Icon name="clock" className="w-3.5 h-3.5 text-[#FFB800]" />
+            <span className="flex items-center gap-1.5 text-[#B9A8F5]">
+              <Icon name="clock" className="w-3.5 h-3.5 text-[#B9A8F5]" />
               <span>Requested</span>
             </span>
           )
@@ -161,11 +154,10 @@ export default function FollowButton({
       </Button>
 
       {errorMessage && (
-        <span className="text-[11px] text-[#FF5C70] mt-1 font-medium animate-fade-in">
+        <span className="text-[11px] text-[#FF6257] mt-1 font-medium animate-fade-in">
           {errorMessage}
         </span>
       )}
     </div>
   );
 }
-
