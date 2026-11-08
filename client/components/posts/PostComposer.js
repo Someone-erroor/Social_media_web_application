@@ -363,8 +363,8 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                 type="button"
                 onClick={() => setAiMode(aiMode === 'generate' ? null : 'generate')}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${aiMode === 'generate'
-                    ? 'bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30'
-                    : 'bg-[#17151D] border border-[#2D2938] hover:border-[#B9A8F5]/40 text-[#777580] hover:text-[#B9A8F5]'
+                  ? 'bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30'
+                  : 'bg-[#17151D] border border-[#2D2938] hover:border-[#B9A8F5]/40 text-[#777580] hover:text-[#B9A8F5]'
                   }`}
                 title="Draft a post with Gemini AI"
               >
@@ -377,8 +377,8 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
                 onClick={() => setAiMode(aiMode === 'improve' ? null : 'improve')}
                 disabled={!content.trim()}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${aiMode === 'improve'
-                    ? 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30'
-                    : 'bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/40 text-[#777580] hover:text-[#FF6257] disabled:opacity-40 disabled:hover:bg-[#17151D] disabled:hover:text-[#777580] disabled:cursor-not-allowed'
+                  ? 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30'
+                  : 'bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/40 text-[#777580] hover:text-[#FF6257] disabled:opacity-40 disabled:hover:bg-[#17151D] disabled:hover:text-[#777580] disabled:cursor-not-allowed'
                   }`}
                 title={content.trim() ? "Improve draft with Gemini AI" : "Write text to enable AI polish"}
               >
@@ -388,10 +388,10 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
 
               <span
                 className={`text-[11px] font-medium ml-2 ${isOverLimit
-                    ? 'text-[#FF6257] font-bold'
-                    : charCount > 900
-                      ? 'text-[#D5F36A]'
-                      : 'text-[#777580]'
+                  ? 'text-[#FF6257] font-bold'
+                  : charCount > 900
+                    ? 'text-[#D5F36A]'
+                    : 'text-[#777580]'
                   }`}
               >
                 {charCount} / 1000
