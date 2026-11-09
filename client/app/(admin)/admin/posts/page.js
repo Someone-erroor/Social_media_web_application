@@ -199,9 +199,16 @@ export default function AdminPostsPage() {
                         </div>
                       </td>
                       <td className="px-5 py-3.5 max-w-xs sm:max-w-md">
-                        <p className="line-clamp-2 text-[#F6F2EA] break-words">
-                          {post.content}
-                        </p>
+                        <div className="space-y-1">
+                          {post.postType === 'splitReality' && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+                              🔀 Split-Reality
+                            </span>
+                          )}
+                          <p className="line-clamp-2 text-[#F6F2EA] break-words">
+                            {post.content || (post.postType === 'splitReality' ? '[Dual-Perspective Media Post]' : '—')}
+                          </p>
+                        </div>
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono text-[#D5F36A]">
                         {post.likesCount ?? 0}

@@ -12,10 +12,14 @@ const SAFE_AUTHOR_FIELDS = 'fullName profile.avatarUrl createdAt';
  * @param {string} params.content - Validated post content
  * @returns {Promise<object>} Created post populated with author details
  */
-export const createPost = async ({ authorId, content }) => {
+export const createPost = async ({ authorId, content, postType = 'normal', primaryMedia = null, realityMedia = null, circle = null }) => {
   const post = new Post({
     author: authorId,
-    content
+    content,
+    postType,
+    primaryMedia,
+    realityMedia,
+    circle
   });
 
   await post.save();
@@ -30,7 +34,9 @@ export const createPost = async ({ authorId, content }) => {
       targetType: 'Post',
       targetId: post._id,
       metadata: {
-        contentLength: content.length,
+        postType,
+        hasMedia: Boolean(primaryMedia && realityMedia),
+        contentLength: (content || '').length,
         createdAt: new Date().toISOString()
       }
     });
@@ -340,6 +346,9 @@ export const getFeed = async ({ userId = null, mode = 'latest', page = 1, limit 
       {
         $project: {
           _id: 1,
+          postType: 1,
+          primaryMedia: 1,
+          realityMedia: 1,
           content: 1,
           circle: 1,
           createdAt: 1,

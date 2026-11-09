@@ -8,6 +8,7 @@ import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
 import { postService } from '@/services/postService';
 import { aiService } from '@/services/aiService';
+import SplitRealityComposer from './SplitRealityComposer';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/routes';
 
@@ -30,6 +31,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successNotice, setSuccessNotice] = useState('');
+  const [postFormat, setPostFormat] = useState('normal'); // 'normal' | 'splitReality'
 
   // AI Panel state
   const [aiMode, setAiMode] = useState(null); // 'generate' | 'improve' | null
@@ -196,7 +198,62 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Post Format Selector */}
+        <div className="flex items-center gap-1.5 pb-2 border-b border-[#2D2938]">
+          <button
+            type="button"
+            onClick={() => setPostFormat('normal')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              postFormat === 'normal'
+                ? 'bg-[#1E1B26] text-[#F6F2EA] border border-[#2D2938] shadow-sm'
+                : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]/50'
+            }`}
+          >
+            <Icon name="feed" className="w-3.5 h-3.5 text-[#FF6257]" />
+            <span>Community Post</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setPostFormat('splitReality')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              postFormat === 'splitReality'
+                ? 'bg-[#FF6257] text-[#17151D] shadow-md shadow-[#FF6257]/20 font-display'
+                : 'text-[#777580] hover:text-[#FF6257] hover:bg-[#1E1B26]/50'
+            }`}
+          >
+            <Icon
+              name="split"
+              className={`w-3.5 h-3.5 ${
+                postFormat === 'splitReality' ? 'text-[#17151D]' : 'text-[#FF6257]'
+              }`}
+            />
+            <span>🔀 Split-Reality Post</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                postFormat === 'splitReality'
+                  ? 'bg-black/20 text-[#17151D]'
+                  : 'bg-[#FF6257]/20 text-[#FF6257]'
+              }`}
+            >
+              New
+            </span>
+          </button>
+        </div>
+
+        {postFormat === 'splitReality' ? (
+          <SplitRealityComposer
+            onCancel={() => setPostFormat('normal')}
+            onPostCreated={(newPost) => {
+              setPostFormat('normal');
+              setSuccessNotice('Split-Reality post published successfully!');
+              if (onPostCreated) onPostCreated(newPost);
+            }}
+            defaultCircleId={defaultCircleId}
+            isUnverified={isUnverified}
+          />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex items-start gap-3">
             <Avatar
               name={user?.fullName || 'User'}
@@ -408,6 +465,7 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
             </Button>
           </div>
         </form>
+        )}
       </CardContent>
     </Card>
   );

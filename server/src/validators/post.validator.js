@@ -1,15 +1,63 @@
 import mongoose from 'mongoose';
 
 /**
- * Validates post creation content.
+ * Validates whether a media string is a valid web URL or data URI.
+ *
+ * @param {string} str
+ * @returns {boolean}
+ */
+const isValidMedia = (str) => {
+  if (typeof str !== 'string') return false;
+  const trimmed = str.trim();
+  if (!trimmed) return false;
+  return /^https?:\/\/.+/i.test(trimmed) || /^data:image\/[a-zA-Z0-9+.-]+;base64,/i.test(trimmed);
+};
+
+/**
+ * Validates post creation content and media.
+ * Supports standard community thoughts ('normal') and signature dual-perspective ('splitReality') posts.
  *
  * @param {object} input - Request body
  * @returns {{ isValid: boolean, errors: string[], sanitized: object }}
  */
 export const validateCreatePostInput = (input = {}) => {
   const errors = [];
-  const { content } = input;
+  const { postType = 'normal', content, primaryMedia, realityMedia, circle } = input;
 
+  if (postType !== 'normal' && postType !== 'splitReality') {
+    errors.push('Post type must be either "normal" or "splitReality".');
+  }
+
+  if (postType === 'splitReality') {
+    // 1. Primary/Final media validation
+    if (!isValidMedia(primaryMedia)) {
+      errors.push('Primary media ("The Final") is required and must be a valid image URL or image file.');
+    }
+
+    // 2. Reality/Behind-the-scenes media validation
+    if (!isValidMedia(realityMedia)) {
+      errors.push('Reality media ("Behind the Reality") is required and must be a valid image URL or image file.');
+    }
+
+    // 3. Caption validation (optional for Split-Reality, but bounded at 1000 chars)
+    if (content && typeof content === 'string' && content.trim().length > 1000) {
+      errors.push('Caption cannot exceed 1000 characters.');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      sanitized: {
+        postType: 'splitReality',
+        content: content && typeof content === 'string' ? content.trim() : '',
+        primaryMedia: primaryMedia ? primaryMedia.trim() : null,
+        realityMedia: realityMedia ? realityMedia.trim() : null,
+        circle: circle || null
+      }
+    };
+  }
+
+  // Normal post validation
   if (!content || typeof content !== 'string' || content.trim() === '') {
     errors.push('Post content is required and cannot be empty.');
   } else {
@@ -23,7 +71,11 @@ export const validateCreatePostInput = (input = {}) => {
     isValid: errors.length === 0,
     errors,
     sanitized: {
-      content: content ? content.trim() : ''
+      postType: 'normal',
+      content: content ? content.trim() : '',
+      primaryMedia: null,
+      realityMedia: null,
+      circle: circle || null
     }
   };
 };
@@ -35,7 +87,24 @@ export const validateCreatePostInput = (input = {}) => {
  * @returns {{ isValid: boolean, errors: string[], sanitized: object }}
  */
 export const validateUpdatePostInput = (input = {}) => {
-  return validateCreatePostInput(input);
+  const errors = [];
+  const { content } = input;
+
+  if (content !== undefined) {
+    if (typeof content !== 'string') {
+      errors.push('Content must be a string.');
+    } else if (content.trim().length > 1000) {
+      errors.push('Content cannot exceed 1000 characters.');
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized: {
+      content: content ? content.trim() : ''
+    }
+  };
 };
 
 /**

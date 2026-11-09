@@ -86,8 +86,8 @@ export const postService = {
    * @param {{ page?: number, limit?: number }} [params]
    * @returns {Promise<{ success: boolean, posts: object[], pagination: object }>}
    */
-  async getFeed({ page = 1, limit = 10 } = {}) {
-    return apiClient(`/feed?page=${page}&limit=${limit}`, {
+  async getFeed({ page = 1, limit = 10, mode = 'latest' } = {}) {
+    return apiClient(`/feed?page=${page}&limit=${limit}&mode=${encodeURIComponent(mode)}`, {
       method: 'GET'
     });
   },

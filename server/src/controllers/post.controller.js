@@ -42,7 +42,11 @@ export const createPost = async (req, res, next) => {
 
     const post = await createPostService({
       authorId: req.user._id,
-      content: sanitized.content
+      content: sanitized.content,
+      postType: sanitized.postType,
+      primaryMedia: sanitized.primaryMedia,
+      realityMedia: sanitized.realityMedia,
+      circle: sanitized.circle
     });
 
     return res.status(201).json({

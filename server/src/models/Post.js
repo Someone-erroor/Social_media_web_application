@@ -13,12 +13,26 @@ const postSchema = new Schema(
       ref: 'User',
       required: [true, 'Post author reference is required']
     },
+    postType: {
+      type: String,
+      enum: ['normal', 'splitReality'],
+      default: 'normal'
+    },
     content: {
       type: String,
-      required: [true, 'Post content is required'],
       trim: true,
-      minlength: [1, 'Post content cannot be empty'],
-      maxlength: [1000, 'Post content cannot exceed 1000 characters']
+      maxlength: [1000, 'Post content cannot exceed 1000 characters'],
+      default: ''
+    },
+    primaryMedia: {
+      type: String,
+      default: null,
+      trim: true
+    },
+    realityMedia: {
+      type: String,
+      default: null,
+      trim: true
     },
     circle: {
       type: Schema.Types.ObjectId,

@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { postService } from '@/services/postService';
 import { aiService } from '@/services/aiService';
 import DiscussionSummaryPanel from '@/components/ai/DiscussionSummaryPanel';
+import SplitRealityViewer from './SplitRealityViewer';
 import { ROUTES } from '@/lib/routes';
 import ReportModal from '@/components/safety/ReportModal';
 
@@ -342,6 +343,12 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
                     {post.recommendationBadge}
                   </span>
                 )}
+                {post.postType === 'splitReality' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+                    <Icon name="split" className="w-2.5 h-2.5 text-[#FF6257]" />
+                    Split-Reality
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -455,9 +462,19 @@ export default function PostCard({ post, onPostUpdated, onPostDeleted }) {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-[#F6F2EA] whitespace-pre-wrap leading-relaxed break-words">
-            {post.content}
-          </p>
+          <div className="space-y-3">
+            {post.postType === 'splitReality' && post.primaryMedia && post.realityMedia && (
+              <SplitRealityViewer
+                primaryMedia={post.primaryMedia}
+                realityMedia={post.realityMedia}
+              />
+            )}
+            {post.content && (
+              <p className="text-sm text-[#F6F2EA] whitespace-pre-wrap leading-relaxed break-words">
+                {post.content}
+              </p>
+            )}
+          </div>
         )}
 
         {/* Interaction Actions Bar (Likes, Comments, AI Summarize) */}
