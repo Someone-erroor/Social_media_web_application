@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import { profileService } from '@/services/profileService';
+import { privacyService } from '@/services/privacyService';
 import { useAuth } from '@/context/AuthContext';
 
 /**
@@ -63,10 +64,19 @@ export default function FollowButton({
         }
       } else if (previousPending) {
         // Currently requested -> Cancel request
-        const res = await profileService.unfollowUser(userId);
-        setFollowing(false);
-        setPending(false);
-        onFollowChange?.(false, res);
+        let res;
+        try {
+          res = await privacyService.cancelFollowRequest(userId);
+        } catch (e) {
+          res = await profileService.unfollowUser(userId);
+        }
+        if (res?.success) {
+          setFollowing(false);
+          setPending(false);
+          onFollowChange?.(false, res);
+        } else {
+          throw new Error(res?.message || 'Failed to cancel follow request.');
+        }
       } else {
         // Currently not following -> Follow
         const res = await profileService.followUser(userId);

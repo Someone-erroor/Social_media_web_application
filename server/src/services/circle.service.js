@@ -150,17 +150,23 @@ export const joinCircle = async (circleId, currentUserId) => {
 
   const isMember = (circle.members || []).some(m => m.toString() === currentUserId.toString());
   if (isMember) {
-    return { success: true, isMember: true, message: 'You are already a member of this Circle.' };
+    return { success: true, isMember: true, memberCount: circle.memberCount || circle.members.length, message: 'You are already a member of this Circle.' };
   }
 
-  circle.members.push(currentUserId);
-  circle.memberCount = circle.members.length;
-  await circle.save();
+  const updatedCircle = await Circle.findByIdAndUpdate(
+    circleId,
+    { $addToSet: { members: currentUserId } },
+    { returnDocument: 'after' }
+  );
+  if (updatedCircle) {
+    updatedCircle.memberCount = updatedCircle.members.length;
+    await updatedCircle.save();
+  }
 
   return {
     success: true,
     isMember: true,
-    memberCount: circle.memberCount,
+    memberCount: updatedCircle?.members?.length || 1,
     message: `Joined ${circle.name}!`
   };
 };
@@ -182,14 +188,20 @@ export const leaveCircle = async (circleId, currentUserId) => {
     throw error;
   }
 
-  circle.members = circle.members.filter(m => m.toString() !== currentUserId.toString());
-  circle.memberCount = circle.members.length;
-  await circle.save();
+  const updatedCircle = await Circle.findByIdAndUpdate(
+    circleId,
+    { $pull: { members: currentUserId } },
+    { returnDocument: 'after' }
+  );
+  if (updatedCircle) {
+    updatedCircle.memberCount = updatedCircle.members.length;
+    await updatedCircle.save();
+  }
 
   return {
     success: true,
     isMember: false,
-    memberCount: circle.memberCount,
+    memberCount: updatedCircle?.members?.length || 0,
     message: `Left ${circle.name}.`
   };
 };

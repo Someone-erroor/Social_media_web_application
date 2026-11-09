@@ -158,6 +158,12 @@ export const submitAnswer = async (challengeId, currentUserId, userAnswers) => {
     throw error;
   }
 
+  if (!userAnswers || typeof userAnswers !== 'object') {
+    const error = new Error('Answers are required to participate in this challenge.');
+    error.status = 400;
+    throw error;
+  }
+
   // Prevent duplicate submission
   const alreadyAnswered = challenge.participants.some(
     p => p.user.toString() === currentUserId.toString()

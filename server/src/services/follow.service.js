@@ -165,27 +165,41 @@ export const unfollowUser = async (currentUserId, targetUserId) => {
   const isCurrentlyFollowing = (targetUser.followers || []).some(
     (id) => id.toString() === currentUserId.toString()
   );
+  const isCurrentlyPending = (targetUser.followRequests || []).some(
+    (id) => id.toString() === currentUserId.toString()
+  );
 
-  if (!isCurrentlyFollowing) {
+  if (!isCurrentlyFollowing && !isCurrentlyPending) {
     return {
       success: true,
       isFollowing: false,
+      isPending: false,
       followersCount: targetUser.followers?.length || 0,
       followingCount: currentUser.following?.length || 0,
       message: 'You are not following this user.'
     };
   }
 
-  // Atomic dual-sided removal
+  // Atomic dual-sided removal for both following and pending follow requests
   const [updatedTarget, updatedCurrent] = await Promise.all([
     User.findByIdAndUpdate(
       targetUserId,
-      { $pull: { followers: currentUserId } },
+      {
+        $pull: {
+          followers: currentUserId,
+          followRequests: currentUserId
+        }
+      },
       { returnDocument: 'after' }
     ),
     User.findByIdAndUpdate(
       currentUserId,
-      { $pull: { following: targetUserId } },
+      {
+        $pull: {
+          following: targetUserId,
+          sentFollowRequests: targetUserId
+        }
+      },
       { returnDocument: 'after' }
     )
   ]);
@@ -207,9 +221,10 @@ export const unfollowUser = async (currentUserId, targetUserId) => {
   return {
     success: true,
     isFollowing: false,
-    followersCount: updatedTarget.followers?.length || 0,
-    followingCount: updatedCurrent.following?.length || 0,
-    message: 'Successfully unfollowed user.'
+    isPending: false,
+    followersCount: updatedTarget?.followers?.length || 0,
+    followingCount: updatedCurrent?.following?.length || 0,
+    message: isCurrentlyFollowing ? 'Successfully unfollowed user.' : 'Follow request cancelled.'
   };
 };
 

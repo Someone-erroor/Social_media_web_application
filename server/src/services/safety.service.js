@@ -1,4 +1,4 @@
-import { User, Report, Appeal, ActivityLog } from '../models/index.js';
+import { User, Report, Appeal, ActivityLog, Post, Comment, Message } from '../models/index.js';
 import { isValidObjectId } from '../validators/profile.validator.js';
 
 /**
@@ -173,6 +173,31 @@ export const createReport = async ({ reporterId, reportedTarget, targetType, cat
   if (!validCategories.includes(category)) {
     const error = new Error(`Category must be one of: ${validCategories.join(', ')}.`);
     error.status = 400;
+    throw error;
+  }
+
+  // Self-report prevention
+  if (targetType === 'User' && reporterId.toString() === reportedTarget.toString()) {
+    const error = new Error('You cannot report yourself.');
+    error.status = 400;
+    throw error;
+  }
+
+  // Validate that the reported target actually exists in the database
+  let targetDoc = null;
+  if (targetType === 'User') {
+    targetDoc = await User.findById(reportedTarget);
+  } else if (targetType === 'Post') {
+    targetDoc = await Post.findById(reportedTarget);
+  } else if (targetType === 'Comment') {
+    targetDoc = await Comment.findById(reportedTarget);
+  } else if (targetType === 'Message') {
+    targetDoc = await Message.findById(reportedTarget);
+  }
+
+  if (!targetDoc) {
+    const error = new Error(`Reported ${targetType.toLowerCase()} not found.`);
+    error.status = 404;
     throw error;
   }
 

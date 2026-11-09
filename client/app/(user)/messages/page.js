@@ -562,7 +562,7 @@ function MessagesContent() {
             </h1>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-semibold text-[#D5F36A] bg-[#D5F36A]/10 border border-[#D5F36A]/30 px-2 py-0.5 rounded-full hidden sm:inline-block">
-                E2EE Active
+                AES-GCM Protected
               </span>
               <button
                 type="button"
@@ -739,7 +739,7 @@ function MessagesContent() {
               {/* Cryptographic Protocol Badge */}
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-[#D5F36A] text-[11px] font-semibold">
                 <Icon name="lock" className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">AES-GCM 256-bit E2EE</span>
+                <span className="hidden sm:inline">AES-GCM 256-bit Protected</span>
                 <span className="sm:hidden">AES-256</span>
               </div>
             </div>

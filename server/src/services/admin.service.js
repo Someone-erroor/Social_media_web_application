@@ -596,13 +596,21 @@ export const applyModerationAction = async ({ action, targetType, targetId, reas
     });
     await notification.save();
   } else if (action === 'suspend_user' && targetType === 'User') {
-    await User.findByIdAndUpdate(targetId, { accountStatus: 'suspended' });
+    await User.findByIdAndUpdate(targetId, {
+      accountStatus: 'suspended',
+      $inc: { tokenVersion: 1 }
+    });
   } else if (action === 'restore_user' && targetType === 'User') {
     await User.findByIdAndUpdate(targetId, { accountStatus: 'active' });
   } else if (action === 'delete_post' && targetType === 'Post') {
     await Post.findByIdAndDelete(targetId);
+    await Promise.all([
+      Comment.deleteMany({ post: targetId }),
+      Like.deleteMany({ post: targetId })
+    ]);
   } else if (action === 'delete_comment' && targetType === 'Comment') {
     await Comment.findByIdAndDelete(targetId);
+    await Like.deleteMany({ comment: targetId });
   } else {
     const error = new Error('Unsupported moderation action or target type combination.');
     error.status = 400;
