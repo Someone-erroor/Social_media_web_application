@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
+import fs from 'fs';
 import { User, Post, Comment, Like, ActivityLog } from '../models/index.js';
+import { processAndStoreMedia, cleanupMediaFiles } from './media.service.js';
 
 const SAFE_AUTHOR_FIELDS = 'fullName profile.avatarUrl createdAt';
 
@@ -13,16 +15,50 @@ const SAFE_AUTHOR_FIELDS = 'fullName profile.avatarUrl createdAt';
  * @returns {Promise<object>} Created post populated with author details
  */
 export const createPost = async ({ authorId, content, postType = 'normal', primaryMedia = null, realityMedia = null, circle = null }) => {
+  let storedPrimary = null;
+  let storedReality = null;
+  const createdLocalFiles = [];
+
+  if (postType === 'splitReality') {
+    try {
+      const primaryRes = await processAndStoreMedia(primaryMedia);
+      storedPrimary = primaryRes.mediaUrl;
+      if (primaryRes.filePath) createdLocalFiles.push(primaryRes.filePath);
+
+      const realityRes = await processAndStoreMedia(realityMedia);
+      storedReality = realityRes.mediaUrl;
+      if (realityRes.filePath) createdLocalFiles.push(realityRes.filePath);
+    } catch (mediaErr) {
+      // Failure rollback: immediately clean up any local files written before error
+      for (const fp of createdLocalFiles) {
+        try {
+          if (fs.existsSync(fp)) await fs.promises.unlink(fp);
+        } catch (_) {}
+      }
+      throw mediaErr;
+    }
+  }
+
   const post = new Post({
     author: authorId,
     content,
     postType,
-    primaryMedia,
-    realityMedia,
+    primaryMedia: storedPrimary,
+    realityMedia: storedReality,
     circle
   });
 
-  await post.save();
+  try {
+    await post.save();
+  } catch (saveErr) {
+    // Failure rollback: clean up local files if database save fails
+    for (const fp of createdLocalFiles) {
+      try {
+        if (fs.existsSync(fp)) await fs.promises.unlink(fp);
+      } catch (_) {}
+    }
+    throw saveErr;
+  }
 
   // Populate safe author attributes for immediate UI display
   await post.populate('author', SAFE_AUTHOR_FIELDS);
@@ -35,7 +71,7 @@ export const createPost = async ({ authorId, content, postType = 'normal', prima
       targetId: post._id,
       metadata: {
         postType,
-        hasMedia: Boolean(primaryMedia && realityMedia),
+        hasMedia: Boolean(storedPrimary && storedReality),
         contentLength: (content || '').length,
         createdAt: new Date().toISOString()
       }
@@ -508,6 +544,13 @@ export const deletePost = async ({ postId, authorId, _forceFailForTest = false }
 
     // 8. Commit the transaction
     await session.commitTransaction();
+
+    // 9. Clean up local media files if post had Split-Reality media
+    if (post.postType === 'splitReality') {
+      cleanupMediaFiles([post.primaryMedia, post.realityMedia], post._id).catch((err) => {
+        console.error(`[MediaService] Cleanup failed during post deletion: ${err.message}`);
+      });
+    }
   } catch (err) {
     // Abort the transaction and preserve original data if any operation fails
     await session.abortTransaction();

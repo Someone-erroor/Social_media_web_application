@@ -10,3 +10,6 @@ yarn-error.log*
 
 # Retain template env file
 !.env.example
+
+# Media uploads storage
+uploads/

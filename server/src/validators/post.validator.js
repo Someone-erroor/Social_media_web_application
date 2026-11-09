@@ -10,7 +10,7 @@ const isValidMedia = (str) => {
   if (typeof str !== 'string') return false;
   const trimmed = str.trim();
   if (!trimmed) return false;
-  return /^https?:\/\/.+/i.test(trimmed) || /^data:image\/[a-zA-Z0-9+.-]+;base64,/i.test(trimmed);
+  return /^https?:\/\/.+/i.test(trimmed) || /^data:image\/[a-zA-Z0-9+.-]+;base64,/i.test(trimmed) || /^\/uploads\/posts\/.+/i.test(trimmed);
 };
 
 /**

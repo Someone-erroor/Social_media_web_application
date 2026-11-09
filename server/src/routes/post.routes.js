@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth, optionalAuth } from '../middleware/auth.middleware.js';
 import {
   createPost,
+  uploadPostMedia,
   getMyPosts,
   getPostById,
   updatePost,
@@ -21,6 +22,9 @@ const router = Router();
 
 // Create new post
 router.post('/', requireAuth, createPost);
+
+// Upload media asset for post
+router.post('/upload', requireAuth, uploadPostMedia);
 
 // Retrieve posts authored by current user
 router.get('/mine', requireAuth, getMyPosts);

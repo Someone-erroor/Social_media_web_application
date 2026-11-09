@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { User, Post, Comment, Like, Notification, ActivityLog, Report, Appeal } from '../models/index.js';
+import { cleanupMediaFiles } from './media.service.js';
 
 const SAFE_USER_FIELDS = 'fullName email role accountStatus isEmailVerified profile.avatarUrl profile.bio createdAt updatedAt';
 
@@ -401,6 +402,13 @@ export const adminDeletePost = async ({ postId, adminUserId }) => {
     await Notification.deleteMany({ resourceType: 'Post', resourceId: postId }, { session });
 
     await session.commitTransaction();
+
+    // Clean up local media files if post had Split-Reality media
+    if (post.postType === 'splitReality') {
+      cleanupMediaFiles([post.primaryMedia, post.realityMedia], post._id).catch((err) => {
+        console.error(`[MediaService] Admin cleanup failed during post deletion: ${err.message}`);
+      });
+    }
   } catch (err) {
     await session.abortTransaction();
     throw err;
@@ -603,11 +611,15 @@ export const applyModerationAction = async ({ action, targetType, targetId, reas
   } else if (action === 'restore_user' && targetType === 'User') {
     await User.findByIdAndUpdate(targetId, { accountStatus: 'active' });
   } else if (action === 'delete_post' && targetType === 'Post') {
+    const targetPost = await Post.findById(targetId);
     await Post.findByIdAndDelete(targetId);
     await Promise.all([
       Comment.deleteMany({ post: targetId }),
       Like.deleteMany({ post: targetId })
     ]);
+    if (targetPost && targetPost.postType === 'splitReality') {
+      cleanupMediaFiles([targetPost.primaryMedia, targetPost.realityMedia], targetPost._id).catch(() => {});
+    }
   } else if (action === 'delete_comment' && targetType === 'Comment') {
     await Comment.findByIdAndDelete(targetId);
     await Like.deleteMany({ comment: targetId });

@@ -57,6 +57,22 @@ const postSchema = new Schema(
   }
 );
 
+// Strict model-level validation for post types and required perspective media
+postSchema.pre('validate', function () {
+  if (this.postType === 'splitReality') {
+    if (!this.primaryMedia || typeof this.primaryMedia !== 'string' || !this.primaryMedia.trim()) {
+      this.invalidate('primaryMedia', 'Primary media ("The Final") is required for Split-Reality posts.');
+    }
+    if (!this.realityMedia || typeof this.realityMedia !== 'string' || !this.realityMedia.trim()) {
+      this.invalidate('realityMedia', 'Reality media ("Behind the Reality") is required for Split-Reality posts.');
+    }
+  } else if (!this.postType || this.postType === 'normal') {
+    if (!this.content || typeof this.content !== 'string' || !this.content.trim()) {
+      this.invalidate('content', 'Post content is required for normal posts.');
+    }
+  }
+});
+
 // Index 1: Global feed chronological retrieval
 postSchema.index({ createdAt: -1 });
 

@@ -55,6 +55,45 @@ export const createPost = async (req, res, next) => {
       post
     });
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({
+        success: false,
+        message: error.message
+      });
+    }
+    next(error);
+  }
+};
+
+/**
+ * Uploads and stores a media asset for a post.
+ * POST /api/posts/upload
+ */
+export const uploadPostMedia = async (req, res, next) => {
+  try {
+    const mediaInput = req.body.media || req.body.image;
+    if (!mediaInput) {
+      return res.status(400).json({
+        success: false,
+        message: 'Media payload is required ("media" or "image" string).'
+      });
+    }
+
+    const { processAndStoreMedia } = await import('../services/media.service.js');
+    const result = await processAndStoreMedia(mediaInput);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Media uploaded and processed successfully.',
+      mediaUrl: result.mediaUrl
+    });
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({
+        success: false,
+        message: error.message
+      });
+    }
     next(error);
   }
 };

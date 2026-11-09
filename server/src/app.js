@@ -2,9 +2,14 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { corsOptions } from './config/cors.js';
 import apiRoutes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -18,8 +23,11 @@ app.use(helmet({
 }));
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '12mb' }));
+app.use(express.urlencoded({ extended: true, limit: '12mb' }));
+
+// Static media uploads serving
+app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 
 // Primary API Router mounted at /api
 app.use('/api', apiRoutes);
