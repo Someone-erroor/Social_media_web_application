@@ -88,28 +88,37 @@ export function NotificationProvider({ children }) {
         }
       });
 
-    // If an existing socket is already connected, don't create duplicate
-    if (socketRef.current?.connected) {
-      return;
+    // Ensure any existing socket is cleanly closed before establishing authenticated connection
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
 
     // Determine backend base URL (strip /api if present in NEXT_PUBLIC_API_URL)
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const socketUrl = apiUrl.replace(/\/api\/?$/, '');
 
+    const getStoredToken = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          return localStorage.getItem('looply_token');
+        } catch {}
+      }
+      return null;
+    };
+
+    const initialToken = getStoredToken();
     const socket = io(socketUrl, {
       withCredentials: true,
       auth: (cb) => {
-        let token = null;
-        if (typeof window !== 'undefined') {
-          try { token = localStorage.getItem('looply_token'); } catch {}
-        }
-        cb(token ? { token } : {});
+        const t = getStoredToken();
+        cb(t ? { token: t } : {});
       },
+      extraHeaders: initialToken ? { Authorization: `Bearer ${initialToken}` } : {},
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 20,
+      reconnectionAttempts: 30,
       reconnectionDelay: 1000
     });
 

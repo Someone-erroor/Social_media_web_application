@@ -361,6 +361,27 @@ export const respondToMessageRequest = async (conversationId, currentUserId, act
   await conversation.save();
   await conversation.populate('participants', '_id fullName profile email');
 
+  // Emit real-time notification to the conversation initiator
+  try {
+    const io = getIO();
+    const otherParticipant = conversation.participants.find(
+      (p) => (p._id || p).toString() !== currentUserId.toString()
+    );
+    if (io && otherParticipant) {
+      const otherIdStr = (otherParticipant._id || otherParticipant).toString();
+      const convIdStr = conversationId.toString();
+      io.to(`user_${otherIdStr}`)
+        .to(`conversation_${convIdStr}`)
+        .emit('conversation_status_change', {
+          conversationId: convIdStr,
+          status: conversation.status,
+          conversation
+        });
+    }
+  } catch (err) {
+    console.error(`[Socket Error] Request response dispatch: ${err.message}`);
+  }
+
   return {
     success: true,
     conversation,

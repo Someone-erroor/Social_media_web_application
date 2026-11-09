@@ -11,6 +11,9 @@ import { useNotifications } from '@/context/NotificationContext';
 import { messageService } from '@/services/messageService';
 import { deriveConversationKey, encryptMessage, decryptMessage } from '@/lib/crypto';
 
+// Global cache of derived CryptoKey instances by conversationId to prevent redundant 100k PBKDF2 passes
+const conversationKeyCache = new Map();
+
 function MessagesContent() {
   const { user } = useAuth();
   const { socket, isUserOnline } = useNotifications();
@@ -44,9 +47,12 @@ function MessagesContent() {
   const cryptoKeyRef = useRef(null);
   const searchTimeoutRef = useRef(null);
   const activeConversationRef = useRef(activeConversation);
+  const decryptingIdsRef = useRef(new Set());
+  const decryptedCacheRef = useRef({});
 
-  // Synchronously keep ref aligned with current active conversation
+  // Synchronously keep refs aligned with state
   activeConversationRef.current = activeConversation;
+  decryptedCacheRef.current = decryptedCache;
 
   // Scroll to bottom of message list
   const scrollToBottom = () => {
@@ -184,19 +190,27 @@ function MessagesContent() {
     }
   };
 
-  // Derive Client-Side AES-GCM key whenever active conversation changes
+  // Derive Client-Side AES-GCM key whenever active conversation changes (uses memory cache)
   useEffect(() => {
-    if (!activeConversation?._id) {
+    const convId = (activeConversation?._id || activeConversation?.id)?.toString();
+    if (!convId) {
       cryptoKeyRef.current = null;
       setCryptoKey(null);
       return;
     }
 
+    if (conversationKeyCache.has(convId)) {
+      const cachedKey = conversationKeyCache.get(convId);
+      cryptoKeyRef.current = cachedKey;
+      setCryptoKey(cachedKey);
+      return;
+    }
+
     let ignore = false;
-    // Derive key using conversation id as shared secret seed
-    deriveConversationKey(activeConversation._id)
+    deriveConversationKey(convId)
       .then((key) => {
         if (!ignore) {
+          conversationKeyCache.set(convId, key);
           cryptoKeyRef.current = key;
           setCryptoKey(key);
         }
@@ -208,7 +222,7 @@ function MessagesContent() {
     return () => {
       ignore = true;
     };
-  }, [activeConversation?._id]);
+  }, [activeConversation?._id, activeConversation?.id]);
 
   // Fetch messages for active conversation
   const fetchMessages = useCallback(async (conversationId) => {
@@ -224,6 +238,48 @@ function MessagesContent() {
       setError(err.message || 'Failed to load messages.');
     } finally {
       setLoadingMessages(false);
+    }
+  }, []);
+
+  // Atomic, race-condition-free single message decryptor
+  const decryptSingleMessage = useCallback(async (msg, explicitKey) => {
+    if (!msg || !msg.isEncrypted || !msg.iv || !msg.content) return;
+    const msgId = getMsgId(msg);
+    if (!msgId || decryptedCacheRef.current[msgId] || decryptingIdsRef.current.has(msgId)) return;
+
+    let key = explicitKey || cryptoKeyRef.current;
+    if (!key) {
+      const convId = (
+        activeConversationRef.current?._id ||
+        activeConversationRef.current?.id ||
+        msg.conversation?._id ||
+        msg.conversation
+      )?.toString();
+      if (convId) {
+        if (conversationKeyCache.has(convId)) {
+          key = conversationKeyCache.get(convId);
+        } else {
+          try {
+            key = await deriveConversationKey(convId);
+            conversationKeyCache.set(convId, key);
+            cryptoKeyRef.current = key;
+            setCryptoKey(key);
+          } catch {}
+        }
+      }
+    }
+
+    if (!key) return;
+
+    decryptingIdsRef.current.add(msgId);
+    try {
+      const plaintext = await decryptMessage(msg.content, msg.iv, key);
+      decryptedCacheRef.current[msgId] = plaintext;
+      setDecryptedCache((prev) => ({ ...prev, [msgId]: plaintext }));
+    } catch (err) {
+      console.warn('[E2EE Decrypt Notice]', msgId, err);
+    } finally {
+      decryptingIdsRef.current.delete(msgId);
     }
   }, []);
 
@@ -246,7 +302,11 @@ function MessagesContent() {
         ''
       ).toString();
 
-      const currentConvId = (activeConversationRef.current?._id || '').toString();
+      const currentConvId = (
+        activeConversationRef.current?._id ||
+        activeConversationRef.current?.id ||
+        ''
+      ).toString();
 
       // If incoming message belongs to open chat, immediately append with strict duplicate check
       if (incomingConvId && incomingConvId === currentConvId) {
@@ -255,25 +315,22 @@ function MessagesContent() {
           return [...prev, incomingMsg];
         });
 
-        // Decrypt immediately if crypto key is already ready
-        if (incomingMsg.isEncrypted && incomingMsg.iv && cryptoKeyRef.current) {
-          decryptMessage(incomingMsg.content, incomingMsg.iv, cryptoKeyRef.current)
-            .then((plaintext) => {
-              setDecryptedCache((prev) => ({ ...prev, [incomingId]: plaintext }));
-            })
-            .catch(() => {});
+        // Decrypt immediately upon arrival
+        if (incomingMsg.isEncrypted && incomingMsg.iv) {
+          decryptSingleMessage(incomingMsg);
         }
 
-        scrollToBottom();
+        setTimeout(scrollToBottom, 50);
         messageService.markAsRead(currentConvId).catch(() => {});
       }
 
       // Update sidebar conversation list snippet & unread count
       setConversations((prev) => {
-        const exists = prev.some((c) => (c._id?.toString?.() || c._id) === incomingConvId);
+        const exists = prev.some((c) => (c._id?.toString?.() || c._id || c.id?.toString?.() || c.id) === incomingConvId);
         if (exists) {
           return prev.map((c) => {
-            if ((c._id?.toString?.() || c._id) === incomingConvId) {
+            const cId = (c._id?.toString?.() || c._id || c.id?.toString?.() || c.id);
+            if (cId === incomingConvId) {
               return {
                 ...c,
                 lastMessage: incomingMsg,
@@ -295,7 +352,11 @@ function MessagesContent() {
 
     const handleTypingStart = (payload) => {
       const incomingConvId = (payload?.conversationId || '').toString();
-      const currentConvId = (activeConversationRef.current?._id || '').toString();
+      const currentConvId = (
+        activeConversationRef.current?._id ||
+        activeConversationRef.current?.id ||
+        ''
+      ).toString();
       if (incomingConvId === currentConvId && payload?.userId !== user?._id) {
         setPartnerTyping(true);
       }
@@ -303,7 +364,11 @@ function MessagesContent() {
 
     const handleTypingStop = (payload) => {
       const incomingConvId = (payload?.conversationId || '').toString();
-      const currentConvId = (activeConversationRef.current?._id || '').toString();
+      const currentConvId = (
+        activeConversationRef.current?._id ||
+        activeConversationRef.current?.id ||
+        ''
+      ).toString();
       if (incomingConvId === currentConvId && payload?.userId !== user?._id) {
         setPartnerTyping(false);
       }
@@ -311,7 +376,10 @@ function MessagesContent() {
 
     // Auto-rejoin active conversation room upon socket reconnect
     const handleRejoin = () => {
-      const convId = activeConversationRef.current?._id;
+      const convId = (
+        activeConversationRef.current?._id ||
+        activeConversationRef.current?.id
+      )?.toString();
       if (convId && socket) {
         socket.emit('join_conversation', convId);
         socket.emit('join_conversation', { conversationId: convId });
@@ -320,7 +388,11 @@ function MessagesContent() {
 
     const handleMessagesRead = (payload) => {
       const incomingConvId = (payload?.conversationId || '').toString();
-      const currentConvId = (activeConversationRef.current?._id || '').toString();
+      const currentConvId = (
+        activeConversationRef.current?._id ||
+        activeConversationRef.current?.id ||
+        ''
+      ).toString();
       if (incomingConvId && incomingConvId === currentConvId) {
         setMessages((prev) =>
           prev.map((m) => {
@@ -335,8 +407,23 @@ function MessagesContent() {
       }
     };
 
+    const handleConversationStatusChange = (payload) => {
+      const incomingConvId = (payload?.conversationId || '').toString();
+      const currentConvId = (
+        activeConversationRef.current?._id ||
+        activeConversationRef.current?.id ||
+        ''
+      ).toString();
+
+      if (incomingConvId && incomingConvId === currentConvId && payload.conversation) {
+        setActiveConversation(payload.conversation);
+      }
+      fetchConversations();
+    };
+
     socket.on('new_message', handleNewMessage);
     socket.on('messages_read', handleMessagesRead);
+    socket.on('conversation_status_change', handleConversationStatusChange);
     socket.on('typing_start', handleTypingStart);
     socket.on('typing_stop', handleTypingStop);
     socket.on('user_typing', handleTypingStart);
@@ -347,6 +434,7 @@ function MessagesContent() {
     return () => {
       socket.off('new_message', handleNewMessage);
       socket.off('messages_read', handleMessagesRead);
+      socket.off('conversation_status_change', handleConversationStatusChange);
       socket.off('typing_start', handleTypingStart);
       socket.off('typing_stop', handleTypingStop);
       socket.off('user_typing', handleTypingStart);
@@ -354,30 +442,31 @@ function MessagesContent() {
       socket.off('connect', handleRejoin);
       socket.off('reconnect', handleRejoin);
     };
-  }, [socket, user?._id, fetchConversations]);
+  }, [socket, user?._id, fetchConversations, decryptSingleMessage]);
 
   // When active conversation changes, load messages & join conversation room
   useEffect(() => {
-    if (!activeConversation?._id) return;
+    const convId = (activeConversation?._id || activeConversation?.id)?.toString();
+    if (!convId) return;
 
-    fetchMessages(activeConversation._id);
+    fetchMessages(convId);
 
     if (socket) {
-      socket.emit('join_conversation', activeConversation._id);
-      socket.emit('join_conversation', { conversationId: activeConversation._id });
+      socket.emit('join_conversation', convId);
+      socket.emit('join_conversation', { conversationId: convId });
 
       return () => {
-        socket.emit('leave_conversation', activeConversation._id);
-        socket.emit('leave_conversation', { conversationId: activeConversation._id });
+        socket.emit('leave_conversation', convId);
+        socket.emit('leave_conversation', { conversationId: convId });
       };
     }
-  }, [activeConversation?._id, socket, fetchMessages]);
+  }, [activeConversation?._id, activeConversation?.id, socket, fetchMessages]);
 
   // Resilient live background sync interval (guarantees real-time sync across side-by-side or blurred windows)
   useEffect(() => {
-    if (!activeConversation?._id) return;
+    const convId = (activeConversation?._id || activeConversation?.id)?.toString();
+    if (!convId) return;
 
-    const convId = activeConversation._id;
     const syncInterval = setInterval(async () => {
       try {
         const res = await messageService.getMessages(convId, 1, 50);
@@ -386,6 +475,8 @@ function MessagesContent() {
             const existingIds = new Set(prev.map((m) => getMsgId(m)));
             const newOnes = res.messages.filter((m) => !existingIds.has(getMsgId(m)));
             if (newOnes.length === 0) return prev;
+            newOnes.forEach((m) => decryptSingleMessage(m));
+            setTimeout(scrollToBottom, 50);
             return [...prev, ...newOnes];
           });
         }
@@ -395,32 +486,20 @@ function MessagesContent() {
     }, 2000);
 
     return () => clearInterval(syncInterval);
-  }, [activeConversation?._id]);
+  }, [activeConversation?._id, activeConversation?.id, decryptSingleMessage]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages, partnerTyping]);
 
-  // Decrypt encrypted messages as soon as crypto key and messages are available
+  // Decrypt encrypted messages reliably whenever messages or crypto key change
   useEffect(() => {
-    if (!cryptoKey || messages.length === 0) return;
-
-    let ignore = false;
     messages.forEach((msg) => {
-      const msgId = getMsgId(msg);
-      if (msg.isEncrypted && msg.iv && !decryptedCache[msgId]) {
-        decryptMessage(msg.content, msg.iv, cryptoKey).then((plaintext) => {
-          if (!ignore) {
-            setDecryptedCache((prev) => ({ ...prev, [msgId]: plaintext }));
-          }
-        });
+      if (msg.isEncrypted && msg.iv) {
+        decryptSingleMessage(msg, cryptoKey);
       }
     });
-
-    return () => {
-      ignore = true;
-    };
-  }, [messages, cryptoKey, decryptedCache]);
+  }, [messages, cryptoKey, decryptSingleMessage]);
 
   // Typing event handler
   const handleInputChange = (e) => {
@@ -479,13 +558,14 @@ function MessagesContent() {
           return [...prev, res.message];
         });
         if (isEncrypted) {
+          decryptedCacheRef.current[sentId] = text;
           setDecryptedCache((prev) => ({ ...prev, [sentId]: text }));
         }
         if (socket) {
           socket.emit('typing_stop', { conversationId: activeConversation._id, userId: user?._id });
         }
         setIsTyping(false);
-        scrollToBottom();
+        setTimeout(scrollToBottom, 50);
 
         // Update local conversation preview in sidebar
         setConversations((prev) =>
