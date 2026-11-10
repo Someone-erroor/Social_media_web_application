@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 /**
- * Message Schema with E2EE Ciphertext Support
+ * Message Schema with Client-Side Encrypted Ciphertext Support
  */
 const messageSchema = new Schema(
   {

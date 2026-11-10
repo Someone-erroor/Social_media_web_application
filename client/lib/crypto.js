@@ -153,7 +153,7 @@ export async function decryptMessage(ciphertextBase64, ivBase64, key) {
 
     return decoder.decode(decryptedBuffer);
   } catch (err) {
-    console.warn('[E2EE Notice] Decryption failed or mismatched key.');
+    console.warn('[Crypto Notice] Decryption failed or mismatched key.');
     return '[Encrypted message — Decryption key mismatch]';
   }
 }

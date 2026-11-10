@@ -573,3 +573,19 @@ npm run lint
 
 ### Scope Control & Exclusions
 In accordance with technical assignment requirements, non-mandatory features such as direct messaging, follow graphs, bookmarks, advanced search engines, real-time presence indicators, and stories/reels are explicitly excluded from the assessment scope.
+
+---
+
+## 8. Direct Messaging & Security Model
+
+Looply includes real-time direct messaging between authenticated users. Private conversations are protected through authenticated access control and client-side encrypted message transport and storage.
+
+### Encryption Model
+
+- **Client-Side AES-GCM 256-bit Encryption:** Messages are encrypted in your browser using the native W3C Web Crypto API before being transmitted.
+- **Cryptographically Random Nonces:** A fresh 96-bit (12-byte) initialization vector (IV) is generated for every single message via `crypto.getRandomValues()` to ensure semantic security and eliminate IV reuse.
+- **Zero Plaintext Storage:** Looply stores encrypted message ciphertext and does not persist plaintext message content in MongoDB.
+- **Encrypted Transport:** Socket.IO real-time event broadcasts and REST API payloads carry ciphertext envelopes and initialization vectors only.
+- **Server-Side Authorization:** Access to conversation streams and real-time socket rooms is strictly restricted to verified conversation participants.
+- **Security Model Classification:** The current implementation is classified as **Client-Side Encrypted with Limitations**. Encryption occurs client-side before transmission and the server operates with content opacity, but keys are derived from conversation secrets and this implementation is not equivalent to a full asymmetric zero-knowledge protocol such as Signal Protocol (Double Ratchet / X3DH).
+

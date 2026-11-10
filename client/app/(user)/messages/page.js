@@ -277,7 +277,7 @@ function MessagesContent() {
       decryptedCacheRef.current[msgId] = plaintext;
       setDecryptedCache((prev) => ({ ...prev, [msgId]: plaintext }));
     } catch (err) {
-      console.warn('[E2EE Decrypt Notice]', msgId, err);
+      console.warn('[Crypto Decrypt Notice]', msgId, err);
     } finally {
       decryptingIdsRef.current.delete(msgId);
     }
