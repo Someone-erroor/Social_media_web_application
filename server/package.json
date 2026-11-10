@@ -19,6 +19,7 @@
     "test:atlas": "node test/test-atlas-connection.mjs",
     "test:gemini-live": "node test/test-gemini-live.mjs",
     "test:split-reality": "node test/test-split-reality-backend.mjs",
+    "test:messaging": "node test/test-realtime-messaging-verification.mjs",
     "admin:create": "node scripts/create-admin.mjs",
     "admin:check": "node scripts/check-users.mjs",
     "admin:seed": "node scripts/provision-demo-admin.mjs",

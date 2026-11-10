@@ -1,8 +1,10 @@
 import { Server as SocketIOServer } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { env } from '../config/env.js';
 import { AUTH_COOKIE_NAME } from '../config/jwt.js';
 import User from '../models/User.js';
+import Conversation from '../models/Conversation.js';
 import { corsOptions } from '../config/cors.js';
 
 let ioInstance = null;
@@ -169,24 +171,47 @@ export const initSocketServer = (httpServer) => {
       return null;
     };
 
-    // Prevent client from joining administrative rooms manually
+    // Prevent client from joining administrative or protected user/conversation rooms manually
     socket.on('join_room', (roomName) => {
+      if (typeof roomName !== 'string') return;
       if (roomName === 'admin_room' && user.role !== 'admin') {
         socket.emit('error', { message: 'Unauthorized room subscription attempt.' });
         return;
       }
-      if (roomName && roomName.startsWith('user_') && roomName !== userRoom && user.role !== 'admin') {
+      if (roomName && roomName.startsWith('user_') && roomName !== userRoom) {
         socket.emit('error', { message: 'Unauthorized user room subscription attempt.' });
+        return;
+      }
+      if (roomName && roomName.startsWith('conversation_')) {
+        socket.emit('error', { message: 'Direct conversation room join forbidden. Use join_conversation.' });
         return;
       }
       socket.join(roomName);
     });
 
-    // Conversation Room & Real-Time Messaging Events
-    socket.on('join_conversation', (data) => {
-      const convId = parseConvId(data);
-      if (convId) {
+    // Conversation Room & Real-Time Messaging Events with Authoritative Membership Verification
+    socket.on('join_conversation', async (data) => {
+      try {
+        const convId = parseConvId(data);
+        if (!convId || !mongoose.isValidObjectId(convId)) {
+          socket.emit('error', { message: 'Invalid conversation ID format.' });
+          return;
+        }
+
+        // Authoritative membership check: verify user is an active participant in this conversation
+        const isParticipant = await Conversation.exists({
+          _id: convId,
+          participants: user._id
+        });
+
+        if (!isParticipant) {
+          socket.emit('error', { message: 'Access denied: You are not a participant in this conversation.' });
+          return;
+        }
+
         socket.join(`conversation_${convId}`);
+      } catch (err) {
+        socket.emit('error', { message: 'Failed to verify conversation membership.' });
       }
     });
 
@@ -197,10 +222,10 @@ export const initSocketServer = (httpServer) => {
       }
     });
 
-    // Ephemeral typing indicators (broadcast to conversation participants)
+    // Ephemeral typing indicators (broadcast only if socket is verified member of conversation)
     socket.on('typing_start', (data) => {
       const convId = parseConvId(data);
-      if (convId) {
+      if (convId && socket.rooms.has(`conversation_${convId}`)) {
         const payload = {
           conversationId: convId,
           userId: user._id,
@@ -213,7 +238,7 @@ export const initSocketServer = (httpServer) => {
 
     socket.on('typing_stop', (data) => {
       const convId = parseConvId(data);
-      if (convId) {
+      if (convId && socket.rooms.has(`conversation_${convId}`)) {
         const payload = {
           conversationId: convId,
           userId: user._id

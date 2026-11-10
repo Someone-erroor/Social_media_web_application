@@ -110,16 +110,22 @@ export function NotificationProvider({ children }) {
     const initialToken = getStoredToken();
     const socket = io(socketUrl, {
       withCredentials: true,
-      auth: (cb) => {
-        const t = getStoredToken();
-        cb(t ? { token: t } : {});
+      auth: {
+        token: initialToken
       },
-      extraHeaders: initialToken ? { Authorization: `Bearer ${initialToken}` } : {},
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 30,
       reconnectionDelay: 1000
+    });
+
+    // Refresh auth token payload on reconnection attempts
+    socket.io?.on?.('reconnect_attempt', () => {
+      const freshToken = getStoredToken();
+      if (freshToken) {
+        socket.auth = { token: freshToken };
+      }
     });
 
     socketRef.current = socket;
