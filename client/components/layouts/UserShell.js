@@ -100,6 +100,45 @@ export default function UserShell({ children, showSidePanel = true }) {
                   </CardContent>
                 </Card>
 
+                {/* Experiences Hub Showcase Card */}
+                <Card className="bg-[#1E1B26] border border-[#2D2938] hover:border-[#FF6257]/40 transition-colors">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Icon name="experiences" className="w-4 h-4 text-[#FF6257]" />
+                        <CardTitle>Experiences</CardTitle>
+                      </div>
+                      <Link
+                        href={ROUTES.USER.EXPERIENCES}
+                        className="text-xs font-semibold text-[#FF6257] hover:text-[#FF8178] transition-colors"
+                      >
+                        view hub &rarr;
+                      </Link>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-2.5 pt-1">
+                    {[
+                      { name: 'Split-Reality', tag: 'Signature', href: ROUTES.USER.FEED },
+                      { name: 'Time Capsules', tag: 'Vaults', href: ROUTES.USER.TIME_CAPSULE },
+                      { name: 'Circles', tag: 'Spaces', href: ROUTES.USER.CIRCLES },
+                      { name: 'Looply Play', tag: 'Interactive', href: ROUTES.USER.PLAY }
+                    ].map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center justify-between group py-0.5 text-xs"
+                      >
+                        <span className="font-medium text-[#F6F2EA] group-hover:text-[#FF6257] transition-colors">
+                          {item.name}
+                        </span>
+                        <span className="text-[10px] text-[#777580] group-hover:text-[#D5F36A] font-mono transition-colors">
+                          {item.tag}
+                        </span>
+                      </Link>
+                    ))}
+                  </CardContent>
+                </Card>
+
                 {/* AI Assistant Teaser Card */}
                 <Card className="bg-gradient-to-br from-[#1E1B26] via-[#24202E] to-[#1E1B26] border border-[#B9A8F5]/30 shadow-lg shadow-[#B9A8F5]/5">
                   <CardContent className="space-y-3 p-5">

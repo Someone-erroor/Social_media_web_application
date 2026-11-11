@@ -16,8 +16,8 @@ export default function UserBottomNav() {
   const navItems = [
     { label: 'Feed', href: ROUTES.USER.FEED, icon: 'feed' },
     { label: 'Explore', href: ROUTES.USER.EXPLORE, icon: 'explore' },
+    { label: 'Experiences', href: ROUTES.USER.EXPERIENCES, icon: 'experiences' },
     { label: 'Messages', href: ROUTES.USER.MESSAGES, icon: 'message' },
-    { label: 'Play', href: ROUTES.USER.PLAY, icon: 'play' },
     { label: 'Alerts', href: ROUTES.USER.NOTIFICATIONS, icon: 'notifications' },
     { label: 'Profile', href: ROUTES.USER.PROFILE, icon: 'profile' }
   ];
@@ -32,6 +32,12 @@ export default function UserBottomNav() {
           const isActive =
             item.href === ROUTES.USER.FEED
               ? pathname === ROUTES.USER.FEED
+              : item.href === ROUTES.USER.EXPERIENCES
+              ? pathname.startsWith(ROUTES.USER.EXPERIENCES) ||
+                pathname.startsWith('/play') ||
+                pathname.startsWith('/time-capsule') ||
+                pathname.startsWith('/circles') ||
+                pathname.startsWith('/events')
               : pathname.startsWith(item.href);
 
           return (

@@ -16,19 +16,35 @@ export default function UserSidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
-  const navItems = [
+  const primaryNavItems = [
     { label: 'Feed', href: ROUTES.USER.FEED, icon: 'feed' },
     { label: 'Explore', href: ROUTES.USER.EXPLORE, icon: 'explore' },
+    { label: 'Experiences', href: ROUTES.USER.EXPERIENCES, icon: 'experiences', badge: 'Hub' },
     { label: 'Messages', href: ROUTES.USER.MESSAGES, icon: 'message' },
-    { label: 'Looply Play', href: ROUTES.USER.PLAY, icon: 'play' },
-    { label: 'Time Capsule', href: ROUTES.USER.TIME_CAPSULE, icon: 'vault' },
-    { label: 'Circles', href: ROUTES.USER.CIRCLES, icon: 'circles' },
-    { label: 'Global Events', href: ROUTES.USER.EVENTS, icon: 'events' },
     { label: 'Notifications', href: ROUTES.USER.NOTIFICATIONS, icon: 'notifications' },
-    { label: 'Profile', href: ROUTES.USER.PROFILE, icon: 'profile' },
+    { label: 'Profile', href: ROUTES.USER.PROFILE, icon: 'profile' }
+  ];
+
+  const secondaryNavItems = [
     { label: 'AI Assistant', href: ROUTES.USER.ASSISTANT, icon: 'assistant' },
     { label: 'Settings', href: ROUTES.USER.SETTINGS, icon: 'settings' }
   ];
+
+  const isItemActive = (href) => {
+    if (href === ROUTES.USER.FEED) {
+      return pathname === ROUTES.USER.FEED;
+    }
+    if (href === ROUTES.USER.EXPERIENCES) {
+      return (
+        pathname.startsWith(ROUTES.USER.EXPERIENCES) ||
+        pathname.startsWith('/play') ||
+        pathname.startsWith('/time-capsule') ||
+        pathname.startsWith('/circles') ||
+        pathname.startsWith('/events')
+      );
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <aside
@@ -41,34 +57,76 @@ export default function UserSidebar() {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto" aria-label="User Navigation">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === ROUTES.USER.FEED
-              ? pathname === ROUTES.USER.FEED
-              : pathname.startsWith(item.href);
+      <nav className="flex-1 px-4 py-5 space-y-6 overflow-y-auto" aria-label="User Navigation">
+        {/* Primary Product Navigation */}
+        <div className="space-y-1">
+          {primaryNavItems.map((item) => {
+            const isActive = isItemActive(item.href);
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
-                isActive
-                  ? 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 font-semibold shadow-sm'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
-              }`}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              <Icon
-                name={item.icon}
-                className={`w-5 h-5 shrink-0 transition-colors ${
-                  isActive ? 'text-[#FF6257]' : 'text-[#777580]'
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
+                  isActive
+                    ? 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 font-semibold shadow-sm'
+                    : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
                 }`}
-              />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <Icon
+                    name={item.icon}
+                    className={`w-5 h-5 shrink-0 transition-colors ${
+                      isActive ? 'text-[#FF6257]' : 'text-[#777580]'
+                    }`}
+                  />
+                  <span className="truncate">{item.label}</span>
+                </div>
+                {item.badge && (
+                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
+                    isActive
+                      ? 'bg-[#FF6257] text-[#17151D]'
+                      : 'bg-[#24202E] text-[#D5F36A] border border-[#D5F36A]/30'
+                  }`}>
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Secondary Preferences & AI Tools */}
+        <div className="pt-3 border-t border-[#2D2938]/60 space-y-1">
+          <p className="px-3.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#777580]">
+            Preferences &amp; Tools
+          </p>
+          {secondaryNavItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-200 hover:translate-x-1 ${
+                  isActive
+                    ? 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 font-semibold shadow-sm'
+                    : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                }`}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                <Icon
+                  name={item.icon}
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    isActive ? 'text-[#FF6257]' : 'text-[#777580]'
+                  }`}
+                />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
       {/* Admin Switcher & User Teaser Footer */}

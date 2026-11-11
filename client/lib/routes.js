@@ -23,6 +23,7 @@ export const ROUTES = {
   USER: {
     FEED: '/feed',
     EXPLORE: '/explore',
+    EXPERIENCES: '/experiences',
     MESSAGES: '/messages',
     PLAY: '/play',
     TIME_CAPSULE: '/time-capsule',
@@ -67,6 +68,7 @@ export const ROUTE_METADATA = {
 
   [ROUTES.USER.FEED]: { title: 'Feed', scope: 'user', description: 'Social media home feed' },
   [ROUTES.USER.EXPLORE]: { title: 'Explore', scope: 'user', description: 'Discover trending posts and creators' },
+  [ROUTES.USER.EXPERIENCES]: { title: 'Experiences', scope: 'user', description: 'Interactive Looply social experiences and signature features' },
   [ROUTES.USER.MESSAGES]: { title: 'Direct Messages', scope: 'user', description: 'Real-time encrypted direct messaging' },
   [ROUTES.USER.PLAY]: { title: 'Looply Play', scope: 'user', description: 'Interactive social games and challenges' },
   [ROUTES.USER.TIME_CAPSULE]: { title: 'Time Capsule', scope: 'user', description: 'Future memories vault' },

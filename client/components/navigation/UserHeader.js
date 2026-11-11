@@ -147,6 +147,16 @@ export default function UserHeader() {
                   </Link>
 
                   <Link
+                    href={ROUTES.USER.EXPERIENCES}
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#777580] hover:text-[#F6F2EA] hover:bg-[#24202E] transition-colors"
+                    role="menuitem"
+                  >
+                    <Icon name="experiences" className="w-4 h-4 text-[#FF6257]" />
+                    <span>Experiences Hub</span>
+                  </Link>
+
+                  <Link
                     href={ROUTES.USER.SETTINGS}
                     onClick={() => setDropdownOpen(false)}
                     className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#777580] hover:text-[#F6F2EA] hover:bg-[#24202E] transition-colors"
