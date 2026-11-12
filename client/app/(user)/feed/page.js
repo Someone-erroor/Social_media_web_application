@@ -1,28 +1,53 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import PageHeader from '@/components/ui/PageHeader';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
+import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import PostComposer from '@/components/posts/PostComposer';
 import PostCard from '@/components/posts/PostCard';
 import { postService } from '@/services/postService';
+import { ROUTES } from '@/lib/routes';
+
+const FEED_MODES = [
+  {
+    id: 'latest',
+    label: 'Latest',
+    desc: 'Real-time community timeline ordered chronologically'
+  },
+  {
+    id: 'following',
+    label: 'Following',
+    desc: 'Chronological updates from creators you follow'
+  },
+  {
+    id: 'explore',
+    label: 'Explore',
+    desc: 'Trending discussions and high-engagement posts'
+  }
+];
 
 export default function FeedPage() {
-  const [feedMode, setFeedMode] = useState('following'); // 'following' | 'latest' | 'explore'
+  // 'latest' as default ensures active content is immediately visible for both new and existing users
+  const [feedMode, setFeedMode] = useState('latest');
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
 
+  const fetchFeed = useCallback(async (mode, page = 1) => {
+    return postService.getFeed({ page, limit: 10, mode });
+  }, []);
+
   useEffect(() => {
     let ignore = false;
     setLoading(true);
     setErrorMessage('');
 
-    postService
-      .getFeed({ page: 1, limit: 10, mode: feedMode })
+    fetchFeed(feedMode, 1)
       .then((res) => {
         if (!ignore && res?.success) {
           setPosts(res.posts || []);
@@ -43,7 +68,7 @@ export default function FeedPage() {
     return () => {
       ignore = true;
     };
-  }, [feedMode]);
+  }, [feedMode, fetchFeed]);
 
   const handlePostCreated = (newPost) => {
     setPosts((prev) => [newPost, ...prev]);
@@ -62,12 +87,11 @@ export default function FeedPage() {
   };
 
   const handleLoadMore = () => {
-    if (pagination.page >= pagination.totalPages) return;
+    if (pagination.page >= pagination.totalPages || loadingMore) return;
     setLoadingMore(true);
     const nextPage = pagination.page + 1;
 
-    postService
-      .getFeed({ page: nextPage, limit: 10, mode: feedMode })
+    fetchFeed(feedMode, nextPage)
       .then((res) => {
         if (res?.success) {
           setPosts((prev) => [...prev, ...(res.posts || [])]);
@@ -85,8 +109,7 @@ export default function FeedPage() {
   const handleRetry = () => {
     setLoading(true);
     setErrorMessage('');
-    postService
-      .getFeed({ page: 1, limit: 10, mode: feedMode })
+    fetchFeed(feedMode, 1)
       .then((res) => {
         if (res?.success) {
           setPosts(res.posts || []);
@@ -101,86 +124,130 @@ export default function FeedPage() {
       });
   };
 
+  const activeModeMeta = useMemo(() => {
+    return FEED_MODES.find((m) => m.id === feedMode) || FEED_MODES[0];
+  }, [feedMode]);
+
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Home Feed"
-        description="The latest thoughts and discussions from creators across Looply"
-      />
+    <div className="space-y-6 animate-fade-in pb-12">
+      {/* 1. Feed Context Header */}
+      <header className="p-5 sm:p-6 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-xl relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 font-display">
+                Social Stream
+              </span>
+              <span className="text-[11px] text-[#777580] flex items-center gap-1 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D5F36A] animate-pulse" />
+                Live Community
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black text-[#F6F2EA] font-display tracking-tight">
+              Your Loop
+            </h1>
+            <p className="text-xs sm:text-sm text-[#777580] max-w-xl leading-relaxed">
+              Explore real-time thoughts, conversations, and dual-perspective stories from creators across Looply.
+            </p>
+          </div>
 
-      {/* Real Post Composer */}
-      <PostComposer onPostCreated={handlePostCreated} />
+          <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+            <Link
+              href={ROUTES.USER.EXPLORE}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#F6F2EA] bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/50 hover:text-[#FF6257] transition-all"
+            >
+              <Icon name="explore" className="w-3.5 h-3.5 text-[#FF6257]" />
+              <span>Discover</span>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-      {/* User-Controlled Feed Modes */}
-      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-3 overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => setFeedMode('following')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-            feedMode === 'following'
-              ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
-          }`}
-        >
-          Following
-        </button>
-        <button
-          type="button"
-          onClick={() => setFeedMode('latest')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-            feedMode === 'latest'
-              ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
-          }`}
-        >
-          Latest
-        </button>
-        <button
-          type="button"
-          onClick={() => setFeedMode('explore')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-            feedMode === 'explore'
-              ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
-          }`}
-        >
-          Explore Discovery
-        </button>
-      </div>
+      {/* 2. Quick Composer Entry */}
+      <section aria-label="Create Post">
+        <PostComposer onPostCreated={handlePostCreated} />
+      </section>
 
-      {/* Error state */}
+      {/* 3. Feed Mode / Filter Controls */}
+      <section className="space-y-2" aria-label="Feed Modes">
+        <div className="flex items-center justify-between gap-2 border-b border-[#2D2938] pb-3 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-2">
+            {FEED_MODES.map((mode) => {
+              const isActive = feedMode === mode.id;
+              return (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => setFeedMode(mode.id)}
+                  aria-pressed={isActive}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap min-h-[36px] ${
+                    isActive
+                      ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
+                      : 'bg-[#1E1B26] border border-[#2D2938] text-[#777580] hover:text-[#F6F2EA] hover:border-[#777580]/40'
+                  }`}
+                >
+                  {mode.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <span className="text-[11px] text-[#777580] hidden sm:inline whitespace-nowrap">
+            {pagination.total > 0 ? `${pagination.total} posts` : 'Active Feed'}
+          </span>
+        </div>
+
+        {/* Sub-label describing the active mode */}
+        <p className="text-[11px] text-[#777580] px-1">
+          {activeModeMeta.desc}
+        </p>
+      </section>
+
+      {/* Error state with retry */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
-          <span>{errorMessage}</span>
+        <div
+          role="alert"
+          className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-2">
+            <Icon name="alertCircle" className="w-4 h-4 shrink-0 text-[#FF6257]" />
+            <span>{errorMessage}</span>
+          </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={handleRetry}
+            className="shrink-0 text-xs"
           >
             Retry
           </Button>
         </div>
       )}
 
-      {/* Posts Stream */}
+      {/* 4. Main Posts Stream */}
       {loading ? (
-        <div className="space-y-4">
+        <div className="space-y-4" aria-label="Loading feed posts">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-sm space-y-3 animate-pulse"
+              className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-sm space-y-4 animate-pulse"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#24202E]" />
                 <div className="space-y-1.5 flex-1">
-                  <div className="w-28 h-3.5 bg-[#24202E] rounded" />
-                  <div className="w-16 h-2.5 bg-[#24202E]/60 rounded" />
+                  <div className="w-32 h-3.5 bg-[#24202E] rounded" />
+                  <div className="w-20 h-2.5 bg-[#24202E]/60 rounded" />
                 </div>
               </div>
               <div className="space-y-2 pt-1">
                 <div className="w-full h-3 bg-[#24202E] rounded" />
-                <div className="w-4/5 h-3 bg-[#24202E]/60 rounded" />
+                <div className="w-5/6 h-3 bg-[#24202E] rounded" />
+                <div className="w-3/5 h-3 bg-[#24202E]/60 rounded" />
+              </div>
+              <div className="pt-2 border-t border-[#2D2938] flex gap-4">
+                <div className="w-12 h-6 bg-[#24202E] rounded-lg" />
+                <div className="w-12 h-6 bg-[#24202E] rounded-lg" />
               </div>
             </div>
           ))}
@@ -188,9 +255,33 @@ export default function FeedPage() {
       ) : posts.length === 0 ? (
         <EmptyState
           icon="feed"
-          title="Your Feed is Empty"
-          description="No posts have been published yet. Be the first to share your thoughts using the composer above!"
-          badgeText="Community Feed"
+          title={
+            feedMode === 'following'
+              ? 'Your Following Feed is Quiet'
+              : feedMode === 'explore'
+              ? 'No Trending Posts Right Now'
+              : 'Your Loop is Empty'
+          }
+          description={
+            feedMode === 'following'
+              ? "You aren't following anyone with recent posts yet. Switch to the Latest timeline to discover active creators!"
+              : feedMode === 'explore'
+              ? 'Trending discussions with high likes and comments will automatically appear here.'
+              : 'No community posts have been published yet. Be the first to share your thoughts using the composer above!'
+          }
+          badgeText="Looply Feed"
+          action={
+            feedMode === 'following' ? (
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={() => setFeedMode('latest')}
+              >
+                Switch to Latest Feed
+              </Button>
+            ) : null
+          }
         />
       ) : (
         <div className="space-y-4">
@@ -203,16 +294,16 @@ export default function FeedPage() {
             />
           ))}
 
-          {/* Pagination: Load More Button */}
+          {/* Pagination: Load More */}
           {pagination.page < pagination.totalPages && (
-            <div className="pt-2 text-center">
+            <div className="pt-4 text-center">
               <Button
                 type="button"
                 variant="outline"
                 size="md"
                 onClick={handleLoadMore}
                 disabled={loadingMore}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto min-w-[200px]"
               >
                 {loadingMore ? 'Loading More Posts...' : 'Load More Posts'}
               </Button>

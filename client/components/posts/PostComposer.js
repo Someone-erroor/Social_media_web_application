@@ -265,11 +265,11 @@ export default function PostComposer({ onPostCreated, defaultCircleId = null }) 
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                aria-label="What is happening? Share your thoughts"
-                placeholder="What is happening? Share your thoughts..."
+                aria-label="What's happening in your Loop?"
+                placeholder="What's happening in your Loop? Share a thought, link, or question..."
                 rows={3}
                 disabled={loading || aiLoading}
-                className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#17151D] p-3 text-sm text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#FF6257] transition-colors"
+                className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#17151D] p-3 text-sm text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#FF6257] transition-colors leading-relaxed"
               />
             </div>
           </div>

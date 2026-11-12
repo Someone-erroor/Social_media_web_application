@@ -168,6 +168,13 @@ export const postService = {
   },
 
   /**
+   * Alias for createComment to prevent API signature mismatch in consumers.
+   */
+  async addComment(postId, data) {
+    return this.createComment(postId, data);
+  },
+
+  /**
    * Updates an existing comment. (Phase 10)
    *
    * @param {string} commentId
