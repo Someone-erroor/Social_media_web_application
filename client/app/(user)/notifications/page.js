@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -9,6 +11,7 @@ import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
 import EmptyState from '@/components/ui/EmptyState';
 import { useNotifications } from '@/context/NotificationContext';
+import { ROUTES } from '@/lib/routes';
 
 function formatTimestamp(dateString) {
   if (!dateString) return '—';
@@ -32,32 +35,55 @@ function formatTimestamp(dateString) {
 function getNotificationIcon(type) {
   switch (type) {
     case 'post_like':
-      return <Icon name="heart" className="w-4 h-4 text-[#FF6257] fill-[#FF6257]" />;
+      return <Icon name="heart" className="w-3.5 h-3.5 text-[#FF6257] fill-[#FF6257]" />;
     case 'post_comment':
-      return <Icon name="comments" className="w-4 h-4 text-[#B9A8F5]" />;
+      return <Icon name="comments" className="w-3.5 h-3.5 text-[#B9A8F5]" />;
     case 'follow':
     case 'follow_request_accepted':
-      return <Icon name="users" className="w-4 h-4 text-[#D5F36A]" />;
+      return <Icon name="users" className="w-3.5 h-3.5 text-[#D5F36A]" />;
     case 'follow_request':
-      return <Icon name="clock" className="w-4 h-4 text-[#FBBF24]" />;
+      return <Icon name="clock" className="w-3.5 h-3.5 text-[#FBBF24]" />;
     case 'message':
-      return <Icon name="message" className="w-4 h-4 text-[#FF6257]" />;
+      return <Icon name="message" className="w-3.5 h-3.5 text-[#FF6257]" />;
     case 'circle_invite':
-      return <Icon name="circles" className="w-4 h-4 text-[#B9A8F5]" />;
+      return <Icon name="circles" className="w-3.5 h-3.5 text-[#B9A8F5]" />;
     case 'time_capsule_unlocked':
-      return <Icon name="vault" className="w-4 h-4 text-[#D5F36A]" />;
+      return <Icon name="vault" className="w-3.5 h-3.5 text-[#D5F36A]" />;
     case 'game_challenge':
-      return <Icon name="play" className="w-4 h-4 text-[#D5F36A]" />;
+      return <Icon name="play" className="w-3.5 h-3.5 text-[#D5F36A]" />;
     case 'moderation_warning':
-      return <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257]" />;
+      return <Icon name="alertCircle" className="w-3.5 h-3.5 text-[#FF6257]" />;
     case 'login_alert':
-      return <Icon name="lock" className="w-4 h-4 text-[#FBBF24]" />;
+      return <Icon name="lock" className="w-3.5 h-3.5 text-[#FBBF24]" />;
     default:
-      return <Icon name="notifications" className="w-4 h-4 text-[#777580]" />;
+      return <Icon name="notifications" className="w-3.5 h-3.5 text-[#777580]" />;
+  }
+}
+
+function getNotificationDestination(notif) {
+  const actorId = notif.actor?._id;
+  switch (notif.type) {
+    case 'message':
+      return actorId ? `${ROUTES.USER.MESSAGES}?userId=${actorId}` : ROUTES.USER.MESSAGES;
+    case 'follow':
+    case 'follow_request':
+    case 'follow_request_accepted':
+      return actorId ? ROUTES.USER.USER_PROFILE(actorId) : ROUTES.USER.FEED;
+    case 'circle_invite':
+      return ROUTES.USER.CIRCLES;
+    case 'time_capsule_unlocked':
+      return ROUTES.USER.TIME_CAPSULE;
+    case 'game_challenge':
+      return ROUTES.USER.PLAY;
+    case 'post_like':
+    case 'post_comment':
+    default:
+      return ROUTES.USER.FEED;
   }
 }
 
 export default function NotificationsPage() {
+  const router = useRouter();
   const {
     notifications,
     unreadCount,
@@ -69,15 +95,37 @@ export default function NotificationsPage() {
     refreshNotifications
   } = useNotifications();
 
-  const [filter, setFilter] = useState('all'); // 'all' | 'unread' | 'likes' | 'comments'
+  // Filters: 'all' | 'unread' | 'reactions' | 'social'
+  const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(12);
   const [errorNotice, setErrorNotice] = useState('');
+
+  const reactionsCount = notifications.filter(
+    (n) => n.type === 'post_like' || n.type === 'post_comment'
+  ).length;
+
+  const socialCount = notifications.filter(
+    (n) =>
+      n.type === 'follow' ||
+      n.type === 'follow_request' ||
+      n.type === 'follow_request_accepted' ||
+      n.type === 'circle_invite' ||
+      n.type === 'game_challenge'
+  ).length;
 
   const filteredNotifications = notifications.filter((n) => {
     if (filter === 'unread') return !n.readAt;
-    if (filter === 'likes') return n.type === 'post_like';
-    if (filter === 'comments') return n.type === 'post_comment';
+    if (filter === 'reactions') return n.type === 'post_like' || n.type === 'post_comment';
+    if (filter === 'social') {
+      return (
+        n.type === 'follow' ||
+        n.type === 'follow_request' ||
+        n.type === 'follow_request_accepted' ||
+        n.type === 'circle_invite' ||
+        n.type === 'game_challenge'
+      );
+    }
     return true;
   });
 
@@ -93,12 +141,20 @@ export default function NotificationsPage() {
     }
   };
 
+  const handleNotificationClick = (notif) => {
+    if (!notif.readAt) {
+      markAsRead(notif._id);
+    }
+    const destination = getNotificationDestination(notif);
+    router.push(destination);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader
           title="Notifications"
-          description="Real-time alerts, post reactions, and community interactions"
+          description="Real-time alerts, post reactions, member follows, and community interactions"
           badge={
             <Badge variant={isConnected ? 'lime' : 'neutral'} size="sm">
               {isConnected ? 'Real-time Connected' : 'Sync Active'}
@@ -142,14 +198,14 @@ export default function NotificationsPage() {
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-medium underline hover:text-[#FF8178]"
+              className="font-medium underline hover:text-[#FF8178] cursor-pointer"
             >
               Retry
             </button>
             <button
               type="button"
               onClick={() => setErrorNotice('')}
-              className="text-[#FF6257] hover:text-[#FF8178] font-bold"
+              className="text-[#FF6257] hover:text-[#FF8178] font-bold cursor-pointer"
             >
               ✕
             </button>
@@ -165,55 +221,78 @@ export default function NotificationsPage() {
             setFilter('all');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
+          className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
             filter === 'all'
               ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
               : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
-          All ({notifications.length})
+          <span>All</span>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+            filter === 'all' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+          }`}>
+            {notifications.length}
+          </span>
         </button>
+
         <button
           type="button"
           onClick={() => {
             setFilter('unread');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
+          className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
             filter === 'unread'
               ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
               : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
-          Unread ({unreadCount})
+          <span>Unread</span>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+            filter === 'unread' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+          }`}>
+            {unreadCount}
+          </span>
         </button>
+
         <button
           type="button"
           onClick={() => {
-            setFilter('likes');
+            setFilter('reactions');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
-            filter === 'likes'
+          className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+            filter === 'reactions'
               ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
               : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
-          Likes
+          <span>Reactions</span>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+            filter === 'reactions' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+          }`}>
+            {reactionsCount}
+          </span>
         </button>
+
         <button
           type="button"
           onClick={() => {
-            setFilter('comments');
+            setFilter('social');
             setPage(1);
           }}
-          className={`px-3 py-1.5 rounded-xl font-semibold transition-colors shrink-0 ${
-            filter === 'comments'
+          className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+            filter === 'social'
               ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
               : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
           }`}
         >
-          Comments
+          <span>Social</span>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+            filter === 'social' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+          }`}>
+            {socialCount}
+          </span>
         </button>
       </div>
 
@@ -233,13 +312,25 @@ export default function NotificationsPage() {
       ) : filteredNotifications.length === 0 ? (
         <EmptyState
           icon="notifications"
-          title={filter === 'unread' ? 'No Unread Alerts' : 'No Notifications Yet'}
+          title={
+            filter === 'unread'
+              ? 'No Unread Alerts'
+              : filter === 'reactions'
+              ? 'No Reactions Yet'
+              : filter === 'social'
+              ? 'No Social Activity Yet'
+              : 'No Notifications Yet'
+          }
           description={
             filter === 'unread'
-              ? "You're all caught up! No unread notifications found."
-              : 'When members like your posts or leave comments, real-time alerts will appear here.'
+              ? "You're all caught up! There are no unread notifications right now."
+              : filter === 'reactions'
+              ? 'Likes and comments from other creators will show up here.'
+              : filter === 'social'
+              ? 'Follows, circle invites, and game challenges will appear here.'
+              : 'When members interact with your posts or profile, alerts will appear here.'
           }
-          badgeText="Live Activity"
+          badgeText="Activity Stream"
         />
       ) : (
         <div className="space-y-2.5">
@@ -248,59 +339,84 @@ export default function NotificationsPage() {
             const actor = notif.actor || {};
 
             return (
-              <Card
+              <div
                 key={notif._id}
-                className={`transition-colors ${
+                onClick={() => handleNotificationClick(notif)}
+                className={`group rounded-2xl border transition-all cursor-pointer p-4 flex items-start justify-between gap-3 text-xs ${
                   isUnread
-                    ? 'bg-[#1E1B26] border-[#FF6257]/40 shadow-sm'
-                    : 'bg-[#1E1B26]/70 border-[#2D2938] hover:bg-[#24202E]/60'
+                    ? 'bg-[#1E1B26] border-[#FF6257]/40 shadow-sm hover:border-[#FF6257] shadow-black/40'
+                    : 'bg-[#1E1B26]/70 border-[#2D2938] hover:bg-[#24202E]/70 hover:border-[#2D2938]/90'
                 }`}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleNotificationClick(notif);
+                  }
+                }}
               >
-                <div className="p-4 flex items-start justify-between gap-3 text-xs">
-                  <div className="flex items-start gap-3 min-w-0">
-                    <div className="relative shrink-0">
-                      <Avatar
-                        name={actor.fullName || 'User'}
-                        src={actor.profile?.avatarUrl}
-                        size="md"
-                      />
-                      <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-[#17151D] border border-[#2D2938] shadow-xs">
-                        {getNotificationIcon(notif.type)}
-                      </span>
-                    </div>
-
-                    <div className="min-w-0 space-y-0.5">
-                      <p className="text-[#F6F2EA] leading-snug">
-                        {notif.message}
-                      </p>
-                      <span className="text-[11px] text-[#777580] block font-mono">
-                        {formatTimestamp(notif.createdAt)}
-                      </span>
-                    </div>
+                <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                  <div className="relative shrink-0">
+                    <Avatar
+                      name={actor.fullName || 'User'}
+                      src={actor.profile?.avatarUrl}
+                      size="md"
+                    />
+                    <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-[#17151D] border border-[#2D2938] shadow-xs">
+                      {getNotificationIcon(notif.type)}
+                    </span>
                   </div>
 
+                  <div className="min-w-0 space-y-1">
+                    <p className="text-[#F6F2EA] leading-snug group-hover:text-white transition-colors">
+                      {notif.message}
+                    </p>
+                    <div className="flex items-center gap-2 text-[11px] text-[#777580]">
+                      <span className="font-mono">{formatTimestamp(notif.createdAt)}</span>
+                      {isUnread && (
+                        <>
+                          <span>•</span>
+                          <span className="inline-flex items-center gap-1 text-[#FF6257] font-semibold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6257] animate-pulse" />
+                            New
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
                   {isUnread && (
                     <button
                       type="button"
-                      onClick={() => markAsRead(notif._id)}
-                      className="shrink-0 p-1.5 rounded-lg text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors text-[11px] font-semibold"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markAsRead(notif._id);
+                      }}
+                      className="px-2.5 py-1 rounded-lg text-[#FF6257] bg-[#FF6257]/10 hover:bg-[#FF6257]/20 transition-colors text-[11px] font-semibold cursor-pointer"
                       title="Mark as read"
                     >
                       Mark read
                     </button>
                   )}
+                  <Icon
+                    name="chevronRight"
+                    className="w-4 h-4 text-[#777580] group-hover:text-[#F6F2EA] group-hover:translate-x-0.5 transition-all"
+                  />
                 </div>
-              </Card>
+              </div>
             );
           })}
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="pt-3 flex items-center justify-between text-xs text-[#777580]">
+            <div className="pt-4 flex items-center justify-between text-xs text-[#777580]">
               <span>
                 Page {page} of {totalPages}
               </span>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"

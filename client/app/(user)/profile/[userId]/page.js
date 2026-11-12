@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import Card, { CardContent } from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import EmptyState from '@/components/ui/EmptyState';
@@ -17,7 +18,6 @@ import { useAuth } from '@/context/AuthContext';
 import { profileService } from '@/services/profileService';
 import { postService } from '@/services/postService';
 import { messageService } from '@/services/messageService';
-import { safetyService } from '@/services/safetyService';
 import { ROUTES } from '@/lib/routes';
 
 export default function UserProfilePage() {
@@ -33,6 +33,9 @@ export default function UserProfilePage() {
   const [postsError, setPostsError] = useState('');
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
+  // Content tabs: 'all' | 'splitReality'
+  const [activeTab, setActiveTab] = useState('all');
+
   // User list modal state (Followers / Following)
   const [userListModalOpen, setUserListModalOpen] = useState(false);
   const [userListType, setUserListType] = useState('followers');
@@ -40,7 +43,10 @@ export default function UserProfilePage() {
   const [userListLoading, setUserListLoading] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
 
-  const isOwnProfile = currentUser && (currentUser._id === userId || currentUser.id === userId);
+  const isOwnProfile = Boolean(
+    currentUser &&
+    (currentUser._id === userId || currentUser.id === userId || profile?.isOwnProfile)
+  );
 
   const handleStartMessage = async () => {
     try {
@@ -74,7 +80,7 @@ export default function UserProfilePage() {
         });
 
       const postsPromise = postService
-        .getUserPosts(userId, { page: 1, limit: 20 })
+        .getUserPosts(userId, { page: 1, limit: 30 })
         .then((postsRes) => {
           if (!ignore) {
             setPosts(postsRes?.posts || []);
@@ -159,22 +165,28 @@ export default function UserProfilePage() {
       })
     : '';
 
+  // Filter posts based on active tab
+  const splitRealityPosts = posts.filter(
+    (p) => p.postType === 'splitReality' || p.isSplitReality || (p.primaryMedia && p.realityMedia)
+  );
+  const displayedPosts = activeTab === 'splitReality' ? splitRealityPosts : posts;
+
   return (
     <div className="space-y-6">
       <PageHeader
         title={profile ? profile.fullName : 'Profile'}
         description={
           profile
-            ? `Explore ${profile.fullName}'s presence, activity, and thoughts on Looply`
+            ? `Explore ${profile.fullName}'s presence, dual-perspective stories, and thoughts on Looply`
             : 'Viewing member profile on Looply'
         }
       />
 
       {loading ? (
         <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] animate-pulse">
-          <div className="h-28 bg-[#24202E]" />
+          <div className="h-32 bg-[#24202E]" />
           <CardContent className="pt-0 pb-6 px-6">
-            <div className="-mt-12 mb-4 w-24 h-24 rounded-full bg-[#24202E] ring-4 ring-[#17151D]" />
+            <div className="-mt-14 mb-4 w-24 h-24 rounded-full bg-[#24202E] ring-4 ring-[#17151D]" />
             <div className="space-y-2">
               <div className="w-48 h-5 bg-[#24202E] rounded" />
               <div className="w-64 h-3 bg-[#24202E]/60 rounded" />
@@ -209,11 +221,13 @@ export default function UserProfilePage() {
         <>
           {/* Profile Header Card */}
           <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] shadow-xl shadow-black/50">
-            <div className="h-28 bg-gradient-to-r from-[#FF6257]/70 via-[#17151D] to-[#B9A8F5]/70" />
+            <div className="h-32 sm:h-36 bg-gradient-to-r from-[#FF6257]/70 via-[#17151D] to-[#B9A8F5]/70 relative">
+              <div className="absolute inset-0 bg-[radial-gradient(#D5F36A_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
+            </div>
 
-            <CardContent className="relative pt-0 pb-6 px-6">
-              <div className="-mt-12 mb-4 flex items-end justify-between gap-3">
-                <div className="rounded-full ring-4 ring-[#17151D] bg-[#17151D]">
+            <CardContent className="relative pt-0 pb-6 px-4 sm:px-6">
+              <div className="-mt-14 mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div className="rounded-full ring-4 ring-[#1E1B26] bg-[#17151D] p-0.5">
                   <Avatar
                     name={profile.fullName}
                     src={profile.profile?.avatarUrl}
@@ -221,17 +235,18 @@ export default function UserProfilePage() {
                   />
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-2 flex items-center gap-2">
                   {isOwnProfile ? (
                     <Button
                       href={ROUTES.USER.PROFILE_EDIT}
                       variant="outline"
                       size="sm"
+                      icon={<Icon name="edit" className="w-3.5 h-3.5" />}
                     >
                       Edit Profile
                     </Button>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <>
                       <FollowButton
                         userId={userId}
                         isFollowing={Boolean(profile.isFollowing)}
@@ -260,28 +275,36 @@ export default function UserProfilePage() {
                       <button
                         type="button"
                         onClick={() => setShowReportModal(true)}
-                        className="p-2 rounded-lg text-[#777580] hover:text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors"
+                        className="p-2 rounded-lg text-[#777580] hover:text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors cursor-pointer"
                         title="Report User"
                       >
                         <Icon name="flag" className="w-4 h-4" />
                       </button>
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div>
-                  <h1 className="text-xl font-black text-[#F6F2EA] font-display">
-                    {profile.fullName}
-                  </h1>
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <h1 className="text-xl sm:text-2xl font-black text-[#F6F2EA] font-display">
+                      {profile.fullName}
+                    </h1>
+                    {profile.isPrivate && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#24202E] text-[#B9A8F5] border border-[#2D2938]">
+                        <Icon name="lock" className="w-2.5 h-2.5" />
+                        Private
+                      </span>
+                    )}
+                  </div>
                   {memberSince && (
-                    <p className="text-xs text-[#777580]">Member since {memberSince}</p>
+                    <p className="text-xs text-[#777580] mt-0.5">Member since {memberSince}</p>
                   )}
                 </div>
 
                 {profile.profile?.bio ? (
-                  <p className="text-sm text-[#777580] max-w-xl leading-relaxed">
+                  <p className="text-sm text-[#F6F2EA]/90 max-w-2xl leading-relaxed">
                     {profile.profile.bio}
                   </p>
                 ) : (
@@ -291,29 +314,29 @@ export default function UserProfilePage() {
                 )}
 
                 {/* Follower / Following Metrics Bar */}
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-t border-[#2D2938] text-xs">
+                <div className="flex flex-wrap items-center gap-6 pt-3 border-t border-[#2D2938] text-xs">
                   <button
                     type="button"
                     onClick={handleOpenFollowers}
-                    className="flex items-center gap-1.5 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
+                    className="flex items-center gap-2 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
                     title="View followers"
                   >
-                    <span className="font-bold text-[#F6F2EA] text-sm group-hover:text-[#FF6257] font-display">
+                    <span className="font-bold text-[#F6F2EA] text-base group-hover:text-[#FF6257] font-display">
                       {profile.followersCount ?? 0}
                     </span>
-                    <span>Followers</span>
+                    <span className="font-medium">Followers</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleOpenFollowing}
-                    className="flex items-center gap-1.5 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
+                    className="flex items-center gap-2 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
                     title="View following"
                   >
-                    <span className="font-bold text-[#F6F2EA] text-sm group-hover:text-[#FF6257] font-display">
+                    <span className="font-bold text-[#F6F2EA] text-base group-hover:text-[#FF6257] font-display">
                       {profile.followingCount ?? 0}
                     </span>
-                    <span>Following</span>
+                    <span className="font-medium">Following</span>
                   </button>
                 </div>
               </div>
@@ -322,41 +345,95 @@ export default function UserProfilePage() {
 
           {/* User Posts Section */}
           <div className="space-y-4">
-            <h2 className="text-sm font-bold text-[#F6F2EA] font-display">
-              Posts by {profile.fullName} ({posts.length})
-            </h2>
-
             {profile.isPrivate && !profile.isFollowing && !isOwnProfile ? (
-              <div className="p-8 rounded-2xl bg-[#1E1B26] border border-[#2D2938] text-center space-y-3">
-                <div className="w-12 h-12 rounded-full bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center mx-auto">
-                  <Icon name="lock" className="w-6 h-6" />
+              <div className="p-10 rounded-2xl bg-[#1E1B26] border border-[#2D2938] text-center space-y-4 shadow-lg">
+                <div className="w-14 h-14 rounded-full bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center mx-auto">
+                  <Icon name="lock" className="w-7 h-7" />
                 </div>
-                <h3 className="text-sm font-bold text-[#F6F2EA] font-display">This Account is Private</h3>
-                <p className="text-xs text-[#777580] max-w-sm mx-auto">
-                  Follow {profile.fullName} to view their photos, posts, and community activity.
-                </p>
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-[#F6F2EA] font-display">This Account is Private</h3>
+                  <p className="text-xs text-[#777580] max-w-md mx-auto leading-relaxed">
+                    Follow {profile.fullName} to see their photos, dual-perspective Split-Reality posts, and activity on Looply.
+                  </p>
+                </div>
               </div>
-            ) : postsError ? (
-              <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
-                {postsError}
-              </div>
-            ) : posts.length === 0 ? (
-              <EmptyState
-                icon="posts"
-                title="No Publications Yet"
-                description={`${profile.fullName} has not published any posts on Looply yet.`}
-              />
             ) : (
-              <div className="space-y-4">
-                {posts.map((post) => (
-                  <PostCard
-                    key={post._id}
-                    post={post}
-                    onPostUpdated={handlePostUpdated}
-                    onPostDeleted={handlePostDeleted}
-                  />
-                ))}
-              </div>
+              <>
+                {/* Content Tabs */}
+                <div className="flex items-center justify-between border-b border-[#2D2938] pb-3 gap-3 overflow-x-auto">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('all')}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 ${
+                        activeTab === 'all'
+                          ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
+                          : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                      }`}
+                    >
+                      <span>All Posts</span>
+                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                        activeTab === 'all' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+                      }`}>
+                        {posts.length}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('splitReality')}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 ${
+                        activeTab === 'splitReality'
+                          ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
+                          : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                      }`}
+                    >
+                      <Icon name="split" className="w-3 h-3" />
+                      <span>Split-Reality</span>
+                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                        activeTab === 'splitReality' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+                      }`}>
+                        {splitRealityPosts.length}
+                      </span>
+                    </button>
+                  </div>
+
+                  <span className="text-xs text-[#777580] hidden sm:inline font-mono">
+                    {displayedPosts.length} publication{displayedPosts.length === 1 ? '' : 's'}
+                  </span>
+                </div>
+
+                {postsError ? (
+                  <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+                    {postsError}
+                  </div>
+                ) : displayedPosts.length === 0 ? (
+                  activeTab === 'splitReality' ? (
+                    <EmptyState
+                      icon="split"
+                      title="No Split-Reality Posts"
+                      description={`${profile.fullName} has not shared any Split-Reality dual-perspective posts yet.`}
+                    />
+                  ) : (
+                    <EmptyState
+                      icon="posts"
+                      title="No Publications Yet"
+                      description={`${profile.fullName} has not published any posts on Looply yet.`}
+                    />
+                  )
+                ) : (
+                  <div className="space-y-4">
+                    {displayedPosts.map((post) => (
+                      <PostCard
+                        key={post._id}
+                        post={post}
+                        onPostUpdated={handlePostUpdated}
+                        onPostDeleted={handlePostDeleted}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
 

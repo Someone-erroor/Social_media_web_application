@@ -6,6 +6,7 @@ import Logo from '@/components/brand/Logo';
 import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/context/AuthContext';
+import { useNotifications } from '@/context/NotificationContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
@@ -15,6 +16,7 @@ import { ROUTES } from '@/lib/routes';
 export default function UserSidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
 
   const primaryNavItems = [
     { label: 'Feed', href: ROUTES.USER.FEED, icon: 'feed' },
@@ -83,7 +85,11 @@ export default function UserSidebar() {
                   />
                   <span className="truncate">{item.label}</span>
                 </div>
-                {item.badge && (
+                {item.href === ROUTES.USER.NOTIFICATIONS && unreadCount > 0 ? (
+                  <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-[#FF6257] rounded-full shadow-xs shadow-[#FF6257]/50 animate-badge-pulse">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                ) : item.badge ? (
                   <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
                     isActive
                       ? 'bg-[#FF6257] text-[#17151D]'
@@ -91,7 +97,7 @@ export default function UserSidebar() {
                   }`}>
                     {item.badge}
                   </span>
-                )}
+                ) : null}
               </Link>
             );
           })}

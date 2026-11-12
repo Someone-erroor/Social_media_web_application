@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Icon from '@/components/ui/Icon';
+import { useNotifications } from '@/context/NotificationContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
@@ -12,6 +13,7 @@ import { ROUTES } from '@/lib/routes';
  */
 export default function UserBottomNav() {
   const pathname = usePathname();
+  const { unreadCount } = useNotifications();
 
   const navItems = [
     { label: 'Feed', href: ROUTES.USER.FEED, icon: 'feed' },
@@ -44,17 +46,24 @@ export default function UserBottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium transition-colors relative ${
                 isActive
                   ? 'text-[#FF6257] font-bold'
                   : 'text-[#777580] hover:text-[#F6F2EA]'
               }`}
               aria-current={isActive ? 'page' : undefined}
             >
-              <Icon
-                name={item.icon}
-                className={`w-5 h-5 mb-0.5 ${isActive ? 'text-[#FF6257]' : 'text-[#777580]'}`}
-              />
+              <div className="relative">
+                <Icon
+                  name={item.icon}
+                  className={`w-5 h-5 mb-0.5 ${isActive ? 'text-[#FF6257]' : 'text-[#777580]'}`}
+                />
+                {item.href === ROUTES.USER.NOTIFICATIONS && unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[14px] h-3.5 px-0.5 text-[8px] font-bold text-white bg-[#FF6257] rounded-full animate-badge-pulse">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </div>
               <span>{item.label}</span>
             </Link>
           );

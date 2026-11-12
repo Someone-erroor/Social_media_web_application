@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import { profileService } from '@/services/profileService';
@@ -28,12 +28,12 @@ export default function FollowButton({
   const [errorMessage, setErrorMessage] = useState('');
 
   // Synchronize state if parent changes isFollowing or isPending
-  if (isFollowing !== following && !loading) {
-    setFollowing(isFollowing);
-  }
-  if (isPending !== pending && !loading) {
-    setPending(isPending);
-  }
+  useEffect(() => {
+    if (!loading) {
+      setFollowing(isFollowing);
+      setPending(isPending);
+    }
+  }, [isFollowing, isPending, loading]);
 
   const handleToggleFollow = async (e) => {
     e.preventDefault();

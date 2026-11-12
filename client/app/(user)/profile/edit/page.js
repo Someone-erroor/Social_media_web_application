@@ -64,11 +64,11 @@ export default function ProfileEditPage() {
 
     const trimmedName = fullName.trim();
     if (!trimmedName || trimmedName.length < 2) {
-      setErrorMessage('Full name must be at least 2 characters.');
+      setErrorMessage('Display name must be at least 2 characters.');
       return;
     }
     if (trimmedName.length > 70) {
-      setErrorMessage('Full name cannot exceed 70 characters.');
+      setErrorMessage('Display name cannot exceed 70 characters.');
       return;
     }
 
@@ -93,10 +93,10 @@ export default function ProfileEditPage() {
 
       if (res?.user) {
         updateUser(res.user);
-        setSuccessMessage('Profile updated successfully!');
+        setSuccessMessage('Profile updated successfully! Redirecting...');
         setTimeout(() => {
           router.push(ROUTES.USER.PROFILE);
-        }, 1200);
+        }, 1000);
       }
     } catch (err) {
       setErrorMessage(err.message || 'Failed to update profile.');
@@ -105,11 +105,15 @@ export default function ProfileEditPage() {
     }
   };
 
+  const bioLength = bio.length;
+  const isBioNearLimit = bioLength > 220;
+  const isBioOverLimit = bioLength > 250;
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Edit Profile"
-        description="Update your public profile, avatar, and personal biography"
+        description="Update your public identity, display name, avatar, and personal biography"
         action={
           <Button
             href={ROUTES.USER.PROFILE}
@@ -171,29 +175,30 @@ export default function ProfileEditPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-6">
               {errorMessage && (
-                <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
-                  {errorMessage}
+                <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center gap-2">
+                  <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257] shrink-0" />
+                  <span>{errorMessage}</span>
                 </div>
               )}
 
               {successMessage && (
                 <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center gap-2">
-                  <Icon name="check" className="w-4 h-4 text-[#D5F36A]" />
+                  <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
                   <span>{successMessage}</span>
                 </div>
               )}
 
-              {/* Avatar Preview */}
-              <div className="flex items-center gap-5">
+              {/* Avatar Live Preview */}
+              <div className="flex items-center gap-5 p-4 rounded-xl bg-[#17151D] border border-[#2D2938]">
                 <Avatar
                   name={fullName || 'User'}
                   src={avatarUrl.trim()}
                   size="xl"
                 />
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-[#F6F2EA] font-display">Avatar Preview</p>
+                <div className="space-y-1 min-w-0">
+                  <p className="text-xs font-bold text-[#F6F2EA] font-display">Avatar Live Preview</p>
                   <p className="text-[11px] text-[#777580]">
-                    Provide a direct image URL (JPEG, PNG, or WebP) below.
+                    Enter a direct public image URL (JPEG, PNG, or WebP) below to update your picture.
                   </p>
                 </div>
               </div>
@@ -215,7 +220,12 @@ export default function ProfileEditPage() {
               </FormField>
 
               {/* Display Name Field */}
-              <FormField id="edit-name" label="Display Name" required>
+              <FormField
+                id="edit-name"
+                label="Display Name"
+                required
+                helperText={`${fullName.length}/70 characters (minimum 2)`}
+              >
                 <Input
                   id="edit-name"
                   type="text"
@@ -223,6 +233,7 @@ export default function ProfileEditPage() {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Your full name"
                   disabled={loading}
+                  maxLength={70}
                   required
                 />
               </FormField>
@@ -230,8 +241,8 @@ export default function ProfileEditPage() {
               {/* Email Field (Read-only) */}
               <FormField
                 id="edit-email"
-                label="Email Address"
-                helperText="Your email cannot be edited from this form."
+                label="Account Email"
+                helperText="Account email address cannot be changed from this form."
               >
                 <Input
                   id="edit-email"
@@ -246,16 +257,21 @@ export default function ProfileEditPage() {
               <FormField
                 id="edit-bio"
                 label="Biography"
-                helperText={`${bio.length}/250 characters`}
+                helperText={
+                  <span className={isBioOverLimit ? 'text-[#FF6257] font-bold' : isBioNearLimit ? 'text-[#FBBF24]' : 'text-[#777580]'}>
+                    {bioLength}/250 characters
+                  </span>
+                }
               >
                 <textarea
                   id="edit-bio"
-                  rows={3}
+                  rows={4}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell the community about yourself, your interests, or what you're working on..."
+                  placeholder="Tell the community about yourself, your creative perspective, or what you're working on..."
                   disabled={loading}
-                  className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#17151D] p-3 text-sm text-[#F6F2EA] placeholder-[#777580] focus:outline-none focus:border-[#FF6257]"
+                  maxLength={250}
+                  className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#17151D] p-3 text-sm text-[#F6F2EA] placeholder-[#777580] focus:outline-none focus:border-[#FF6257] transition-colors"
                 />
               </FormField>
             </CardContent>
@@ -273,7 +289,7 @@ export default function ProfileEditPage() {
                 type="submit"
                 variant="primary"
                 size="md"
-                disabled={loading}
+                disabled={loading || isBioOverLimit}
               >
                 {loading ? 'Saving Changes...' : 'Save Changes'}
               </Button>
