@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { GameChallenge, User, Notification, ActivityLog } from '../models/index.js';
 import { isValidObjectId } from '../validators/profile.validator.js';
 import { sendNotificationToUser } from './socket.service.js';
@@ -101,7 +102,7 @@ export const listChallenges = async ({ gameType, page = 1, limit = 20 }) => {
  * Retrieves a single challenge details.
  */
 export const getChallengeById = async (challengeId, currentUserId = null) => {
-  if (!isValidObjectId(challengeId)) {
+  if (!challengeId || !mongoose.Types.ObjectId.isValid(challengeId)) {
     const error = new Error('Invalid challenge ID format.');
     error.status = 400;
     throw error;
@@ -109,7 +110,8 @@ export const getChallengeById = async (challengeId, currentUserId = null) => {
 
   const challenge = await GameChallenge.findById(challengeId)
     .populate('creator', '_id fullName profile.avatarUrl')
-    .populate('participants.user', '_id fullName profile.avatarUrl');
+    .populate('participants.user', '_id fullName profile.avatarUrl')
+    .select('+answerKey');
 
   if (!challenge) {
     const error = new Error('Game challenge not found.');
@@ -118,8 +120,11 @@ export const getChallengeById = async (challengeId, currentUserId = null) => {
   }
 
   const userParticipation = currentUserId
-    ? challenge.participants.find(p => p.user?._id.toString() === currentUserId.toString())
+    ? challenge.participants.find(p => p.user?._id?.toString() === currentUserId.toString())
     : null;
+  const isCreator = Boolean(
+    currentUserId && challenge.creator?._id?.toString() === currentUserId.toString()
+  );
 
   const challengeObj = challenge.toObject ? challenge.toObject() : { ...challenge };
   const gd = challengeObj.gameData || {};
@@ -127,11 +132,20 @@ export const getChallengeById = async (challengeId, currentUserId = null) => {
   challengeObj.options = challengeObj.options || gd.options || gd.statements || (gd.questions?.[0]?.options) || [];
   challengeObj.hint = challengeObj.hint || gd.hint || '';
 
+  // If user already played or is creator, include the solution & debrief
+  if (userParticipation || isCreator) {
+    challengeObj.revealedAnswerKey = challenge.answerKey;
+    challengeObj.explanation = gd.explanation || challenge.answerKey?.explanation || '';
+  } else {
+    delete challengeObj.answerKey;
+  }
+
   return {
     success: true,
     challenge: challengeObj,
     hasParticipated: Boolean(userParticipation),
-    userScore: userParticipation ? userParticipation.score : null
+    userScore: userParticipation ? userParticipation.score : null,
+    userAnswers: userParticipation ? userParticipation.userAnswers : null
   };
 };
 
@@ -139,7 +153,7 @@ export const getChallengeById = async (challengeId, currentUserId = null) => {
  * Submits an answer to a challenge and computes results.
  */
 export const submitAnswer = async (challengeId, currentUserId, userAnswers) => {
-  if (!isValidObjectId(challengeId)) {
+  if (!challengeId || !mongoose.Types.ObjectId.isValid(challengeId)) {
     const error = new Error('Invalid challenge ID format.');
     error.status = 400;
     throw error;
@@ -180,33 +194,51 @@ export const submitAnswer = async (challengeId, currentUserId, userAnswers) => {
 
   let score = 0;
   let maxScore = 0;
+  let answerKeyDetails = {};
+
+  const norm = (s) => String(s || '').trim().toLowerCase().replace(/^(the|a|an)\s+/i, '').replace(/[^a-z0-9]/g, '');
 
   if (challenge.gameType === 'who_knows_me') {
     const key = challenge.answerKey || {}; // { q0: 1, q1: 2, ... }
-    maxScore = Object.keys(key).length;
+    maxScore = Object.keys(key).length || 1;
     for (const [qKey, correctVal] of Object.entries(key)) {
-      if (userAnswers[qKey] === correctVal) score += 1;
+      if (Number(userAnswers[qKey]) === Number(correctVal)) score += 1;
     }
+    answerKeyDetails = {
+      correctAnswers: key
+    };
   } else if (challenge.gameType === 'two_truths_and_lie') {
     maxScore = 1;
-    // key is the index of the lie (0, 1, or 2)
-    if (Number(userAnswers.lieIndex) === Number(challenge.answerKey.lieIndex)) {
+    const correctLieIndex = Number(challenge.answerKey.lieIndex);
+    const userLie = Number(userAnswers.lieIndex !== undefined ? userAnswers.lieIndex : userAnswers.selectedOption);
+    if (userLie === correctLieIndex) {
       score = 1;
     }
+    answerKeyDetails = {
+      correctLieIndex,
+      explanation: challenge.gameData?.explanation || challenge.answerKey?.explanation || ''
+    };
   } else if (challenge.gameType === 'emoji_challenge') {
     maxScore = 1;
     const cleanCorrect = String(challenge.answerKey.answer || '').trim().toLowerCase();
-    const cleanUser = String(userAnswers.answer || '').trim().toLowerCase();
-    if (cleanUser === cleanCorrect) {
+    const cleanUser = String(userAnswers.answer || userAnswers.textAnswer || '').trim().toLowerCase();
+    if (cleanUser === cleanCorrect || (norm(cleanUser) && norm(cleanUser) === norm(cleanCorrect))) {
       score = 1;
     }
+    answerKeyDetails = {
+      correctAnswer: challenge.answerKey.answer
+    };
   } else if (challenge.gameType === 'picture_mystery') {
     maxScore = 1;
     const cleanCorrect = String(challenge.answerKey.answer || '').trim().toLowerCase();
-    const cleanUser = String(userAnswers.answer || '').trim().toLowerCase();
-    if (cleanUser === cleanCorrect) {
+    const cleanUser = String(userAnswers.answer || userAnswers.textAnswer || '').trim().toLowerCase();
+    if (cleanUser === cleanCorrect || (norm(cleanUser) && norm(cleanUser) === norm(cleanCorrect))) {
       score = 1;
     }
+    answerKeyDetails = {
+      correctAnswer: challenge.answerKey.answer,
+      revealedImageUrl: challenge.gameData?.imageUrl || ''
+    };
   }
 
   // Record participation
@@ -240,7 +272,8 @@ export const submitAnswer = async (challengeId, currentUserId, userAnswers) => {
     success: true,
     score,
     maxScore,
-    message: score === maxScore ? '🎉 Perfect score! You nailed it!' : `You scored ${score} out of ${maxScore}!`
+    message: score === maxScore ? '🎉 Perfect score! You nailed it!' : `You scored ${score} out of ${maxScore}!`,
+    ...answerKeyDetails
   };
 };
 

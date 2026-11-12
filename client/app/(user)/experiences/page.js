@@ -36,12 +36,12 @@ export default function ExperiencesPage() {
       status: 'Available Now',
       statusType: 'available',
       primaryAction: {
-        label: 'Create Split-Reality',
-        href: ROUTES.USER.FEED,
+        label: 'Discover in Explore',
+        href: ROUTES.USER.EXPLORE,
         variant: 'primary'
       },
       secondaryAction: {
-        label: 'View in Feed',
+        label: 'Create in Feed',
         href: ROUTES.USER.FEED,
         variant: 'outline'
       },
@@ -103,11 +103,11 @@ export default function ExperiencesPage() {
       iconBg: 'bg-[#FF6257]/15',
       borderColor: 'hover:border-[#FF6257]/50',
       description:
-        'Test bonds and spark lighthearted conversations with social games including "Who Knows Me Better?", "Two Truths & a Lie", and "Emoji Challenges".',
+        'Spark playful banter and test your connections with friendly social games: "Who Knows Me?", "Two Truths & a Lie", "Emoji Riddles", and "Picture Mysteries".',
       status: 'Active Games',
       statusType: 'available',
       primaryAction: {
-        label: 'Launch Games',
+        label: 'Play Games',
         href: ROUTES.USER.PLAY,
         variant: 'secondary'
       },
@@ -151,8 +151,8 @@ export default function ExperiencesPage() {
       status: 'Profile Integration',
       statusType: 'available',
       primaryAction: {
-        label: 'View Mutuals',
-        href: ROUTES.USER.FEED,
+        label: 'View Profile',
+        href: ROUTES.USER.PROFILE,
         variant: 'secondary'
       },
       featured: false,
@@ -169,11 +169,11 @@ export default function ExperiencesPage() {
       iconBg: 'bg-[#D5F36A]/15',
       borderColor: 'hover:border-[#D5F36A]/50',
       description:
-        'Ephemeral atmospheric spaces tailored to shared emotional states and intentions, featuring live participant presence and reflection sparks.',
+        'Cozy, temporary atmospheric spaces tailored to creative, curious, or chill vibes with live presence and friendly conversation.',
       status: 'Live Atmospheric Rooms',
       statusType: 'available',
       primaryAction: {
-        label: 'Enter Orbit',
+        label: 'Pull Up a Chair',
         href: ROUTES.USER.MOOD_ORBIT,
         variant: 'primary'
       },
@@ -182,7 +182,7 @@ export default function ExperiencesPage() {
     },
     {
       id: 'feed-heists',
-      name: 'Feed Heists',
+      name: 'Community Quests & Heists',
       category: 'interactive',
       categoryLabel: 'Interactive & Play',
       badgeVariant: 'coral',
@@ -191,16 +191,16 @@ export default function ExperiencesPage() {
       iconBg: 'bg-[#FF6257]/15',
       borderColor: 'hover:border-[#FF6257]/50',
       description:
-        'Collaborative, time-sensitive community missions where operatives decipher clues, unlock signals, and crack platform puzzles before time expires.',
-      status: 'Active Missions',
+        'Collaborative, time-sensitive community mysteries where friends team up to unlock secret clues and crack hidden codes together.',
+      status: 'Active Quests',
       statusType: 'available',
       primaryAction: {
-        label: 'Launch Heists',
+        label: 'Join Quests',
         href: ROUTES.USER.HEISTS,
         variant: 'primary'
       },
       featured: false,
-      highlight: 'Collaborative cipher missions'
+      highlight: 'Team mystery solving'
     }
   ];
 

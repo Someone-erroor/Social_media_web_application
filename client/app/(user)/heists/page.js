@@ -13,10 +13,10 @@ import { heistService } from '@/services/heistService';
 import { ROUTES } from '@/lib/routes';
 
 const STATUS_FILTERS = [
-  { id: '', label: 'All Missions' },
-  { id: 'active', label: 'Active Heists' },
-  { id: 'completed', label: 'Cracked / Solved' },
-  { id: 'expired', label: 'Archived / Expired' }
+  { id: '', label: 'All Quests' },
+  { id: 'active', label: 'Active Quests' },
+  { id: 'completed', label: 'Cracked & Solved' },
+  { id: 'expired', label: 'Archived' }
 ];
 
 const DIFFICULTY_VARIANTS = {
@@ -171,11 +171,11 @@ export default function HeistsPage() {
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Header */}
       <PageHeader
-        title="Feed Heists"
-        description="Collaborative, time-sensitive social missions appearing in the Loop. Operatives must collectively uncover clues and crack objectives before time expires."
+        title="Community Quests & Heists"
+        description="Collaborative, time-sensitive community quests in the Loop! Team up with friends to uncover secret clues and crack the hidden mystery before time runs out."
         badge={
           <Badge variant="coral" size="sm">
-            Signature Experience
+            Community Quest
           </Badge>
         }
         action={
@@ -186,7 +186,7 @@ export default function HeistsPage() {
             onClick={() => setShowCreateModal(true)}
             icon={<Icon name="key" className="w-4 h-4" />}
           >
-            Initiate Heist
+            Start a Quest
           </Button>
         }
       />
@@ -239,13 +239,13 @@ export default function HeistsPage() {
       ) : heists.length === 0 ? (
         <EmptyState
           icon="key"
-          title="No Active Feed Heists"
+          title="No Active Quests Right Now"
           description={
             statusFilter === 'active'
-              ? 'There are currently no active missions running. Initiate the first collaborative community heist!'
-              : 'No missions match your selected filter criteria.'
+              ? 'There are currently no active community quests running. Start the first quest and invite friends to solve it!'
+              : 'No quests match your selected filter criteria.'
           }
-          badgeText="Social Missions"
+          badgeText="Community Quests"
           action={
             <Button
               type="button"
@@ -253,7 +253,7 @@ export default function HeistsPage() {
               size="sm"
               onClick={() => setShowCreateModal(true)}
             >
-              Initiate Heist
+              Start a Quest
             </Button>
           }
         />

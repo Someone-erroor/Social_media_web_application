@@ -413,9 +413,9 @@ export const getFeed = async ({ userId = null, mode = 'latest', page = 1, limit 
   const total = countResult.length > 0 ? countResult[0].total : 0;
 
   const reasonMap = {
-    following: 'Following — Chronological from creators you follow',
-    explore: 'Explore — Trending discussions across Looply',
-    latest: 'Latest — Real-time community timeline'
+    following: 'Following — Chronological updates from creators you follow',
+    explore: 'Explore — Visual media & split-reality discoveries',
+    latest: 'Conversations — Community thoughts & personal discussions'
   };
 
   const posts = rawPosts.map((p) => ({
@@ -436,8 +436,145 @@ export const getFeed = async ({ userId = null, mode = 'latest', page = 1, limit 
   };
 };
 
-export const getExplorePosts = async ({ userId = null, page, limit, skip }) => {
-  return getFeed({ userId, mode: 'explore', page, limit, skip });
+/**
+ * Dedicated Visual Discovery Pipeline for Explore.
+ * Surfaces photography, digital art, creative visual moments, and Split-Reality posts
+ * ranked by community engagement (likes & comments) and freshness.
+ *
+ * @param {object} params
+ * @param {string|null} params.userId - Authenticated user ID (for blocked user exclusion)
+ * @param {string} params.category - Optional visual category filter
+ * @param {number} params.page - Current page
+ * @param {number} params.limit - Page size
+ * @param {number} params.skip - Offset
+ * @returns {Promise<{ posts: object[], pagination: object }>}
+ */
+export const getExplorePosts = async ({ userId = null, category = 'all', page = 1, limit = 12, skip = 0 }) => {
+  let currentUser = null;
+  let blockedIds = [];
+
+  if (userId) {
+    currentUser = await User.findById(userId).select('blockedUsers');
+    if (currentUser) {
+      blockedIds = (currentUser.blockedUsers || []).map((id) => id);
+    }
+  }
+
+  // Visual Discovery match conditions:
+  // Must be active author, not blocked, not private (public discovery)
+  const matchConditions = {
+    'authorDoc.accountStatus': 'active',
+    'authorDoc.isPrivate': { $ne: true }
+  };
+
+  if (blockedIds.length > 0) {
+    matchConditions['authorDoc._id'] = { $nin: blockedIds };
+  }
+
+  // Visual discovery space: must have media or be split-reality
+  const visualFilter = {
+    $or: [
+      { postType: 'splitReality' },
+      { primaryMedia: { $exists: true, $ne: null, $nin: ['', null] } }
+    ]
+  };
+
+  if (category === 'splitReality' || category === 'split-reality') {
+    visualFilter.$or = [{ postType: 'splitReality' }];
+  }
+
+  const matchStages = [
+    { $match: visualFilter },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'author',
+        foreignField: '_id',
+        as: 'authorDoc'
+      }
+    },
+    { $unwind: '$authorDoc' },
+    { $match: matchConditions }
+  ];
+
+  const [countResult, rawPosts] = await Promise.all([
+    Post.aggregate([...matchStages, { $count: 'total' }]),
+    Post.aggregate([
+      ...matchStages,
+      {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'post',
+          as: 'likes'
+        }
+      },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'post',
+          as: 'comments'
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          postType: 1,
+          primaryMedia: 1,
+          realityMedia: 1,
+          content: 1,
+          circle: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          likesCount: { $size: '$likes' },
+          commentsCount: { $size: '$comments' },
+          engagementScore: {
+            $add: [
+              { $multiply: [{ $size: '$likes' }, 2] },
+              { $multiply: [{ $size: '$comments' }, 3] }
+            ]
+          },
+          author: {
+            _id: '$authorDoc._id',
+            fullName: '$authorDoc.fullName',
+            role: '$authorDoc.role',
+            isPrivate: '$authorDoc.isPrivate',
+            profile: {
+              avatarUrl: '$authorDoc.profile.avatarUrl',
+              bio: '$authorDoc.profile.bio'
+            },
+            createdAt: '$authorDoc.createdAt'
+          }
+        }
+      },
+      { $sort: { engagementScore: -1, createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit }
+    ])
+  ]);
+
+  const total = countResult.length > 0 ? countResult[0].total : 0;
+
+  const posts = rawPosts.map((p) => ({
+    ...p,
+    feedMode: 'explore',
+    isVisualDiscovery: true,
+    recommendationReason: p.postType === 'splitReality'
+      ? 'Split-Reality — Dual Perspective'
+      : 'Visual Discovery — High Community Engagement'
+  }));
+
+  return {
+    posts,
+    category,
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / limit) || 1
+    }
+  };
 };
 
 /**

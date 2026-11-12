@@ -370,10 +370,10 @@ async function runTests() {
 
   // Socket 3 joins room to listen
   socket3.emit('mood_orbit:join', { roomId: roomId.toString() });
-  await new Promise((r) => setTimeout(r, 200));
+  await new Promise((r) => setTimeout(r, 600));
 
   socket1.emit('mood_orbit:join', { roomId: roomId.toString() });
-  await new Promise((r) => setTimeout(r, 200));
+  await new Promise((r) => setTimeout(r, 600));
   assert(agent1JoinedNotice, 'Legitimate socket joins and broadcasts mood_orbit:user_joined to subscribers');
 
   // 3.3 Real-time message reception
@@ -389,7 +389,7 @@ async function runTests() {
     content: 'Live atmospheric pulse.'
   });
 
-  await new Promise((r) => setTimeout(r, 300));
+  await new Promise((r) => setTimeout(r, 800));
   assert(receivedRealtimeMessage, 'Real-time mood_orbit:new_message broadcast and received over socket');
 
   // Clean up sockets

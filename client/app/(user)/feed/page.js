@@ -14,18 +14,13 @@ import { ROUTES } from '@/lib/routes';
 const FEED_MODES = [
   {
     id: 'latest',
-    label: 'Latest',
-    desc: 'Real-time community timeline ordered chronologically'
+    label: 'Community Conversations',
+    desc: 'Real-time discussions, questions, and daily moments from across Looply'
   },
   {
     id: 'following',
     label: 'Following',
-    desc: 'Chronological updates from creators you follow'
-  },
-  {
-    id: 'explore',
-    label: 'Explore',
-    desc: 'Trending discussions and high-engagement posts'
+    desc: 'Chronological thoughts and updates from creators you follow'
   }
 ];
 
@@ -144,20 +139,20 @@ export default function FeedPage() {
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-[#F6F2EA] font-display tracking-tight">
-              Your Loop
+              Community Feed
             </h1>
             <p className="text-xs sm:text-sm text-[#777580] max-w-xl leading-relaxed">
-              Explore real-time thoughts, conversations, and dual-perspective stories from creators across Looply.
+              Your conversational home for daily updates, questions, and thoughtful reflections with friends.
             </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
             <Link
               href={ROUTES.USER.EXPLORE}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#F6F2EA] bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/50 hover:text-[#FF6257] transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#17151D] bg-[#D5F36A] hover:bg-[#c6e655] transition-all font-display shadow-md shadow-[#D5F36A]/20"
             >
-              <Icon name="explore" className="w-3.5 h-3.5 text-[#FF6257]" />
-              <span>Discover</span>
+              <Icon name="split" className="w-3.5 h-3.5 text-[#17151D]" />
+              <span>Explore Visuals</span>
             </Link>
           </div>
         </div>
@@ -167,6 +162,21 @@ export default function FeedPage() {
       <section aria-label="Create Post">
         <PostComposer onPostCreated={handlePostCreated} />
       </section>
+
+      {/* Visual Discoveries Banner */}
+      <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#1E1B26] to-[#17151D] border border-[#2D2938] flex items-center justify-between text-xs">
+        <div className="flex items-center gap-2 text-[#777580]">
+          <Icon name="sparkles" className="w-4 h-4 text-[#FF6257]" />
+          <span>Looking for photography and dual-perspective stories?</span>
+        </div>
+        <Link
+          href={ROUTES.USER.EXPLORE}
+          className="text-[#D5F36A] font-bold hover:underline flex items-center gap-1 font-display"
+        >
+          <span>Visual Explore</span>
+          <span>→</span>
+        </Link>
+      </div>
 
       {/* 3. Feed Mode / Filter Controls */}
       <section className="space-y-2" aria-label="Feed Modes">

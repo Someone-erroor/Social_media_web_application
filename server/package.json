@@ -22,9 +22,11 @@
     "test:messaging": "node test/test-realtime-messaging-verification.mjs",
     "test:crypto": "node test/test-cryptographic-integrity.mjs",
     "test:signature-experiences": "node test/test-signature-experiences.mjs",
+    "test:play": "node test/test-play-games.mjs",
     "admin:create": "node scripts/create-admin.mjs",
     "admin:check": "node scripts/check-users.mjs",
     "admin:seed": "node scripts/provision-demo-admin.mjs",
+    "seed:community": "node scripts/seed-synthetic-community.mjs",
     "test:all": "node test/test-phase3.mjs && node test/test-phase4.mjs && node test/test-batch2.mjs && node test/test-batch3.mjs && node test/test-phase15.mjs && node test/test-phase16-responsive.mjs && node test/test-e2e-browser.mjs"
   },
   "dependencies": {

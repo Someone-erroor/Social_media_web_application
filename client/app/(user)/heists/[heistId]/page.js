@@ -163,7 +163,7 @@ export default function HeistMissionConsolePage({ params }) {
           className="inline-flex items-center gap-1.5 hover:text-[#FF6257] transition-colors"
         >
           <Icon name="arrowLeft" className="w-3.5 h-3.5" />
-          <span>All Feed Heists</span>
+          <span>All Community Quests</span>
         </Link>
 
         <button
@@ -172,7 +172,7 @@ export default function HeistMissionConsolePage({ params }) {
           className="inline-flex items-center gap-1 hover:text-[#FF6257] transition-colors"
         >
           <Icon name="flag" className="w-3.5 h-3.5" />
-          <span>Report Mission</span>
+          <span>Report Quest</span>
         </button>
       </div>
 
@@ -183,7 +183,7 @@ export default function HeistMissionConsolePage({ params }) {
         </div>
       )}
 
-      {/* Mission Banner & Header */}
+      {/* Quest Banner & Header */}
       <Card className="bg-[#1E1B26] border-[#2D2938] overflow-hidden">
         <div className="p-6 sm:p-8 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -192,7 +192,7 @@ export default function HeistMissionConsolePage({ params }) {
                 <Icon name="key" className="w-5 h-5" />
               </span>
               <Badge variant={isCompleted ? 'success' : isExpired ? 'neutral' : 'coral'} size="sm">
-                {heist.status?.toUpperCase()}
+                {isCompleted ? 'SOLVED' : isExpired ? 'ARCHIVED' : 'ACTIVE QUEST'}
               </Badge>
               <span className="text-xs font-mono uppercase text-[#D5F36A]">
                 {heist.heistType?.replace(/_/g, ' ')}
@@ -202,12 +202,12 @@ export default function HeistMissionConsolePage({ params }) {
             <div className="flex items-center gap-2 text-xs font-mono">
               <span className="text-[#777580] flex items-center gap-1">
                 <Icon name="users" className="w-4 h-4 text-[#D5F36A]" />
-                {heist.participantsCount} Operatives
+                {heist.participantsCount} Adventurers
               </span>
               <span className="text-[#2D2938]">•</span>
               <span className="text-[#FF6257] flex items-center gap-1">
                 <Icon name="clock" className="w-4 h-4" />
-                {isCompleted ? 'Mission Solved' : isExpired ? 'Expired' : 'Active Deadline'}
+                {isCompleted ? 'Quest Solved' : isExpired ? 'Expired' : 'Active Countdown'}
               </span>
             </div>
           </div>
@@ -221,17 +221,17 @@ export default function HeistMissionConsolePage({ params }) {
             </p>
           </div>
 
-          {/* Operative Enrollment State */}
+          {/* Participant State */}
           <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[#2D2938]">
             <div className="flex items-center gap-2.5">
               <Avatar
-                name={heist.creator?.fullName || 'Operative'}
+                name={heist.creator?.fullName || 'Creator'}
                 src={heist.creator?.profile?.avatarUrl}
                 size="sm"
               />
               <div className="text-xs">
-                <span className="text-[#777580] block text-[10px]">Mission Dispatcher</span>
-                <span className="text-[#F6F2EA] font-semibold">{heist.creator?.fullName || 'Anonymous'}</span>
+                <span className="text-[#777580] block text-[10px]">Quest Host</span>
+                <span className="text-[#F6F2EA] font-semibold">{heist.creator?.fullName || 'Community Friend'}</span>
               </div>
             </div>
 
@@ -240,7 +240,7 @@ export default function HeistMissionConsolePage({ params }) {
                 <>
                   <span className="px-3 py-1.5 rounded-xl bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30 text-xs font-semibold flex items-center gap-1.5">
                     <Icon name="check" className="w-3.5 h-3.5" />
-                    Enrolled Operative
+                    Joined Quest
                   </span>
                   {isActive && (
                     <button
@@ -248,7 +248,7 @@ export default function HeistMissionConsolePage({ params }) {
                       onClick={handleLeave}
                       className="px-3 py-1.5 rounded-xl text-xs text-[#777580] hover:text-[#FF6257] hover:bg-[#17151D] transition-colors"
                     >
-                      Withdraw
+                      Leave
                     </button>
                   )}
                 </>
@@ -261,7 +261,7 @@ export default function HeistMissionConsolePage({ params }) {
                   disabled={joining}
                   icon={<Icon name="plus" className="w-4 h-4" />}
                 >
-                  {joining ? 'Enrolling...' : 'Join Mission'}
+                  {joining ? 'Joining...' : 'Join Quest'}
                 </Button>
               ) : null}
             </div>
@@ -379,31 +379,31 @@ export default function HeistMissionConsolePage({ params }) {
         <div className="space-y-4">
           <Card className="bg-[#1E1B26] border-[#2D2938]">
             <CardHeader>
-              <CardTitle>Decryption Console</CardTitle>
+              <CardTitle>Submit Your Guess</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {isCompleted ? (
                 <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-center space-y-2">
                   <span className="text-2xl block">🏆</span>
-                  <p className="text-xs font-bold text-[#F6F2EA]">Mission Complete</p>
+                  <p className="text-xs font-bold text-[#F6F2EA]">Quest Complete</p>
                   <p className="text-[11px] text-[#777580]">
-                    The objective was successfully solved. Debrief credentials have been durably stored in the platform ledger.
+                    The mystery was successfully cracked and solved by the community!
                   </p>
                 </div>
               ) : isExpired ? (
                 <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-center space-y-2">
                   <span className="text-2xl block">⌛</span>
-                  <p className="text-xs font-bold text-[#777580]">Mission Expired</p>
+                  <p className="text-xs font-bold text-[#777580]">Quest Expired</p>
                   <p className="text-[11px] text-[#777580]">
-                    The operational window closed before the cipher could be broken.
+                    The time window closed before the secret code could be cracked.
                   </p>
                 </div>
               ) : !heist.isParticipant ? (
                 <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-center space-y-3">
                   <Icon name="key" className="w-8 h-8 text-[#FF6257] mx-auto" />
-                  <p className="text-xs text-[#F6F2EA] font-semibold">Operative Clearance Required</p>
+                  <p className="text-xs text-[#F6F2EA] font-semibold">Join To Guess</p>
                   <p className="text-[11px] text-[#777580]">
-                    Join the mission to submit decryption signals and unlock collaborative clues.
+                    Join this community quest to submit code guesses and help unlock secret clues!
                   </p>
                   <Button
                     type="button"
@@ -413,7 +413,7 @@ export default function HeistMissionConsolePage({ params }) {
                     onClick={handleJoin}
                     disabled={joining}
                   >
-                    {joining ? 'Enrolling...' : 'Join as Operative'}
+                    {joining ? 'Joining...' : 'Join the Quest'}
                   </Button>
                 </div>
               ) : (

@@ -93,13 +93,14 @@ export const postService = {
   },
 
   /**
-   * Retrieves explore/discovery posts.
+   * Retrieves explore/discovery posts (visual discovery & Split-Reality).
    *
-   * @param {{ page?: number, limit?: number }} [params]
+   * @param {{ page?: number, limit?: number, category?: string }} [params]
    * @returns {Promise<{ success: boolean, posts: object[], pagination: object }>}
    */
-  async getExplore({ page = 1, limit = 10 } = {}) {
-    return apiClient(`/feed/explore?page=${page}&limit=${limit}`, {
+  async getExplore({ page = 1, limit = 10, category = 'all' } = {}) {
+    const catQuery = category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+    return apiClient(`/feed/explore?page=${page}&limit=${limit}${catQuery}`, {
       method: 'GET'
     });
   },

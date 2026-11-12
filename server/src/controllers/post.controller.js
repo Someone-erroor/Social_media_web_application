@@ -233,9 +233,11 @@ export const getFeed = async (req, res, next) => {
 export const getExplore = async (req, res, next) => {
   try {
     const pagination = validatePaginationQuery(req.query);
+    const category = req.query.category || 'all';
 
     const result = await getExploreService({
       userId: req.user?._id || null,
+      category,
       page: pagination.page,
       limit: pagination.limit,
       skip: pagination.skip
