@@ -12,6 +12,8 @@ import GameChallenge from './GameChallenge.js';
 import TimeCapsule from './TimeCapsule.js';
 import Circle from './Circle.js';
 import GlobalEvent from './GlobalEvent.js';
+import FeedHeist from './FeedHeist.js';
+import MoodOrbitRoom from './MoodOrbitRoom.js';
 
 export {
   User,
@@ -28,6 +30,8 @@ export {
   TimeCapsule,
   Circle,
   GlobalEvent,
+  FeedHeist,
+  MoodOrbitRoom,
   ACTIVITY_ACTIONS,
   SENSITIVE_METADATA_KEYS,
   hasNoSensitiveKeys
@@ -48,6 +52,8 @@ export default {
   TimeCapsule,
   Circle,
   GlobalEvent,
+  FeedHeist,
+  MoodOrbitRoom,
   ACTIVITY_ACTIONS,
   SENSITIVE_METADATA_KEYS,
   hasNoSensitiveKeys

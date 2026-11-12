@@ -39,7 +39,9 @@ export default function UserBottomNav() {
                 pathname.startsWith('/play') ||
                 pathname.startsWith('/time-capsule') ||
                 pathname.startsWith('/circles') ||
-                pathname.startsWith('/events')
+                pathname.startsWith('/events') ||
+                pathname.startsWith('/heists') ||
+                pathname.startsWith('/mood-orbit')
               : pathname.startsWith(item.href);
 
           return (

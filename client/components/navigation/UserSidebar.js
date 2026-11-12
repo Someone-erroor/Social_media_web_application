@@ -42,7 +42,9 @@ export default function UserSidebar() {
         pathname.startsWith('/play') ||
         pathname.startsWith('/time-capsule') ||
         pathname.startsWith('/circles') ||
-        pathname.startsWith('/events')
+        pathname.startsWith('/events') ||
+        pathname.startsWith('/heists') ||
+        pathname.startsWith('/mood-orbit')
       );
     }
     return pathname.startsWith(href);

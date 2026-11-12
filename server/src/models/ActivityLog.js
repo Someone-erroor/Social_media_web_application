@@ -30,6 +30,11 @@ export const ACTIVITY_ACTIONS = [
   'game_challenge_creation',
   'circle_creation',
   'global_event_creation',
+  'feed_heist_creation',
+  'feed_heist_join',
+  'feed_heist_solve',
+  'mood_orbit_room_creation',
+  'mood_orbit_room_join',
   'admin_action'
 ];
 

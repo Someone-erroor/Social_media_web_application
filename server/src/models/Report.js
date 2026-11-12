@@ -20,8 +20,8 @@ const reportSchema = new Schema(
       type: String,
       required: [true, 'Target type is required'],
       enum: {
-        values: ['User', 'Post', 'Comment', 'Message'],
-        message: 'Target type must be User, Post, Comment, or Message'
+        values: ['User', 'Post', 'Comment', 'Message', 'FeedHeist', 'MoodOrbitRoom'],
+        message: 'Target type must be User, Post, Comment, Message, FeedHeist, or MoodOrbitRoom'
       }
     },
     category: {

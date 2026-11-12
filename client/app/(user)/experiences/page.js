@@ -163,44 +163,44 @@ export default function ExperiencesPage() {
       name: 'Mood-Orbit Rooms',
       category: 'spaces',
       categoryLabel: 'Spaces & Social',
-      badgeVariant: 'outline',
+      badgeVariant: 'lime',
       icon: 'sparkles',
-      iconColor: 'text-[#777580]',
-      iconBg: 'bg-[#24202E]',
-      borderColor: 'border-[#2D2938]',
+      iconColor: 'text-[#D5F36A]',
+      iconBg: 'bg-[#D5F36A]/15',
+      borderColor: 'hover:border-[#D5F36A]/50',
       description:
-        'Ephemeral atmospheric listening and reflection rooms tailored to daily emotional states, collaborative music queues, and low-friction presence.',
-      status: 'Coming Next',
-      statusType: 'future',
+        'Ephemeral atmospheric spaces tailored to shared emotional states and intentions, featuring live participant presence and reflection sparks.',
+      status: 'Live Atmospheric Rooms',
+      statusType: 'available',
       primaryAction: {
-        label: 'Coming Next',
-        disabled: true,
-        variant: 'outline'
+        label: 'Enter Orbit',
+        href: ROUTES.USER.MOOD_ORBIT,
+        variant: 'primary'
       },
       featured: false,
-      highlight: 'In Development'
+      highlight: 'Real-time presence & prompts'
     },
     {
       id: 'feed-heists',
       name: 'Feed Heists',
       category: 'interactive',
       categoryLabel: 'Interactive & Play',
-      badgeVariant: 'outline',
+      badgeVariant: 'coral',
       icon: 'key',
-      iconColor: 'text-[#777580]',
-      iconBg: 'bg-[#24202E]',
-      borderColor: 'border-[#2D2938]',
+      iconColor: 'text-[#FF6257]',
+      iconBg: 'bg-[#FF6257]/15',
+      borderColor: 'hover:border-[#FF6257]/50',
       description:
-        'Collaborative storytelling quests where community choices unlock secret clues, hidden post branches, and limited-edition profile badges.',
-      status: 'Coming Next',
-      statusType: 'future',
+        'Collaborative, time-sensitive community missions where operatives decipher clues, unlock signals, and crack platform puzzles before time expires.',
+      status: 'Active Missions',
+      statusType: 'available',
       primaryAction: {
-        label: 'Coming Next',
-        disabled: true,
-        variant: 'outline'
+        label: 'Launch Heists',
+        href: ROUTES.USER.HEISTS,
+        variant: 'primary'
       },
       featured: false,
-      highlight: 'In Development'
+      highlight: 'Collaborative cipher missions'
     }
   ];
 

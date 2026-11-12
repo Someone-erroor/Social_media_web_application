@@ -211,6 +211,26 @@ export default function ExplorePage() {
       desc: 'Solve platform-wide collaborative riddles, decode evidence clues, and join the Hall of Fame.',
       href: ROUTES.USER.EVENTS,
       action: 'Investigate'
+    },
+    {
+      id: 'feed-heists',
+      title: 'Feed Heists',
+      badge: 'Missions',
+      badgeColor: 'coral',
+      icon: 'key',
+      desc: 'Collaborative, time-sensitive social missions where operatives unlock signal clues and crack community ciphers.',
+      href: ROUTES.USER.HEISTS,
+      action: 'Launch Heists'
+    },
+    {
+      id: 'mood-orbit',
+      title: 'Mood-Orbit Rooms',
+      badge: 'Atmospheric',
+      badgeColor: 'lime',
+      icon: 'sparkles',
+      desc: 'Enter temporary spaces tuned to creative, curious, or chill intentions with real-time presence.',
+      href: ROUTES.USER.MOOD_ORBIT,
+      action: 'Enter Orbit'
     }
   ];
 

@@ -33,6 +33,8 @@ const notificationSchema = new Schema(
           'circle_invite',
           'time_capsule_unlocked',
           'game_challenge',
+          'feed_heist',
+          'mood_orbit',
           'moderation_warning',
           'system'
         ],
@@ -47,7 +49,7 @@ const notificationSchema = new Schema(
     },
     resourceType: {
       type: String,
-      enum: ['Post', 'Comment', 'User', 'Conversation', 'TimeCapsule', 'Circle', 'GameChallenge', 'GlobalEvent', 'System', null],
+      enum: ['Post', 'Comment', 'User', 'Conversation', 'TimeCapsule', 'Circle', 'GameChallenge', 'GlobalEvent', 'FeedHeist', 'MoodOrbitRoom', 'System', null],
       default: null
     },
     resourceId: {

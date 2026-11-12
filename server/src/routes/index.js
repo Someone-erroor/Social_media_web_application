@@ -16,6 +16,8 @@ import timeCapsuleRoutes from './timeCapsule.routes.js';
 import circleRoutes from './circle.routes.js';
 import eventRoutes from './event.routes.js';
 import memoryRoutes from './memory.routes.js';
+import heistRoutes from './heist.routes.js';
+import moodOrbitRoutes from './moodOrbit.routes.js';
 import devRoutes from './dev.routes.js';
 import { getExplore } from '../controllers/post.controller.js';
 
@@ -55,6 +57,14 @@ router.use('/circles', circleRoutes);
 
 // Global Mystery Events
 router.use('/events', eventRoutes);
+
+// Feed Heists (Collaborative Time-Sensitive Social Missions)
+router.use('/heists', heistRoutes);
+router.use('/feed-heists', heistRoutes);
+
+// Mood-Orbit Rooms (Ephemeral Atmospheric Social Spaces)
+router.use('/mood-orbit', moodOrbitRoutes);
+router.use('/rooms', moodOrbitRoutes);
 
 // Friendship Memories
 router.use('/memories', memoryRoutes);

@@ -21,6 +21,7 @@
     "test:split-reality": "node test/test-split-reality-backend.mjs",
     "test:messaging": "node test/test-realtime-messaging-verification.mjs",
     "test:crypto": "node test/test-cryptographic-integrity.mjs",
+    "test:signature-experiences": "node test/test-signature-experiences.mjs",
     "admin:create": "node scripts/create-admin.mjs",
     "admin:check": "node scripts/check-users.mjs",
     "admin:seed": "node scripts/provision-demo-admin.mjs",

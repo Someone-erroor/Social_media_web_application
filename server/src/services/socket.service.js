@@ -5,6 +5,7 @@ import { env } from '../config/env.js';
 import { AUTH_COOKIE_NAME } from '../config/jwt.js';
 import User from '../models/User.js';
 import Conversation from '../models/Conversation.js';
+import MoodOrbitRoom from '../models/MoodOrbitRoom.js';
 import { corsOptions } from '../config/cors.js';
 
 let ioInstance = null;
@@ -186,7 +187,73 @@ export const initSocketServer = (httpServer) => {
         socket.emit('error', { message: 'Direct conversation room join forbidden. Use join_conversation.' });
         return;
       }
+      if (roomName && roomName.startsWith('mood_orbit_')) {
+        socket.emit('error', { message: 'Direct mood orbit room join forbidden. Use mood_orbit:join.' });
+        return;
+      }
       socket.join(roomName);
+    });
+
+    // Mood-Orbit Ephemeral Room Presence & Subscriptions
+    socket.on('mood_orbit:join', async (data) => {
+      try {
+        const roomId = typeof data === 'string' ? data.trim() : data?.roomId?.toString().trim();
+        if (!roomId || !mongoose.isValidObjectId(roomId)) {
+          socket.emit('error', { message: 'Invalid Mood-Orbit room ID format.' });
+          return;
+        }
+
+        const room = await MoodOrbitRoom.findById(roomId);
+        if (!room) {
+          socket.emit('error', { message: 'Mood-Orbit room does not exist.' });
+          return;
+        }
+
+        if (room.status === 'expired' || new Date(room.expiresAt) < new Date()) {
+          socket.emit('error', { message: 'Cannot join expired Mood-Orbit room.' });
+          return;
+        }
+
+        socket.join(`mood_orbit_${roomId}`);
+        socket.to(`mood_orbit_${roomId}`).emit('mood_orbit:user_joined', {
+          roomId,
+          user: {
+            _id: user._id,
+            fullName: user.fullName
+          }
+        });
+      } catch (err) {
+        socket.emit('error', { message: 'Failed to subscribe to Mood-Orbit room.' });
+      }
+    });
+
+    socket.on('mood_orbit:leave', (data) => {
+      const roomId = typeof data === 'string' ? data.trim() : data?.roomId?.toString().trim();
+      if (roomId) {
+        socket.leave(`mood_orbit_${roomId}`);
+        socket.to(`mood_orbit_${roomId}`).emit('mood_orbit:user_left', {
+          roomId,
+          userId: user._id
+        });
+      }
+    });
+
+    socket.on('mood_orbit:message', async (data) => {
+      try {
+        const roomId = data?.roomId?.toString().trim();
+        const content = data?.content?.toString().trim();
+
+        if (!roomId || !content) return;
+        if (!socket.rooms.has(`mood_orbit_${roomId}`)) {
+          socket.emit('error', { message: 'Access denied: You have not joined this Mood-Orbit room.' });
+          return;
+        }
+
+        const { postRoomMessage } = await import('./moodOrbit.service.js');
+        await postRoomMessage(roomId, user._id, { content });
+      } catch (err) {
+        socket.emit('error', { message: err.message || 'Failed to send room message.' });
+      }
     });
 
     // Conversation Room & Real-Time Messaging Events with Authoritative Membership Verification
