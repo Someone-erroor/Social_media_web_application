@@ -204,3 +204,4 @@ feedHeistSchema.index({ 'participants.user': 1 });
 const FeedHeist = mongoose.models.FeedHeist || mongoose.model('FeedHeist', feedHeistSchema);
 
 export default FeedHeist;
+

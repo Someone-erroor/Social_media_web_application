@@ -516,3 +516,4 @@ export const submitHeistAnswer = async (heistId, userId, { answer, note = '' }) 
     remainingAttempts: 15 - (userSubmissions.length + 1)
   };
 };
+

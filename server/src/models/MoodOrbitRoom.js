@@ -150,3 +150,4 @@ moodOrbitRoomSchema.index({ 'participants.user': 1 });
 const MoodOrbitRoom = mongoose.models.MoodOrbitRoom || mongoose.model('MoodOrbitRoom', moodOrbitRoomSchema);
 
 export default MoodOrbitRoom;
+

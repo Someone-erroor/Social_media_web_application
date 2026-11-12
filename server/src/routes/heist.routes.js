@@ -22,3 +22,4 @@ router.post('/:heistId/leave', handleLeaveHeist);
 router.post('/:heistId/submit', handleSubmitHeistAnswer);
 
 export default router;
+

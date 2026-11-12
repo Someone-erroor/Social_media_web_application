@@ -386,3 +386,4 @@ export const postRoomMessage = async (roomId, userId, { content }) => {
 
   return persistedMessage;
 };
+
