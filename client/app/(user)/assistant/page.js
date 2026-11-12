@@ -14,7 +14,7 @@ export default function AssistantPage() {
         title="AI Assistant Workbench"
         description="Brainstorm post ideas, draft engaging updates, and refine your writing with Google Gemini AI"
         badge={
-          <Badge variant="primary" size="sm">
+          <Badge variant="lavender" size="sm">
             Google Gemini Active
           </Badge>
         }

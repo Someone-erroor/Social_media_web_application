@@ -26,7 +26,7 @@ const formatAiError = (err) => {
   if (category === 'DAILY_QUOTA_EXHAUSTED' || /daily quota|requests per day/i.test(rawMsg)) {
     return {
       message:
-        'Gemini daily quota has been exhausted. Check the configured Google AI Studio project or wait for its quota reset.',
+        'The Gemini AI service has temporarily reached its daily usage quota. Please try again later or wait for the quota reset.',
       canRetry: false
     };
   }
@@ -176,9 +176,10 @@ export default function AssistantWorkbench() {
         length
       });
 
-      if (res?.success && res.content) {
+      const generatedText = res?.generatedContent || res?.content;
+      if (res?.success && generatedText) {
         setResult({
-          text: res.content,
+          text: generatedText,
           type: 'generated',
           metadata: res.metadata
         });
@@ -210,9 +211,10 @@ export default function AssistantWorkbench() {
         instructions: instructions.trim() || undefined
       });
 
-      if (res?.success && res.improved) {
+      const improvedText = res?.improvedContent || res?.improved;
+      if (res?.success && improvedText) {
         setResult({
-          text: res.improved,
+          text: improvedText,
           type: 'improved',
           metadata: res.metadata
         });

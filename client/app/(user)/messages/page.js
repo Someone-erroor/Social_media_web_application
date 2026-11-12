@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
-import EmptyState from '@/components/ui/EmptyState';
 import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationContext';
 import { messageService } from '@/services/messageService';
@@ -13,6 +12,39 @@ import { deriveConversationKey, encryptMessage, decryptMessage } from '@/lib/cry
 
 // Global cache of derived CryptoKey instances by conversationId to prevent redundant 100k PBKDF2 passes
 const conversationKeyCache = new Map();
+
+function formatMessageTime(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatConversationDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const now = new Date();
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  if (isYesterday) {
+    return 'Yesterday';
+  }
+
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
 
 function MessagesContent() {
   const { user } = useAuth();
@@ -28,6 +60,7 @@ function MessagesContent() {
   const [decryptedCache, setDecryptedCache] = useState({});
   const [cryptoKey, setCryptoKey] = useState(null);
   const [messageInput, setMessageInput] = useState('');
+  const [chatSearchQuery, setChatSearchQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [partnerTyping, setPartnerTyping] = useState(false);
   const [loadingConversations, setLoadingConversations] = useState(true);
@@ -54,7 +87,7 @@ function MessagesContent() {
   activeConversationRef.current = activeConversation;
   decryptedCacheRef.current = decryptedCache;
 
-  // Scroll to bottom of message list
+  // Scroll to bottom of message list smoothly
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -529,6 +562,8 @@ function MessagesContent() {
     // Immediately clear input and lock sending to eliminate accidental double-transmissions
     setMessageInput('');
     setSending(true);
+    setError('');
+
     try {
       let contentToSend = text;
       let isEncrypted = false;
@@ -591,6 +626,14 @@ function MessagesContent() {
     }
   };
 
+  // Keyboard shortcut: Enter to send, Shift+Enter for newline
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(e);
+    }
+  };
+
   // Handle message request accept/reject
   const handleRequestResponse = async (action) => {
     if (!activeConversation) return;
@@ -620,13 +663,22 @@ function MessagesContent() {
       c.initiatedBy !== user?._id
   );
 
-  const displayedConversations = activeTab === 'chats' ? directChats : messageRequests;
+  const displayedConversations = (activeTab === 'chats' ? directChats : messageRequests).filter(
+    (conv) => {
+      if (!chatSearchQuery.trim()) return true;
+      const other = getOtherUser(conv);
+      return (
+        other?.fullName?.toLowerCase().includes(chatSearchQuery.toLowerCase()) ||
+        other?.email?.toLowerCase().includes(chatSearchQuery.toLowerCase())
+      );
+    }
+  );
 
   // Active recipient
   const recipient = getOtherUser(activeConversation);
 
   return (
-    <div className="h-[calc(100vh-8.5rem)] flex rounded-2xl bg-[#1E1B26] border border-[#2D2938] overflow-hidden shadow-2xl animate-fade-in relative">
+    <div className="h-[calc(100dvh-12rem)] md:h-[calc(100vh-8.5rem)] mb-16 md:mb-0 flex rounded-2xl bg-[#1E1B26] border border-[#2D2938] overflow-hidden shadow-2xl relative">
       {/* Left Sidebar: Conversations List */}
       <div
         className={`w-full md:w-80 border-r border-[#2D2938] flex flex-col bg-[#17151D] ${
@@ -642,7 +694,7 @@ function MessagesContent() {
             </h1>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-semibold text-[#D5F36A] bg-[#D5F36A]/10 border border-[#D5F36A]/30 px-2 py-0.5 rounded-full hidden sm:inline-block">
-                AES-GCM Protected
+                AES-GCM 256-bit Protected
               </span>
               <button
                 type="button"
@@ -656,11 +708,26 @@ function MessagesContent() {
             </div>
           </div>
 
+          {/* Quick Chat Search Filter */}
+          <div className="relative">
+            <Icon
+              name="search"
+              className="w-3.5 h-3.5 text-[#777580] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              value={chatSearchQuery}
+              onChange={(e) => setChatSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#1E1B26] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257] transition-colors"
+            />
+          </div>
+
           <div className="flex rounded-xl bg-[#1E1B26] p-1 border border-[#2D2938]">
             <button
               type="button"
               onClick={() => setActiveTab('chats')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'chats'
                   ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-sm'
                   : 'text-[#777580] hover:text-[#F6F2EA]'
@@ -671,7 +738,7 @@ function MessagesContent() {
             <button
               type="button"
               onClick={() => setActiveTab('requests')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'requests'
                   ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-sm'
                   : 'text-[#777580] hover:text-[#F6F2EA]'
@@ -699,11 +766,13 @@ function MessagesContent() {
           ) : displayedConversations.length === 0 ? (
             <div className="p-6 text-center text-xs text-[#777580] flex flex-col items-center gap-3">
               <p>
-                {activeTab === 'chats'
-                  ? 'No active direct chats yet. Follow creators or visit profiles to start a conversation.'
+                {chatSearchQuery
+                  ? `No conversations matching "${chatSearchQuery}".`
+                  : activeTab === 'chats'
+                  ? 'No active direct chats yet. Connect with members to start a conversation.'
                   : 'No pending message requests.'}
               </p>
-              {activeTab === 'chats' && (
+              {activeTab === 'chats' && !chatSearchQuery && (
                 <button
                   type="button"
                   onClick={openNewChatModal}
@@ -743,12 +812,7 @@ function MessagesContent() {
                         {otherUser?.fullName || 'User'}
                       </p>
                       <span className="text-[10px] text-[#777580]">
-                        {conv.lastMessageAt
-                          ? new Date(conv.lastMessageAt).toLocaleDateString([], {
-                              month: 'short',
-                              day: 'numeric'
-                            })
-                          : ''}
+                        {formatConversationDate(conv.lastMessageAt)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-1 mt-0.5">
@@ -778,51 +842,65 @@ function MessagesContent() {
         {activeConversation && recipient ? (
           <>
             {/* Active Chat Header */}
-            <div className="h-16 px-4 sm:px-6 border-b border-[#2D2938] bg-[#17151D] flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="h-16 px-4 sm:px-6 border-b border-[#2D2938] bg-[#17151D] flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <button
                   type="button"
                   onClick={() => setActiveConversation(null)}
-                  className="md:hidden text-[#777580] hover:text-[#F6F2EA] p-1"
-                  aria-label="Back to conversations"
+                  className="md:hidden text-[#777580] hover:text-[#F6F2EA] p-1.5 -ml-1 rounded-lg hover:bg-[#1E1B26] transition-colors cursor-pointer shrink-0"
+                  aria-label="Back to conversations list"
                 >
                   <Icon name="arrowLeft" className="w-5 h-5" />
                 </button>
                 {(() => {
                   const isRecipientOnline = isUserOnline ? isUserOnline(recipient?._id) : false;
                   return (
-                    <>
+                    <div className="flex items-center gap-3 min-w-0">
                       <Avatar
                         name={recipient.fullName || 'User'}
                         src={recipient?.profile?.avatarUrl}
                         size="sm"
                         status={isRecipientOnline ? 'online' : 'offline'}
                       />
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <h2 className="text-xs sm:text-sm font-bold text-[#F6F2EA] leading-tight font-display">
+                          <h2 className="text-xs sm:text-sm font-bold text-[#F6F2EA] leading-tight font-display truncate">
                             {recipient.fullName}
                           </h2>
-                          <span className={`text-[10px] font-semibold ${isRecipientOnline ? 'text-[#D5F36A]' : 'text-[#777580]'}`}>
+                          <span className={`text-[10px] font-semibold shrink-0 ${isRecipientOnline ? 'text-[#D5F36A]' : 'text-[#777580]'}`}>
                             • {isRecipientOnline ? 'Online' : 'Offline'}
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#777580] font-mono">
-                          {recipient.username ? `@${recipient.username}` : recipient.email}
+                        <p className="text-[11px] text-[#777580] font-mono truncate">
+                          {recipient.email ? `@${recipient.email.split('@')[0]}` : ''}
                         </p>
                       </div>
-                    </>
+                    </div>
                   );
                 })()}
               </div>
 
               {/* Cryptographic Protocol Badge */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-[#D5F36A] text-[11px] font-semibold">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-[#D5F36A] text-[11px] font-semibold shrink-0">
                 <Icon name="lock" className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">AES-GCM 256-bit Protected</span>
                 <span className="sm:hidden">AES-256</span>
               </div>
             </div>
+
+            {/* Error Notice Banner */}
+            {error && (
+              <div className="p-3 bg-[#FF6257]/10 border-b border-[#FF6257]/30 flex items-center justify-between text-xs text-[#FF6257]">
+                <span>{error}</span>
+                <button
+                  type="button"
+                  onClick={() => setError('')}
+                  className="p-1 hover:text-[#FF8178] font-bold cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
 
             {/* Message Request Warning Banner */}
             {(activeConversation.status === 'pending_request' || activeConversation.status === 'pending') &&
@@ -859,19 +937,19 @@ function MessagesContent() {
             {/* Messages Scroll Area */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
               {loadingMessages ? (
-                <div className="p-8 text-center text-xs text-[#777580]">
+                <div className="p-8 text-center text-xs text-[#777580] animate-pulse">
                   Decrypting secure message stream...
                 </div>
               ) : messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-[#777580]">
                   <Icon name="lock" className="w-8 h-8 text-[#FF6257]" />
                   <p className="text-xs font-bold text-[#F6F2EA] font-display">Client-Side Encrypted (AES-GCM 256-bit)</p>
-                  <p className="text-[11px] max-w-xs leading-relaxed">
-                    Messages are encrypted in your browser using Web Crypto AES-GCM 256-bit before leaving your device.
+                  <p className="text-[11px] max-w-sm leading-relaxed">
+                    Messages are encrypted in your browser before leaving your device. Only conversation participants can decrypt.
                   </p>
                 </div>
               ) : (
-                messages.map((msg) => {
+                messages.map((msg, index) => {
                   const msgId = getMsgId(msg);
                   const senderId = (msg.sender?._id || msg.sender)?.toString();
                   const currentUserId = user?._id?.toString();
@@ -882,31 +960,26 @@ function MessagesContent() {
 
                   return (
                     <div
-                      key={msgId || Math.random().toString()}
+                      key={msgId || index}
                       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                     >
                       <div
-                        className={`max-w-[75%] sm:max-w-md px-3.5 py-2.5 rounded-2xl text-xs break-words shadow-sm ${
+                        className={`max-w-[80%] sm:max-w-md px-3.5 py-2.5 rounded-2xl text-xs break-words shadow-sm ${
                           isMine
                             ? 'bg-[#FF6257] text-white rounded-br-xs shadow-md shadow-[#FF6257]/15'
                             : 'bg-[#1E1B26] border border-[#2D2938] text-[#F6F2EA] rounded-bl-xs'
                         }`}
                       >
-                        <p className="whitespace-pre-wrap">{displayContent}</p>
+                        <p className="whitespace-pre-wrap leading-relaxed">{displayContent}</p>
                         <div
                           className={`flex items-center gap-1.5 mt-1 text-[9px] ${
                             isMine ? 'text-white/80 justify-end' : 'text-[#777580]'
                           }`}
                         >
                           {msg.isEncrypted && <Icon name="lock" className="w-2.5 h-2.5" />}
-                          <span>
-                            {new Date(msg.createdAt || Date.now()).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </span>
+                          <span>{formatMessageTime(msg.createdAt)}</span>
                           {isMine && (
-                            <span>{msg.readBy?.length > 1 || msg.readAt ? '• Read' : '• Sent'}</span>
+                            <span>{msg.readAt || msg.readBy?.length > 1 ? '• Read' : '• Sent'}</span>
                           )}
                         </div>
                       </div>
@@ -917,7 +990,7 @@ function MessagesContent() {
 
               {/* Partner Typing Indicator */}
               {partnerTyping && (
-                <div className="flex items-center gap-1.5 text-xs text-[#777580] italic py-1 animate-pulse">
+                <div className="flex items-center gap-2 text-xs text-[#777580] italic py-1 animate-pulse">
                   <span className="w-2 h-2 rounded-full bg-[#D5F36A]" />
                   <span>{recipient.fullName} is typing...</span>
                 </div>
@@ -935,8 +1008,9 @@ function MessagesContent() {
                 type="text"
                 value={messageInput}
                 onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
                 placeholder={`Encrypted message to ${recipient.fullName}...`}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#1E1B26] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257]"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-[#1E1B26] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257] transition-colors"
                 disabled={sending}
               />
               <Button
@@ -959,9 +1033,9 @@ function MessagesContent() {
                 <span className="text-[10px] font-semibold text-[#D5F36A] bg-[#D5F36A]/10 border border-[#D5F36A]/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                   AES-GCM PROTECTED
                 </span>
-                <h2 className="text-lg font-bold text-[#F6F2EA] mt-2 font-display">Encrypted Direct Messages</h2>
+                <h2 className="text-lg font-bold text-[#F6F2EA] mt-2 font-display">Client-Side Encrypted Messages</h2>
                 <p className="text-xs text-[#777580] max-w-sm mx-auto mt-1 leading-relaxed">
-                  Choose a contact from the list or start a conversation from a creator profile.
+                  Choose a contact from the list or start a conversation with any creator. Messages are encrypted in your browser before transmission.
                 </p>
               </div>
               <Button
