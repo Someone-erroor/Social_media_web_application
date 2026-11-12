@@ -1,26 +1,28 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import PageHeader from '@/components/ui/PageHeader';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import ExperienceHeader from '@/components/experiences/ExperienceHeader';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Avatar from '@/components/ui/Avatar';
+import Badge from '@/components/ui/Badge';
 import Card, { CardContent } from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import { useAuth } from '@/context/AuthContext';
 import { playService } from '@/services/playService';
 
 const GAME_TYPES = [
-  { id: 'all', label: 'All Games', icon: 'play' },
-  { id: 'who_knows_me', label: 'Who Knows Me Better?', icon: 'users', desc: 'Test how well your friends really know your preferences' },
-  { id: 'two_truths_and_lie', label: 'Two Truths & a Lie', icon: 'sparkles', desc: 'Two real facts, one clever lie. Can they spot it?' },
-  { id: 'emoji_challenge', label: 'Emoji Challenge', icon: 'assistant', desc: 'Decode movie, song, or phrase puzzles from emojis' },
-  { id: 'picture_mystery', label: 'Picture Mystery', icon: 'eye', desc: 'Unravel riddles and secret visual clues' }
+  { id: 'all', label: 'All Formats', icon: 'play' },
+  { id: 'who_knows_me', label: 'Who Knows Me?', icon: 'users', desc: 'Test how well your friends know you' },
+  { id: 'two_truths_and_lie', label: 'Two Truths & Lie', icon: 'sparkles', desc: 'Can they spot the single lie?' },
+  { id: 'emoji_challenge', label: 'Emoji Riddles', icon: 'assistant', desc: 'Decode phrases from emojis' },
+  { id: 'picture_mystery', label: 'Picture Mystery', icon: 'split', desc: 'Visual riddles and hidden clues' }
 ];
 
 export default function PlayPage() {
   const { user } = useAuth();
   const [selectedType, setSelectedType] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'unplayed' | 'played'
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -135,137 +137,260 @@ export default function PlayPage() {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <PageHeader
-          title="Looply Play"
-          description="Interactive social games, trivia, and playful challenges with friends"
-        />
-        <Button
-          type="button"
-          variant="primary"
-          size="sm"
-          onClick={() => setShowCreateModal(true)}
-          icon={<Icon name="plus" className="w-4 h-4" />}
-          className="self-start sm:self-auto shrink-0 shadow-lg shadow-coral-500/10"
-        >
-          Create Challenge
-        </Button>
-      </div>
+  // Filtered list based on status (all, unplayed, played)
+  const filteredChallenges = useMemo(() => {
+    return challenges.filter((c) => {
+      const isPlayed = Boolean(
+        c.played ||
+        c.participants?.some((p) => (p.user?._id || p.user) === user?._id)
+      );
+      if (statusFilter === 'played') return isPlayed;
+      if (statusFilter === 'unplayed') return !isPlayed;
+      return true;
+    });
+  }, [challenges, statusFilter, user?._id]);
 
-      {/* Game Type Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-3 border-b border-[#2D2938]">
-        {GAME_TYPES.map((gt) => (
-          <button
-            key={gt.id}
+  // Featured challenge is the first active challenge
+  const featuredChallenge = challenges.length > 0 ? challenges[0] : null;
+
+  return (
+    <div className="space-y-8 animate-fade-in pb-12">
+      {/* 1. Standardized Experience Header */}
+      <ExperienceHeader
+        title="Looply Play & Challenges"
+        description="Test friendships and spark lighthearted conversations with social games including 'Who Knows Me Better?', 'Two Truths & a Lie', and 'Emoji Challenges'."
+        icon="play"
+        categoryLabel="Interactive & Play"
+        status="Active Games"
+        statusVariant="coral"
+        action={
+          <Button
             type="button"
-            onClick={() => setSelectedType(gt.id)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-              selectedType === gt.id
-                ? 'bg-[#FF6257] text-[#17151D] shadow-md shadow-[#FF6257]/20'
-                : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
-            }`}
+            variant="primary"
+            size="md"
+            onClick={() => setShowCreateModal(true)}
+            icon={<Icon name="plus" className="w-4 h-4" />}
+            className="shadow-lg shadow-[#FF6257]/20 shrink-0 font-bold"
           >
-            <Icon name={gt.icon} className="w-3.5 h-3.5" />
-            <span>{gt.label}</span>
-          </button>
-        ))}
-      </div>
+            Create Challenge
+          </Button>
+        }
+      />
 
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
-          {error}
+        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center gap-2">
+          <Icon name="alertCircle" className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      {/* Challenges Grid */}
+      {/* 2. Featured Challenge Hero (Shown when on All Games) */}
+      {!loading && featuredChallenge && selectedType === 'all' && statusFilter === 'all' && (
+        <div className="p-6 rounded-2xl bg-gradient-to-r from-[#1E1B26] via-[#241F30] to-[#1E1B26] border border-[#FF6257]/30 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6257]/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+            <div className="space-y-2 max-w-xl">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF6257] text-[#17151D] font-display">
+                  ★ Featured Activity
+                </span>
+                <span className="text-[11px] text-[#777580] uppercase tracking-wider font-semibold">
+                  {featuredChallenge.gameType?.replace(/_/g, ' ')}
+                </span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold text-[#F6F2EA] font-display">
+                {featuredChallenge.title}
+              </h2>
+              <p className="text-xs text-[#777580] line-clamp-2 leading-relaxed">
+                {featuredChallenge.prompt}
+              </p>
+              <div className="flex items-center gap-3 text-xs text-[#777580] pt-1">
+                <span className="flex items-center gap-1.5">
+                  <Avatar
+                    name={featuredChallenge.creator?.fullName || 'Creator'}
+                    src={featuredChallenge.creator?.profile?.avatarUrl}
+                    size="xs"
+                  />
+                  <span>By {featuredChallenge.creator?.fullName || 'Looply Creator'}</span>
+                </span>
+                <span>•</span>
+                <span className="text-[#D5F36A] font-semibold flex items-center gap-1">
+                  <Icon name="sparkles" className="w-3.5 h-3.5" />
+                  +100 Points
+                </span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="primary"
+              size="md"
+              onClick={() => handleOpenPlay(featuredChallenge)}
+              icon={<Icon name="play" className="w-4 h-4" />}
+              className="w-full md:w-auto shadow-lg shadow-[#FF6257]/25"
+            >
+              Play Challenge Now
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Categorization & Filtering Controls */}
+      <div className="space-y-4">
+        {/* Game Type Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {GAME_TYPES.map((gt) => {
+            const isSelected = selectedType === gt.id;
+            return (
+              <button
+                key={gt.id}
+                type="button"
+                onClick={() => setSelectedType(gt.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#FF6257] text-[#17151D] shadow-md shadow-[#FF6257]/20 font-bold'
+                    : 'bg-[#1E1B26] border border-[#2D2938] text-[#777580] hover:text-[#F6F2EA] hover:border-[#777580]/40'
+                }`}
+              >
+                <Icon name={gt.icon} className="w-3.5 h-3.5" />
+                <span>{gt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Status Filter Tabs (All / Unplayed / Played) */}
+        <div className="flex items-center justify-between gap-4 pt-1 border-t border-[#2D2938]">
+          <div className="flex items-center gap-2">
+            {[
+              { id: 'all', label: 'All Challenges' },
+              { id: 'unplayed', label: 'Unplayed' },
+              { id: 'played', label: 'Played by Me' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setStatusFilter(tab.id)}
+                className={`text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer font-medium ${
+                  statusFilter === tab.id
+                    ? 'bg-[#24202E] text-[#F6F2EA] border border-[#2D2938] font-semibold'
+                    : 'text-[#777580] hover:text-[#F6F2EA]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <span className="text-[11px] text-[#777580]">
+            {filteredChallenges.length} {filteredChallenges.length === 1 ? 'game' : 'games'} available
+          </span>
+        </div>
+      </div>
+
+      {/* 4. Active Content Grid or Empty State */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse space-y-3">
-              <div className="w-20 h-4 bg-[#24202E] rounded" />
+              <div className="flex items-center justify-between">
+                <div className="w-20 h-4 bg-[#24202E] rounded" />
+                <div className="w-12 h-4 bg-[#24202E] rounded" />
+              </div>
               <div className="w-3/4 h-5 bg-[#24202E] rounded" />
-              <div className="w-full h-3 bg-[#24202E] rounded" />
+              <div className="w-full h-12 bg-[#24202E] rounded" />
+              <div className="w-full h-8 bg-[#24202E] rounded pt-2" />
             </div>
           ))}
         </div>
-      ) : challenges.length === 0 ? (
+      ) : filteredChallenges.length === 0 ? (
         <EmptyState
           icon="play"
           title="No Challenges Found"
-          description="No interactive challenges created under this category yet. Be the first to challenge your friends!"
+          description={
+            statusFilter === 'played'
+              ? "You haven't played any challenges in this category yet. Dive in and test your trivia!"
+              : "No community challenges exist for this filter yet. Create the very first one!"
+          }
           badgeText="Looply Play"
+          action={
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => setShowCreateModal(true)}
+              icon={<Icon name="plus" className="w-4 h-4" />}
+            >
+              Create Challenge
+            </Button>
+          }
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {challenges.map((c) => {
-            const hasPlayed = c.participants?.some((p) => p.user?._id === user?._id || p.user === user?._id);
-            const myScore = c.participants?.find((p) => p.user?._id === user?._id || p.user === user?._id)?.score;
+          {filteredChallenges.map((challenge) => {
+            const isPlayed = Boolean(
+              challenge.played ||
+              challenge.participants?.some((p) => (p.user?._id || p.user) === user?._id)
+            );
 
             return (
-              <Card key={c._id} className="bg-[#1E1B26] border-[#2D2938] hover:border-[#FF6257]/40 transition-colors flex flex-col justify-between shadow-xl">
+              <Card
+                key={challenge._id}
+                className="bg-[#1E1B26] border-[#2D2938] hover:border-[#FF6257]/40 transition-all flex flex-col justify-between shadow-xl group"
+              >
                 <CardContent className="p-5 space-y-4">
-                  {/* Game Category Badge & Creator */}
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30">
-                      {c.gameType?.replace(/_/g, ' ')}
+                  {/* Top Bar: Game Type & Status */}
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 font-display">
+                      {challenge.gameType?.replace(/_/g, ' ')}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <Avatar
-                        name={c.creator?.fullName || 'Host'}
-                        src={c.creator?.profile?.avatarUrl}
-                        size="xs"
-                      />
-                      <span className="text-[11px] text-[#777580] truncate max-w-[100px]">
-                        {c.creator?.fullName}
+                    {isPlayed ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#D5F36A] bg-[#D5F36A]/10 border border-[#D5F36A]/30 px-2 py-0.5 rounded-full">
+                        <Icon name="check" className="w-3 h-3" />
+                        Played
                       </span>
-                    </div>
+                    ) : (
+                      <span className="text-[10px] font-semibold text-[#777580]">
+                        {challenge.participants?.length || 0} played
+                      </span>
+                    )}
                   </div>
 
-                  {/* Challenge Title & Prompt */}
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-[#F6F2EA] font-display line-clamp-1">
-                      {c.title}
+                  {/* Title & Prompt Preview */}
+                  <div className="space-y-1.5">
+                    <h3 className="text-sm font-bold text-[#F6F2EA] font-display line-clamp-1 group-hover:text-[#FF6257] transition-colors">
+                      {challenge.title}
                     </h3>
                     <p className="text-xs text-[#777580] line-clamp-2 leading-relaxed">
-                      {c.prompt}
+                      {challenge.prompt}
                     </p>
                   </div>
 
-                  {/* Options Preview */}
-                  {c.options && c.options.length > 0 && (
-                    <div className="space-y-1.5 pt-1">
-                      {c.options.slice(0, 3).map((opt, idx) => (
-                        <div
-                          key={idx}
-                          className="px-3 py-1.5 rounded-lg bg-[#17151D] border border-[#2D2938] text-[11px] text-[#777580] truncate"
-                        >
-                          {opt}
-                        </div>
-                      ))}
+                  {/* Creator Info & Action CTA */}
+                  <div className="pt-3 border-t border-[#2D2938] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        name={challenge.creator?.fullName || 'Creator'}
+                        src={challenge.creator?.profile?.avatarUrl}
+                        size="xs"
+                      />
+                      <div className="truncate max-w-[90px]">
+                        <p className="text-[11px] font-medium text-[#F6F2EA] truncate">
+                          {challenge.creator?.fullName || 'Creator'}
+                        </p>
+                      </div>
                     </div>
-                  )}
 
-                  {/* Stats & Play Button */}
-                  <div className="pt-2 border-t border-[#2D2938] flex items-center justify-between">
-                    <span className="text-[11px] text-[#777580]">
-                      {c.participantsCount || c.participants?.length || 0} played
-                    </span>
-                    {hasPlayed ? (
-                      <span className="text-xs font-bold text-[#D5F36A]">
-                        Score: {myScore || 100} pts
-                      </span>
-                    ) : (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="primary"
-                        onClick={() => handleOpenPlay(c)}
-                      >
-                        Play Now
-                      </Button>
-                    )}
+                    <Button
+                      type="button"
+                      variant={isPlayed ? 'outline' : 'primary'}
+                      size="sm"
+                      onClick={() => handleOpenPlay(challenge)}
+                      icon={<Icon name="play" className="w-3.5 h-3.5" />}
+                      className="text-xs"
+                    >
+                      {isPlayed ? 'Play Again' : 'Play Now'}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -274,17 +399,58 @@ export default function PlayPage() {
         </div>
       )}
 
-      {/* Active Challenge Play Modal */}
+      {/* 5. Supporting Information / How It Works */}
+      <section className="p-6 rounded-2xl bg-[#1E1B26]/80 border border-[#2D2938] space-y-4">
+        <div className="flex items-center gap-2">
+          <Icon name="sparkles" className="w-4 h-4 text-[#FF6257]" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F6F2EA] font-display">
+            How Looply Play Works
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center text-xs font-bold font-display">
+              1
+            </div>
+            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Pick Your Game Format</h3>
+            <p className="text-[11px] text-[#777580] leading-relaxed">
+              Create personal friendship trivia, a crafty Two Truths and a Lie, or cryptographic emoji riddles.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#B9A8F5]/15 text-[#B9A8F5] flex items-center justify-center text-xs font-bold font-display">
+              2
+            </div>
+            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Challenge Your Circle</h3>
+            <p className="text-[11px] text-[#777580] leading-relaxed">
+              Friends attempt your prompt and submit their deductions. Answers are validated on submission.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#D5F36A]/15 text-[#D5F36A] flex items-center justify-center text-xs font-bold font-display">
+              3
+            </div>
+            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Earn Social Points</h3>
+            <p className="text-[11px] text-[#777580] leading-relaxed">
+              Every correct guess earns bragging rights and activity points across your Looply social profile.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Active Play Modal */}
       {activeChallenge && (
         <div
           role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
         >
-          <div className="w-full max-w-lg bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl p-6 space-y-5">
+          <div className="w-full max-w-md bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#D5F36A]">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF6257] font-display">
                   {activeChallenge.gameType?.replace(/_/g, ' ')}
                 </span>
                 <h2 className="text-base font-bold text-[#F6F2EA] font-display">
@@ -294,7 +460,7 @@ export default function PlayPage() {
               <button
                 type="button"
                 onClick={() => setActiveChallenge(null)}
-                className="text-[#777580] hover:text-[#F6F2EA] p-1 rounded-lg hover:bg-[#24202E]"
+                className="text-[#777580] hover:text-[#F6F2EA] p-1.5 rounded-lg hover:bg-[#24202E] cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -343,7 +509,7 @@ export default function PlayPage() {
                 {activeChallenge.options && activeChallenge.options.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-xs font-bold text-[#F6F2EA] font-display">
-                      {activeChallenge.gameType === 'two_truths_and_a_lie'
+                      {activeChallenge.gameType === 'two_truths_and_lie'
                         ? 'Spot the LIE among these statements:'
                         : 'Select your answer:'}
                     </p>
@@ -352,7 +518,7 @@ export default function PlayPage() {
                         key={idx}
                         type="button"
                         onClick={() => setSelectedOption(idx)}
-                        className={`w-full p-3 rounded-xl border text-xs text-left transition-colors ${
+                        className={`w-full p-3 rounded-xl border text-xs text-left transition-colors cursor-pointer ${
                           selectedOption === idx
                             ? 'border-[#FF6257] bg-[#FF6257]/15 text-[#F6F2EA] font-bold'
                             : 'border-[#2D2938] hover:bg-[#24202E] text-[#777580]'
@@ -379,8 +545,9 @@ export default function PlayPage() {
                 )}
 
                 {activeChallenge.hint && (
-                  <p className="text-[11px] text-[#FBBF24] italic">
-                    💡 Hint: {activeChallenge.hint}
+                  <p className="text-[11px] text-[#FBBF24] italic flex items-center gap-1">
+                    <Icon name="sparkles" className="w-3.5 h-3.5 text-[#FBBF24]" />
+                    <span>Hint: {activeChallenge.hint}</span>
                   </p>
                 )}
 
@@ -422,7 +589,7 @@ export default function PlayPage() {
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-[#777580] hover:text-[#F6F2EA] p-1 rounded-lg hover:bg-[#24202E]"
+                className="text-[#777580] hover:text-[#F6F2EA] p-1 rounded-lg hover:bg-[#24202E] cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -436,7 +603,7 @@ export default function PlayPage() {
               )}
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#F6F2EA] font-display">Game Type</label>
+                <label className="text-xs font-bold text-[#F6F2EA] font-display">Game Format</label>
                 <select
                   value={createType}
                   onChange={(e) => setCreateType(e.target.value)}
@@ -476,7 +643,7 @@ export default function PlayPage() {
               {/* Options */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-[#F6F2EA] font-display">
-                  {createType === 'two_truths_and_a_lie' ? 'Three Statements (2 truths + 1 lie)' : 'Options'}
+                  {createType === 'two_truths_and_lie' ? 'Three Statements (2 truths + 1 lie)' : 'Options'}
                 </label>
                 {createOptions.map((opt, i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -502,7 +669,7 @@ export default function PlayPage() {
                         onChange={(e) => setCreateAnswerKey(e.target.value)}
                         className="accent-[#FF6257]"
                       />
-                      <span>{createType === 'two_truths_and_a_lie' ? 'Lie' : 'Correct'}</span>
+                      <span>{createType === 'two_truths_and_lie' ? 'Lie' : 'Correct'}</span>
                     </label>
                   </div>
                 ))}
