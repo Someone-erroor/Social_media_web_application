@@ -1,6 +1,6 @@
 /**
- * Reusable Badge Component for Looply (Editorial Expression Theme)
- * Status pills and descriptive tags with Electric Coral, Acid Lime, and Soft Lavender accents.
+ * Reusable Badge Component for Looply (Warm Social Playground Theme)
+ * Status pills and descriptive tags with Brand Purple, Social Coral, Joy Yellow, and Success Green.
  */
 export default function Badge({
   children,
@@ -18,15 +18,16 @@ export default function Badge({
   };
 
   const variantClasses = {
-    neutral: 'bg-[#24202E] text-[#F6F2EA] border border-[#2D2938]',
-    primary: 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/35 font-semibold',
-    coral: 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/35 font-semibold',
-    lime: 'bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/35 font-semibold',
-    lavender: 'bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/35 font-semibold',
-    success: 'bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/35 font-semibold',
-    warning: 'bg-[#F59E0B]/15 text-[#FBBF24] border border-[#F59E0B]/35 font-medium',
-    danger: 'bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/35 font-semibold',
-    outline: 'bg-transparent text-[#777580] border border-[#2D2938]'
+    neutral: 'bg-[#F1F0EC] text-[#1E1E24] border border-[#E7E5E0]',
+    primary: 'bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/25 font-semibold',
+    coral: 'bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/25 font-semibold',
+    lime: 'bg-[#E8F7EE] text-[#2E7D4E] border border-[#4CAF78]/30 font-semibold',
+    lavender: 'bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/25 font-semibold',
+    success: 'bg-[#E8F7EE] text-[#2E7D4E] border border-[#4CAF78]/30 font-semibold',
+    warning: 'bg-[#FFF7E0] text-[#B28200] border border-[#FFD166]/40 font-semibold',
+    danger: 'bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/25 font-semibold',
+    yellow: 'bg-[#FFF7E0] text-[#B28200] border border-[#FFD166]/40 font-semibold',
+    outline: 'bg-white text-[#6B6B73] border border-[#E7E5E0]'
   };
 
   return (

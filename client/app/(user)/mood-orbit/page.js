@@ -15,12 +15,12 @@ import { ROUTES } from '@/lib/routes';
 
 const MOODS = [
   { id: '', label: 'All Orbits', icon: 'sparkles', desc: 'Browse all active atmospheric spaces' },
-  { id: 'creative', label: 'Creative', icon: 'edit', accent: '#FF6257', desc: 'Making, designing, and brainstorming' },
-  { id: 'curious', label: 'Curious', icon: 'search', accent: '#D5F36A', desc: 'Inquiring, learning, and discovering' },
-  { id: 'chill', label: 'Chill', icon: 'heart', accent: '#70D6FF', desc: 'Unwinding, listening, and easy presence' },
-  { id: 'energized', label: 'Energized', icon: 'sparkles', accent: '#FF9F1C', desc: 'High motivation, active sharing' },
-  { id: 'focused', label: 'Focused', icon: 'clock', accent: '#B9A8F5', desc: 'Deep work, study, and silent accountability' },
-  { id: 'reflective', label: 'Reflective', icon: 'eye', accent: '#E0AAFF', desc: 'Perspective, journal thoughts, mindful check-ins' }
+  { id: 'creative', label: 'Creative', icon: 'edit', accent: '#6C63FF', desc: 'Making, designing, and brainstorming' },
+  { id: 'curious', label: 'Curious', icon: 'search', accent: '#4CAF78', desc: 'Inquiring, learning, and discovering' },
+  { id: 'chill', label: 'Chill', icon: 'heart', accent: '#0284C7', desc: 'Unwinding, listening, and easy presence' },
+  { id: 'energized', label: 'Energized', icon: 'sparkles', accent: '#FFD166', desc: 'High motivation, active sharing' },
+  { id: 'focused', label: 'Focused', icon: 'clock', accent: '#6C63FF', desc: 'Deep work, study, and silent accountability' },
+  { id: 'reflective', label: 'Reflective', icon: 'eye', accent: '#FF6B6B', desc: 'Perspective, journal thoughts, mindful check-ins' }
 ];
 
 function formatExpiryCountdown(expiresAt) {
@@ -98,19 +98,17 @@ export default function MoodOrbitPage() {
         prompt: formData.prompt.trim(),
         maxParticipants: formData.maxParticipants,
         durationHours: formData.durationHours,
-        settings: {
-          ambientTheme: formData.ambientTheme
-        }
+        ambientTheme: formData.ambientTheme
       });
 
-      setShowCreateModal(false);
-      if (res.room?._id) {
+      if (res?.success && res.room?._id) {
+        setShowCreateModal(false);
         router.push(ROUTES.USER.MOOD_ORBIT_ROOM(res.room._id));
       } else {
-        loadRooms();
+        throw new Error(res?.message || 'Failed to open space.');
       }
     } catch (err) {
-      setCreateError(err.message || 'Failed to open space.');
+      setCreateError(err.message || 'Error opening Mood-Orbit space.');
     } finally {
       setCreateLoading(false);
     }
@@ -120,7 +118,7 @@ export default function MoodOrbitPage() {
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Header */}
       <PageHeader
-        title="Mood-Orbit Rooms"
+        title="Mood-Orbit Spaces"
         description="Temporary social spaces organized by shared emotional atmosphere and intention. Enter an orbit to share ideas, presence, or quiet inspiration."
         badge={
           <Badge variant="lime" size="sm">
@@ -141,7 +139,7 @@ export default function MoodOrbitPage() {
       />
 
       {/* Mood Selector Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#2D2938] scrollbar-none">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#E7E5E0] scrollbar-none">
         {MOODS.map((m) => {
           const isActive = selectedMood === m.id;
           return (
@@ -151,11 +149,11 @@ export default function MoodOrbitPage() {
               onClick={() => setSelectedMood(m.id)}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-[#D5F36A] text-[#110F17] font-bold shadow-md shadow-[#D5F36A]/20'
-                  : 'bg-[#1E1B26] border border-[#2D2938] text-[#777580] hover:text-[#F6F2EA] hover:border-[#D5F36A]/40'
+                  ? 'bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/30 font-bold shadow-2xs'
+                  : 'bg-white border border-[#E7E5E0] text-[#6B6B73] hover:text-[#1E1E24]'
               }`}
             >
-              <Icon name={m.icon} className={`w-3.5 h-3.5 ${isActive ? 'text-[#110F17]' : 'text-[#777580]'}`} />
+              <Icon name={m.icon} className={`w-3.5 h-3.5 ${isActive ? 'text-[#6C63FF]' : 'text-[#6B6B73]'}`} />
               <span>{m.label}</span>
             </button>
           );
@@ -163,7 +161,7 @@ export default function MoodOrbitPage() {
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+        <div className="p-3.5 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B]">
           {error}
         </div>
       )}
@@ -172,7 +170,7 @@ export default function MoodOrbitPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-44 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse" />
+            <div key={i} className="h-44 rounded-2xl bg-white border border-[#E7E5E0] animate-pulse" />
           ))}
         </div>
       ) : rooms.length === 0 ? (
@@ -181,7 +179,7 @@ export default function MoodOrbitPage() {
           title="No Active Rooms in this Orbit"
           description={
             selectedMood
-              ? `There are currently no active spaces tuned to the "${selectedMood}" mood. Open the first space and invite fellow operatives!`
+              ? `There are currently no active spaces tuned to the "${selectedMood}" mood. Open the first space and invite fellow members!`
               : 'There are currently no active Mood-Orbit rooms open. Open the first atmospheric space!'
           }
           badgeText="Atmospheric Presence"
@@ -205,38 +203,38 @@ export default function MoodOrbitPage() {
             return (
               <Card
                 key={room._id}
-                className="bg-[#1E1B26] border-[#2D2938] hover:border-[#D5F36A]/50 transition-all flex flex-col justify-between shadow-lg group"
+                className="bg-white border-[#E7E5E0] hover:border-[#6C63FF]/40 transition-all flex flex-col justify-between shadow-xs group"
               >
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="p-1.5 rounded-lg bg-[#D5F36A]/15 text-[#D5F36A]">
+                      <span className="p-1.5 rounded-lg bg-[#EEEAFE] text-[#6C63FF]">
                         <Icon name="sparkles" className="w-4 h-4" />
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#17151D] border border-[#2D2938] text-[#D5F36A] font-mono">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F8F7F4] border border-[#E7E5E0] text-[#6C63FF] font-mono">
                         {room.mood}
                       </span>
                     </div>
 
-                    <span className="text-[11px] font-mono text-[#777580] flex items-center gap-1">
-                      <Icon name="clock" className="w-3.5 h-3.5 text-[#FF6257]" />
+                    <span className="text-[11px] font-mono text-[#6B6B73] flex items-center gap-1">
+                      <Icon name="clock" className="w-3.5 h-3.5 text-[#FF6B6B]" />
                       {formatExpiryCountdown(room.expiresAt)}
                     </span>
                   </div>
 
                   <div className="space-y-1">
-                    <h2 className="text-base font-bold text-[#F6F2EA] font-display group-hover:text-[#D5F36A] transition-colors line-clamp-1">
+                    <h2 className="text-base font-bold text-[#1E1E24] font-display group-hover:text-[#6C63FF] transition-colors line-clamp-1">
                       <Link href={ROUTES.USER.MOOD_ORBIT_ROOM(room._id)}>
                         {room.name}
                       </Link>
                     </h2>
-                    <p className="text-xs text-[#777580] line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#6B6B73] line-clamp-2 leading-relaxed">
                       {room.intention}
                     </p>
                   </div>
 
                   {room.prompt && (
-                    <div className="p-2.5 rounded-xl bg-[#17151D] border border-[#2D2938]/80 text-[11px] text-[#B9A8F5] italic line-clamp-1">
+                    <div className="p-2.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[11px] text-[#6C63FF] italic line-clamp-1">
                       "{room.prompt}"
                     </div>
                   )}
@@ -244,34 +242,34 @@ export default function MoodOrbitPage() {
                   {/* Presence & Capacity Bar */}
                   <div className="space-y-1.5 pt-1">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-[#777580] flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#D5F36A] animate-pulse" />
+                      <span className="text-[#6B6B73] flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#4CAF78] animate-pulse" />
                         Presence
                       </span>
-                      <span className="font-mono text-[#F6F2EA]">
+                      <span className="font-mono text-[#1E1E24]">
                         {room.participantsCount || 0} / {room.maxParticipants} seats
                       </span>
                     </div>
 
-                    <div className="w-full h-1.5 rounded-full bg-[#17151D] overflow-hidden">
+                    <div className="w-full h-1.5 rounded-full bg-[#F1F0EC] overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          isFull ? 'bg-[#FF6257]' : 'bg-[#D5F36A]'
+                          isFull ? 'bg-[#FF6B6B]' : 'bg-[#4CAF78]'
                         }`}
                         style={{ width: `${capacityRatio}%` }}
                       />
                     </div>
                   </div>
 
-                  <div className="pt-2 flex items-center justify-between border-t border-[#2D2938]">
+                  <div className="pt-2 flex items-center justify-between border-t border-[#E7E5E0]">
                     <div className="flex items-center gap-2">
                       <Avatar
                         name={room.creator?.fullName || 'Host'}
                         src={room.creator?.profile?.avatarUrl}
                         size="xs"
                       />
-                      <span className="text-[11px] text-[#777580] truncate max-w-[100px]">
-                        {room.creator?.fullName || 'Operative'}
+                      <span className="text-[11px] text-[#6B6B73] truncate max-w-[100px]">
+                        {room.creator?.fullName || 'Member'}
                       </span>
                     </div>
 
@@ -297,49 +295,49 @@ export default function MoodOrbitPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
         >
-          <div className="w-full max-w-lg bg-[#1E1B26] border border-[#2D2938] rounded-2xl p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
+          <div className="w-full max-w-lg bg-white border border-[#E7E5E0] rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
               <div>
-                <span className="text-[10px] font-bold uppercase text-[#D5F36A]">Orbit Launch</span>
-                <h3 className="text-base font-bold text-[#F6F2EA]">Open Mood-Orbit Space</h3>
+                <span className="text-[10px] font-bold uppercase text-[#6C63FF]">Orbit Launch</span>
+                <h3 className="text-base font-bold text-[#1E1E24]">Open Mood-Orbit Space</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-[#777580] hover:text-[#F6F2EA] p-1"
+                className="text-[#6B6B73] hover:text-[#1E1E24] p-1 cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
             </div>
 
             {createError && (
-              <div className="p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+              <div className="p-3 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B]">
                 {createError}
               </div>
             )}
 
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-[#777580]">Space Name *</label>
+                <label className="font-semibold text-[#1E1E24]">Space Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Late Night Ambient Sketching"
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#D5F36A]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#6C63FF]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-[#777580]">Emotional Atmosphere / Mood *</label>
+                  <label className="font-semibold text-[#1E1E24]">Emotional Atmosphere / Mood *</label>
                   <select
                     value={formData.mood}
                     onChange={(e) => setFormData({ ...formData, mood: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#D5F36A]"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#6C63FF]"
                   >
                     <option value="creative">Creative (Making &amp; Designing)</option>
                     <option value="curious">Curious (Questions &amp; Learning)</option>
@@ -351,11 +349,11 @@ export default function MoodOrbitPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-[#777580]">Duration (Hours)</label>
+                  <label className="font-semibold text-[#1E1E24]">Duration (Hours)</label>
                   <select
                     value={formData.durationHours}
                     onChange={(e) => setFormData({ ...formData, durationHours: parseInt(e.target.value, 10) || 4 })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#D5F36A]"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#6C63FF]"
                   >
                     <option value="1">1 Hour</option>
                     <option value="2">2 Hours</option>
@@ -368,32 +366,32 @@ export default function MoodOrbitPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-[#777580]">Room Intention *</label>
+                <label className="font-semibold text-[#1E1E24]">Room Intention *</label>
                 <textarea
                   rows={2}
                   required
                   value={formData.intention}
                   onChange={(e) => setFormData({ ...formData, intention: e.target.value })}
                   placeholder="What is the shared purpose or atmosphere of this space?"
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#D5F36A]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#6C63FF]"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-[#777580]">Custom Mood Prompt (Optional)</label>
+                <label className="font-semibold text-[#1E1E24]">Custom Mood Prompt (Optional)</label>
                 <input
                   type="text"
                   value={formData.prompt}
                   onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
                   placeholder="Leave blank to use recommended default prompt..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#D5F36A]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#6C63FF]"
                 />
               </div>
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="font-semibold text-[#777580]">Participant Capacity</label>
-                  <span className="font-mono text-[#D5F36A]">{formData.maxParticipants} seats</span>
+                  <label className="font-semibold text-[#1E1E24]">Participant Capacity</label>
+                  <span className="font-mono text-[#6C63FF]">{formData.maxParticipants} seats</span>
                 </div>
                 <input
                   type="range"
@@ -402,11 +400,11 @@ export default function MoodOrbitPage() {
                   step="5"
                   value={formData.maxParticipants}
                   onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value, 10) || 20 })}
-                  className="w-full accent-[#D5F36A]"
+                  className="w-full accent-[#6C63FF]"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#2D2938]">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#E7E5E0]">
                 <Button
                   type="button"
                   variant="outline"
@@ -432,4 +430,3 @@ export default function MoodOrbitPage() {
     </div>
   );
 }
-

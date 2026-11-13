@@ -103,12 +103,12 @@ export default function AdminPostsPage() {
 
       {/* Success Alert */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#E8F5E9] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
-            <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
-            <span>{successMessage}</span>
+            <Icon name="check" className="w-4 h-4 text-[#2E7D4E] shrink-0" />
+            <span className="font-semibold">{successMessage}</span>
           </div>
-          <button type="button" onClick={() => setSuccessMessage('')} className="text-[#D5F36A] hover:text-white">
+          <button type="button" onClick={() => setSuccessMessage('')} className="text-[#2E7D4E] hover:text-[#1E1E24]">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -116,9 +116,9 @@ export default function AdminPostsPage() {
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between shadow-xs">
           <span>{error}</span>
-          <button type="button" onClick={() => setError('')} className="text-[#FF6257] hover:text-white">
+          <button type="button" onClick={() => setError('')} className="text-[#FF6B6B] hover:text-[#1E1E24]">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -143,10 +143,10 @@ export default function AdminPostsPage() {
       </div>
 
       {/* Table Container */}
-      <Card className="overflow-hidden bg-[#1E1B26] border-[#2D2938]">
+      <Card className="overflow-hidden bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#F6F2EA]">
-            <thead className="bg-[#17151D] border-b border-[#2D2938] text-[#777580] uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#1E1E24]">
+            <thead className="bg-[#F8F7F4] border-b border-[#E7E5E0] text-[#6B6B73] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">Author</th>
                 <th scope="col" className="px-5 py-3.5">Content Preview</th>
@@ -156,10 +156,10 @@ export default function AdminPostsPage() {
                 <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2D2938]">
+            <tbody className="divide-y divide-[#E7E5E0]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#777580] font-medium">
+                  <td colSpan={6} className="py-8 text-center text-[#6B6B73] font-medium">
                     Loading posts for moderation...
                   </td>
                 </tr>
@@ -180,7 +180,7 @@ export default function AdminPostsPage() {
                   const isConfirming = confirmDeleteId === post._id;
 
                   return (
-                    <tr key={post._id} className="hover:bg-[#17151D]/60 transition-colors">
+                    <tr key={post._id} className="hover:bg-[#F8F7F4]/60 transition-colors">
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -189,10 +189,10 @@ export default function AdminPostsPage() {
                             size="sm"
                           />
                           <div>
-                            <span className="font-semibold text-[#F6F2EA] block">
+                            <span className="font-semibold text-[#1E1E24] block">
                               {author.fullName || 'Unknown'}
                             </span>
-                            <span className="text-[10px] text-[#777580] font-mono">
+                            <span className="text-[10px] text-[#6B6B73] font-mono">
                               {author.email || '—'}
                             </span>
                           </div>
@@ -201,22 +201,22 @@ export default function AdminPostsPage() {
                       <td className="px-5 py-3.5 max-w-xs sm:max-w-md">
                         <div className="space-y-1">
                           {post.postType === 'splitReality' && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/20">
                               🔀 Split-Reality
                             </span>
                           )}
-                          <p className="line-clamp-2 text-[#F6F2EA] break-words">
+                          <p className="line-clamp-2 text-[#1E1E24] break-words">
                             {post.content || (post.postType === 'splitReality' ? '[Dual-Perspective Media Post]' : '—')}
                           </p>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono text-[#D5F36A]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono font-semibold text-[#FF6B6B]">
                         {post.likesCount ?? 0}
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono text-[#B9A8F5]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-center font-mono font-semibold text-[#6C63FF]">
                         {post.commentsCount ?? 0}
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-[#6B6B73]">
                         {formatDate(post.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -261,7 +261,7 @@ export default function AdminPostsPage() {
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-[#2D2938] bg-[#17151D] text-xs text-[#777580]">
+          <div className="flex items-center justify-between p-4 border-t border-[#E7E5E0] bg-[#F8F7F4] text-xs text-[#6B6B73]">
             <span>
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total posts)
             </span>

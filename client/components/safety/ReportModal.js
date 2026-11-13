@@ -70,20 +70,20 @@ export default function ReportModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="report-dialog-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#080D12]/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
     >
-      <div className="w-full max-w-md bg-[#101A22] border border-[#263640] rounded-2xl shadow-2xl p-6 space-y-4">
+      <div className="w-full max-w-md bg-white border border-[#E7E5E0] rounded-2xl shadow-xl p-6 space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#263640]">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#FF5C70]/15 flex items-center justify-center text-[#FF5C70]">
+            <div className="w-8 h-8 rounded-lg bg-[#FFEAEA] flex items-center justify-center text-[#FF6B6B]">
               <Icon name="flag" className="w-4 h-4" />
             </div>
             <div>
-              <h2 id="report-dialog-title" className="text-sm font-bold text-[#F4F8FA]">
+              <h2 id="report-dialog-title" className="text-sm font-bold text-[#1E1E24]">
                 Report {targetType.charAt(0).toUpperCase() + targetType.slice(1)}
               </h2>
-              <p className="text-[11px] text-[#9BAAB4]">
+              <p className="text-[11px] text-[#6B6B73]">
                 Help keep the Looply community safe and constructive
               </p>
             </div>
@@ -91,7 +91,7 @@ export default function ReportModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-[#9BAAB4] hover:text-[#F4F8FA] p-1 rounded-lg hover:bg-[#151F29] transition-colors"
+            className="text-[#6B6B73] hover:text-[#1E1E24] p-1 rounded-lg hover:bg-[#F1F0EC] transition-colors cursor-pointer"
             aria-label="Close report dialog"
           >
             <Icon name="close" className="w-4 h-4" />
@@ -100,32 +100,32 @@ export default function ReportModal({
 
         {success ? (
           <div className="py-8 text-center space-y-2">
-            <div className="w-12 h-12 rounded-full bg-[#19D3E3]/15 text-[#19D3E3] flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-full bg-[#E8F7EE] text-[#4CAF78] flex items-center justify-center mx-auto">
               <Icon name="check" className="w-6 h-6" />
             </div>
-            <p className="text-sm font-semibold text-[#F4F8FA]">Report Submitted</p>
-            <p className="text-xs text-[#9BAAB4]">
+            <p className="text-sm font-semibold text-[#1E1E24]">Report Submitted</p>
+            <p className="text-xs text-[#6B6B73]">
               Thank you. Our moderation team has been notified and will review this content.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 rounded-xl bg-[#FF5C70]/10 border border-[#FF5C70]/30 text-xs text-[#FF5C70]">
+              <div className="p-3 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] font-medium">
                 {error}
               </div>
             )}
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#9BAAB4]">Select a reason</label>
+              <label className="text-xs font-semibold text-[#1E1E24]">Select a reason</label>
               <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
                 {REPORT_CATEGORIES.map((cat) => (
                   <label
                     key={cat.id}
                     className={`flex items-start gap-3 p-2.5 rounded-xl border cursor-pointer transition-colors ${
                       category === cat.id
-                        ? 'border-[#19D3E3] bg-[#19D3E3]/10 text-[#F4F8FA]'
-                        : 'border-[#263640] hover:bg-[#151F29] text-[#9BAAB4]'
+                        ? 'border-[#6C63FF] bg-[#EEEAFE]/40 text-[#1E1E24]'
+                        : 'border-[#E7E5E0] hover:bg-[#F8F7F4] text-[#6B6B73]'
                     }`}
                   >
                     <input
@@ -134,11 +134,11 @@ export default function ReportModal({
                       value={cat.id}
                       checked={category === cat.id}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="mt-0.5 accent-[#19D3E3]"
+                      className="mt-0.5 accent-[#6C63FF]"
                     />
                     <div>
-                      <p className="text-xs font-medium text-[#F4F8FA]">{cat.label}</p>
-                      <p className="text-[10px] text-[#9BAAB4]">{cat.desc}</p>
+                      <p className="text-xs font-medium text-[#1E1E24]">{cat.label}</p>
+                      <p className="text-[10px] text-[#6B6B73]">{cat.desc}</p>
                     </div>
                   </label>
                 ))}
@@ -146,7 +146,7 @@ export default function ReportModal({
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="report-reason" className="text-xs font-semibold text-[#9BAAB4]">
+              <label htmlFor="report-reason" className="text-xs font-semibold text-[#1E1E24]">
                 Additional context (optional)
               </label>
               <textarea
@@ -155,7 +155,7 @@ export default function ReportModal({
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Describe what violates our community standards..."
-                className="w-full px-3 py-2 text-xs bg-[#151F29] border border-[#263640] rounded-xl text-[#F4F8FA] placeholder-[#9BAAB4]/60 focus:outline-hidden focus:border-[#19D3E3]"
+                className="w-full px-3 py-2 text-xs bg-[#F8F7F4] border border-[#E7E5E0] rounded-xl text-[#1E1E24] placeholder-[#6B6B73] focus:outline-hidden focus:border-[#6C63FF] focus:bg-white"
                 maxLength={500}
               />
             </div>
@@ -166,7 +166,7 @@ export default function ReportModal({
               </Button>
               <Button
                 type="submit"
-                variant="danger"
+                variant="coral"
                 size="sm"
                 disabled={loading}
               >
@@ -179,4 +179,3 @@ export default function ReportModal({
     </div>
   );
 }
-

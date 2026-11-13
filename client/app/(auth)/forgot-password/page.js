@@ -53,47 +53,47 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Card className="shadow-md border-[#2D2938] bg-[#1E1B26]">
-      <CardHeader className="text-center pb-2 border-b border-[#2D2938]">
-        <div className="w-12 h-12 rounded-2xl bg-[#FF6257]/15 border border-[#FF6257]/30 flex items-center justify-center text-[#FF6257] mx-auto mb-2 shadow-xs">
+    <Card className="shadow-xs border-[#E7E5E0] bg-white">
+      <CardHeader className="text-center pb-2 border-b border-[#E7E5E0]">
+        <div className="w-12 h-12 rounded-2xl bg-[#EEEAFE] border border-[#6C63FF]/20 flex items-center justify-center text-[#6C63FF] mx-auto mb-2 shadow-xs">
           <Icon name="lock" className="w-6 h-6" />
         </div>
-        <CardTitle className="text-xl font-bold font-display text-[#F6F2EA]">Reset your password</CardTitle>
-        <CardDescription className="text-xs text-[#777580]">
+        <CardTitle className="text-xl font-bold text-[#1E1E24]">Reset your password</CardTitle>
+        <CardDescription className="text-xs text-[#6B6B73]">
           Enter the email associated with your account and we&apos;ll send instructions to reset your password.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4 pt-4 text-[#F6F2EA]">
+      <CardContent className="space-y-4 pt-4 text-[#1E1E24]">
         {errorMessage && (
-          <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+          <div className="p-3.5 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] font-medium">
             {errorMessage}
           </div>
         )}
 
         {successMessage && (
-          <div className="p-4 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] space-y-2">
-            <p className="font-semibold text-[#F6F2EA]">Check your inbox</p>
+          <div className="p-4 rounded-xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] space-y-2 font-medium">
+            <p className="font-semibold text-[#1E1E24]">Check your inbox</p>
             <p>{successMessage}</p>
-            <p className="text-[11px] text-[#777580]">
+            <p className="text-[11px] text-[#6B6B73]">
               The reset link will remain active for 30 minutes. Be sure to check your spam or promotions folder.
             </p>
           </div>
         )}
 
         {devResetLink && (
-          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] text-xs space-y-2.5">
-            <div className="flex items-center gap-2 font-semibold text-[#FF6257]">
-              <Icon name="mail" className="w-4 h-4 text-[#FF6257]" />
+          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] text-xs space-y-2.5">
+            <div className="flex items-center gap-2 font-semibold text-[#6C63FF]">
+              <Icon name="mail" className="w-4 h-4 text-[#6C63FF]" />
               <span>Development Email Preview</span>
             </div>
-            <p className="text-[#777580] leading-relaxed">
+            <p className="text-[#6B6B73] leading-relaxed">
               Your password reset link is ready in the local preview mailbox. Click below to proceed with setting a new password:
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <a
                 href={devResetLink}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#FF6257] hover:opacity-90 text-[#110F17] font-bold text-xs shadow-xs transition-colors"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#6C63FF] hover:bg-[#574FE8] text-white font-bold text-xs shadow-xs transition-colors"
               >
                 <span>Reset Password Now &rarr;</span>
               </a>
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
                 href="http://localhost:5000/api/__dev/mailbox/latest"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[#2D2938] bg-[#1E1B26] text-[#FF6257] hover:bg-[#17151D] font-medium text-xs transition-colors"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[#E7E5E0] bg-white text-[#6C63FF] hover:bg-[#EEEAFE] font-medium text-xs transition-colors"
               >
                 <span>Open Local Email Preview</span>
               </a>
@@ -128,7 +128,7 @@ export default function ForgotPasswordPage() {
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full shadow-md shadow-[#FF6257]/20"
+              className="w-full shadow-xs font-bold"
               disabled={loading}
             >
               {loading ? 'Sending Instructions...' : 'Send Reset Instructions'}
@@ -147,11 +147,11 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <div className="pt-4 border-t border-[#2D2938] text-center text-xs text-[#777580]">
+        <div className="pt-4 border-t border-[#E7E5E0] text-center text-xs text-[#6B6B73]">
           Remember your password?{' '}
           <Link
             href={ROUTES.PUBLIC.LOGIN}
-            className="font-semibold text-[#FF6257] hover:underline"
+            className="font-semibold text-[#6C63FF] hover:underline"
           >
             Back to sign in
           </Link>

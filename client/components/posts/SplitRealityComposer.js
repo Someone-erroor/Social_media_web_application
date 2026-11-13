@@ -98,31 +98,18 @@ export default function SplitRealityComposer({
       return;
     }
 
-    if (!primaryMedia.trim()) {
-      setErrorMessage('Please provide the primary/polished media (✨ The Final).');
-      setActiveStep('final');
-      return;
-    }
-
-    if (!realityMedia.trim()) {
-      setErrorMessage('Please provide the behind-the-scenes media (👀 Behind the Reality).');
-      setActiveStep('reality');
-      return;
-    }
-
-    if (caption.trim().length > 1000) {
-      setErrorMessage('Caption cannot exceed 1000 characters.');
+    if (!primaryMedia.trim() || !realityMedia.trim()) {
+      setErrorMessage('Both Primary (Final) and Reality (BTS) images are required.');
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await postService.createPost({
-        postType: 'splitReality',
+      const res = await postService.createSplitRealityPost({
+        content: caption.trim() || undefined,
         primaryMedia: primaryMedia.trim(),
         realityMedia: realityMedia.trim(),
-        content: caption.trim() || undefined,
         circle: defaultCircleId || undefined
       });
 
@@ -141,21 +128,21 @@ export default function SplitRealityComposer({
   const canPreview = Boolean(primaryMedia.trim() && realityMedia.trim());
 
   return (
-    <div className="p-4 rounded-2xl bg-[#17151D] border border-[#FF6257]/30 space-y-4 animate-fade-in shadow-xl">
+    <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#6C63FF]/30 space-y-4 animate-fade-in shadow-sm">
       {/* Header and Step Indicator */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#2D2938]">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#FF6257]/15 border border-[#FF6257]/30 flex items-center justify-center text-[#FF6257]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#E7E5E0]">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#EEEAFE] border border-[#6C63FF]/30 flex items-center justify-center text-[#6C63FF]">
             <Icon name="split" className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-[#F6F2EA] flex items-center gap-2 font-display">
+            <h2 className="text-sm font-bold text-[#1E1E24] flex items-center gap-2 font-display">
               Create Split-Reality Post
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FF6257]/10 text-[#FF6257] border border-[#FF6257]/30">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/20">
                 Signature Format
               </span>
             </h2>
-            <p className="text-[11px] text-[#777580]">
+            <p className="text-[11px] text-[#6B6B73]">
               Showcase two connected perspectives: What you see → What really happened behind it.
             </p>
           </div>
@@ -165,19 +152,19 @@ export default function SplitRealityComposer({
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="text-xs font-semibold text-[#777580] hover:text-[#F6F2EA] self-end sm:self-auto px-2 py-1 rounded-lg hover:bg-[#1E1B26] transition-colors"
+          className="text-xs font-semibold text-[#6B6B73] hover:text-[#1E1E24] self-end sm:self-auto px-2 py-1 rounded-lg hover:bg-[#F1F0EC] transition-colors cursor-pointer"
         >
           Cancel
         </button>
       </div>
 
       {errorMessage && (
-        <div className="p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between animate-fade-in">
+        <div className="p-3 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between animate-fade-in">
           <span>{errorMessage}</span>
           <button
             type="button"
             onClick={() => setErrorMessage('')}
-            className="text-[#777580] hover:text-[#F6F2EA] ml-2 font-bold"
+            className="text-[#6B6B73] hover:text-[#1E1E24] ml-2 font-bold cursor-pointer"
           >
             ×
           </button>
@@ -185,9 +172,9 @@ export default function SplitRealityComposer({
       )}
 
       {/* Preset Inspiration Strip */}
-      <div className="p-3 rounded-xl bg-[#1E1B26] border border-[#2D2938] space-y-2">
-        <p className="text-[11px] font-bold text-[#F6F2EA] flex items-center gap-1.5 font-display">
-          <Icon name="sparkles" className="w-3.5 h-3.5 text-[#D5F36A]" />
+      <div className="p-3 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-2">
+        <p className="text-[11px] font-bold text-[#1E1E24] flex items-center gap-1.5 font-display">
+          <Icon name="sparkles" className="w-3.5 h-3.5 text-[#6C63FF]" />
           Instant Demo Presets
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -196,7 +183,7 @@ export default function SplitRealityComposer({
               key={preset.id}
               type="button"
               onClick={() => handleApplyPreset(preset)}
-              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/50 text-[#F6F2EA] hover:text-[#FF6257] transition-all text-left"
+              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white border border-[#E7E5E0] hover:border-[#6C63FF]/50 text-[#1E1E24] hover:text-[#6C63FF] transition-all text-left shadow-2xs cursor-pointer"
             >
               {preset.name}
             </button>
@@ -205,54 +192,54 @@ export default function SplitRealityComposer({
       </div>
 
       {/* Step Navigation Tabs */}
-      <div className="flex items-center gap-1 border-b border-[#2D2938] pb-1 overflow-x-auto">
+      <div className="flex items-center gap-1.5 border-b border-[#E7E5E0] pb-2 overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveStep('final')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
             activeStep === 'final'
-              ? 'bg-[#D5F36A] text-[#17151D]'
-              : 'text-[#777580] hover:text-[#F6F2EA]'
+              ? 'bg-[#EEEAFE] text-[#6C63FF] shadow-2xs'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
           }`}
         >
           <span>✨ 1. The Final</span>
-          {primaryMedia && <span className="w-1.5 h-1.5 rounded-full bg-[#17151D]" />}
+          {primaryMedia && <span className="w-1.5 h-1.5 rounded-full bg-[#6C63FF]" />}
         </button>
 
         <button
           type="button"
           onClick={() => setActiveStep('reality')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
             activeStep === 'reality'
-              ? 'bg-[#FF6257] text-[#17151D]'
-              : 'text-[#777580] hover:text-[#F6F2EA]'
+              ? 'bg-[#FFEAEA] text-[#FF6B6B] shadow-2xs'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
           }`}
         >
           <span>👀 2. Behind the Reality</span>
-          {realityMedia && <span className="w-1.5 h-1.5 rounded-full bg-[#17151D]" />}
+          {realityMedia && <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B6B]" />}
         </button>
 
         <button
           type="button"
           onClick={() => setActiveStep('caption')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
             activeStep === 'caption'
-              ? 'bg-[#B9A8F5] text-[#17151D]'
-              : 'text-[#777580] hover:text-[#F6F2EA]'
+              ? 'bg-[#FFF7E0] text-[#B28200] shadow-2xs'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
           }`}
         >
           <span>✍️ 3. Caption</span>
-          {caption.trim() && <span className="w-1.5 h-1.5 rounded-full bg-[#17151D]" />}
+          {caption.trim() && <span className="w-1.5 h-1.5 rounded-full bg-[#B28200]" />}
         </button>
 
         <button
           type="button"
           onClick={() => setActiveStep('preview')}
           disabled={!canPreview}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
             activeStep === 'preview'
-              ? 'bg-[#F6F2EA] text-[#17151D]'
-              : 'text-[#777580] hover:text-[#F6F2EA] disabled:opacity-40 disabled:cursor-not-allowed'
+              ? 'bg-[#1E1E24] text-white'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] disabled:opacity-40 disabled:cursor-not-allowed'
           }`}
         >
           <span>🔀 4. Live Preview</span>
@@ -263,13 +250,13 @@ export default function SplitRealityComposer({
       {activeStep === 'final' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-[#F6F2EA] font-display">
+            <label className="text-xs font-bold text-[#1E1E24] font-display">
               Side A — ✨ The Final (Polished Result)
             </label>
-            <span className="text-[11px] text-[#D5F36A] font-semibold">Primary Perspective</span>
+            <span className="text-[11px] text-[#6C63FF] font-semibold">Primary Perspective</span>
           </div>
 
-          <p className="text-xs text-[#777580]">
+          <p className="text-xs text-[#6B6B73]">
             The completed artwork, final photograph, polished UI, or finished product that viewers initially see.
           </p>
 
@@ -280,7 +267,7 @@ export default function SplitRealityComposer({
               onChange={(e) => setPrimaryMedia(e.target.value)}
               placeholder="Paste public image URL (https://...)..."
               disabled={loading}
-              className="flex-1 rounded-xl border border-[#2D2938] bg-[#1E1B26] px-3 py-2 text-xs text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#D5F36A]"
+              className="flex-1 rounded-xl border border-[#E7E5E0] bg-white px-3 py-2 text-xs text-[#1E1E24] placeholder:text-[#6B6B73]/60 focus:outline-none focus:border-[#6C63FF]"
             />
             <input
               ref={primaryInputRef}
@@ -301,7 +288,7 @@ export default function SplitRealityComposer({
           </div>
 
           {primaryMedia && (
-            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-[#2D2938] bg-[#110F17]">
+            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-[#E7E5E0] bg-[#F1F0EC]">
               <img
                 src={primaryMedia}
                 alt="Primary Preview"
@@ -310,7 +297,7 @@ export default function SplitRealityComposer({
               <button
                 type="button"
                 onClick={() => setPrimaryMedia('')}
-                className="absolute top-2 right-2 p-1 rounded-lg bg-[#17151D]/80 text-[#FF6257] hover:bg-[#17151D] text-xs font-bold"
+                className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-white/90 text-[#FF6B6B] hover:bg-white text-xs font-bold shadow-xs cursor-pointer"
               >
                 Clear
               </button>
@@ -335,13 +322,13 @@ export default function SplitRealityComposer({
       {activeStep === 'reality' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-[#F6F2EA] font-display">
+            <label className="text-xs font-bold text-[#1E1E24] font-display">
               Side B — 👀 Behind the Reality (The Making-Of / Raw)
             </label>
-            <span className="text-[11px] text-[#FF6257] font-semibold">Revealed Perspective</span>
+            <span className="text-[11px] text-[#FF6B6B] font-semibold">Revealed Perspective</span>
           </div>
 
-          <p className="text-xs text-[#777580]">
+          <p className="text-xs text-[#6B6B73]">
             The raw capture, wireframe, unedited photo, work-in-progress, or behind-the-scenes setup.
           </p>
 
@@ -352,7 +339,7 @@ export default function SplitRealityComposer({
               onChange={(e) => setRealityMedia(e.target.value)}
               placeholder="Paste public image URL (https://...)..."
               disabled={loading}
-              className="flex-1 rounded-xl border border-[#2D2938] bg-[#1E1B26] px-3 py-2 text-xs text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#FF6257]"
+              className="flex-1 rounded-xl border border-[#E7E5E0] bg-white px-3 py-2 text-xs text-[#1E1E24] placeholder:text-[#6B6B73]/60 focus:outline-none focus:border-[#FF6B6B]"
             />
             <input
               ref={realityInputRef}
@@ -373,7 +360,7 @@ export default function SplitRealityComposer({
           </div>
 
           {realityMedia && (
-            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-[#2D2938] bg-[#110F17]">
+            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-[#E7E5E0] bg-[#F1F0EC]">
               <img
                 src={realityMedia}
                 alt="Reality Preview"
@@ -382,7 +369,7 @@ export default function SplitRealityComposer({
               <button
                 type="button"
                 onClick={() => setRealityMedia('')}
-                className="absolute top-2 right-2 p-1 rounded-lg bg-[#17151D]/80 text-[#FF6257] hover:bg-[#17151D] text-xs font-bold"
+                className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-white/90 text-[#FF6B6B] hover:bg-white text-xs font-bold shadow-xs cursor-pointer"
               >
                 Clear
               </button>
@@ -398,6 +385,7 @@ export default function SplitRealityComposer({
             >
               ← Back to Final
             </Button>
+
             <Button
               type="button"
               variant="primary"
@@ -415,10 +403,10 @@ export default function SplitRealityComposer({
       {activeStep === 'caption' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-[#F6F2EA] font-display">
+            <label className="text-xs font-bold text-[#1E1E24] font-display">
               Post Caption & Story
             </label>
-            <span className="text-[11px] text-[#777580]">Optional</span>
+            <span className="text-[11px] text-[#6B6B73]">Optional</span>
           </div>
 
           <textarea
@@ -426,11 +414,11 @@ export default function SplitRealityComposer({
             onChange={(e) => setCaption(e.target.value)}
             rows={3}
             maxLength={1000}
-            placeholder="Share the story behind this split-reality moment (what made the difference, lessons learned, or prompt friends to drag)..."
-            className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#1E1B26] p-3 text-xs text-[#F6F2EA] placeholder:text-[#777580] focus:outline-none focus:border-[#B9A8F5]"
+            placeholder="Share the story behind this split-reality moment..."
+            className="w-full resize-none rounded-xl border border-[#E7E5E0] bg-white p-3 text-xs text-[#1E1E24] placeholder:text-[#6B6B73]/60 focus:outline-none focus:border-[#6C63FF]"
           />
 
-          <div className="flex items-center justify-between text-[11px] text-[#777580]">
+          <div className="flex items-center justify-between text-[11px] text-[#6B6B73]">
             <span>{caption.length} / 1000 characters</span>
             <div className="flex gap-2">
               <Button
@@ -460,14 +448,14 @@ export default function SplitRealityComposer({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-[#F6F2EA] font-display">
+              <p className="text-xs font-bold text-[#1E1E24] font-display">
                 🔀 Interactive Split-Reality Preview
               </p>
-              <p className="text-[11px] text-[#777580]">
+              <p className="text-[11px] text-[#6B6B73]">
                 Drag the slider below to test how your community will experience this post.
               </p>
             </div>
-            <span className="text-[11px] font-bold text-[#D5F36A] bg-[#D5F36A]/10 border border-[#D5F36A]/30 px-2 py-0.5 rounded-full">
+            <span className="text-[11px] font-bold text-[#4CAF78] bg-[#E8F7EE] border border-[#4CAF78]/30 px-2 py-0.5 rounded-full">
               Live Preview
             </span>
           </div>
@@ -478,12 +466,12 @@ export default function SplitRealityComposer({
           />
 
           {caption.trim() && (
-            <p className="text-xs text-[#F6F2EA] p-3 rounded-xl bg-[#1E1B26] border border-[#2D2938] whitespace-pre-wrap">
+            <p className="text-xs text-[#1E1E24] p-3 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] whitespace-pre-wrap">
               {caption}
             </p>
           )}
 
-          <div className="flex items-center justify-between pt-3 border-t border-[#2D2938]">
+          <div className="flex items-center justify-between pt-3 border-t border-[#E7E5E0]">
             <Button
               type="button"
               variant="outline"
@@ -510,4 +498,3 @@ export default function SplitRealityComposer({
     </div>
   );
 }
-

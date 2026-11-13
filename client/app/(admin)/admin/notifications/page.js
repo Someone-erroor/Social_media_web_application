@@ -106,23 +106,23 @@ export default function AdminNotificationsPage() {
       </div>
 
       {(contextError || actionError) && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
-            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257] shrink-0" />
+            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6B6B] shrink-0" />
             <span>{contextError || actionError}</span>
           </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-medium underline hover:text-white"
+              className="font-medium underline hover:text-[#1E1E24]"
             >
               Retry
             </button>
             <button
               type="button"
               onClick={() => setActionError('')}
-              className="text-[#FF6257] hover:text-white font-bold"
+              className="text-[#FF6B6B] hover:text-[#1E1E24] font-bold"
             >
               ✕
             </button>
@@ -131,7 +131,7 @@ export default function AdminNotificationsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-2 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#E7E5E0] pb-2 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => {
@@ -140,8 +140,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'all'
-              ? 'bg-[#FF6257] text-[#110F17] font-semibold shadow-xs'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white font-semibold shadow-xs'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
           }`}
         >
           All Notifications ({notifications.length})
@@ -154,8 +154,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'login_alerts'
-              ? 'bg-[#FF6257] text-[#110F17] font-semibold shadow-xs'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white font-semibold shadow-xs'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
           }`}
         >
           User Login Events ({loginAlerts.length})
@@ -168,8 +168,8 @@ export default function AdminNotificationsPage() {
           }}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
             filter === 'unread'
-              ? 'bg-[#FF6257] text-[#110F17] font-semibold shadow-xs'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white font-semibold shadow-xs'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
           }`}
         >
           Unread ({unreadCount})
@@ -177,10 +177,10 @@ export default function AdminNotificationsPage() {
       </div>
 
       {/* Alerts Table / Feed */}
-      <Card className="overflow-hidden bg-[#1E1B26] border-[#2D2938]">
+      <Card className="overflow-hidden bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
         <CardHeader>
-          <CardTitle>User Authentication Event Log</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-[#1E1E24]">User Authentication Event Log</CardTitle>
+          <CardDescription className="text-[#6B6B73]">
             Recorded whenever registered members sign in across the platform
           </CardDescription>
         </CardHeader>
@@ -188,7 +188,7 @@ export default function AdminNotificationsPage() {
         {loading && notifications.length === 0 ? (
           <div className="p-6 space-y-3 animate-pulse">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-10 bg-[#17151D] rounded-lg w-full" />
+              <div key={i} className="h-10 bg-[#F8F7F4] rounded-lg w-full" />
             ))}
           </div>
         ) : displayedAlerts.length === 0 ? (
@@ -202,8 +202,8 @@ export default function AdminNotificationsPage() {
         ) : (
           <div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#F6F2EA]">
-                <thead className="bg-[#17151D] border-b border-[#2D2938] text-[#777580] uppercase tracking-wider font-semibold">
+              <table className="w-full text-left text-xs text-[#1E1E24]">
+                <thead className="bg-[#F8F7F4] border-b border-[#E7E5E0] text-[#6B6B73] uppercase tracking-wider font-semibold">
                   <tr>
                     <th scope="col" className="px-5 py-3.5">User</th>
                     <th scope="col" className="px-5 py-3.5">Email</th>
@@ -212,7 +212,7 @@ export default function AdminNotificationsPage() {
                     <th scope="col" className="px-5 py-3.5 text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2D2938]">
+                <tbody className="divide-y divide-[#E7E5E0]">
                   {paginatedAlerts.map((alert) => {
                     const actor = alert.actor || {};
                     const isUnread = !alert.readAt;
@@ -221,7 +221,7 @@ export default function AdminNotificationsPage() {
                       <tr
                         key={alert._id}
                         className={`transition-colors ${
-                          isUnread ? 'bg-[#FF6257]/10 font-medium' : 'hover:bg-[#17151D]/60'
+                          isUnread ? 'bg-[#EEEAFE]/30 font-medium' : 'hover:bg-[#F8F7F4]/60'
                         }`}
                       >
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -231,23 +231,23 @@ export default function AdminNotificationsPage() {
                               src={actor.profile?.avatarUrl}
                               size="sm"
                             />
-                            <span className="font-semibold text-[#F6F2EA]">
+                            <span className="font-semibold text-[#1E1E24]">
                               {actor.fullName || 'Unknown Member'}
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#777580]">
+                        <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#6B6B73]">
                           {actor.email || '—'}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap">
                           <Badge
-                            variant={alert.type === 'login_alert' ? 'warning' : 'neutral'}
+                            variant={alert.type === 'login_alert' ? 'yellow' : 'neutral'}
                             size="sm"
                           >
                             {alert.type === 'login_alert' ? 'Login Success' : alert.type}
                           </Badge>
                         </td>
-                        <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
+                        <td className="px-5 py-3.5 whitespace-nowrap text-[#6B6B73]">
                           {formatTimestamp(alert.createdAt)}
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap text-right">
@@ -255,12 +255,12 @@ export default function AdminNotificationsPage() {
                             <button
                               type="button"
                               onClick={() => markAsRead(alert._id)}
-                              className="text-[#FF6257] hover:underline font-semibold"
+                              className="text-[#6C63FF] hover:underline font-semibold"
                             >
                               Mark read
                             </button>
                           ) : (
-                            <span className="text-[#777580] italic">Read</span>
+                            <span className="text-[#6B6B73] italic">Read</span>
                           )}
                         </td>
                       </tr>
@@ -271,7 +271,7 @@ export default function AdminNotificationsPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="p-4 border-t border-[#2D2938] flex items-center justify-between text-xs text-[#777580] bg-[#17151D]">
+              <div className="p-4 border-t border-[#E7E5E0] flex items-center justify-between text-xs text-[#6B6B73] bg-[#F8F7F4]">
                 <span>
                   Page {page} of {totalPages}
                 </span>

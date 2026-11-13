@@ -148,10 +148,10 @@ export default function AdminDashboardPage() {
 
       {/* Error Alert with Retry */}
       {error && (
-        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-sm text-[#FF6257] flex items-center justify-between gap-4">
+        <div className="p-4 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-sm text-[#FF6B6B] flex items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-2">
-            <Icon name="close" className="w-5 h-5 text-[#FF6257] shrink-0" />
-            <span>{error}</span>
+            <Icon name="close" className="w-5 h-5 text-[#FF6B6B] shrink-0" />
+            <span className="font-medium">{error}</span>
           </div>
           <Button type="button" variant="danger" size="sm" onClick={handleRetry}>
             Retry
@@ -162,21 +162,21 @@ export default function AdminDashboardPage() {
       {/* Real Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Users */}
-        <Card className="bg-[#1E1B26] border-[#2D2938]">
+        <Card className="bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#777580] uppercase tracking-wider">
+              <span className="text-xs font-semibold text-[#6B6B73] uppercase tracking-wider">
                 Total Users
               </span>
-              <span className="p-2 rounded-xl bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+              <span className="p-2 rounded-xl bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/20 shadow-xs">
                 <Icon name="users" className="w-5 h-5" />
               </span>
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-bold font-display text-[#F6F2EA] tracking-tight">
+              <div className="text-2xl font-bold font-display text-[#1E1E24] tracking-tight">
                 {loading ? '...' : stats?.users?.total ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-[#777580]">
+              <p className="mt-1 text-[11px] text-[#6B6B73]">
                 {loading
                   ? 'Loading metrics...'
                   : `${stats?.users?.active ?? 0} active • ${stats?.users?.suspended ?? 0} suspended`}
@@ -186,21 +186,21 @@ export default function AdminDashboardPage() {
         </Card>
 
         {/* Published Posts */}
-        <Card className="bg-[#1E1B26] border-[#2D2938]">
+        <Card className="bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#777580] uppercase tracking-wider">
+              <span className="text-xs font-semibold text-[#6B6B73] uppercase tracking-wider">
                 Published Posts
               </span>
-              <span className="p-2 rounded-xl bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30">
+              <span className="p-2 rounded-xl bg-[#FFF7E0] text-[#7A5800] border border-[#FFD166]/30 shadow-xs">
                 <Icon name="posts" className="w-5 h-5" />
               </span>
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-bold font-display text-[#F6F2EA] tracking-tight">
+              <div className="text-2xl font-bold font-display text-[#1E1E24] tracking-tight">
                 {loading ? '...' : stats?.content?.posts ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-[#777580]">
+              <p className="mt-1 text-[11px] text-[#6B6B73]">
                 {loading ? 'Loading metrics...' : 'Total community posts in MongoDB'}
               </p>
             </div>
@@ -208,21 +208,21 @@ export default function AdminDashboardPage() {
         </Card>
 
         {/* Discussion Comments */}
-        <Card className="bg-[#1E1B26] border-[#2D2938]">
+        <Card className="bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#777580] uppercase tracking-wider">
+              <span className="text-xs font-semibold text-[#6B6B73] uppercase tracking-wider">
                 Total Comments
               </span>
-              <span className="p-2 rounded-xl bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30">
+              <span className="p-2 rounded-xl bg-[#E8F5E9] text-[#2E7D4E] border border-[#4CAF78]/30 shadow-xs">
                 <Icon name="comments" className="w-5 h-5" />
               </span>
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-bold font-display text-[#F6F2EA] tracking-tight">
+              <div className="text-2xl font-bold font-display text-[#1E1E24] tracking-tight">
                 {loading ? '...' : stats?.content?.comments ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-[#777580]">
+              <p className="mt-1 text-[11px] text-[#6B6B73]">
                 {loading ? 'Loading metrics...' : 'Total discussion replies'}
               </p>
             </div>
@@ -230,21 +230,21 @@ export default function AdminDashboardPage() {
         </Card>
 
         {/* Platform Likes */}
-        <Card className="bg-[#1E1B26] border-[#2D2938]">
+        <Card className="bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#777580] uppercase tracking-wider">
+              <span className="text-xs font-semibold text-[#6B6B73] uppercase tracking-wider">
                 Total Likes
               </span>
-              <span className="p-2 rounded-xl bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+              <span className="p-2 rounded-xl bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/20 shadow-xs">
                 <Icon name="heart" className="w-5 h-5" />
               </span>
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-bold font-display text-[#F6F2EA] tracking-tight">
+              <div className="text-2xl font-bold font-display text-[#1E1E24] tracking-tight">
                 {loading ? '...' : stats?.content?.likes ?? 0}
               </div>
-              <p className="mt-1 text-[11px] text-[#777580]">
+              <p className="mt-1 text-[11px] text-[#6B6B73]">
                 {loading ? 'Loading metrics...' : 'Total post reactions recorded'}
               </p>
             </div>
@@ -253,38 +253,38 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* System Status Details */}
-      <Card className="bg-[#1E1B26] border-[#2D2938]">
+      <Card className="bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <CardTitle>System Architecture Status</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-[#1E1E24]">System Architecture Status</CardTitle>
+              <CardDescription className="text-[#6B6B73]">
                 Live database connectivity and runtime telemetry
               </CardDescription>
             </div>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30 w-fit">
-              <span className="w-2 h-2 rounded-full bg-[#D5F36A]"></span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#E8F5E9] text-[#2E7D4E] border border-[#4CAF78]/30 w-fit">
+              <span className="w-2 h-2 rounded-full bg-[#4CAF78]"></span>
               Database: {stats?.system?.databaseStatus || 'connected'} ({stats?.system?.databaseName || 'looply'})
             </span>
           </div>
         </CardHeader>
         <CardContent className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938]">
-              <span className="text-[#777580] block text-[11px] font-medium">New Registrations Today</span>
-              <span className="text-base font-bold text-[#F6F2EA] mt-1 block">
+            <div className="p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]">
+              <span className="text-[#6B6B73] block text-[11px] font-medium">New Registrations Today</span>
+              <span className="text-base font-bold text-[#1E1E24] mt-1 block">
                 {loading ? '...' : stats?.users?.newToday ?? 0}
               </span>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938]">
-              <span className="text-[#777580] block text-[11px] font-medium">New Registrations This Week</span>
-              <span className="text-base font-bold text-[#F6F2EA] mt-1 block">
+            <div className="p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]">
+              <span className="text-[#6B6B73] block text-[11px] font-medium">New Registrations This Week</span>
+              <span className="text-base font-bold text-[#1E1E24] mt-1 block">
                 {loading ? '...' : stats?.users?.newThisWeek ?? 0}
               </span>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938]">
-              <span className="text-[#777580] block text-[11px] font-medium">Verified Email Accounts</span>
-              <span className="text-base font-bold text-[#F6F2EA] mt-1 block">
+            <div className="p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]">
+              <span className="text-[#6B6B73] block text-[11px] font-medium">Verified Email Accounts</span>
+              <span className="text-base font-bold text-[#1E1E24] mt-1 block">
                 {loading ? '...' : stats?.users?.verified ?? 0}
               </span>
             </div>
@@ -293,17 +293,17 @@ export default function AdminDashboardPage() {
       </Card>
 
       {/* Recent Platform Activity */}
-      <Card className="overflow-hidden bg-[#1E1B26] border-[#2D2938]">
+      <Card className="overflow-hidden bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
         <CardHeader>
-          <CardTitle>Recent Platform Activity</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-[#1E1E24]">Recent Platform Activity</CardTitle>
+          <CardDescription className="text-[#6B6B73]">
             Real audit trail events captured in ActivityLog
           </CardDescription>
         </CardHeader>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#F6F2EA]">
-            <thead className="bg-[#17151D] border-b border-[#2D2938] text-[#777580] uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#1E1E24]">
+            <thead className="bg-[#F8F7F4] border-b border-[#E7E5E0] text-[#6B6B73] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">Action</th>
                 <th scope="col" className="px-5 py-3.5">Actor</th>
@@ -311,10 +311,10 @@ export default function AdminDashboardPage() {
                 <th scope="col" className="px-5 py-3.5">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2D2938]">
+            <tbody className="divide-y divide-[#E7E5E0]">
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-[#777580] font-medium">
+                  <td colSpan={4} className="py-8 text-center text-[#6B6B73] font-medium">
                     Loading recent audit activity...
                   </td>
                 </tr>
@@ -331,7 +331,7 @@ export default function AdminDashboardPage() {
                 </tr>
               ) : (
                 activities.map((log) => (
-                  <tr key={log._id} className="hover:bg-[#17151D]/60 transition-colors">
+                  <tr key={log._id} className="hover:bg-[#F8F7F4]/60 transition-colors">
                     <td className="px-5 py-3.5 whitespace-nowrap">
                       <Badge variant={getActionBadgeVariant(log.action)} size="sm">
                         {formatActionTitle(log.action)}
@@ -346,22 +346,22 @@ export default function AdminDashboardPage() {
                             size="sm"
                           />
                           <div>
-                            <span className="font-semibold text-[#F6F2EA] block">
+                            <span className="font-semibold text-[#1E1E24] block">
                               {log.actor.fullName}
                             </span>
-                            <span className="text-[10px] text-[#777580] font-mono">
+                            <span className="text-[10px] text-[#6B6B73] font-mono">
                               {log.actor.email}
                             </span>
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[#777580] italic">System / Visitor</span>
+                        <span className="text-[#6B6B73] italic">System / Visitor</span>
                       )}
                     </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
+                    <td className="px-5 py-3.5 whitespace-nowrap text-[#6B6B73]">
                       {log.targetType ? `${log.targetType} (${log.targetId ? log.targetId.slice(-6) : '—'})` : '—'}
                     </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
+                    <td className="px-5 py-3.5 whitespace-nowrap text-[#6B6B73]">
                       {formatTimestamp(log.createdAt)}
                     </td>
                   </tr>

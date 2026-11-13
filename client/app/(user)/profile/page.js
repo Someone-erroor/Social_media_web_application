@@ -157,7 +157,7 @@ export default function ProfilePage() {
       />
 
       {profileError && (
-        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between gap-3">
+        <div className="p-4 rounded-2xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between gap-3 font-medium">
           <span>{profileError}</span>
           <Button
             size="sm"
@@ -167,7 +167,7 @@ export default function ProfilePage() {
               setProfileError('');
               setReloadTrigger((n) => n + 1);
             }}
-            className="text-xs text-[#FF6257] hover:bg-[#FF6257]/10"
+            className="text-xs text-[#FF6B6B] hover:bg-[#FF6B6B]/10"
           >
             Retry
           </Button>
@@ -175,14 +175,14 @@ export default function ProfilePage() {
       )}
 
       {/* Profile Header Card */}
-      <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] shadow-xl shadow-black/50">
-        <div className="h-32 sm:h-36 bg-gradient-to-r from-[#FF6257]/80 via-[#17151D] to-[#B9A8F5]/80 relative">
-          <div className="absolute inset-0 bg-[radial-gradient(#D5F36A_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
+      <Card className="overflow-hidden border-[#E7E5E0] bg-white shadow-xs">
+        <div className="h-32 sm:h-36 bg-gradient-to-r from-[#6C63FF]/30 via-[#EEEAFE] to-[#FFD166]/40 relative">
+          <div className="absolute inset-0 bg-[radial-gradient(#6C63FF_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
         </div>
 
         <CardContent className="relative pt-0 pb-6 px-4 sm:px-6">
           <div className="-mt-14 mb-4 flex flex-wrap items-end justify-between gap-3">
-            <div className="rounded-full ring-4 ring-[#1E1B26] bg-[#17151D] p-0.5">
+            <div className="rounded-full ring-4 ring-white bg-white p-0.5 shadow-xs">
               <Avatar
                 name={profile?.fullName || 'Creator'}
                 src={profile?.profile?.avatarUrl}
@@ -205,40 +205,40 @@ export default function ProfilePage() {
           <div className="space-y-4">
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-black text-[#F6F2EA] font-display">
+                <h1 className="text-xl sm:text-2xl font-black text-[#1E1E24]">
                   {profile?.fullName || 'Creator'}
                 </h1>
-                <Badge variant={profile?.role === 'admin' ? 'coral' : 'lime'}>
+                <Badge variant={profile?.role === 'admin' ? 'coral' : 'primary'}>
                   {profile?.role === 'admin' ? 'Admin' : 'Creator'}
                 </Badge>
               </div>
-              <p className="text-xs text-[#777580] font-mono mt-0.5">{userHandle}</p>
+              <p className="text-xs text-[#6B6B73] font-mono mt-0.5">{userHandle}</p>
             </div>
 
-            <p className="text-sm text-[#F6F2EA]/90 max-w-2xl leading-relaxed">
+            <p className="text-sm text-[#1E1E24] max-w-2xl leading-relaxed">
               {profile?.profile?.bio ? (
                 profile.profile.bio
               ) : (
-                <span className="italic text-[#777580]">
+                <span className="italic text-[#6B6B73]">
                   No bio added yet.{' '}
-                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-[#FF6257] hover:underline font-medium">
+                  <Link href={ROUTES.USER.PROFILE_EDIT} className="text-[#6C63FF] hover:underline font-medium">
                     Add a bio to introduce yourself
                   </Link>
                 </span>
               )}
             </p>
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#777580] pt-1">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#6B6B73] pt-1 font-medium">
               <span className="flex items-center gap-1.5">
-                <Icon name="calendar" className="w-3.5 h-3.5 text-[#777580]" />
+                <Icon name="calendar" className="w-3.5 h-3.5 text-[#6B6B73]" />
                 Member since {memberSince}
               </span>
               <span className="flex items-center gap-1.5">
-                <Icon name="mail" className="w-3.5 h-3.5 text-[#777580]" />
+                <Icon name="mail" className="w-3.5 h-3.5 text-[#6B6B73]" />
                 {profile?.isEmailVerified ? (
-                  <span className="text-[#D5F36A] font-semibold">Email Verified</span>
+                  <span className="text-[#2E7D4E] font-semibold">Email Verified</span>
                 ) : (
-                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-[#FBBF24] hover:underline font-medium">
+                  <Link href={ROUTES.PUBLIC.VERIFY_EMAIL} className="text-[#B28200] hover:underline font-medium">
                     Unverified (Verify now)
                   </Link>
                 )}
@@ -246,14 +246,14 @@ export default function ProfilePage() {
             </div>
 
             {/* Follower / Following Metrics Bar */}
-            <div className="flex flex-wrap items-center gap-6 pt-3 border-t border-[#2D2938] text-xs">
+            <div className="flex flex-wrap items-center gap-6 pt-3 border-t border-[#E7E5E0] text-xs">
               <button
                 type="button"
                 onClick={handleOpenFollowers}
-                className="flex items-center gap-2 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
+                className="flex items-center gap-2 text-[#6B6B73] hover:text-[#6C63FF] transition-colors cursor-pointer group py-1"
                 title="View your followers"
               >
-                <span className="font-bold text-[#F6F2EA] text-base group-hover:text-[#FF6257] font-display">
+                <span className="font-bold text-[#1E1E24] text-base group-hover:text-[#6C63FF]">
                   {followersCount}
                 </span>
                 <span className="font-medium">Followers</span>
@@ -262,10 +262,10 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={handleOpenFollowing}
-                className="flex items-center gap-2 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
+                className="flex items-center gap-2 text-[#6B6B73] hover:text-[#6C63FF] transition-colors cursor-pointer group py-1"
                 title="View who you are following"
               >
-                <span className="font-bold text-[#F6F2EA] text-base group-hover:text-[#FF6257] font-display">
+                <span className="font-bold text-[#1E1E24] text-base group-hover:text-[#6C63FF]">
                   {followingCount}
                 </span>
                 <span className="font-medium">Following</span>
@@ -277,20 +277,20 @@ export default function ProfilePage() {
 
       {/* Publications Section with Tabs */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#2D2938] pb-3 gap-3 overflow-x-auto">
+        <div className="flex items-center justify-between border-b border-[#E7E5E0] pb-3 gap-3 overflow-x-auto">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setActiveTab('all')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
                 activeTab === 'all'
-                  ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                  ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+                  : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
               }`}
             >
               <span>All Posts</span>
               <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                activeTab === 'all' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+                activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
               }`}>
                 {posts.length}
               </span>
@@ -299,23 +299,23 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => setActiveTab('splitReality')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
                 activeTab === 'splitReality'
-                  ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                  ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+                  : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
               }`}
             >
               <Icon name="split" className="w-3 h-3" />
               <span>Split-Reality</span>
               <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                activeTab === 'splitReality' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+                activeTab === 'splitReality' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
               }`}>
                 {splitRealityPosts.length}
               </span>
             </button>
           </div>
 
-          <span className="text-xs text-[#777580] hidden sm:inline font-mono">
+          <span className="text-xs text-[#6B6B73] hidden sm:inline font-medium">
             {displayedPosts.length} publication{displayedPosts.length === 1 ? '' : 's'}
           </span>
         </div>
@@ -325,24 +325,24 @@ export default function ProfilePage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-sm space-y-3 animate-pulse"
+                className="p-5 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-3 animate-pulse"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#24202E]" />
+                  <div className="w-10 h-10 rounded-full bg-[#F1F0EC]" />
                   <div className="space-y-1.5 flex-1">
-                    <div className="w-28 h-3.5 bg-[#24202E]" />
-                    <div className="w-16 h-2.5 bg-[#24202E]/60 rounded" />
+                    <div className="w-28 h-3.5 bg-[#F1F0EC]" />
+                    <div className="w-16 h-2.5 bg-[#F1F0EC]/60 rounded" />
                   </div>
                 </div>
                 <div className="space-y-2 pt-1">
-                  <div className="w-full h-3 bg-[#24202E] rounded" />
-                  <div className="w-4/5 h-3 bg-[#24202E]/60 rounded" />
+                  <div className="w-full h-3 bg-[#F1F0EC] rounded" />
+                  <div className="w-4/5 h-3 bg-[#F1F0EC]/60 rounded" />
                 </div>
               </div>
             ))}
           </div>
         ) : postsError ? (
-          <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+          <div className="p-4 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] font-medium">
             {postsError}
           </div>
         ) : displayedPosts.length === 0 ? (

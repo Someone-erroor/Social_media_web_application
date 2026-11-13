@@ -3,11 +3,11 @@ import { ClientProviders } from '@/components/providers/ClientProviders';
 
 export const metadata = {
   title: {
-    default: 'Looply — Connect. Share. Express.',
+    default: 'Looply — A Modern Social Playground',
     template: '%s | Looply'
   },
   description:
-    'Looply is an editorial digital social networking platform built for authentic connection, creative dialogue, and expressive experiences.',
+    'Looply is a warm, modern social playground for authentic conversation, playful shared experiences, and genuine community connection.',
   icons: {
     icon: '/favicon.svg'
   }
@@ -16,12 +16,12 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#17151D'
+  themeColor: '#FFFFFF'
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full bg-[#110F17] antialiased selection:bg-[#FF6257] selection:text-[#17151D] dark">
+    <html lang="en" className="h-full bg-[#F8F7F4] antialiased selection:bg-[#EEEAFE] selection:text-[#6C63FF]">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col text-[#F6F2EA] bg-[#110F17] font-sans">
+      <body className="min-h-full flex flex-col text-[#1E1E24] bg-[#F8F7F4] font-sans">
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

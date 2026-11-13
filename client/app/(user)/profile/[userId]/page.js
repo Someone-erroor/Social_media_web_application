@@ -183,13 +183,13 @@ export default function UserProfilePage() {
       />
 
       {loading ? (
-        <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] animate-pulse">
-          <div className="h-32 bg-[#24202E]" />
+        <Card className="overflow-hidden border-[#E7E5E0] bg-white animate-pulse shadow-xs">
+          <div className="h-32 bg-[#F1F0EC]" />
           <CardContent className="pt-0 pb-6 px-6">
-            <div className="-mt-14 mb-4 w-24 h-24 rounded-full bg-[#24202E] ring-4 ring-[#17151D]" />
+            <div className="-mt-14 mb-4 w-24 h-24 rounded-full bg-[#F1F0EC] ring-4 ring-white" />
             <div className="space-y-2">
-              <div className="w-48 h-5 bg-[#24202E] rounded" />
-              <div className="w-64 h-3 bg-[#24202E]/60 rounded" />
+              <div className="w-48 h-5 bg-[#F1F0EC] rounded" />
+              <div className="w-64 h-3 bg-[#F1F0EC]/60 rounded" />
             </div>
           </CardContent>
         </Card>
@@ -220,14 +220,14 @@ export default function UserProfilePage() {
       ) : (
         <>
           {/* Profile Header Card */}
-          <Card className="overflow-hidden border-[#2D2938] bg-[#1E1B26] shadow-xl shadow-black/50">
-            <div className="h-32 sm:h-36 bg-gradient-to-r from-[#FF6257]/70 via-[#17151D] to-[#B9A8F5]/70 relative">
-              <div className="absolute inset-0 bg-[radial-gradient(#D5F36A_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
+          <Card className="overflow-hidden border-[#E7E5E0] bg-white shadow-xs">
+            <div className="h-32 sm:h-36 bg-gradient-to-r from-[#6C63FF]/30 via-[#EEEAFE] to-[#FFD166]/40 relative">
+              <div className="absolute inset-0 bg-[radial-gradient(#6C63FF_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
             </div>
 
             <CardContent className="relative pt-0 pb-6 px-4 sm:px-6">
               <div className="-mt-14 mb-4 flex flex-wrap items-end justify-between gap-3">
-                <div className="rounded-full ring-4 ring-[#1E1B26] bg-[#17151D] p-0.5">
+                <div className="rounded-full ring-4 ring-white bg-white p-0.5 shadow-xs">
                   <Avatar
                     name={profile.fullName}
                     src={profile.profile?.avatarUrl}
@@ -267,15 +267,15 @@ export default function UserProfilePage() {
                         href={ROUTES.USER.MEMORIES(userId)}
                         variant="ghost"
                         size="sm"
-                        className="px-2 text-[#B9A8F5] hover:text-[#D5F36A]"
+                        className="px-2 text-[#6C63FF] hover:bg-[#EEEAFE]"
                         title="Friendship Memories"
                       >
-                        <Icon name="sparkles" className="w-4 h-4 text-[#B9A8F5]" />
+                        <Icon name="sparkles" className="w-4 h-4 text-[#6C63FF]" />
                       </Button>
                       <button
                         type="button"
                         onClick={() => setShowReportModal(true)}
-                        className="p-2 rounded-lg text-[#777580] hover:text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors cursor-pointer"
+                        className="p-2 rounded-lg text-[#6B6B73] hover:text-[#FF6B6B] hover:bg-[#FF6B6B]/10 transition-colors cursor-pointer"
                         title="Report User"
                       >
                         <Icon name="flag" className="w-4 h-4" />
@@ -288,40 +288,40 @@ export default function UserProfilePage() {
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <h1 className="text-xl sm:text-2xl font-black text-[#F6F2EA] font-display">
+                    <h1 className="text-xl sm:text-2xl font-black text-[#1E1E24]">
                       {profile.fullName}
                     </h1>
                     {profile.isPrivate && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#24202E] text-[#B9A8F5] border border-[#2D2938]">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#F1F0EC] text-[#6B6B73] border border-[#E7E5E0]">
                         <Icon name="lock" className="w-2.5 h-2.5" />
                         Private
                       </span>
                     )}
                   </div>
                   {memberSince && (
-                    <p className="text-xs text-[#777580] mt-0.5">Member since {memberSince}</p>
+                    <p className="text-xs text-[#6B6B73] mt-0.5">Member since {memberSince}</p>
                   )}
                 </div>
 
                 {profile.profile?.bio ? (
-                  <p className="text-sm text-[#F6F2EA]/90 max-w-2xl leading-relaxed">
+                  <p className="text-sm text-[#1E1E24] max-w-2xl leading-relaxed">
                     {profile.profile.bio}
                   </p>
                 ) : (
-                  <p className="text-xs italic text-[#777580]">
+                  <p className="text-xs italic text-[#6B6B73]">
                     This member has not written a bio yet.
                   </p>
                 )}
 
                 {/* Follower / Following Metrics Bar */}
-                <div className="flex flex-wrap items-center gap-6 pt-3 border-t border-[#2D2938] text-xs">
+                <div className="flex flex-wrap items-center gap-6 pt-3 border-t border-[#E7E5E0] text-xs">
                   <button
                     type="button"
                     onClick={handleOpenFollowers}
-                    className="flex items-center gap-2 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
+                    className="flex items-center gap-2 text-[#6B6B73] hover:text-[#6C63FF] transition-colors cursor-pointer group py-1"
                     title="View followers"
                   >
-                    <span className="font-bold text-[#F6F2EA] text-base group-hover:text-[#FF6257] font-display">
+                    <span className="font-bold text-[#1E1E24] text-base group-hover:text-[#6C63FF]">
                       {profile.followersCount ?? 0}
                     </span>
                     <span className="font-medium">Followers</span>
@@ -330,10 +330,10 @@ export default function UserProfilePage() {
                   <button
                     type="button"
                     onClick={handleOpenFollowing}
-                    className="flex items-center gap-2 text-[#777580] hover:text-[#FF6257] transition-colors cursor-pointer group py-1"
+                    className="flex items-center gap-2 text-[#6B6B73] hover:text-[#6C63FF] transition-colors cursor-pointer group py-1"
                     title="View following"
                   >
-                    <span className="font-bold text-[#F6F2EA] text-base group-hover:text-[#FF6257] font-display">
+                    <span className="font-bold text-[#1E1E24] text-base group-hover:text-[#6C63FF]">
                       {profile.followingCount ?? 0}
                     </span>
                     <span className="font-medium">Following</span>
@@ -346,13 +346,13 @@ export default function UserProfilePage() {
           {/* User Posts Section */}
           <div className="space-y-4">
             {profile.isPrivate && !profile.isFollowing && !isOwnProfile ? (
-              <div className="p-10 rounded-2xl bg-[#1E1B26] border border-[#2D2938] text-center space-y-4 shadow-lg">
-                <div className="w-14 h-14 rounded-full bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center mx-auto">
+              <div className="p-10 rounded-2xl bg-white border border-[#E7E5E0] text-center space-y-4 shadow-xs">
+                <div className="w-14 h-14 rounded-full bg-[#FFEAEA] text-[#FF6B6B] flex items-center justify-center mx-auto">
                   <Icon name="lock" className="w-7 h-7" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-base font-bold text-[#F6F2EA] font-display">This Account is Private</h3>
-                  <p className="text-xs text-[#777580] max-w-md mx-auto leading-relaxed">
+                  <h3 className="text-base font-bold text-[#1E1E24]">This Account is Private</h3>
+                  <p className="text-xs text-[#6B6B73] max-w-md mx-auto leading-relaxed">
                     Follow {profile.fullName} to see their photos, dual-perspective Split-Reality posts, and activity on Looply.
                   </p>
                 </div>
@@ -360,20 +360,20 @@ export default function UserProfilePage() {
             ) : (
               <>
                 {/* Content Tabs */}
-                <div className="flex items-center justify-between border-b border-[#2D2938] pb-3 gap-3 overflow-x-auto">
+                <div className="flex items-center justify-between border-b border-[#E7E5E0] pb-3 gap-3 overflow-x-auto">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setActiveTab('all')}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
                         activeTab === 'all'
-                          ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-                          : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                          ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+                          : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
                       }`}
                     >
                       <span>All Posts</span>
                       <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                        activeTab === 'all' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+                        activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
                       }`}>
                         {posts.length}
                       </span>
@@ -382,29 +382,29 @@ export default function UserProfilePage() {
                     <button
                       type="button"
                       onClick={() => setActiveTab('splitReality')}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
                         activeTab === 'splitReality'
-                          ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-                          : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                          ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+                          : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
                       }`}
                     >
                       <Icon name="split" className="w-3 h-3" />
                       <span>Split-Reality</span>
                       <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                        activeTab === 'splitReality' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+                        activeTab === 'splitReality' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
                       }`}>
                         {splitRealityPosts.length}
                       </span>
                     </button>
                   </div>
 
-                  <span className="text-xs text-[#777580] hidden sm:inline font-mono">
+                  <span className="text-xs text-[#6B6B73] hidden sm:inline font-medium">
                     {displayedPosts.length} publication{displayedPosts.length === 1 ? '' : 's'}
                   </span>
                 </div>
 
                 {postsError ? (
-                  <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+                  <div className="p-4 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] font-medium">
                     {postsError}
                   </div>
                 ) : displayedPosts.length === 0 ? (

@@ -8,32 +8,32 @@ import Icon from '@/components/ui/Icon';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * Public Navigation Bar for Looply Landing Page (Editorial Expression Theme)
- * Midnight Ink background (#110F17/90), hairline border (#2D2938), Electric Coral and Soft Lavender accents.
+ * Public Navigation Bar for Looply Landing Page (Light-First Social Playground)
+ * Crisp white surface (#FFFFFF/90), hairline border (#E7E5E0), Brand Purple (#6C63FF) and Coral (#FF6B6B) accents.
  */
 export default function PublicNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#2D2938] bg-[#110F17]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-[#E7E5E0] bg-[#FFFFFF]/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
         <Logo showTagline={false} href={ROUTES.PUBLIC.HOME} />
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#777580]" aria-label="Main Navigation">
-          <Link href="/#features" className="hover:text-[#F6F2EA] transition-colors">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#6B6B73]" aria-label="Main Navigation">
+          <Link href="/#features" className="hover:text-[#1E1E24] transition-colors">
             Features
           </Link>
-          <Link href="/#how-it-works" className="hover:text-[#F6F2EA] transition-colors">
+          <Link href="/#how-it-works" className="hover:text-[#1E1E24] transition-colors">
             How It Works
           </Link>
-          <Link href="/#community" className="hover:text-[#F6F2EA] transition-colors">
+          <Link href="/#community" className="hover:text-[#1E1E24] transition-colors">
             Community
           </Link>
-          <Link href={ROUTES.USER.FEED} className="hover:text-[#F6F2EA] transition-colors flex items-center gap-1.5">
+          <Link href={ROUTES.USER.FEED} className="hover:text-[#1E1E24] transition-colors flex items-center gap-1.5 font-semibold text-[#1E1E24]">
             <span>Feed</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6257] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B6B] animate-pulse" />
           </Link>
         </nav>
 
@@ -41,7 +41,7 @@ export default function PublicNavbar() {
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/login?admin=true"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#B9A8F5] bg-[#1E1B26] border border-[#B9A8F5]/40 hover:bg-[#B9A8F5] hover:text-[#17151D] transition-all shadow-xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#6C63FF] bg-[#EEEAFE] border border-[#6C63FF]/20 hover:bg-[#6C63FF] hover:text-white transition-all shadow-xs"
             title="Administrator Portal Access"
           >
             <Icon name="shield" className="w-3.5 h-3.5" />
@@ -52,6 +52,7 @@ export default function PublicNavbar() {
             href={ROUTES.PUBLIC.LOGIN}
             variant="ghost"
             size="sm"
+            className="text-[#1E1E24] hover:bg-[#F1F0EC]"
           >
             Sign In
           </Button>
@@ -68,7 +69,7 @@ export default function PublicNavbar() {
         <div className="md:hidden flex items-center">
           <button
             type="button"
-            className="p-2 rounded-lg text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26] focus:outline-none focus:ring-2 focus:ring-[#FF6257]"
+            className="p-2 rounded-lg text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC] focus:outline-none focus:ring-2 focus:ring-[#6C63FF]"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -80,44 +81,44 @@ export default function PublicNavbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-[#2D2938] bg-[#17151D] px-4 pt-3 pb-6 space-y-4 shadow-2xl animate-fade-in">
-          <nav className="flex flex-col space-y-2 text-base font-medium text-[#F6F2EA]" aria-label="Mobile Navigation">
+        <div className="md:hidden border-b border-[#E7E5E0] bg-[#FFFFFF] px-4 pt-3 pb-6 space-y-4 shadow-xl animate-fade-in">
+          <nav className="flex flex-col space-y-2 text-base font-medium text-[#1E1E24]" aria-label="Mobile Navigation">
             <Link
               href="/#features"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-[#1E1B26] hover:text-[#FF6257] transition-colors"
+              className="px-3 py-2 rounded-lg hover:bg-[#F8F7F4] hover:text-[#6C63FF] transition-colors"
             >
               Features
             </Link>
             <Link
               href="/#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-[#1E1B26] hover:text-[#FF6257] transition-colors"
+              className="px-3 py-2 rounded-lg hover:bg-[#F8F7F4] hover:text-[#6C63FF] transition-colors"
             >
               How It Works
             </Link>
             <Link
               href="/#community"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-[#1E1B26] hover:text-[#FF6257] transition-colors"
+              className="px-3 py-2 rounded-lg hover:bg-[#F8F7F4] hover:text-[#6C63FF] transition-colors"
             >
               Community
             </Link>
             <Link
               href={ROUTES.USER.FEED}
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-[#1E1B26] hover:text-[#FF6257] transition-colors flex items-center justify-between"
+              className="px-3 py-2 rounded-lg hover:bg-[#F8F7F4] hover:text-[#6C63FF] transition-colors flex items-center justify-between"
             >
               <span>Explore Live Feed</span>
-              <span className="w-2 h-2 rounded-full bg-[#FF6257]" />
+              <span className="w-2 h-2 rounded-full bg-[#FF6B6B]" />
             </Link>
           </nav>
 
-          <div className="pt-4 border-t border-[#2D2938] flex flex-col gap-2">
+          <div className="pt-4 border-t border-[#E7E5E0] flex flex-col gap-2">
             <Link
               href="/login?admin=true"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2.5 rounded-xl bg-[#1E1B26] border border-[#B9A8F5]/40 text-[#B9A8F5] hover:bg-[#B9A8F5] hover:text-[#17151D] transition-colors flex items-center justify-center gap-2 text-xs font-bold"
+              className="px-3 py-2.5 rounded-xl bg-[#EEEAFE] border border-[#6C63FF]/30 text-[#6C63FF] hover:bg-[#6C63FF] hover:text-white transition-colors flex items-center justify-center gap-2 text-xs font-bold"
             >
               <Icon name="shield" className="w-4 h-4" />
               <span>Admin Portal Access</span>

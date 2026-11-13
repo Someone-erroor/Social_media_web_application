@@ -85,13 +85,13 @@ export default function AdminReportsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header & Status Filter Pills */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#2D2938]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E7E5E0]">
         <div>
-          <h1 className="text-xl font-bold font-display text-[#F6F2EA] flex items-center gap-2">
-            <Icon name="flag" className="w-5 h-5 text-[#FF6257]" />
+          <h1 className="text-xl font-bold font-display text-[#1E1E24] flex items-center gap-2">
+            <Icon name="flag" className="w-5 h-5 text-[#FF6B6B]" />
             Trust & Safety Reports
           </h1>
-          <p className="text-xs text-[#777580]">
+          <p className="text-xs text-[#6B6B73]">
             Review flagged posts, comments, accounts, and enforce community standards
           </p>
         </div>
@@ -104,8 +104,8 @@ export default function AdminReportsPage() {
               onClick={() => setStatusFilter(f.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                 statusFilter === f.id
-                  ? 'bg-[#FF6257] text-[#110F17]'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                  ? 'bg-[#6C63FF] text-white shadow-xs'
+                  : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
               }`}
             >
               {f.label}
@@ -115,7 +115,7 @@ export default function AdminReportsPage() {
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+        <div className="p-3.5 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B]">
           {error}
         </div>
       )}
@@ -123,7 +123,7 @@ export default function AdminReportsPage() {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse h-28" />
+            <div key={i} className="p-5 rounded-2xl bg-[#FFFFFF] border border-[#E7E5E0] animate-pulse h-28" />
           ))}
         </div>
       ) : reports.length === 0 ? (
@@ -136,17 +136,17 @@ export default function AdminReportsPage() {
       ) : (
         <div className="space-y-3">
           {reports.map((report) => (
-            <Card key={report._id} className="bg-[#1E1B26] border-[#2D2938] hover:border-[#FF6257]/30">
+            <Card key={report._id} className="bg-[#FFFFFF] border-[#E7E5E0] hover:border-[#6C63FF]/30 shadow-xs">
               <CardContent className="p-5 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/20">
                       {report.category?.replace(/_/g, ' ')}
                     </span>
-                    <span className="text-xs font-semibold text-[#F6F2EA]">
-                      Target: <span className="uppercase text-[#D5F36A]">{report.targetType}</span>
+                    <span className="text-xs font-semibold text-[#1E1E24]">
+                      Target: <span className="uppercase text-[#2E7D4E]">{report.targetType}</span>
                     </span>
-                    <span className="text-[11px] text-[#777580] font-mono">
+                    <span className="text-[11px] text-[#6B6B73] font-mono">
                       (ID: {report.targetId})
                     </span>
                   </div>
@@ -180,12 +180,12 @@ export default function AdminReportsPage() {
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1">
-                  <p className="text-xs text-[#F6F2EA]">
+                <div className="p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1">
+                  <p className="text-xs text-[#1E1E24]">
                     <strong>Reason / Details:</strong> {report.explanation || report.reason || 'No description provided.'}
                   </p>
-                  <p className="text-[10px] text-[#777580]">
-                    Target: <code className="text-[#FF6257] font-mono">{String(report.reportedTarget?._id || report.reportedTarget || report.targetId || 'N/A')}</code> • Reported by: {report.reporter?.fullName || report.reporter?.email || 'User'} •{' '}
+                  <p className="text-[10px] text-[#6B6B73]">
+                    Target: <code className="text-[#6C63FF] font-mono">{String(report.reportedTarget?._id || report.reportedTarget || report.targetId || 'N/A')}</code> • Reported by: {report.reporter?.fullName || report.reporter?.email || 'User'} •{' '}
                     {new Date(report.createdAt).toLocaleString([], {
                       month: 'short',
                       day: 'numeric',
@@ -205,22 +205,22 @@ export default function AdminReportsPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
         >
-          <div className="w-full max-w-lg bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
+          <div className="w-full max-w-lg bg-[#FFFFFF] border border-[#E7E5E0] rounded-2xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
               <div>
-                <span className="text-[10px] font-bold uppercase text-[#FF6257]">
+                <span className="text-[10px] font-bold uppercase text-[#FF6B6B]">
                   Safety Action Center
                 </span>
-                <h2 className="text-sm font-bold text-[#F6F2EA]">
+                <h2 className="text-sm font-bold text-[#1E1E24]">
                   Review Report #{selectedReport._id?.slice(-6)}
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedReport(null)}
-                className="text-[#777580] hover:text-[#F6F2EA] p-1 rounded-lg hover:bg-[#17151D]"
+                className="text-[#6B6B73] hover:text-[#1E1E24] p-1 rounded-lg hover:bg-[#F1F0EC]"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -228,13 +228,13 @@ export default function AdminReportsPage() {
 
             <form onSubmit={handleResolveSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#777580]">
+                <label className="text-xs font-semibold text-[#6B6B73]">
                   Update Report Status
                 </label>
                 <select
                   value={actionStatus}
                   onChange={(e) => setActionStatus(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-hidden focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#FFFFFF] border border-[#E7E5E0] text-xs text-[#1E1E24] focus:outline-hidden focus:border-[#6C63FF]"
                 >
                   <option value="under_review">Under Review</option>
                   <option value="resolved">Resolved (Action Taken)</option>
@@ -243,13 +243,13 @@ export default function AdminReportsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#777580]">
+                <label className="text-xs font-semibold text-[#6B6B73]">
                   Enforce Moderation Action (Optional)
                 </label>
                 <select
                   value={moderationAction}
                   onChange={(e) => setModerationAction(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-hidden focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#FFFFFF] border border-[#E7E5E0] text-xs text-[#1E1E24] focus:outline-hidden focus:border-[#6C63FF]"
                 >
                   <option value="none">No immediate automated action</option>
                   {selectedReport.targetType?.toLowerCase() === 'post' && (
@@ -268,7 +268,7 @@ export default function AdminReportsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#777580]">
+                <label className="text-xs font-semibold text-[#6B6B73]">
                   Resolution Notes / Audit Log
                 </label>
                 <textarea
@@ -276,7 +276,7 @@ export default function AdminReportsPage() {
                   value={resolutionNotes}
                   onChange={(e) => setResolutionNotes(e.target.value)}
                   placeholder="Explain the review findings and any actions taken..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-hidden focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#FFFFFF] border border-[#E7E5E0] text-xs text-[#1E1E24] focus:outline-hidden focus:border-[#6C63FF]"
                 />
               </div>
 
@@ -305,4 +305,3 @@ export default function AdminReportsPage() {
     </div>
   );
 }
-

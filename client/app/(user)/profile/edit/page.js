@@ -105,10 +105,6 @@ export default function ProfileEditPage() {
     }
   };
 
-  const bioLength = bio.length;
-  const isBioNearLimit = bioLength > 220;
-  const isBioOverLimit = bioLength > 250;
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -127,7 +123,7 @@ export default function ProfileEditPage() {
       />
 
       {fetchError && (
-        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between gap-3">
+        <div className="p-4 rounded-2xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between gap-3 font-medium">
           <span>{fetchError}</span>
           <Button
             size="sm"
@@ -137,7 +133,7 @@ export default function ProfileEditPage() {
               setFetchError('');
               setReloadTrigger((n) => n + 1);
             }}
-            className="text-xs text-[#FF6257] hover:bg-[#FF6257]/10"
+            className="text-xs text-[#FF6B6B] hover:bg-[#FF6B6B]/10"
           >
             Retry
           </Button>
@@ -145,26 +141,26 @@ export default function ProfileEditPage() {
       )}
 
       {fetchLoading ? (
-        <Card className="border-[#2D2938] bg-[#1E1B26] animate-pulse">
+        <Card className="border-[#E7E5E0] bg-white animate-pulse shadow-xs">
           <CardHeader className="space-y-2">
-            <div className="h-5 w-40 bg-[#24202E] rounded" />
-            <div className="h-3 w-64 bg-[#24202E]/60 rounded" />
+            <div className="h-5 w-40 bg-[#F1F0EC] rounded" />
+            <div className="h-3 w-64 bg-[#F1F0EC]/60 rounded" />
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-full bg-[#24202E]" />
+              <div className="w-16 h-16 rounded-full bg-[#F1F0EC]" />
               <div className="space-y-1.5 flex-1">
-                <div className="h-3.5 w-28 bg-[#24202E] rounded" />
-                <div className="h-2.5 w-48 bg-[#24202E]/60 rounded" />
+                <div className="h-3.5 w-28 bg-[#F1F0EC] rounded" />
+                <div className="h-2.5 w-48 bg-[#F1F0EC]/60 rounded" />
               </div>
             </div>
-            <div className="h-10 bg-[#24202E]/50 rounded-xl" />
-            <div className="h-10 bg-[#24202E]/50 rounded-xl" />
-            <div className="h-24 bg-[#24202E]/50 rounded-xl" />
+            <div className="h-10 bg-[#F1F0EC]/50 rounded-xl" />
+            <div className="h-10 bg-[#F1F0EC]/50 rounded-xl" />
+            <div className="h-24 bg-[#F1F0EC]/50 rounded-xl" />
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
+        <Card className="border-[#E7E5E0] bg-white shadow-xs">
           <CardHeader>
             <CardTitle>Profile Details</CardTitle>
             <CardDescription>
@@ -175,29 +171,29 @@ export default function ProfileEditPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-6">
               {errorMessage && (
-                <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center gap-2">
-                  <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257] shrink-0" />
+                <div className="p-3.5 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center gap-2 font-medium">
+                  <Icon name="alertCircle" className="w-4 h-4 text-[#FF6B6B] shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
               {successMessage && (
-                <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center gap-2">
-                  <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
+                <div className="p-3.5 rounded-xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] flex items-center gap-2 font-medium">
+                  <Icon name="check" className="w-4 h-4 text-[#2E7D4E] shrink-0" />
                   <span>{successMessage}</span>
                 </div>
               )}
 
               {/* Avatar Live Preview */}
-              <div className="flex items-center gap-5 p-4 rounded-xl bg-[#17151D] border border-[#2D2938]">
+              <div className="flex items-center gap-5 p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]">
                 <Avatar
                   name={fullName || 'User'}
                   src={avatarUrl.trim()}
                   size="xl"
                 />
                 <div className="space-y-1 min-w-0">
-                  <p className="text-xs font-bold text-[#F6F2EA] font-display">Avatar Live Preview</p>
-                  <p className="text-[11px] text-[#777580]">
+                  <p className="text-xs font-bold text-[#1E1E24]">Avatar Live Preview</p>
+                  <p className="text-[11px] text-[#6B6B73]">
                     Enter a direct public image URL (JPEG, PNG, or WebP) below to update your picture.
                   </p>
                 </div>
@@ -249,38 +245,35 @@ export default function ProfileEditPage() {
                   type="email"
                   value={user?.email || ''}
                   disabled
-                  className="bg-[#110F17] text-[#777580] border-[#2D2938] cursor-not-allowed"
+                  className="opacity-70 bg-[#F1F0EC]"
                 />
               </FormField>
 
-              {/* Biography Field */}
+              {/* Bio Field */}
               <FormField
                 id="edit-bio"
                 label="Biography"
-                helperText={
-                  <span className={isBioOverLimit ? 'text-[#FF6257] font-bold' : isBioNearLimit ? 'text-[#FBBF24]' : 'text-[#777580]'}>
-                    {bioLength}/250 characters
-                  </span>
-                }
+                helperText={`${bio.length}/250 characters`}
               >
                 <textarea
                   id="edit-bio"
                   rows={4}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell the community about yourself, your creative perspective, or what you're working on..."
-                  disabled={loading}
+                  placeholder="Write a few words about your creative interests, hobbies, or what brings you to Looply..."
                   maxLength={250}
-                  className="w-full resize-none rounded-xl border border-[#2D2938] bg-[#17151D] p-3 text-sm text-[#F6F2EA] placeholder-[#777580] focus:outline-none focus:border-[#FF6257] transition-colors"
+                  disabled={loading}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder-[#6B6B73] focus:outline-hidden focus:border-[#6C63FF] transition-colors"
                 />
               </FormField>
             </CardContent>
 
-            <CardFooter className="flex items-center justify-end gap-3 border-t border-[#2D2938] pt-4">
+            <CardFooter className="flex items-center justify-end gap-3 border-t border-[#E7E5E0] pt-4">
               <Button
-                href={ROUTES.USER.PROFILE}
+                type="button"
                 variant="outline"
-                size="md"
+                size="sm"
+                href={ROUTES.USER.PROFILE}
                 disabled={loading}
               >
                 Cancel
@@ -288,10 +281,11 @@ export default function ProfileEditPage() {
               <Button
                 type="submit"
                 variant="primary"
-                size="md"
-                disabled={loading || isBioOverLimit}
+                size="sm"
+                disabled={loading}
+                icon={loading ? undefined : <Icon name="check" className="w-4 h-4 text-white" />}
               >
-                {loading ? 'Saving Changes...' : 'Save Changes'}
+                {loading ? 'Saving Changes...' : 'Save Profile'}
               </Button>
             </CardFooter>
           </form>

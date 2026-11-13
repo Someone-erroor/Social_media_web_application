@@ -11,9 +11,9 @@ import Icon from '@/components/ui/Icon';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * AdminShell Layout Component for Looply (Editorial Expression Theme)
- * Distinct high-contrast administrative workspace.
- * Deep dark background (#110F17), elevated Midnight Ink cards (#1E1B26), Electric Coral active indicators.
+ * AdminShell Layout Component for Looply (Light-First Social Playground)
+ * Clean, high-contrast administrative workspace.
+ * Warm background (#F8F7F4), crisp white cards (#FFFFFF), Brand Purple (#6C63FF) active indicators.
  * If user is unauthenticated or lacks admin role, presents dedicated admin clearance guidance.
  */
 export default function AdminShell({ children }) {
@@ -28,10 +28,10 @@ export default function AdminShell({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#110F17] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F8F7F4] flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-[#2D2938] border-t-[#FF6257] rounded-full animate-spin" />
-          <p className="text-xs text-[#777580] font-medium">Verifying Administrator Access...</p>
+          <div className="w-10 h-10 border-3 border-[#E7E5E0] border-t-[#6C63FF] rounded-full animate-spin" />
+          <p className="text-xs text-[#6B6B73] font-medium">Verifying Administrator Access...</p>
         </div>
       </div>
     );
@@ -45,25 +45,25 @@ export default function AdminShell({ children }) {
   // If logged in as standard user without admin privileges
   if (user?.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-[#110F17] flex items-center justify-center p-4">
-        <Card className="max-w-md w-full p-6 sm:p-8 text-center space-y-5 bg-[#1E1B26] border-[#2D2938] shadow-2xl shadow-black/80">
-          <div className="w-16 h-16 rounded-2xl bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 mx-auto flex items-center justify-center shadow-lg shadow-[#FF6257]/10">
+      <div className="min-h-screen bg-[#F8F7F4] flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-6 sm:p-8 text-center space-y-5 bg-[#FFFFFF] border-[#E7E5E0] shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/20 mx-auto flex items-center justify-center shadow-xs">
             <Icon name="shield" className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
-            <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+            <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/20">
               Clearance Required
             </span>
-            <h2 className="text-lg sm:text-xl font-bold text-[#F6F2EA] font-display tracking-tight">
+            <h2 className="text-lg sm:text-xl font-bold text-[#1E1E24] font-display tracking-tight">
               Administrator Access Required
             </h2>
-            <p className="text-xs text-[#777580] leading-relaxed">
+            <p className="text-xs text-[#6B6B73] leading-relaxed">
               You are currently signed in as{' '}
-              <strong className="text-[#F6F2EA] font-semibold">{user.fullName || 'Member'}</strong>{' '}
-              (<span className="font-mono text-[#B9A8F5]">{user.email}</span>), which is a standard member account.
+              <strong className="text-[#1E1E24] font-semibold">{user.fullName || 'Member'}</strong>{' '}
+              (<span className="font-mono text-[#6C63FF]">{user.email}</span>), which is a standard member account.
             </p>
-            <p className="text-xs text-[#777580] leading-relaxed">
+            <p className="text-xs text-[#6B6B73] leading-relaxed">
               The Looply Administration Console is reserved strictly for platform administrators.
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function AdminShell({ children }) {
             <Button
               variant="primary"
               size="md"
-              className="w-full sm:w-auto flex items-center justify-center gap-2"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 font-bold shadow-xs"
               onClick={async () => {
                 await logout();
                 router.push('/login?admin=true&redirect=/admin');
@@ -97,7 +97,7 @@ export default function AdminShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#110F17] text-[#F6F2EA] flex flex-col antialiased selection:bg-[#FF6257] selection:text-[#17151D]">
+    <div className="min-h-screen bg-[#F8F7F4] text-[#1E1E24] flex flex-col antialiased selection:bg-[#6C63FF] selection:text-white">
       {/* Sidebar Navigation */}
       <AdminSidebar />
 

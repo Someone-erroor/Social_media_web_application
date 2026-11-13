@@ -189,12 +189,12 @@ export default function AdminUsersPage() {
 
       {/* Success Banner */}
       {successNotice && (
-        <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#E8F5E9] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
-            <Icon name="check" className="w-4 h-4 text-[#D5F36A] shrink-0" />
-            <span>{successNotice}</span>
+            <Icon name="check" className="w-4 h-4 text-[#2E7D4E] shrink-0" />
+            <span className="font-semibold">{successNotice}</span>
           </div>
-          <button type="button" onClick={() => setSuccessNotice('')} className="text-[#D5F36A] hover:text-white font-bold">
+          <button type="button" onClick={() => setSuccessNotice('')} className="text-[#2E7D4E] hover:text-[#1E1E24] font-bold">
             ✕
           </button>
         </div>
@@ -202,9 +202,9 @@ export default function AdminUsersPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between shadow-xs">
           <span>{error}</span>
-          <button type="button" onClick={() => setError('')} className="text-[#FF6257] hover:text-white">
+          <button type="button" onClick={() => setError('')} className="text-[#FF6B6B] hover:text-[#1E1E24]">
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
@@ -212,13 +212,13 @@ export default function AdminUsersPage() {
 
       {/* Create Administrator Inline Card / Modal */}
       {showCreateModal && (
-        <Card className="p-5 border-[#2D2938] bg-[#1E1B26] shadow-xl space-y-4">
-          <div className="flex items-center justify-between border-b border-[#2D2938] pb-3">
+        <Card className="p-5 border-[#E7E5E0] bg-[#FFFFFF] shadow-md space-y-4">
+          <div className="flex items-center justify-between border-b border-[#E7E5E0] pb-3">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-[#B9A8F5]/15 text-[#B9A8F5]">
+              <span className="p-1.5 rounded-lg bg-[#EEEAFE] text-[#6C63FF]">
                 <Icon name="shield" className="w-4 h-4" />
               </span>
-              <h3 className="text-sm font-bold text-[#F6F2EA]">Create Platform Administrator</h3>
+              <h3 className="text-sm font-bold text-[#1E1E24]">Create Platform Administrator</h3>
             </div>
             <button
               type="button"
@@ -226,21 +226,21 @@ export default function AdminUsersPage() {
                 setShowCreateModal(false);
                 setCreateError('');
               }}
-              className="text-[#777580] hover:text-white font-bold"
+              className="text-[#6B6B73] hover:text-[#1E1E24] font-bold"
             >
               ✕
             </button>
           </div>
 
           {createError && (
-            <div className="p-3 rounded-lg bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+            <div className="p-3 rounded-lg bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B]">
               {createError}
             </div>
           )}
 
           <form onSubmit={handleCreateAdminSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label htmlFor="create-admin-name" className="block text-[11px] font-medium text-[#777580] mb-1">
+              <label htmlFor="create-admin-name" className="block text-[11px] font-medium text-[#6B6B73] mb-1">
                 Admin Full Name *
               </label>
               <Input
@@ -255,7 +255,7 @@ export default function AdminUsersPage() {
             </div>
 
             <div>
-              <label htmlFor="create-admin-email" className="block text-[11px] font-medium text-[#777580] mb-1">
+              <label htmlFor="create-admin-email" className="block text-[11px] font-medium text-[#6B6B73] mb-1">
                 Admin Email / ID *
               </label>
               <Input
@@ -270,7 +270,7 @@ export default function AdminUsersPage() {
             </div>
 
             <div>
-              <label htmlFor="create-admin-pass" className="block text-[11px] font-medium text-[#777580] mb-1">
+              <label htmlFor="create-admin-pass" className="block text-[11px] font-medium text-[#6B6B73] mb-1">
                 Password (min 8 chars) *
               </label>
               <Input
@@ -328,7 +328,7 @@ export default function AdminUsersPage() {
             value={accountStatus}
             onChange={(e) => setAccountStatus(e.target.value)}
             aria-label="Filter by account status"
-            className="rounded-xl border border-[#2D2938] bg-[#17151D] px-3 py-2 text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+            className="rounded-xl border border-[#E7E5E0] bg-[#FFFFFF] px-3 py-2 text-xs text-[#1E1E24] focus:outline-none focus:border-[#6C63FF] shadow-xs"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -339,7 +339,7 @@ export default function AdminUsersPage() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
             aria-label="Filter by user role"
-            className="rounded-xl border border-[#2D2938] bg-[#17151D] px-3 py-2 text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+            className="rounded-xl border border-[#E7E5E0] bg-[#FFFFFF] px-3 py-2 text-xs text-[#1E1E24] focus:outline-none focus:border-[#6C63FF] shadow-xs"
           >
             <option value="">All Roles</option>
             <option value="user">User</option>
@@ -354,8 +354,8 @@ export default function AdminUsersPage() {
 
       {/* Confirmation Modal */}
       {confirmAction && (
-        <div className="p-4 rounded-xl bg-amber-400/10 border border-amber-400/30 text-xs text-amber-300 space-y-2">
-          <p className="font-semibold text-amber-200">
+        <div className="p-4 rounded-xl bg-[#FFF7E0] border border-[#FFD166]/40 text-xs text-[#7A5800] space-y-2 shadow-xs">
+          <p className="font-semibold text-[#1E1E24]">
             Confirm Account {confirmAction.nextStatus === 'suspended' ? 'Suspension' : 'Reactivation'}
           </p>
           <p>
@@ -392,10 +392,10 @@ export default function AdminUsersPage() {
       )}
 
       {/* Table Container */}
-      <Card className="overflow-hidden bg-[#1E1B26] border-[#2D2938]">
+      <Card className="overflow-hidden bg-[#FFFFFF] border-[#E7E5E0] shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#F6F2EA]">
-            <thead className="bg-[#17151D] border-b border-[#2D2938] text-[#777580] uppercase tracking-wider font-semibold">
+          <table className="w-full text-left text-xs text-[#1E1E24]">
+            <thead className="bg-[#F8F7F4] border-b border-[#E7E5E0] text-[#6B6B73] uppercase tracking-wider font-semibold">
               <tr>
                 <th scope="col" className="px-5 py-3.5">User</th>
                 <th scope="col" className="px-5 py-3.5">Email</th>
@@ -405,10 +405,10 @@ export default function AdminUsersPage() {
                 <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2D2938]">
+            <tbody className="divide-y divide-[#E7E5E0]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#777580] font-medium">
+                  <td colSpan={6} className="py-8 text-center text-[#6B6B73] font-medium">
                     Loading users directory...
                   </td>
                 </tr>
@@ -431,7 +431,7 @@ export default function AdminUsersPage() {
                   const isSuspended = targetUser.accountStatus === 'suspended';
 
                   return (
-                    <tr key={targetUser._id} className="hover:bg-[#17151D]/60 transition-colors">
+                    <tr key={targetUser._id} className="hover:bg-[#F8F7F4]/60 transition-colors">
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -439,12 +439,12 @@ export default function AdminUsersPage() {
                             src={targetUser.profile?.avatarUrl}
                             size="sm"
                           />
-                          <span className="font-semibold text-[#F6F2EA]">
+                          <span className="font-semibold text-[#1E1E24]">
                             {targetUser.fullName}
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#777580]">
+                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[#6B6B73]">
                         {targetUser.email}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap">
@@ -457,7 +457,7 @@ export default function AdminUsersPage() {
                               type="button"
                               disabled={actionLoadingId === targetUser._id}
                               onClick={() => handleRoleChange(targetUser._id, targetUser.role === 'admin' ? 'user' : 'admin')}
-                              className="text-[10px] text-[#FF6257] hover:underline font-semibold cursor-pointer disabled:opacity-40"
+                              className="text-[10px] text-[#6C63FF] hover:underline font-semibold cursor-pointer disabled:opacity-40"
                               title={targetUser.role === 'admin' ? 'Demote to standard user' : 'Promote to administrator'}
                             >
                               {targetUser.role === 'admin' ? 'Demote' : 'Promote'}
@@ -470,12 +470,12 @@ export default function AdminUsersPage() {
                           {isSuspended ? 'Suspended' : 'Active'}
                         </Badge>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap text-[#777580]">
+                      <td className="px-5 py-3.5 whitespace-nowrap text-[#6B6B73]">
                         {formatDate(targetUser.createdAt)}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-right">
                         {isCurrentAdmin ? (
-                          <span className="text-[11px] text-[#777580] italic">Current Session</span>
+                          <span className="text-[11px] text-[#6B6B73] italic">Current Session</span>
                         ) : (
                           <Button
                             type="button"
@@ -504,7 +504,7 @@ export default function AdminUsersPage() {
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-[#2D2938] bg-[#17151D] text-xs text-[#777580]">
+          <div className="flex items-center justify-between p-4 border-t border-[#E7E5E0] bg-[#F8F7F4] text-xs text-[#6B6B73]">
             <span>
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total members)
             </span>

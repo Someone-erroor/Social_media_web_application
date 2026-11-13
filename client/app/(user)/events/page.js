@@ -131,9 +131,9 @@ export default function EventsPage() {
         action={
           selectedEvent ? (
             <div className="flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#777580]">
-                <Icon name="clock" className="w-3.5 h-3.5 text-[#FF6257]" />
-                <span className="font-mono text-[#F6F2EA]">{countdownText || 'Live Mystery'}</span>
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E7E5E0] text-xs text-[#6B6B73] shadow-2xs font-medium">
+                <Icon name="clock" className="w-3.5 h-3.5 text-[#FF6B6B]" />
+                <span className="font-mono text-[#1E1E24] font-semibold">{countdownText || 'Live Mystery'}</span>
               </span>
             </div>
           ) : null
@@ -141,7 +141,7 @@ export default function EventsPage() {
       />
 
       {error && (
-        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center gap-2 font-medium">
           <Icon name="alertCircle" className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -150,8 +150,8 @@ export default function EventsPage() {
       {/* 2. Active Content or Empty State */}
       {loading ? (
         <div className="space-y-4">
-          <div className="h-44 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse" />
-          <div className="h-64 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse" />
+          <div className="h-44 rounded-2xl bg-white border border-[#E7E5E0] animate-pulse shadow-xs" />
+          <div className="h-64 rounded-2xl bg-white border border-[#E7E5E0] animate-pulse shadow-xs" />
         </div>
       ) : events.length === 0 ? (
         <EmptyState
@@ -161,7 +161,7 @@ export default function EventsPage() {
           badgeText="Detective Guild"
           action={
             <Link href={ROUTES.USER.PLAY}>
-              <Button type="button" variant="primary" size="sm" icon={<Icon name="play" className="w-4 h-4" />}>
+              <Button type="button" variant="primary" size="sm" icon={<Icon name="play" className="w-4 h-4 text-white" />}>
                 Explore Looply Play Mini-Games
               </Button>
             </Link>
@@ -171,7 +171,7 @@ export default function EventsPage() {
         <div className="space-y-6">
           {/* Event Selector Pills if multiple events exist */}
           {events.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-[#2D2938]">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-[#E7E5E0]">
               {events.map((ev) => {
                 const isSelected = selectedEvent?._id === ev._id;
                 return (
@@ -184,8 +184,8 @@ export default function EventsPage() {
                     }}
                     className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#FF6257] text-[#17151D] shadow-md shadow-[#FF6257]/20 font-bold'
-                        : 'bg-[#1E1B26] border border-[#2D2938] text-[#777580] hover:text-[#F6F2EA]'
+                        ? 'bg-[#FF6B6B] text-white shadow-xs font-bold'
+                        : 'bg-white border border-[#E7E5E0] text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F8F7F4]'
                     }`}
                   >
                     {ev.title}
@@ -200,26 +200,26 @@ export default function EventsPage() {
             {/* Left 2 Columns: Mystery Clues & Submission Form */}
             <div className="lg:col-span-2 space-y-6">
               {selectedEvent && (
-                <Card className="bg-[#1E1B26] border-[#2D2938] shadow-xl overflow-hidden">
+                <Card className="bg-white border-[#E7E5E0] shadow-xs overflow-hidden">
                   <CardContent className="p-6 space-y-6">
                     {/* Event Status Bar */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 font-display">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/20">
                           {selectedEvent.status === 'active' || !selectedEvent.status
                             ? '● Live Mystery'
                             : 'Mystery Concluded'}
                         </span>
                         {countdownText && (
-                          <span className="text-[11px] font-mono text-[#777580]">
+                          <span className="text-[11px] font-medium text-[#6B6B73]">
                             {countdownText}
                           </span>
                         )}
                       </div>
 
                       {hasSolved && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30 flex items-center gap-1 font-display">
-                          <Icon name="check" className="w-3 h-3 text-[#D5F36A]" />
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#E8F7EE] text-[#2E7D4E] border border-[#4CAF78]/30 flex items-center gap-1">
+                          <Icon name="check" className="w-3 h-3 text-[#2E7D4E]" />
                           Cracked by You
                         </span>
                       )}
@@ -227,22 +227,22 @@ export default function EventsPage() {
 
                     {/* Mystery Title & Narrative */}
                     <div className="space-y-2">
-                      <h2 className="text-xl sm:text-2xl font-bold text-[#F6F2EA] font-display">
+                      <h2 className="text-xl sm:text-2xl font-bold text-[#1E1E24]">
                         {selectedEvent.title}
                       </h2>
-                      <p className="text-xs sm:text-sm text-[#777580] leading-relaxed">
+                      <p className="text-xs sm:text-sm text-[#6B6B73] leading-relaxed">
                         {selectedEvent.description}
                       </p>
                     </div>
 
                     {/* Discovered Clues */}
-                    <div className="space-y-3 pt-2 border-t border-[#2D2938]">
+                    <div className="space-y-3 pt-2 border-t border-[#E7E5E0]">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-[#B9A8F5] flex items-center gap-1.5 font-display">
-                          <Icon name="sparkles" className="w-4 h-4 text-[#B9A8F5]" />
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-[#6C63FF] flex items-center gap-1.5">
+                          <Icon name="sparkles" className="w-4 h-4 text-[#6C63FF]" />
                           Discovered Evidence &amp; Clues
                         </h3>
-                        <span className="text-[10px] text-[#777580]">
+                        <span className="text-[10px] text-[#6B6B73]">
                           {selectedEvent.clues?.length || 0} clues revealed
                         </span>
                       </div>
@@ -252,21 +252,21 @@ export default function EventsPage() {
                           selectedEvent.clues.map((clue, idx) => (
                             <div
                               key={idx}
-                              className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] space-y-1.5"
+                              className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] space-y-1.5"
                             >
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-[#B9A8F5] uppercase tracking-wider font-display">
+                                <span className="text-[10px] font-bold text-[#6C63FF] uppercase tracking-wider">
                                   Clue #{idx + 1}
                                 </span>
-                                <span className="text-[10px] text-[#777580]">Decrypted</span>
+                                <span className="text-[10px] text-[#6B6B73] font-medium">Decrypted</span>
                               </div>
-                              <p className="leading-relaxed font-mono text-[11px] sm:text-xs">
+                              <p className="leading-relaxed font-mono text-[11px] sm:text-xs text-[#1E1E24]">
                                 {typeof clue === 'string' ? clue : clue.text}
                               </p>
                             </div>
                           ))
                         ) : (
-                          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#777580] text-center italic">
+                          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#6B6B73] text-center italic">
                             No public clues revealed yet. Check back soon as the mystery unfolds.
                           </div>
                         )}
@@ -274,23 +274,23 @@ export default function EventsPage() {
                     </div>
 
                     {/* Answer Submission Form */}
-                    <div className="pt-4 border-t border-[#2D2938] space-y-3">
+                    <div className="pt-4 border-t border-[#E7E5E0] space-y-3">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-xs font-bold text-[#F6F2EA] font-display">
+                        <h3 className="text-xs font-bold text-[#1E1E24]">
                           Submit Deductive Solution
                         </h3>
-                        <span className="text-[11px] text-[#D5F36A] font-semibold flex items-center gap-1">
-                          <Icon name="sparkles" className="w-3 h-3 text-[#D5F36A]" />
+                        <span className="text-[11px] text-[#2E7D4E] font-semibold flex items-center gap-1">
+                          <Icon name="sparkles" className="w-3 h-3 text-[#2E7D4E]" />
                           +500 Points Reward
                         </span>
                       </div>
 
                       {feedback && (
                         <div
-                          className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 ${
+                          className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 font-medium ${
                             feedback.isCorrect
-                              ? 'bg-[#D5F36A]/10 border-[#D5F36A]/30 text-[#D5F36A]'
-                              : 'bg-[#FF6257]/10 border-[#FF6257]/30 text-[#FF6257]'
+                              ? 'bg-[#E8F7EE] border-[#4CAF78]/30 text-[#2E7D4E]'
+                              : 'bg-[#FF6B6B]/10 border-[#FF6B6B]/30 text-[#FF6B6B]'
                           }`}
                         >
                           <Icon
@@ -307,8 +307,8 @@ export default function EventsPage() {
                       )}
 
                       {hasSolved ? (
-                        <div className="p-4 rounded-xl bg-[#17151D] border border-[#D5F36A]/30 text-xs text-[#D5F36A] text-center font-semibold flex items-center justify-center gap-2">
-                          <Icon name="check" className="w-4 h-4 text-[#D5F36A]" />
+                        <div className="p-4 rounded-xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] text-center font-semibold flex items-center justify-center gap-2">
+                          <Icon name="check" className="w-4 h-4 text-[#2E7D4E]" />
                           <span>
                             You cracked this case! Your rank and score are immortalized in the Hall of Fame.
                           </span>
@@ -320,12 +320,12 @@ export default function EventsPage() {
                             value={answerInput}
                             onChange={(e) => setAnswerInput(e.target.value)}
                             placeholder="Enter your final deductive solution..."
-                            className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257]"
+                            className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder-[#6B6B73] focus:outline-hidden focus:border-[#FF6B6B] focus:bg-white"
                             disabled={submitting}
                           />
                           <Button
                             type="submit"
-                            variant="primary"
+                            variant="coral"
                             size="sm"
                             disabled={submitting || !answerInput.trim()}
                           >
@@ -341,25 +341,25 @@ export default function EventsPage() {
 
             {/* Right Column: Detective Leaderboard */}
             <div className="space-y-4">
-              <Card className="bg-[#1E1B26] border-[#2D2938] shadow-xl">
+              <Card className="bg-white border-[#E7E5E0] shadow-xs">
                 <CardContent className="p-5 space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#F6F2EA] flex items-center gap-2 font-display">
-                      <Icon name="activity" className="w-4 h-4 text-[#D5F36A]" />
+                  <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#1E1E24] flex items-center gap-2">
+                      <Icon name="activity" className="w-4 h-4 text-[#6C63FF]" />
                       Detective Hall of Fame
                     </h3>
-                    <span className="text-[10px] text-[#777580]">
+                    <span className="text-[10px] text-[#6B6B73]">
                       {leaderboard.length} Solvers
                     </span>
                   </div>
 
                   {leaderboard.length === 0 ? (
                     <div className="text-center py-8 space-y-2">
-                      <Icon name="shield" className="w-8 h-8 text-[#777580]/40 mx-auto" />
-                      <p className="text-xs text-[#777580]">
+                      <Icon name="shield" className="w-8 h-8 text-[#6B6B73]/40 mx-auto" />
+                      <p className="text-xs text-[#6B6B73]">
                         No detectives have solved this case yet.
                       </p>
-                      <p className="text-[11px] text-[#FF6257] font-semibold">
+                      <p className="text-[11px] text-[#FF6B6B] font-semibold">
                         Will you be the first on the board?
                       </p>
                     </div>
@@ -368,18 +368,18 @@ export default function EventsPage() {
                       {leaderboard.map((entry, index) => (
                         <div
                           key={entry._id || index}
-                          className="flex items-center justify-between p-3 rounded-xl bg-[#17151D] border border-[#2D2938]"
+                          className="flex items-center justify-between p-3 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]"
                         >
                           <div className="flex items-center gap-2.5">
                             <span
                               className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                                 index === 0
-                                  ? 'bg-[#D5F36A] text-[#17151D]'
+                                  ? 'bg-[#FFD166] text-[#6B4E00]'
                                   : index === 1
-                                  ? 'bg-[#B9A8F5] text-[#17151D]'
+                                  ? 'bg-[#EEEAFE] text-[#6C63FF]'
                                   : index === 2
-                                  ? 'bg-[#FF6257] text-white'
-                                  : 'text-[#777580] bg-[#24202E]'
+                                  ? 'bg-[#FFEAEA] text-[#FF6B6B]'
+                                  : 'text-[#6B6B73] bg-[#E7E5E0]'
                               }`}
                             >
                               {index + 1}
@@ -390,12 +390,12 @@ export default function EventsPage() {
                               size="xs"
                             />
                             <div className="truncate max-w-[100px]">
-                              <p className="text-xs font-semibold text-[#F6F2EA] truncate">
+                              <p className="text-xs font-semibold text-[#1E1E24] truncate">
                                 {entry.user?.fullName || 'Solver'}
                               </p>
                             </div>
                           </div>
-                          <span className="text-[11px] font-bold text-[#D5F36A]">
+                          <span className="text-[11px] font-bold text-[#2E7D4E]">
                             {entry.points || 500} pts
                           </span>
                         </div>
@@ -410,40 +410,40 @@ export default function EventsPage() {
       )}
 
       {/* 3. Supporting Information / Detective Guild Rules */}
-      <section className="p-6 rounded-2xl bg-[#1E1B26]/80 border border-[#2D2938] space-y-4">
+      <section className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-4">
         <div className="flex items-center gap-2">
-          <Icon name="shield" className="w-4 h-4 text-[#FF6257]" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F6F2EA] font-display">
+          <Icon name="shield" className="w-4 h-4 text-[#FF6B6B]" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#1E1E24]">
             Detective Guild Protocols
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
-            <div className="w-6 h-6 rounded-lg bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center text-xs font-bold font-display">
+          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#FFEAEA] text-[#FF6B6B] flex items-center justify-center text-xs font-bold">
               1
             </div>
-            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Analyze Discovered Clues</h3>
-            <p className="text-[11px] text-[#777580] leading-relaxed">
-              Examine riddles, cryptographic hints, and platform cues released throughout the active event duration.
+            <h3 className="text-xs font-bold text-[#1E1E24]">Analyze Discovered Clues</h3>
+            <p className="text-[11px] text-[#6B6B73] leading-relaxed">
+              Examine riddles, hints, and platform cues released throughout the active event duration.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
-            <div className="w-6 h-6 rounded-lg bg-[#B9A8F5]/15 text-[#B9A8F5] flex items-center justify-center text-xs font-bold font-display">
+          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#EEEAFE] text-[#6C63FF] flex items-center justify-center text-xs font-bold">
               2
             </div>
-            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Submit Deductions</h3>
-            <p className="text-[11px] text-[#777580] leading-relaxed">
+            <h3 className="text-xs font-bold text-[#1E1E24]">Submit Deductions</h3>
+            <p className="text-[11px] text-[#6B6B73] leading-relaxed">
               Enter your deduction into the verification terminal. Solutions are verified instantly on submission.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
-            <div className="w-6 h-6 rounded-lg bg-[#D5F36A]/15 text-[#D5F36A] flex items-center justify-center text-xs font-bold font-display">
+          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#E8F7EE] text-[#4CAF78] flex items-center justify-center text-xs font-bold">
               3
             </div>
-            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Immortalize Your Name</h3>
-            <p className="text-[11px] text-[#777580] leading-relaxed">
+            <h3 className="text-xs font-bold text-[#1E1E24]">Immortalize Your Name</h3>
+            <p className="text-[11px] text-[#6B6B73] leading-relaxed">
               Top detectives earn permanent placement in the Detective Hall of Fame and bonus reputation points.
             </p>
           </div>

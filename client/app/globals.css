@@ -2,72 +2,66 @@
 
 :root {
   /* ==========================================================================
-     LOOPLY OFFICIAL GLOBAL COLOUR SYSTEM (EDITORIAL EXPRESSION)
+     LOOPLY LIGHT-FIRST WARM SOCIAL PLAYGROUND COLOR SYSTEM
      ========================================================================== */
-  --midnight-ink: #17151D;
-  --warm-ivory: #F6F2EA;
-  --electric-coral: #FF6257;
-  --acid-lime: #D5F36A;
-  --soft-lavender: #B9A8F5;
-  --slate: #777580;
-  --pure-white: #FFFFFF;
+  --looply-bg: #F8F7F4;              /* App Background: Warm Light Ivory */
+  --looply-surface: #FFFFFF;         /* Primary Surface: Crisp White Card */
+  --looply-surface-secondary: #F1F0EC;/* Secondary Surface: Soft Warm Gray */
+  --looply-surface-hover: #EBEAE5;   /* Surface Hover State */
+  --looply-sidebar: #FFFFFF;         /* Clean White Sidebar Surface */
 
-  /* Semantic Theme Mappings */
-  --looply-bg: #110F17;              /* Deep Midnight Ink floor */
-  --looply-sidebar: #17151D;         /* Midnight Ink surface */
-  --looply-surface: #1E1B26;         /* Elevated rich card surface */
-  --looply-surface-raised: #262230;  /* Secondary raised elevation */
-  --looply-surface-hover: #2F2A3D;   /* Hover interaction state */
+  --looply-text: #1E1E24;            /* Primary Text: High-contrast Dark Slate */
+  --looply-text-bright: #000000;     /* Pure Black Emphasis */
+  --looply-muted: #6B6B73;           /* Secondary Text: Balanced Slate */
+  --looply-muted-light: #9B9BA3;     /* Tertiary Text / Placeholder */
 
-  --looply-border: #2D2938;          /* Refined subtle editorial border */
-  --looply-border-hover: #433D52;    /* Interactive border highlight */
+  --looply-border: #E7E5E0;          /* Subtle Refined Hairline Border */
+  --looply-border-hover: #D0CECA;    /* Interactive Border Hover */
 
-  --looply-coral: #FF6257;           /* Electric Coral primary action */
-  --looply-coral-hover: #FF4D40;
-  --looply-coral-glow: rgba(255, 98, 87, 0.22);
+  --looply-brand: #6C63FF;           /* Brand Primary: Energetic Indigo/Purple */
+  --looply-brand-hover: #574FE8;     /* Brand Hover State */
+  --looply-brand-glow: rgba(108, 99, 255, 0.18);
 
-  --looply-lime: #D5F36A;            /* Acid Lime interactive highlight */
-  --looply-lime-glow: rgba(213, 243, 106, 0.25);
+  --looply-coral: #FF6B6B;           /* Social / Reaction Accent: Warm Coral */
+  --looply-coral-hover: #F25757;
+  --looply-coral-glow: rgba(255, 107, 107, 0.2);
 
-  --looply-lavender: #B9A8F5;        /* Soft Lavender secondary accent */
-  --looply-lavender-glow: rgba(185, 168, 245, 0.2);
+  --looply-yellow: #FFD166;          /* Joy / Play Accent: Warm Yellow/Amber */
+  --looply-yellow-hover: #F5C247;
+  --looply-yellow-glow: rgba(255, 209, 102, 0.25);
 
-  --looply-text: #F6F2EA;            /* Warm Ivory primary text */
-  --looply-text-bright: #FFFFFF;     /* Pure White emphasis */
-  --looply-muted: #777580;           /* Slate metadata and secondary */
-  --looply-muted-light: #A3A0AC;     /* Intermediate slate for readability */
+  --looply-green: #4CAF78;           /* Success / Active: Fresh Green */
+  --looply-green-hover: #3E9B66;
+  --looply-green-glow: rgba(76, 175, 120, 0.22);
 
-  --looply-success: #D5F36A;         /* Acid Lime for success/online */
-  --looply-warning: #FFB84D;
-  --looply-danger: #FF6257;          /* Electric Coral for danger */
+  --looply-lavender: #EEEAFE;        /* Soft Lavender Surface (AI & Highlights) */
+  --looply-lavender-text: #6C63FF;
+
+  --looply-success: #4CAF78;
+  --looply-warning: #FFD166;
+  --looply-danger: #FF6B6B;
 
   --background: var(--looply-bg);
   --foreground: var(--looply-text);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-midnight-ink: #17151D;
-  --color-warm-ivory: #F6F2EA;
-  --color-electric-coral: #FF6257;
-  --color-acid-lime: #D5F36A;
-  --color-soft-lavender: #B9A8F5;
-  --color-slate: #777580;
-  --color-pure-white: #FFFFFF;
-
   --color-looply-bg: var(--looply-bg);
-  --color-looply-sidebar: var(--looply-sidebar);
   --color-looply-surface: var(--looply-surface);
-  --color-looply-surface-raised: var(--looply-surface-raised);
+  --color-looply-surface-secondary: var(--looply-surface-secondary);
   --color-looply-surface-hover: var(--looply-surface-hover);
+  --color-looply-sidebar: var(--looply-sidebar);
 
   --color-looply-border: var(--looply-border);
   --color-looply-border-hover: var(--looply-border-hover);
 
+  --color-looply-brand: var(--looply-brand);
+  --color-looply-brand-hover: var(--looply-brand-hover);
   --color-looply-coral: var(--looply-coral);
-  --color-looply-coral-hover: var(--looply-coral-hover);
-  --color-looply-lime: var(--looply-lime);
+  --color-looply-yellow: var(--looply-yellow);
+  --color-looply-green: var(--looply-green);
   --color-looply-lavender: var(--looply-lavender);
 
   --color-looply-text: var(--looply-text);
@@ -95,30 +89,30 @@ body {
   letter-spacing: -0.011em;
 }
 
-/* Accessible focus outline indicator using Electric Coral */
+/* Accessible focus outline indicator using Brand Primary */
 :focus-visible {
-  outline: 2px solid var(--electric-coral);
+  outline: 2px solid var(--looply-brand);
   outline-offset: 2px;
 }
 
-/* Editorial Custom Scrollbar */
+/* Light-First Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #110F17;
+  background: #F8F7F4;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2D2938;
+  background: #D5D3CC;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #433D52;
+  background: #B5B2AA;
 }
 
 /* ==========================================================================
-   EDITORIAL ANIMATIONS & MICRO-INTERACTIONS
+   ANIMATIONS & MICRO-INTERACTIONS
    ========================================================================== */
 @keyframes fadeIn {
   from {
@@ -134,7 +128,7 @@ body {
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -159,22 +153,22 @@ body {
 
 @keyframes burstPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 98, 87, 0.4);
+    box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(255, 98, 87, 0);
+    box-shadow: 0 0 0 10px rgba(108, 99, 255, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 98, 87, 0);
+    box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
   }
 }
 
-@keyframes limeGlow {
+@keyframes badgePulse {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(213, 243, 106, 0.2);
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 16px rgba(213, 243, 106, 0.45);
+    transform: scale(1.08);
   }
 }
 
@@ -194,17 +188,17 @@ body {
   animation: burstPulse 0.4s ease-out;
 }
 
-.animate-lime-glow {
-  animation: limeGlow 2.5s ease-in-out infinite;
+.animate-badge-pulse {
+  animation: badgePulse 2s ease-in-out infinite;
 }
 
-/* Editorial Typography Utility Classes */
+/* Typography Utility Classes */
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.025em;
 }
 
-/* Reusable Interactive Micro-Interactions */
+/* Interactive Card & Button Micro-Interactions */
 .interactive-card {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
@@ -212,8 +206,8 @@ body {
 }
 .interactive-card:hover {
   transform: translateY(-2px);
-  border-color: #433D52;
-  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  border-color: #D0CECA;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
 }
 
 .interactive-button {
@@ -228,14 +222,14 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
-/* Smooth scrolling when motion is not reduced */
+/* Smooth scrolling */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
   }
 }
 
-/* Strict prefers-reduced-motion compliance (WCAG 2.2 AA) */
+/* prefers-reduced-motion compliance (WCAG 2.2 AA) */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

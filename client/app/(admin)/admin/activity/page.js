@@ -23,7 +23,7 @@ export default function AdminActivityPage() {
           <select
             disabled
             aria-label="Filter by event type"
-            className="rounded-xl border border-[#2D2938] bg-[#17151D] px-3 py-2 text-xs text-[#F6F2EA] focus:outline-none disabled:bg-[#1E1B26] disabled:text-[#777580] disabled:cursor-not-allowed"
+            className="rounded-xl border border-[#E7E5E0] bg-[#FFFFFF] px-3 py-2 text-xs text-[#1E1E24] focus:outline-none disabled:bg-[#F8F7F4] disabled:text-[#6B6B73] disabled:cursor-not-allowed shadow-xs"
           >
             <option>All Event Types</option>
             <option>User Login</option>
@@ -52,4 +52,3 @@ export default function AdminActivityPage() {
     </div>
   );
 }
-

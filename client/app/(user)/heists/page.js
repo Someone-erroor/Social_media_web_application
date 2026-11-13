@@ -20,9 +20,9 @@ const STATUS_FILTERS = [
 ];
 
 const DIFFICULTY_VARIANTS = {
-  easy: 'success',
-  medium: 'warning',
-  hard: 'danger',
+  easy: 'primary',
+  medium: 'yellow',
+  hard: 'coral',
   master: 'lavender'
 };
 
@@ -181,10 +181,10 @@ export default function HeistsPage() {
         action={
           <Button
             type="button"
-            variant="primary"
+            variant="coral"
             size="sm"
             onClick={() => setShowCreateModal(true)}
-            icon={<Icon name="key" className="w-4 h-4" />}
+            icon={<Icon name="key" className="w-4 h-4 text-white" />}
           >
             Start a Quest
           </Button>
@@ -192,17 +192,17 @@ export default function HeistsPage() {
       />
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#2D2938]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E7E5E0]">
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
           {STATUS_FILTERS.map((f) => (
             <button
               key={f.id}
               type="button"
               onClick={() => setStatusFilter(f.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 statusFilter === f.id
-                  ? 'bg-[#FF6257] text-[#110F17]'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                  ? 'bg-[#FF6B6B] text-white shadow-xs font-bold'
+                  : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white bg-transparent border border-transparent hover:border-[#E7E5E0]'
               }`}
             >
               {f.label}
@@ -217,14 +217,14 @@ export default function HeistsPage() {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search missions..."
             aria-label="Search heists"
-            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder-[#6B6B73] focus:outline-none focus:border-[#FF6B6B] shadow-2xs"
           />
-          <Icon name="search" className="w-3.5 h-3.5 text-[#777580] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Icon name="search" className="w-3.5 h-3.5 text-[#6B6B73] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+        <div className="p-3.5 rounded-2xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] font-medium">
           {error}
         </div>
       )}
@@ -233,7 +233,7 @@ export default function HeistsPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-48 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse" />
+            <div key={i} className="h-48 rounded-2xl bg-white border border-[#E7E5E0] animate-pulse shadow-xs" />
           ))}
         </div>
       ) : heists.length === 0 ? (
@@ -249,7 +249,7 @@ export default function HeistsPage() {
           action={
             <Button
               type="button"
-              variant="primary"
+              variant="coral"
               size="sm"
               onClick={() => setShowCreateModal(true)}
             >
@@ -266,18 +266,18 @@ export default function HeistsPage() {
             return (
               <Card
                 key={heist._id}
-                className="bg-[#1E1B26] border-[#2D2938] hover:border-[#FF6257]/40 transition-all flex flex-col justify-between"
+                className="bg-white border-[#E7E5E0] hover:border-[#FF6B6B]/40 transition-all flex flex-col justify-between shadow-xs hover:shadow-md"
               >
                 <CardContent className="p-5 sm:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="p-1.5 rounded-lg bg-[#FF6257]/15 text-[#FF6257]">
+                      <span className="p-1.5 rounded-lg bg-[#FFEAEA] text-[#FF6B6B]">
                         <Icon name="key" className="w-4 h-4" />
                       </span>
                       <Badge variant={DIFFICULTY_VARIANTS[heist.difficulty] || 'neutral'} size="sm">
                         {heist.difficulty?.toUpperCase()}
                       </Badge>
-                      <span className="text-[11px] font-mono text-[#D5F36A] uppercase">
+                      <span className="text-[11px] font-semibold text-[#6C63FF] uppercase">
                         {heist.heistType?.replace(/_/g, ' ')}
                       </span>
                     </div>
@@ -285,7 +285,7 @@ export default function HeistsPage() {
                     <Badge
                       variant={
                         isCompleted
-                          ? 'success'
+                          ? 'primary'
                           : isExpired
                           ? 'neutral'
                           : 'coral'
@@ -297,30 +297,30 @@ export default function HeistsPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <h2 className="text-base font-bold text-[#F6F2EA] font-display hover:text-[#FF6257] transition-colors">
+                    <h2 className="text-base font-bold text-[#1E1E24] hover:text-[#FF6B6B] transition-colors">
                       <Link href={ROUTES.USER.HEIST_DETAIL(heist._id)}>
                         {heist.title}
                       </Link>
                     </h2>
-                    <p className="text-xs text-[#777580] line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#6B6B73] line-clamp-2 leading-relaxed">
                       {heist.shortDescription}
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#17151D] border border-[#2D2938] flex items-center justify-between text-xs">
+                  <div className="p-3 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <Avatar
                         name={heist.creator?.fullName || 'Operative'}
                         src={heist.creator?.profile?.avatarUrl}
                         size="xs"
                       />
-                      <span className="text-[#F6F2EA] font-medium text-[11px]">
+                      <span className="text-[#1E1E24] font-medium text-[11px]">
                         {heist.creator?.fullName || 'Anonymous'}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 text-[11px] text-[#777580]">
-                      <span className="flex items-center gap-1 font-mono text-[#D5F36A]">
+                    <div className="flex items-center gap-3 text-[11px] text-[#6B6B73]">
+                      <span className="flex items-center gap-1 font-semibold text-[#6C63FF]">
                         <Icon name="users" className="w-3.5 h-3.5" />
                         {heist.participantsCount ?? 0} Operatives
                       </span>
@@ -328,13 +328,13 @@ export default function HeistsPage() {
                   </div>
 
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-[11px] font-mono text-[#FF6257] flex items-center gap-1">
+                    <span className="text-[11px] font-semibold text-[#FF6B6B] flex items-center gap-1">
                       <Icon name="clock" className="w-3.5 h-3.5" />
                       {isCompleted ? 'Mission Completed' : formatTimeRemaining(heist.endAt)}
                     </span>
 
                     <Link href={ROUTES.USER.HEIST_DETAIL(heist._id)}>
-                      <Button type="button" size="sm" variant={isCompleted ? 'outline' : 'primary'}>
+                      <Button type="button" size="sm" variant={isCompleted ? 'outline' : 'coral'}>
                         {isCompleted ? 'View Debrief' : 'Enter Mission'}
                       </Button>
                     </Link>
@@ -351,49 +351,49 @@ export default function HeistsPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
         >
-          <div className="w-full max-w-xl bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
+          <div className="w-full max-w-xl bg-white border border-[#E7E5E0] rounded-2xl shadow-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
               <div>
-                <span className="text-[10px] font-bold uppercase text-[#FF6257]">Mission Dispatch</span>
-                <h3 className="text-base font-bold text-[#F6F2EA]">Initiate Feed Heist</h3>
+                <span className="text-[10px] font-bold uppercase text-[#FF6B6B]">Mission Dispatch</span>
+                <h3 className="text-base font-bold text-[#1E1E24]">Initiate Feed Heist</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-[#777580] hover:text-[#F6F2EA] p-1 rounded-lg"
+                className="text-[#6B6B73] hover:text-[#1E1E24] p-1 rounded-lg hover:bg-[#F1F0EC] cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
             </div>
 
             {createError && (
-              <div className="p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+              <div className="p-3 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] font-medium">
                 {createError}
               </div>
             )}
 
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-[#777580]">Mission Title *</label>
+                <label className="font-semibold text-[#1E1E24]">Mission Title *</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Operation Echo Chamber"
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-[#777580]">Mission Format</label>
+                  <label className="font-semibold text-[#1E1E24]">Mission Format</label>
                   <select
                     value={formData.heistType}
                     onChange={(e) => setFormData({ ...formData, heistType: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                   >
                     <option value="community_code">Community Code</option>
                     <option value="perspective_heist">Perspective Heist</option>
@@ -402,11 +402,11 @@ export default function HeistsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-[#777580]">Difficulty</label>
+                  <label className="font-semibold text-[#1E1E24]">Difficulty</label>
                   <select
                     value={formData.difficulty}
                     onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                   >
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
@@ -416,74 +416,74 @@ export default function HeistsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-[#777580]">Duration (Hours)</label>
+                  <label className="font-semibold text-[#1E1E24]">Duration (Hours)</label>
                   <input
                     type="number"
                     min="1"
                     max="72"
                     value={formData.durationHours}
                     onChange={(e) => setFormData({ ...formData, durationHours: parseInt(e.target.value, 10) || 6 })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-[#777580]">Short Briefing *</label>
+                <label className="font-semibold text-[#1E1E24]">Short Briefing *</label>
                 <input
                   type="text"
                   required
                   value={formData.shortDescription}
                   onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
                   placeholder="One sentence summary visible in feed and cards..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-[#777580]">Full Mission Briefing / Objective *</label>
+                <label className="font-semibold text-[#1E1E24]">Full Mission Briefing / Objective *</label>
                 <textarea
                   rows={3}
                   required
                   value={formData.missionPrompt}
                   onChange={(e) => setFormData({ ...formData, missionPrompt: e.target.value })}
                   placeholder="Explain the background mystery, what the community is investigating, and what format the answer takes..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                 />
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-3">
-                <span className="font-bold text-[#FF6257] block">Clue 1 (Unlocked Immediately)</span>
+              <div className="p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-3">
+                <span className="font-bold text-[#FF6B6B] block">Clue 1 (Unlocked Immediately)</span>
                 <input
                   type="text"
                   value={formData.clue1Text}
                   onChange={(e) => setFormData({ ...formData, clue1Text: e.target.value })}
                   placeholder="First clue description or riddle..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#110F17] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B]"
                 />
                 <input
                   type="text"
                   value={formData.clue1Hint}
                   onChange={(e) => setFormData({ ...formData, clue1Hint: e.target.value })}
                   placeholder="Optional hint..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#110F17] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B]"
                 />
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-3">
+              <div className="p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#D5F36A]">Clue 2 (Gated by Operative Count)</span>
+                  <span className="font-bold text-[#6C63FF]">Clue 2 (Gated by Operative Count)</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[#777580]">Unlocks at:</span>
+                    <span className="text-[#6B6B73]">Unlocks at:</span>
                     <input
                       type="number"
                       min="1"
                       max="50"
                       value={formData.clue2Threshold}
                       onChange={(e) => setFormData({ ...formData, clue2Threshold: parseInt(e.target.value, 10) || 2 })}
-                      className="w-16 px-2 py-1 rounded-lg bg-[#110F17] border border-[#2D2938] text-[#F6F2EA] text-center"
+                      className="w-16 px-2 py-1 rounded-lg bg-white border border-[#E7E5E0] text-[#1E1E24] text-center"
                     />
-                    <span className="text-[#777580]">operatives</span>
+                    <span className="text-[#6B6B73]">operatives</span>
                   </div>
                 </div>
                 <input
@@ -491,33 +491,33 @@ export default function HeistsPage() {
                   value={formData.clue2Text}
                   onChange={(e) => setFormData({ ...formData, clue2Text: e.target.value })}
                   placeholder="Second clue that unlocks when community unites..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#110F17] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B]"
                 />
                 <input
                   type="text"
                   value={formData.clue2Hint}
                   onChange={(e) => setFormData({ ...formData, clue2Hint: e.target.value })}
                   placeholder="Optional hint..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#110F17] border border-[#2D2938] text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B]"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-[#FF6257]">Target Cipher Solution *</label>
+                <label className="font-semibold text-[#FF6B6B]">Target Cipher Solution *</label>
                 <input
                   type="text"
                   required
                   value={formData.targetSolution}
                   onChange={(e) => setFormData({ ...formData, targetSolution: e.target.value })}
                   placeholder="The exact solution code or phrase that cracks the heist..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#FF6257]/40 text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#FF6B6B]/40 text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                 />
-                <p className="text-[10px] text-[#777580]">
-                  Target solution is strictly encrypted on the server and hidden from all public payloads.
+                <p className="text-[10px] text-[#6B6B73]">
+                  Target solution is securely validated on the server and hidden from all public payloads.
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#2D2938]">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#E7E5E0]">
                 <Button
                   type="button"
                   variant="outline"
@@ -529,7 +529,7 @@ export default function HeistsPage() {
                 </Button>
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="coral"
                   size="sm"
                   disabled={createLoading}
                 >
@@ -543,4 +543,3 @@ export default function HeistsPage() {
     </div>
   );
 }
-

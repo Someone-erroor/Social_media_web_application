@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Icon from '@/components/ui/Icon';
 
 /**
- * SplitRealityViewer Component
+ * SplitRealityViewer Component (Warm Social Playground Theme)
  *
  * Looply signature dual-perspective media experience:
  * - Side A: ✨ The Final (Polished / Completed result)
  * - Side B: 👀 Behind the Reality (Raw / BTS / Making of)
  *
  * Supports fluid mouse and touch dragging with pointer capture, keyboard slider
- * controls, quick preset buttons, resilient fallback handling, and mobile-friendly touch targets.
+ * controls, quick preset buttons, and mobile-friendly touch targets.
  */
 export default function SplitRealityViewer({
   primaryMedia,
@@ -89,7 +89,7 @@ export default function SplitRealityViewer({
   const isBothLoaded = primaryLoaded && realityLoaded;
 
   return (
-    <div className={`relative group select-none space-y-2 ${className}`}>
+    <div className={`relative group select-none space-y-2.5 ${className}`}>
       {/* Outer Media Frame */}
       <div
         ref={containerRef}
@@ -105,7 +105,7 @@ export default function SplitRealityViewer({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onKeyDown={handleKeyDown}
-        className={`relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[520px] overflow-hidden rounded-2xl border border-[#2D2938] bg-[#110F17] cursor-ew-resize outline-none focus-visible:ring-2 focus-visible:ring-[#FF6257] shadow-xl ${
+        className={`relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[520px] overflow-hidden rounded-2xl border border-[#E7E5E0] bg-[#F1F0EC] cursor-ew-resize outline-none focus-visible:ring-2 focus-visible:ring-[#6C63FF] shadow-xs ${
           isDragging ? 'cursor-grabbing' : ''
         }`}
         style={{ touchAction: 'pan-y' }}
@@ -123,10 +123,10 @@ export default function SplitRealityViewer({
             draggable={false}
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#17151D] text-center">
-            <Icon name="image" className="w-8 h-8 text-[#FF6257]/60 mb-2" />
-            <p className="text-xs font-semibold text-[#F6F2EA]">Reality Media Unavailable</p>
-            <p className="text-[11px] text-[#777580] mt-1">Unable to load the second perspective.</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#F1F0EC] text-center">
+            <Icon name="image" className="w-8 h-8 text-[#FF6B6B]/60 mb-2" />
+            <p className="text-xs font-semibold text-[#1E1E24]">Reality Media Unavailable</p>
+            <p className="text-[11px] text-[#6B6B73] mt-1">Unable to load the second perspective.</p>
           </div>
         )}
 
@@ -147,38 +147,38 @@ export default function SplitRealityViewer({
           />
         ) : (
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#1E1B26] text-center"
+            className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-white text-center"
             style={{
               clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`
             }}
           >
-            <Icon name="image" className="w-8 h-8 text-[#D5F36A]/60 mb-2" />
-            <p className="text-xs font-semibold text-[#F6F2EA]">Primary Media Unavailable</p>
-            <p className="text-[11px] text-[#777580] mt-1">Unable to load the primary perspective.</p>
+            <Icon name="image" className="w-8 h-8 text-[#6C63FF]/60 mb-2" />
+            <p className="text-xs font-semibold text-[#1E1E24]">Primary Media Unavailable</p>
+            <p className="text-[11px] text-[#6B6B73] mt-1">Unable to load the primary perspective.</p>
           </div>
         )}
 
         {/* Loading Shimmer Overlay */}
         {!isBothLoaded && !primaryError && !realityError && (
-          <div className="absolute inset-0 bg-[#1E1B26] animate-pulse flex flex-col items-center justify-center gap-2 z-15">
-            <div className="w-8 h-8 rounded-full border-2 border-[#FF6257] border-t-transparent animate-spin" />
-            <p className="text-xs font-medium text-[#777580]">Loading Split-Reality perspectives...</p>
+          <div className="absolute inset-0 bg-[#F1F0EC] animate-pulse flex flex-col items-center justify-center gap-2 z-15">
+            <div className="w-8 h-8 rounded-full border-2 border-[#6C63FF] border-t-transparent animate-spin" />
+            <p className="text-xs font-medium text-[#6B6B73]">Loading perspectives...</p>
           </div>
         )}
 
         {/* Layer 3: Vertical Divider Line */}
         <div
-          className="absolute top-0 bottom-0 w-0.5 bg-[#F6F2EA] pointer-events-none z-20 shadow-[0_0_12px_rgba(255,98,87,0.7)]"
+          className="absolute top-0 bottom-0 w-0.5 bg-white pointer-events-none z-20 shadow-[0_0_10px_rgba(108,99,255,0.6)]"
           style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
         >
           {/* Central Handle Button (>=44px touch target) */}
           <div
-            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#17151D] border-2 border-[#FF6257] text-[#F6F2EA] flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.7),0_0_14px_rgba(255,98,87,0.5)] transition-transform ${
-              isDragging ? 'scale-110 shadow-[0_0_20px_rgba(255,98,87,0.8)]' : 'group-hover:scale-105'
+            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border-2 border-[#6C63FF] text-[#6C63FF] flex items-center justify-center shadow-lg transition-transform ${
+              isDragging ? 'scale-110 shadow-xl' : 'group-hover:scale-105'
             }`}
           >
             {/* Split Arrows Indicator */}
-            <div className="flex items-center gap-1 text-[#F6F2EA]">
+            <div className="flex items-center gap-1 text-[#6C63FF]">
               <span className="text-[10px] font-black">◀</span>
               <span className="text-[10px] font-black">▶</span>
             </div>
@@ -188,35 +188,35 @@ export default function SplitRealityViewer({
         {/* Perspective Label Badges */}
         {/* Left Side: The Final */}
         <div
-          className={`absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-[#17151D]/85 backdrop-blur-md border border-[#D5F36A]/40 text-[#D5F36A] text-[11px] font-bold flex items-center gap-1.5 shadow-md pointer-events-none transition-opacity duration-200 ${
+          className={`absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-[#E7E5E0] text-[#6C63FF] text-[11px] font-bold flex items-center gap-1.5 shadow-sm pointer-events-none transition-opacity duration-200 ${
             sliderPosition < 15 ? 'opacity-30' : 'opacity-100'
           }`}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#D5F36A] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#6C63FF] animate-pulse" />
           <span>✨ {primaryLabel}</span>
         </div>
 
         {/* Right Side: Behind the Reality */}
         <div
-          className={`absolute top-3 right-3 z-10 px-2.5 py-1 rounded-full bg-[#17151D]/85 backdrop-blur-md border border-[#FF6257]/40 text-[#FF6257] text-[11px] font-bold flex items-center gap-1.5 shadow-md pointer-events-none transition-opacity duration-200 ${
+          className={`absolute top-3 right-3 z-10 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-[#E7E5E0] text-[#FF6B6B] text-[11px] font-bold flex items-center gap-1.5 shadow-sm pointer-events-none transition-opacity duration-200 ${
             sliderPosition > 85 ? 'opacity-30' : 'opacity-100'
           }`}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#FF6257] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B6B] animate-pulse" />
           <span>👀 {realityLabel}</span>
         </div>
 
         {/* Interactive Reveal Guide / Position Pill (Bottom Center) */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1 rounded-full bg-[#17151D]/90 backdrop-blur-md border border-[#2D2938] text-[10px] font-semibold text-[#777580] flex items-center gap-2 pointer-events-none shadow-lg">
-          <Icon name="split" className="w-3 h-3 text-[#FF6257]" />
-          <span className="text-[#F6F2EA]">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-[#E7E5E0] text-[10px] font-semibold text-[#6B6B73] flex items-center gap-2 pointer-events-none shadow-sm">
+          <Icon name="split" className="w-3 h-3 text-[#6C63FF]" />
+          <span className="text-[#1E1E24]">
             {sliderPosition === 100
               ? 'Showing Final'
               : sliderPosition === 0
               ? 'Showing Reality'
               : `${sliderPosition}% Final`}
           </span>
-          <span className="text-[#777580] hidden sm:inline">• Slide to reveal</span>
+          <span className="text-[#6B6B73] hidden sm:inline">• Slide to reveal</span>
         </div>
       </div>
 
@@ -227,10 +227,10 @@ export default function SplitRealityViewer({
             <button
               type="button"
               onClick={() => setSliderPosition(100)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer min-h-[30px] ${
+              className={`px-3 py-1 rounded-xl text-[11px] font-bold transition-colors cursor-pointer min-h-[30px] ${
                 sliderPosition === 100
-                  ? 'bg-[#D5F36A] text-[#17151D]'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                  ? 'bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/30'
+                  : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
               }`}
             >
               ✨ Full Final
@@ -238,10 +238,10 @@ export default function SplitRealityViewer({
             <button
               type="button"
               onClick={() => setSliderPosition(50)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer min-h-[30px] ${
+              className={`px-3 py-1 rounded-xl text-[11px] font-bold transition-colors cursor-pointer min-h-[30px] ${
                 sliderPosition === 50
-                  ? 'bg-[#FF6257] text-[#17151D]'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                  ? 'bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/30'
+                  : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
               }`}
             >
               50 / 50 Split
@@ -249,18 +249,18 @@ export default function SplitRealityViewer({
             <button
               type="button"
               onClick={() => setSliderPosition(0)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer min-h-[30px] ${
+              className={`px-3 py-1 rounded-xl text-[11px] font-bold transition-colors cursor-pointer min-h-[30px] ${
                 sliderPosition === 0
-                  ? 'bg-[#FF6257] text-[#17151D]'
-                  : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+                  ? 'bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/30'
+                  : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC]'
               }`}
             >
               👀 Full Reality
             </button>
           </div>
 
-          <span className="text-[10px] text-[#777580] hidden sm:inline">
-            Drag divider or use ← → arrow keys
+          <span className="text-[10px] text-[#6B6B73] hidden sm:inline">
+            Drag divider or use ← → keys
           </span>
         </div>
       )}

@@ -1,6 +1,6 @@
 /**
- * Reusable PageHeader Component for Looply (Editorial Expression Theme)
- * High-contrast header across user and admin screens with Syne display typography.
+ * Reusable PageHeader Component for Looply (Warm Social Playground Theme)
+ * High-contrast clean header across user and admin screens with Syne display typography.
  */
 export default function PageHeader({
   title,
@@ -11,17 +11,17 @@ export default function PageHeader({
 }) {
   return (
     <div
-      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-[#2D2938] mb-6 ${className}`}
+      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-[#E7E5E0] mb-6 ${className}`}
     >
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#F6F2EA] font-display">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#1E1E24] font-display">
             {title}
           </h1>
           {badge && <div>{badge}</div>}
         </div>
         {description && (
-          <p className="mt-1 text-xs sm:text-sm text-[#777580] leading-normal">
+          <p className="mt-1 text-xs sm:text-sm text-[#6B6B73] leading-normal">
             {description}
           </p>
         )}

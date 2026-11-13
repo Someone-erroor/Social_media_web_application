@@ -10,9 +10,9 @@ import { useNotifications } from '@/context/NotificationContext';
 import { ROUTES } from '@/lib/routes';
 
 /**
- * Top Header for User Experience (Editorial Expression Theme)
- * Midnight Ink background (#17151D), high-contrast search pill, Electric Coral notification pill (#FF6257),
- * and accessible user profile dropdown with Soft Lavender (#B9A8F5) Admin Console link.
+ * Top Header for User Experience (Warm Social Playground Theme)
+ * White background (#FFFFFF/95), search pill, notification pill with warm coral (#FF6B6B),
+ * and clean accessible user profile dropdown with Admin Console link.
  */
 export default function UserHeader() {
   const { user, logout } = useAuth();
@@ -59,7 +59,7 @@ export default function UserHeader() {
   const initials = getInitials(displayName);
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-[#17151D]/95 backdrop-blur-md border-b border-[#2D2938]">
+    <header className="sticky top-0 z-20 w-full bg-white/95 backdrop-blur-md border-b border-[#E7E5E0]">
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Mobile Logo: links strictly to Feed */}
         <div className="md:hidden flex items-center">
@@ -70,10 +70,10 @@ export default function UserHeader() {
         <div className="flex-1 max-w-md hidden sm:block">
           <Link
             href={ROUTES.USER.EXPLORE}
-            className="flex items-center gap-2.5 w-full rounded-full border border-[#2D2938] bg-[#1E1B26] hover:bg-[#24202E] hover:border-[#FF6257] px-4 py-1.5 text-xs text-[#777580] hover:text-[#F6F2EA] transition-all shadow-inner group"
+            className="flex items-center gap-2.5 w-full rounded-full border border-[#E7E5E0] bg-[#F8F7F4] hover:bg-[#F1F0EC] hover:border-[#6C63FF]/40 px-4 py-1.5 text-xs text-[#6B6B73] hover:text-[#1E1E24] transition-all shadow-inner group"
           >
-            <Icon name="search" className="w-4 h-4 text-[#FF6257] group-hover:scale-110 transition-transform" />
-            <span className="font-medium">Explore posts, topics, and community creators...</span>
+            <Icon name="search" className="w-4 h-4 text-[#6C63FF] group-hover:scale-110 transition-transform" />
+            <span className="font-medium">Explore posts, topics, and creators...</span>
           </Link>
         </div>
 
@@ -82,26 +82,26 @@ export default function UserHeader() {
           {/* Admin Activity Shortcut Button */}
           <Link
             href={ROUTES.ADMIN.DASHBOARD}
-            className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[#B9A8F5] bg-[#1E1B26] border border-[#B9A8F5]/40 hover:bg-[#B9A8F5] hover:text-[#17151D] transition-all shadow-xs"
+            className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[#6C63FF] bg-[#EEEAFE] border border-[#6C63FF]/20 hover:bg-[#6C63FF] hover:text-white transition-all shadow-xs"
             title="Looply Platform Administration Console"
           >
-            <Icon name="shield" className="w-3.5 h-3.5 shrink-0 text-[#B9A8F5] group-hover:text-[#17151D] transition-colors" />
+            <Icon name="shield" className="w-3.5 h-3.5 shrink-0 text-[#6C63FF] group-hover:text-white transition-colors" />
             <span className="hidden sm:inline">Admin</span>
             {user?.role === 'admin' ? (
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D5F36A] group-hover:bg-[#17151D] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4CAF78] group-hover:bg-white animate-pulse" />
             ) : (
-              <span className="text-[10px] text-[#777580] group-hover:text-[#17151D] font-mono">Portal</span>
+              <span className="text-[10px] text-[#6B6B73] group-hover:text-white/80 font-mono">Portal</span>
             )}
           </Link>
 
           <Link
             href={ROUTES.USER.NOTIFICATIONS}
-            className="p-2 rounded-full text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26] transition-colors relative"
+            className="p-2 rounded-full text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC] transition-colors relative"
             aria-label="View notifications"
           >
             <Icon name="notifications" className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-[#FF6257] rounded-full animate-badge-pulse shadow-xs shadow-[#FF6257]/50">
+              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-[#FF6B6B] rounded-full animate-badge-pulse shadow-xs">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
@@ -112,7 +112,7 @@ export default function UserHeader() {
             <button
               type="button"
               onClick={() => setDropdownOpen((prev) => !prev)}
-              className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#FF6257]/40 focus:outline-none focus:ring-2 focus:ring-[#FF6257] transition-all min-w-[28px] min-h-[28px]"
+              className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#6C63FF]/30 focus:outline-none focus:ring-2 focus:ring-[#6C63FF] transition-all min-w-[28px] min-h-[28px] cursor-pointer"
               aria-label={`${initials} - ${displayName} Menu`}
               aria-haspopup="menu"
               aria-expanded={dropdownOpen}
@@ -122,14 +122,14 @@ export default function UserHeader() {
 
             {dropdownOpen && (
               <div
-                className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-2xl shadow-black/80 py-1.5 z-50 animate-fade-in"
+                className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-[#E7E5E0] shadow-xl py-1.5 z-50 animate-fade-in"
                 role="menu"
                 aria-label="User profile menu"
               >
                 {/* User Identity Banner */}
-                <div className="px-3.5 py-2.5 border-b border-[#2D2938]">
-                  <p className="text-xs font-bold text-[#F6F2EA] truncate">{displayName}</p>
-                  <p className="text-[11px] text-[#777580] truncate font-mono">
+                <div className="px-3.5 py-2.5 border-b border-[#E7E5E0]">
+                  <p className="text-xs font-bold text-[#1E1E24] truncate">{displayName}</p>
+                  <p className="text-[11px] text-[#6B6B73] truncate font-mono">
                     {user ? `@${user.email?.split('@')[0]}` : 'Active Session'}
                   </p>
                 </div>
@@ -139,30 +139,40 @@ export default function UserHeader() {
                   <Link
                     href={ROUTES.USER.PROFILE}
                     onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#777580] hover:text-[#F6F2EA] hover:bg-[#24202E] transition-colors"
+                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC] transition-colors"
                     role="menuitem"
                   >
-                    <Icon name="profile" className="w-4 h-4 text-[#FF6257]" />
+                    <Icon name="profile" className="w-4 h-4 text-[#6C63FF]" />
                     <span>My Profile</span>
+                  </Link>
+
+                  <Link
+                    href={ROUTES.USER.PLAY}
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC] transition-colors"
+                    role="menuitem"
+                  >
+                    <Icon name="play" className="w-4 h-4 text-[#FFD166]" />
+                    <span>Play Arcade</span>
                   </Link>
 
                   <Link
                     href={ROUTES.USER.EXPERIENCES}
                     onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#777580] hover:text-[#F6F2EA] hover:bg-[#24202E] transition-colors"
+                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC] transition-colors"
                     role="menuitem"
                   >
-                    <Icon name="experiences" className="w-4 h-4 text-[#FF6257]" />
+                    <Icon name="experiences" className="w-4 h-4 text-[#6C63FF]" />
                     <span>Experiences Hub</span>
                   </Link>
 
                   <Link
                     href={ROUTES.USER.SETTINGS}
                     onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#777580] hover:text-[#F6F2EA] hover:bg-[#24202E] transition-colors"
+                    className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F1F0EC] transition-colors"
                     role="menuitem"
                   >
-                    <Icon name="settings" className="w-4 h-4 text-[#FF6257]" />
+                    <Icon name="settings" className="w-4 h-4 text-[#6B6B73]" />
                     <span>Settings</span>
                   </Link>
 
@@ -171,14 +181,14 @@ export default function UserHeader() {
                     <Link
                       href={ROUTES.ADMIN.DASHBOARD}
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-[#B9A8F5] hover:bg-[#24202E] transition-colors border-t border-[#2D2938]/60"
+                      className="flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-[#6C63FF] hover:bg-[#EEEAFE] transition-colors border-t border-[#E7E5E0]"
                       role="menuitem"
                     >
                       <span className="flex items-center gap-2.5">
-                        <Icon name="shield" className="w-4 h-4 text-[#B9A8F5]" />
+                        <Icon name="shield" className="w-4 h-4 text-[#6C63FF]" />
                         Admin Console
                       </span>
-                      <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-[#B9A8F5]/15 text-[#B9A8F5] border border-[#B9A8F5]/30">
+                      <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/20">
                         Admin
                       </span>
                     </Link>
@@ -186,17 +196,17 @@ export default function UserHeader() {
                 </div>
 
                 {/* Sign Out Action */}
-                <div className="pt-1 border-t border-[#2D2938]">
+                <div className="pt-1 border-t border-[#E7E5E0]">
                   <button
                     type="button"
                     onClick={() => {
                       setDropdownOpen(false);
                       logout();
                     }}
-                    className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#FF6257] hover:bg-[#FF6257]/10 transition-colors text-left font-medium"
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#FF6B6B] hover:bg-[#FFEAEA] transition-colors text-left font-semibold cursor-pointer"
                     role="menuitem"
                   >
-                    <Icon name="close" className="w-4 h-4 text-[#FF6257]" />
+                    <Icon name="close" className="w-4 h-4 text-[#FF6B6B]" />
                     <span>Sign Out</span>
                   </button>
                 </div>

@@ -26,11 +26,10 @@ export default function ExperiencesPage() {
       name: 'Split-Reality Posts',
       category: 'signature',
       categoryLabel: 'Signature Experience',
-      badgeVariant: 'coral',
+      badgeVariant: 'primary',
       icon: 'split',
-      iconColor: 'text-[#FF6257]',
-      iconBg: 'bg-[#FF6257]/15',
-      borderColor: 'hover:border-[#FF6257]/50',
+      iconColor: 'text-[#6C63FF]',
+      iconBg: 'bg-[#EEEAFE]',
       description:
         'Reveal two connected perspectives of the same moment: the polished final result on one side and the raw, authentic behind-the-scenes reality on the other.',
       status: 'Available Now',
@@ -49,114 +48,25 @@ export default function ExperiencesPage() {
       highlight: 'Interactive slider reveal'
     },
     {
-      id: 'time-capsule',
-      name: 'Time Capsules',
-      category: 'moments',
-      categoryLabel: 'Moments & Vaults',
-      badgeVariant: 'lavender',
-      icon: 'vault',
-      iconColor: 'text-[#B9A8F5]',
-      iconBg: 'bg-[#B9A8F5]/15',
-      borderColor: 'hover:border-[#B9A8F5]/50',
-      description:
-        'Seal thoughts, photos, and messages into future time vaults. Set a release date with automated countdowns and share unlocking moments with friends.',
-      status: 'Active Experience',
-      statusType: 'available',
-      primaryAction: {
-        label: 'Open Vaults',
-        href: ROUTES.USER.TIME_CAPSULE,
-        variant: 'secondary'
-      },
-      featured: false,
-      highlight: 'Automated countdown unlock'
-    },
-    {
-      id: 'circles',
-      name: 'Circles & Communities',
-      category: 'spaces',
-      categoryLabel: 'Spaces & Social',
-      badgeVariant: 'lime',
-      icon: 'circles',
-      iconColor: 'text-[#D5F36A]',
-      iconBg: 'bg-[#D5F36A]/15',
-      borderColor: 'hover:border-[#D5F36A]/50',
-      description:
-        'Connect in topic-focused community hubs. Join dedicated circles around technology, arts, gaming, science, and design with focused discussion streams.',
-      status: 'Active Communities',
-      statusType: 'available',
-      primaryAction: {
-        label: 'Explore Circles',
-        href: ROUTES.USER.CIRCLES,
-        variant: 'secondary'
-      },
-      featured: false,
-      highlight: 'Topic-curated networks'
-    },
-    {
       id: 'play',
-      name: 'Looply Play & Challenges',
+      name: 'Looply Play & Games',
       category: 'interactive',
       categoryLabel: 'Interactive & Play',
-      badgeVariant: 'coral',
+      badgeVariant: 'yellow',
       icon: 'play',
-      iconColor: 'text-[#FF6257]',
-      iconBg: 'bg-[#FF6257]/15',
-      borderColor: 'hover:border-[#FF6257]/50',
+      iconColor: 'text-[#B28200]',
+      iconBg: 'bg-[#FFF7E0]',
       description:
         'Spark playful banter and test your connections with friendly social games: "Who Knows Me?", "Two Truths & a Lie", "Emoji Riddles", and "Picture Mysteries".',
-      status: 'Active Games',
+      status: 'Active Arcade',
       statusType: 'available',
       primaryAction: {
-        label: 'Play Games',
+        label: 'Play Arcade',
         href: ROUTES.USER.PLAY,
-        variant: 'secondary'
+        variant: 'yellow'
       },
       featured: false,
-      highlight: 'Social mini-games'
-    },
-    {
-      id: 'events',
-      name: 'Global Mystery Events',
-      category: 'interactive',
-      categoryLabel: 'Interactive & Play',
-      badgeVariant: 'lavender',
-      icon: 'events',
-      iconColor: 'text-[#B9A8F5]',
-      iconBg: 'bg-[#B9A8F5]/15',
-      borderColor: 'hover:border-[#B9A8F5]/50',
-      description:
-        'Engage in platform-wide mystery solving. Crack community riddles, piece together clues with fellow creators, and climb the real-time event leaderboard.',
-      status: 'Live Events',
-      statusType: 'available',
-      primaryAction: {
-        label: 'Join Mystery',
-        href: ROUTES.USER.EVENTS,
-        variant: 'secondary'
-      },
-      featured: false,
-      highlight: 'Platform-wide riddles'
-    },
-    {
-      id: 'memories',
-      name: 'Friendship Memories',
-      category: 'moments',
-      categoryLabel: 'Moments & Vaults',
-      badgeVariant: 'lime',
-      icon: 'heart',
-      iconColor: 'text-[#D5F36A]',
-      iconBg: 'bg-[#D5F36A]/15',
-      borderColor: 'hover:border-[#D5F36A]/50',
-      description:
-        'Celebrate mutual milestones, interaction streaks, and shared conversations with mutual followers directly on creator and friend profiles.',
-      status: 'Profile Integration',
-      statusType: 'available',
-      primaryAction: {
-        label: 'View Profile',
-        href: ROUTES.USER.PROFILE,
-        variant: 'secondary'
-      },
-      featured: false,
-      highlight: 'Milestones & streaks'
+      highlight: '4 social game modes'
     },
     {
       id: 'mood-orbit',
@@ -165,9 +75,8 @@ export default function ExperiencesPage() {
       categoryLabel: 'Spaces & Social',
       badgeVariant: 'lime',
       icon: 'sparkles',
-      iconColor: 'text-[#D5F36A]',
-      iconBg: 'bg-[#D5F36A]/15',
-      borderColor: 'hover:border-[#D5F36A]/50',
+      iconColor: 'text-[#2E7D4E]',
+      iconBg: 'bg-[#E8F7EE]',
       description:
         'Cozy, temporary atmospheric spaces tailored to creative, curious, or chill vibes with live presence and friendly conversation.',
       status: 'Live Atmospheric Rooms',
@@ -181,15 +90,56 @@ export default function ExperiencesPage() {
       highlight: 'Real-time presence & prompts'
     },
     {
+      id: 'time-capsule',
+      name: 'Time Capsules',
+      category: 'moments',
+      categoryLabel: 'Moments & Vaults',
+      badgeVariant: 'lavender',
+      icon: 'vault',
+      iconColor: 'text-[#6C63FF]',
+      iconBg: 'bg-[#EEEAFE]',
+      description:
+        'Seal thoughts, photos, and messages into future time vaults. Set a release date with automated countdowns and share unlocking moments with friends.',
+      status: 'Active Vaults',
+      statusType: 'available',
+      primaryAction: {
+        label: 'Open Vaults',
+        href: ROUTES.USER.TIME_CAPSULE,
+        variant: 'outline'
+      },
+      featured: false,
+      highlight: 'Automated countdown unlock'
+    },
+    {
+      id: 'circles',
+      name: 'Circles & Communities',
+      category: 'spaces',
+      categoryLabel: 'Spaces & Social',
+      badgeVariant: 'lime',
+      icon: 'circles',
+      iconColor: 'text-[#2E7D4E]',
+      iconBg: 'bg-[#E8F7EE]',
+      description:
+        'Connect in topic-focused community hubs. Join dedicated circles around technology, arts, gaming, science, and design with focused discussion streams.',
+      status: 'Active Communities',
+      statusType: 'available',
+      primaryAction: {
+        label: 'Explore Circles',
+        href: ROUTES.USER.CIRCLES,
+        variant: 'outline'
+      },
+      featured: false,
+      highlight: 'Topic-curated networks'
+    },
+    {
       id: 'feed-heists',
       name: 'Community Quests & Heists',
       category: 'interactive',
       categoryLabel: 'Interactive & Play',
       badgeVariant: 'coral',
       icon: 'key',
-      iconColor: 'text-[#FF6257]',
-      iconBg: 'bg-[#FF6257]/15',
-      borderColor: 'hover:border-[#FF6257]/50',
+      iconColor: 'text-[#FF6B6B]',
+      iconBg: 'bg-[#FFEAEA]',
       description:
         'Collaborative, time-sensitive community mysteries where friends team up to unlock secret clues and crack hidden codes together.',
       status: 'Active Quests',
@@ -201,6 +151,48 @@ export default function ExperiencesPage() {
       },
       featured: false,
       highlight: 'Team mystery solving'
+    },
+    {
+      id: 'events',
+      name: 'Global Mystery Events',
+      category: 'interactive',
+      categoryLabel: 'Interactive & Play',
+      badgeVariant: 'lavender',
+      icon: 'events',
+      iconColor: 'text-[#6C63FF]',
+      iconBg: 'bg-[#EEEAFE]',
+      description:
+        'Engage in platform-wide mystery solving. Crack community riddles, piece together clues with fellow creators, and climb the real-time event leaderboard.',
+      status: 'Live Events',
+      statusType: 'available',
+      primaryAction: {
+        label: 'Join Mystery',
+        href: ROUTES.USER.EVENTS,
+        variant: 'outline'
+      },
+      featured: false,
+      highlight: 'Platform-wide riddles'
+    },
+    {
+      id: 'memories',
+      name: 'Friendship Memories',
+      category: 'moments',
+      categoryLabel: 'Moments & Vaults',
+      badgeVariant: 'coral',
+      icon: 'heart',
+      iconColor: 'text-[#FF6B6B]',
+      iconBg: 'bg-[#FFEAEA]',
+      description:
+        'Celebrate mutual milestones, interaction streaks, and shared conversations with mutual followers directly on creator and friend profiles.',
+      status: 'Profile Integration',
+      statusType: 'available',
+      primaryAction: {
+        label: 'View Profile',
+        href: ROUTES.USER.PROFILE,
+        variant: 'outline'
+      },
+      featured: false,
+      highlight: 'Milestones & streaks'
     }
   ];
 
@@ -218,8 +210,8 @@ export default function ExperiencesPage() {
         title="Your Looply Experiences"
         description="Discover interactive social formats, creative signature posts, and community spaces beyond ordinary scrolling."
         badge={
-          <Badge variant="coral" size="sm">
-            Interactive Hub
+          <Badge variant="primary" size="sm">
+            Experiences Hub
           </Badge>
         }
       />
@@ -227,42 +219,37 @@ export default function ExperiencesPage() {
       {/* Featured Signature Experience Banner */}
       {featuredExperience && (selectedCategory === 'all' || selectedCategory === 'signature') && (
         <section aria-labelledby="featured-experience-heading" className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF6257] via-[#B9A8F5] to-[#D5F36A] rounded-3xl opacity-20 group-hover:opacity-35 blur-md transition duration-500 pointer-events-none" />
-          
-          <div className="relative rounded-2xl bg-[#1E1B26] border border-[#FF6257]/40 p-6 sm:p-7 shadow-2xl overflow-hidden">
-            {/* Background Accent Mesh */}
-            <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-[#FF6257]/10 rounded-full blur-3xl pointer-events-none" />
-            
+          <div className="relative rounded-2xl bg-gradient-to-r from-[#EEEAFE] via-white to-[#FFF7E0] border border-[#6C63FF]/30 p-6 sm:p-7 shadow-xs overflow-hidden">
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-3 max-w-xl">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="coral" size="sm">
+                  <Badge variant="primary" size="sm">
                     Signature Experience
                   </Badge>
-                  <span className="text-[11px] font-mono text-[#D5F36A]">
+                  <span className="text-[11px] font-mono text-[#6C63FF]">
                     • Interactive Dual-Perspective
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FF6257]/15 border border-[#FF6257]/30 flex items-center justify-center text-[#FF6257] shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-[#6C63FF]/30 flex items-center justify-center text-[#6C63FF] shrink-0 shadow-2xs">
                     <Icon name="split" className="w-5 h-5" />
                   </div>
                   <h2
                     id="featured-experience-heading"
-                    className="text-lg sm:text-xl font-black text-[#F6F2EA] font-display"
+                    className="text-lg sm:text-xl font-black text-[#1E1E24] font-display"
                   >
                     {featuredExperience.name}
                   </h2>
                 </div>
 
-                <p className="text-xs sm:text-sm text-[#777580] leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#6B6B73] leading-relaxed">
                   {featuredExperience.description}
                 </p>
 
-                <p className="text-[11px] text-[#A8A5B2] flex items-center gap-1.5 pt-1">
-                  <Icon name="info" className="w-3.5 h-3.5 text-[#FF6257] shrink-0" />
-                  <span>Available directly inside the post creation drawer on your Home Feed.</span>
+                <p className="text-[11px] text-[#6B6B73] flex items-center gap-1.5 pt-1">
+                  <Icon name="info" className="w-3.5 h-3.5 text-[#6C63FF] shrink-0" />
+                  <span>Available directly inside the post creation drawer on your Community Feed.</span>
                 </p>
               </div>
 
@@ -270,7 +257,7 @@ export default function ExperiencesPage() {
               <div className="flex flex-row md:flex-col sm:items-stretch gap-2.5 w-full md:w-auto shrink-0">
                 <Button
                   href={featuredExperience.primaryAction.href}
-                  variant={featuredExperience.primaryAction.variant}
+                  variant="primary"
                   size="md"
                   className="flex-1 md:flex-none justify-center"
                 >
@@ -280,7 +267,7 @@ export default function ExperiencesPage() {
                 {featuredExperience.secondaryAction && (
                   <Button
                     href={featuredExperience.secondaryAction.href}
-                    variant={featuredExperience.secondaryAction.variant}
+                    variant="outline"
                     size="md"
                     className="flex-1 md:flex-none justify-center"
                   >
@@ -294,7 +281,7 @@ export default function ExperiencesPage() {
       )}
 
       {/* Category Filter Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="Experience Categories">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="Experience Categories">
         {CATEGORIES.map((cat) => {
           const isSelected = selectedCategory === cat.id;
           return (
@@ -304,10 +291,10 @@ export default function ExperiencesPage() {
               role="tab"
               aria-selected={isSelected}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                 isSelected
-                  ? 'bg-[#FF6257] text-[#17151D] shadow-md shadow-[#FF6257]/20 font-bold'
-                  : 'bg-[#1E1B26] text-[#777580] hover:text-[#F6F2EA] hover:bg-[#24202E] border border-[#2D2938]'
+                  ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+                  : 'bg-white text-[#6B6B73] hover:text-[#1E1E24] border border-[#E7E5E0]'
               }`}
             >
               {cat.label}
@@ -317,27 +304,21 @@ export default function ExperiencesPage() {
       </div>
 
       {/* Experience Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {filteredExperiences
           .filter((exp) => selectedCategory !== 'all' || !exp.featured)
           .map((exp) => {
-            const isFuture = exp.statusType === 'future';
-
             return (
               <Card
                 key={exp.id}
-                className={`flex flex-col justify-between transition-all duration-200 border ${
-                  isFuture
-                    ? 'border-[#2D2938]/60 bg-[#17151D]/80 opacity-75'
-                    : `border-[#2D2938] hover:border-[#FF6257]/40 bg-[#1E1B26] hover:bg-[#201D29] hover:-translate-y-0.5 shadow-sm hover:shadow-lg`
-                }`}
+                className="flex flex-col justify-between transition-all duration-200 border border-[#E7E5E0] bg-white hover:border-[#6C63FF]/40 shadow-xs hover:shadow-sm"
               >
                 <CardContent className="p-5 flex flex-col h-full justify-between space-y-4">
                   <div className="space-y-3">
                     {/* Header: Icon & Category Badge */}
                     <div className="flex items-start justify-between gap-2">
                       <div
-                        className={`w-10 h-10 rounded-xl ${exp.iconBg} border border-white/5 flex items-center justify-center ${exp.iconColor} shrink-0`}
+                        className={`w-10 h-10 rounded-xl ${exp.iconBg} border border-[#E7E5E0] flex items-center justify-center ${exp.iconColor} shrink-0`}
                       >
                         <Icon name={exp.icon} className="w-5 h-5" />
                       </div>
@@ -348,41 +329,34 @@ export default function ExperiencesPage() {
 
                     {/* Title & Highlight */}
                     <div>
-                      <h3 className="text-sm sm:text-base font-bold text-[#F6F2EA] font-display">
+                      <h3 className="text-sm sm:text-base font-bold text-[#1E1E24] font-display">
                         {exp.name}
                       </h3>
-                      <p className="text-[10px] uppercase tracking-wider font-mono text-[#777580] mt-0.5">
+                      <p className="text-[10px] uppercase tracking-wider font-mono text-[#6B6B73] mt-0.5">
                         {exp.highlight}
                       </p>
                     </div>
 
                     {/* Description */}
-                    <p className="text-xs text-[#777580] leading-relaxed">
+                    <p className="text-xs text-[#6B6B73] leading-relaxed">
                       {exp.description}
                     </p>
                   </div>
 
                   {/* Primary CTA */}
-                  <div className="pt-2 border-t border-[#2D2938]/60">
-                    {isFuture ? (
-                      <div className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-[#24202E] text-[#777580] border border-[#2D2938] select-none">
-                        <span className="font-medium text-[11px]">Feature In Development</span>
-                        <span className="text-[10px] uppercase font-bold text-[#D5F36A]">Coming Next</span>
-                      </div>
-                    ) : (
-                      <Button
-                        href={exp.primaryAction.href}
-                        variant={exp.primaryAction.variant || 'secondary'}
-                        size="sm"
-                        className="w-full justify-between group"
-                      >
-                        <span>{exp.primaryAction.label}</span>
-                        <Icon
-                          name="chevronRight"
-                          className="w-4 h-4 text-[#777580] group-hover:text-current group-hover:translate-x-0.5 transition-all"
-                        />
-                      </Button>
-                    )}
+                  <div className="pt-2 border-t border-[#E7E5E0]">
+                    <Button
+                      href={exp.primaryAction.href}
+                      variant={exp.primaryAction.variant || 'outline'}
+                      size="sm"
+                      className="w-full justify-between group"
+                    >
+                      <span>{exp.primaryAction.label}</span>
+                      <Icon
+                        name="chevronRight"
+                        className="w-4 h-4 text-[#6B6B73] group-hover:text-current group-hover:translate-x-0.5 transition-all"
+                      />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -391,12 +365,12 @@ export default function ExperiencesPage() {
       </div>
 
       {/* Footer Context / Philosophy Card */}
-      <div className="p-5 rounded-2xl bg-[#17151D] border border-[#2D2938] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-[#F8F7F4] border border-[#E7E5E0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <p className="text-xs font-bold text-[#F6F2EA] font-display">
+          <p className="text-xs font-bold text-[#1E1E24] font-display">
             Purpose-Driven Social Experiences
           </p>
-          <p className="text-[11px] text-[#777580] leading-relaxed">
+          <p className="text-[11px] text-[#6B6B73] leading-relaxed">
             Looply separates interactive game formats, time vaults, and community spaces from your primary feed so your social timeline stays focused on genuine creator content.
           </p>
         </div>
@@ -412,4 +386,3 @@ export default function ExperiencesPage() {
     </div>
   );
 }
-

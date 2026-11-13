@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, use } from 'react';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
 import Card, { CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -127,8 +126,8 @@ export default function HeistMissionConsolePage({ params }) {
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse p-4">
-        <div className="h-20 bg-[#1E1B26] rounded-2xl border border-[#2D2938]" />
-        <div className="h-64 bg-[#1E1B26] rounded-2xl border border-[#2D2938]" />
+        <div className="h-20 bg-white rounded-2xl border border-[#E7E5E0] shadow-xs" />
+        <div className="h-64 bg-white rounded-2xl border border-[#E7E5E0] shadow-xs" />
       </div>
     );
   }
@@ -136,11 +135,11 @@ export default function HeistMissionConsolePage({ params }) {
   if (error && !heist) {
     return (
       <div className="p-8 text-center space-y-4">
-        <div className="w-12 h-12 rounded-full bg-[#FF6257]/15 text-[#FF6257] mx-auto flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full bg-[#FFEAEA] text-[#FF6B6B] mx-auto flex items-center justify-center">
           <Icon name="alertCircle" className="w-6 h-6" />
         </div>
-        <h2 className="text-lg font-bold text-[#F6F2EA]">Mission Access Denied</h2>
-        <p className="text-xs text-[#777580]">{error}</p>
+        <h2 className="text-lg font-bold text-[#1E1E24]">Mission Access Denied</h2>
+        <p className="text-xs text-[#6B6B73]">{error}</p>
         <Link href={ROUTES.USER.HEISTS}>
           <Button variant="outline" size="sm">
             Back to Heists Directory
@@ -157,10 +156,10 @@ export default function HeistMissionConsolePage({ params }) {
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center justify-between text-xs text-[#777580]">
+      <div className="flex items-center justify-between text-xs text-[#6B6B73]">
         <Link
           href={ROUTES.USER.HEISTS}
-          className="inline-flex items-center gap-1.5 hover:text-[#FF6257] transition-colors"
+          className="inline-flex items-center gap-1.5 hover:text-[#FF6B6B] transition-colors font-medium"
         >
           <Icon name="arrowLeft" className="w-3.5 h-3.5" />
           <span>All Community Quests</span>
@@ -169,7 +168,7 @@ export default function HeistMissionConsolePage({ params }) {
         <button
           type="button"
           onClick={() => setShowReportModal(true)}
-          className="inline-flex items-center gap-1 hover:text-[#FF6257] transition-colors"
+          className="inline-flex items-center gap-1 hover:text-[#FF6B6B] transition-colors cursor-pointer"
         >
           <Icon name="flag" className="w-3.5 h-3.5" />
           <span>Report Quest</span>
@@ -177,35 +176,35 @@ export default function HeistMissionConsolePage({ params }) {
       </div>
 
       {reportSuccess && (
-        <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between">
+        <div className="p-3.5 rounded-2xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] flex items-center justify-between font-medium">
           <span>{reportSuccess}</span>
-          <button type="button" onClick={() => setReportSuccess('')} className="font-bold">✕</button>
+          <button type="button" onClick={() => setReportSuccess('')} className="font-bold cursor-pointer">✕</button>
         </div>
       )}
 
       {/* Quest Banner & Header */}
-      <Card className="bg-[#1E1B26] border-[#2D2938] overflow-hidden">
+      <Card className="bg-white border-[#E7E5E0] overflow-hidden shadow-xs">
         <div className="p-6 sm:p-8 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30">
+              <span className="p-2 rounded-xl bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/20">
                 <Icon name="key" className="w-5 h-5" />
               </span>
-              <Badge variant={isCompleted ? 'success' : isExpired ? 'neutral' : 'coral'} size="sm">
+              <Badge variant={isCompleted ? 'primary' : isExpired ? 'neutral' : 'coral'} size="sm">
                 {isCompleted ? 'SOLVED' : isExpired ? 'ARCHIVED' : 'ACTIVE QUEST'}
               </Badge>
-              <span className="text-xs font-mono uppercase text-[#D5F36A]">
+              <span className="text-xs font-semibold uppercase text-[#6C63FF]">
                 {heist.heistType?.replace(/_/g, ' ')}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="text-[#777580] flex items-center gap-1">
-                <Icon name="users" className="w-4 h-4 text-[#D5F36A]" />
+            <div className="flex items-center gap-2 text-xs font-medium">
+              <span className="text-[#6B6B73] flex items-center gap-1">
+                <Icon name="users" className="w-4 h-4 text-[#6C63FF]" />
                 {heist.participantsCount} Adventurers
               </span>
-              <span className="text-[#2D2938]">•</span>
-              <span className="text-[#FF6257] flex items-center gap-1">
+              <span className="text-[#E7E5E0]">•</span>
+              <span className="text-[#FF6B6B] flex items-center gap-1 font-semibold">
                 <Icon name="clock" className="w-4 h-4" />
                 {isCompleted ? 'Quest Solved' : isExpired ? 'Expired' : 'Active Countdown'}
               </span>
@@ -213,16 +212,16 @@ export default function HeistMissionConsolePage({ params }) {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-[#F6F2EA] font-display tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1E24] tracking-tight">
               {heist.title}
             </h1>
-            <p className="text-xs sm:text-sm text-[#777580] leading-relaxed max-w-2xl">
+            <p className="text-xs sm:text-sm text-[#6B6B73] leading-relaxed max-w-2xl">
               {heist.shortDescription}
             </p>
           </div>
 
           {/* Participant State */}
-          <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[#2D2938]">
+          <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[#E7E5E0]">
             <div className="flex items-center gap-2.5">
               <Avatar
                 name={heist.creator?.fullName || 'Creator'}
@@ -230,15 +229,15 @@ export default function HeistMissionConsolePage({ params }) {
                 size="sm"
               />
               <div className="text-xs">
-                <span className="text-[#777580] block text-[10px]">Quest Host</span>
-                <span className="text-[#F6F2EA] font-semibold">{heist.creator?.fullName || 'Community Friend'}</span>
+                <span className="text-[#6B6B73] block text-[10px]">Quest Host</span>
+                <span className="text-[#1E1E24] font-semibold">{heist.creator?.fullName || 'Community Friend'}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               {heist.isParticipant ? (
                 <>
-                  <span className="px-3 py-1.5 rounded-xl bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30 text-xs font-semibold flex items-center gap-1.5">
+                  <span className="px-3 py-1.5 rounded-xl bg-[#E8F7EE] text-[#2E7D4E] border border-[#4CAF78]/30 text-xs font-semibold flex items-center gap-1.5">
                     <Icon name="check" className="w-3.5 h-3.5" />
                     Joined Quest
                   </span>
@@ -246,7 +245,7 @@ export default function HeistMissionConsolePage({ params }) {
                     <button
                       type="button"
                       onClick={handleLeave}
-                      className="px-3 py-1.5 rounded-xl text-xs text-[#777580] hover:text-[#FF6257] hover:bg-[#17151D] transition-colors"
+                      className="px-3 py-1.5 rounded-xl text-xs text-[#6B6B73] hover:text-[#FF6B6B] hover:bg-[#F8F7F4] transition-colors cursor-pointer"
                     >
                       Leave
                     </button>
@@ -255,11 +254,11 @@ export default function HeistMissionConsolePage({ params }) {
               ) : isActive ? (
                 <Button
                   type="button"
-                  variant="primary"
+                  variant="coral"
                   size="sm"
                   onClick={handleJoin}
                   disabled={joining}
-                  icon={<Icon name="plus" className="w-4 h-4" />}
+                  icon={<Icon name="plus" className="w-4 h-4 text-white" />}
                 >
                   {joining ? 'Joining...' : 'Join Quest'}
                 </Button>
@@ -271,35 +270,35 @@ export default function HeistMissionConsolePage({ params }) {
 
       {/* Completion Debrief Banner */}
       {isCompleted && (
-        <div className="p-6 rounded-2xl bg-[#D5F36A]/10 border border-[#D5F36A]/40 text-[#F6F2EA] space-y-3 shadow-xl">
+        <div className="p-6 rounded-2xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-[#1E1E24] space-y-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <span className="p-2 rounded-xl bg-[#D5F36A] text-[#110F17] font-bold">
+            <span className="w-8 h-8 rounded-xl bg-[#4CAF78] text-white font-bold flex items-center justify-center">
               ✓
             </span>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#D5F36A] font-mono">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#2E7D4E]">
                 Mission Accomplished
               </span>
-              <h2 className="text-base font-bold">Community Objective Decrypted</h2>
+              <h2 className="text-base font-bold text-[#1E1E24]">Community Objective Decrypted</h2>
             </div>
           </div>
 
-          <p className="text-xs text-[#F6F2EA] leading-relaxed">
+          <p className="text-xs text-[#6B6B73] leading-relaxed">
             {heist.solutionSummary || 'The target cipher was broken and the mission successfully concluded.'}
           </p>
 
-          <div className="p-3 rounded-xl bg-[#110F17] border border-[#2D2938] flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="p-3 rounded-xl bg-white border border-[#E7E5E0] flex flex-wrap items-center justify-between gap-2 text-xs shadow-2xs">
             <div className="flex items-center gap-2">
               <Avatar
                 name={heist.solvedBy?.fullName || 'Operative'}
                 src={heist.solvedBy?.profile?.avatarUrl}
                 size="xs"
               />
-              <span className="text-[#D5F36A] font-semibold">
+              <span className="text-[#2E7D4E] font-semibold">
                 Cracked by {heist.solvedBy?.fullName || 'Fellow Operative'}
               </span>
             </div>
-            <Badge variant="lime" size="sm">
+            <Badge variant="yellow" size="sm">
               Badge: {heist.rewardBadge || 'Loop Heist Operative'}
             </Badge>
           </div>
@@ -310,60 +309,60 @@ export default function HeistMissionConsolePage({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Clue Ledger */}
         <div className="lg:col-span-2 space-y-4">
-          <Card className="bg-[#1E1B26] border-[#2D2938]">
+          <Card className="bg-white border-[#E7E5E0] shadow-xs">
             <CardHeader>
               <CardTitle>Mission Briefing &amp; Background</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-xs sm:text-sm text-[#F6F2EA] leading-relaxed whitespace-pre-wrap">
+              <p className="text-xs sm:text-sm text-[#1E1E24] leading-relaxed whitespace-pre-wrap">
                 {heist.missionPrompt}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#1E1B26] border-[#2D2938]">
+          <Card className="bg-white border-[#E7E5E0] shadow-xs">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Signal Ledger &amp; Discovered Clues</CardTitle>
-                <span className="text-[10px] font-mono text-[#D5F36A] bg-[#17151D] px-2 py-0.5 rounded border border-[#2D2938]">
+                <span className="text-[10px] font-semibold text-[#6C63FF] bg-[#EEEAFE] px-2.5 py-0.5 rounded-full border border-[#6C63FF]/20">
                   {heist.clues?.filter((c) => c.isUnlocked).length} / {heist.clues?.length || 0} Unlocked
                 </span>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
               {heist.clues?.length === 0 ? (
-                <p className="text-xs text-[#777580] italic">No specific sub-clues registered for this mission.</p>
+                <p className="text-xs text-[#6B6B73] italic">No specific sub-clues registered for this mission.</p>
               ) : (
                 heist.clues.map((clue, idx) => (
                   <div
                     key={idx}
                     className={`p-4 rounded-xl border transition-all ${
                       clue.isUnlocked
-                        ? 'bg-[#17151D] border-[#2D2938]'
-                        : 'bg-[#110F17]/60 border-[#2D2938]/40 border-dashed'
+                        ? 'bg-[#F8F7F4] border-[#E7E5E0]'
+                        : 'bg-[#F1F0EC]/60 border-[#E7E5E0] border-dashed'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className="text-[10px] font-mono font-bold uppercase text-[#FF6257]">
+                      <span className="text-[10px] font-bold uppercase text-[#FF6B6B]">
                         Signal Clue #{clue.order || idx + 1}
                       </span>
                       {clue.isUnlocked ? (
-                        <span className="text-[10px] font-mono text-[#D5F36A] flex items-center gap-1">
+                        <span className="text-[10px] font-semibold text-[#2E7D4E] flex items-center gap-1">
                           <Icon name="check" className="w-3 h-3" /> Unlocked
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono text-[#777580] flex items-center gap-1">
+                        <span className="text-[10px] text-[#6B6B73] flex items-center gap-1">
                           <Icon name="lock" className="w-3 h-3" /> Requires {clue.unlockParticipantThreshold} operatives
                         </span>
                       )}
                     </div>
 
-                    <p className={`text-xs leading-relaxed ${clue.isUnlocked ? 'text-[#F6F2EA]' : 'text-[#777580] font-mono'}`}>
+                    <p className={`text-xs leading-relaxed ${clue.isUnlocked ? 'text-[#1E1E24]' : 'text-[#6B6B73] font-mono'}`}>
                       {clue.clueText}
                     </p>
 
                     {clue.isUnlocked && clue.hint && (
-                      <p className="mt-2 text-[11px] text-[#B9A8F5] italic flex items-center gap-1">
+                      <p className="mt-2 text-[11px] text-[#6C63FF] italic flex items-center gap-1">
                         <Icon name="info" className="w-3 h-3" />
                         Hint: {clue.hint}
                       </p>
@@ -377,37 +376,37 @@ export default function HeistMissionConsolePage({ params }) {
 
         {/* Right Column: Decryption Console & Operative Roster */}
         <div className="space-y-4">
-          <Card className="bg-[#1E1B26] border-[#2D2938]">
+          <Card className="bg-white border-[#E7E5E0] shadow-xs">
             <CardHeader>
               <CardTitle>Submit Your Guess</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {isCompleted ? (
-                <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-center space-y-2">
+                <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-center space-y-2">
                   <span className="text-2xl block">🏆</span>
-                  <p className="text-xs font-bold text-[#F6F2EA]">Quest Complete</p>
-                  <p className="text-[11px] text-[#777580]">
+                  <p className="text-xs font-bold text-[#1E1E24]">Quest Complete</p>
+                  <p className="text-[11px] text-[#6B6B73]">
                     The mystery was successfully cracked and solved by the community!
                   </p>
                 </div>
               ) : isExpired ? (
-                <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-center space-y-2">
+                <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-center space-y-2">
                   <span className="text-2xl block">⌛</span>
-                  <p className="text-xs font-bold text-[#777580]">Quest Expired</p>
-                  <p className="text-[11px] text-[#777580]">
+                  <p className="text-xs font-bold text-[#6B6B73]">Quest Expired</p>
+                  <p className="text-[11px] text-[#6B6B73]">
                     The time window closed before the secret code could be cracked.
                   </p>
                 </div>
               ) : !heist.isParticipant ? (
-                <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-center space-y-3">
-                  <Icon name="key" className="w-8 h-8 text-[#FF6257] mx-auto" />
-                  <p className="text-xs text-[#F6F2EA] font-semibold">Join To Guess</p>
-                  <p className="text-[11px] text-[#777580]">
+                <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-center space-y-3">
+                  <Icon name="key" className="w-8 h-8 text-[#FF6B6B] mx-auto" />
+                  <p className="text-xs text-[#1E1E24] font-semibold">Join To Guess</p>
+                  <p className="text-[11px] text-[#6B6B73]">
                     Join this community quest to submit code guesses and help unlock secret clues!
                   </p>
                   <Button
                     type="button"
-                    variant="primary"
+                    variant="coral"
                     size="sm"
                     className="w-full"
                     onClick={handleJoin}
@@ -420,10 +419,10 @@ export default function HeistMissionConsolePage({ params }) {
                 <form onSubmit={handleSubmitAnswer} className="space-y-3">
                   {submitFeedback && (
                     <div
-                      className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${
+                      className={`p-3 rounded-xl border text-xs flex items-center gap-2 font-medium ${
                         submitFeedback.isCorrect
-                          ? 'bg-[#D5F36A]/10 border-[#D5F36A]/30 text-[#D5F36A]'
-                          : 'bg-[#FF6257]/10 border-[#FF6257]/30 text-[#FF6257]'
+                          ? 'bg-[#E8F7EE] border-[#4CAF78]/30 text-[#2E7D4E]'
+                          : 'bg-[#FF6B6B]/10 border-[#FF6B6B]/30 text-[#FF6B6B]'
                       }`}
                     >
                       <Icon
@@ -435,7 +434,7 @@ export default function HeistMissionConsolePage({ params }) {
                   )}
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-[#777580]">
+                    <label className="text-[11px] font-semibold text-[#1E1E24]">
                       Your Answer / Decrypted Code
                     </label>
                     <input
@@ -444,12 +443,12 @@ export default function HeistMissionConsolePage({ params }) {
                       value={answerInput}
                       onChange={(e) => setAnswerInput(e.target.value)}
                       placeholder="Type the solution here..."
-                      className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                      className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-[#777580]">
+                    <label className="text-[11px] font-semibold text-[#6B6B73]">
                       Methodology / Field Note (Optional)
                     </label>
                     <input
@@ -457,13 +456,13 @@ export default function HeistMissionConsolePage({ params }) {
                       value={noteInput}
                       onChange={(e) => setNoteInput(e.target.value)}
                       placeholder="How did you arrive at this solution?"
-                      className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-none focus:border-[#FF6257]"
+                      className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                     />
                   </div>
 
                   <Button
                     type="submit"
-                    variant="primary"
+                    variant="coral"
                     size="sm"
                     className="w-full"
                     disabled={submitting || !answerInput.trim()}
@@ -471,7 +470,7 @@ export default function HeistMissionConsolePage({ params }) {
                     {submitting ? 'Transmitting Signal...' : 'Transmit Decryption Attempt'}
                   </Button>
 
-                  <p className="text-[10px] text-center text-[#777580]">
+                  <p className="text-[10px] text-center text-[#6B6B73]">
                     Submissions are verified server-side against cryptographic cipher records.
                   </p>
                 </form>
@@ -480,7 +479,7 @@ export default function HeistMissionConsolePage({ params }) {
           </Card>
 
           {/* Operative Roster */}
-          <Card className="bg-[#1E1B26] border-[#2D2938]">
+          <Card className="bg-white border-[#E7E5E0] shadow-xs">
             <CardHeader>
               <CardTitle>Operative Roster ({heist.participants?.length || 0})</CardTitle>
             </CardHeader>
@@ -489,7 +488,7 @@ export default function HeistMissionConsolePage({ params }) {
                 {heist.participants?.map((p, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2 rounded-xl bg-[#17151D] border border-[#2D2938]/60 text-xs"
+                    className="flex items-center justify-between p-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs"
                   >
                     <div className="flex items-center gap-2">
                       <Avatar
@@ -497,12 +496,12 @@ export default function HeistMissionConsolePage({ params }) {
                         src={p.user?.profile?.avatarUrl}
                         size="xs"
                       />
-                      <span className="text-[#F6F2EA] font-medium text-[11px]">
+                      <span className="text-[#1E1E24] font-medium text-[11px]">
                         {p.user?.fullName || 'Operative'}
                       </span>
                     </div>
 
-                    <span className="text-[10px] font-mono text-[#777580]">
+                    <span className="text-[10px] font-mono text-[#6B6B73]">
                       {p.contributionsCount || 0} attempts
                     </span>
                   </div>
@@ -518,15 +517,15 @@ export default function HeistMissionConsolePage({ params }) {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
         >
-          <div className="w-full max-w-md bg-[#1E1B26] border border-[#2D2938] rounded-2xl p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
-              <h3 className="text-sm font-bold text-[#F6F2EA]">Report Feed Heist Mission</h3>
+          <div className="w-full max-w-md bg-white border border-[#E7E5E0] rounded-2xl p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
+              <h3 className="text-sm font-bold text-[#1E1E24]">Report Feed Heist Mission</h3>
               <button
                 type="button"
                 onClick={() => setShowReportModal(false)}
-                className="text-[#777580] hover:text-[#F6F2EA]"
+                className="text-[#6B6B73] hover:text-[#1E1E24] p-1 rounded-lg hover:bg-[#F1F0EC] cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -534,11 +533,11 @@ export default function HeistMissionConsolePage({ params }) {
 
             <form onSubmit={handleReportSubmit} className="space-y-3 text-xs">
               <div className="space-y-1">
-                <label className="text-[#777580] font-semibold">Violation Category</label>
+                <label className="text-[#1E1E24] font-semibold">Violation Category</label>
                 <select
                   value={reportCategory}
                   onChange={(e) => setReportCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                 >
                   <option value="spam">Spam / Low Quality</option>
                   <option value="harassment">Harassment / Bullying</option>
@@ -548,13 +547,13 @@ export default function HeistMissionConsolePage({ params }) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[#777580] font-semibold">Details / Context</label>
+                <label className="text-[#1E1E24] font-semibold">Details / Context</label>
                 <textarea
                   rows={3}
                   value={reportNotes}
                   onChange={(e) => setReportNotes(e.target.value)}
                   placeholder="Explain why this mission violates community guidelines..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-[#1E1E24] focus:outline-none focus:border-[#FF6B6B] focus:bg-white"
                 />
               </div>
 
@@ -567,7 +566,7 @@ export default function HeistMissionConsolePage({ params }) {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="danger" size="sm">
+                <Button type="submit" variant="coral" size="sm">
                   Submit Report
                 </Button>
               </div>
@@ -578,4 +577,3 @@ export default function HeistMissionConsolePage({ params }) {
     </div>
   );
 }
-

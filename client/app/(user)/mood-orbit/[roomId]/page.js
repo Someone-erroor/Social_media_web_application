@@ -16,40 +16,40 @@ import { ROUTES } from '@/lib/routes';
 
 const MOOD_THEMES = {
   creative: {
-    bgGradient: 'from-[#FF6257]/15 to-[#B9A8F5]/5',
-    borderColor: 'border-[#FF6257]/30',
-    accentText: 'text-[#FF6257]',
-    badgeVariant: 'coral'
+    bgGradient: 'from-[#EEEAFE] to-white',
+    borderColor: 'border-[#6C63FF]/30',
+    accentText: 'text-[#6C63FF]',
+    badgeVariant: 'primary'
   },
   curious: {
-    bgGradient: 'from-[#D5F36A]/15 to-[#1E1B26]',
-    borderColor: 'border-[#D5F36A]/30',
-    accentText: 'text-[#D5F36A]',
+    bgGradient: 'from-[#E8F7EE] to-white',
+    borderColor: 'border-[#4CAF78]/30',
+    accentText: 'text-[#2E7D4E]',
     badgeVariant: 'lime'
   },
   chill: {
-    bgGradient: 'from-[#70D6FF]/15 to-[#1E1B26]',
-    borderColor: 'border-[#70D6FF]/30',
-    accentText: 'text-[#70D6FF]',
+    bgGradient: 'from-[#E0F2FE] to-white',
+    borderColor: 'border-[#0284C7]/30',
+    accentText: 'text-[#0284C7]',
     badgeVariant: 'neutral'
   },
   energized: {
-    bgGradient: 'from-[#FF9F1C]/15 to-[#FF6257]/5',
-    borderColor: 'border-[#FF9F1C]/30',
-    accentText: 'text-[#FF9F1C]',
-    badgeVariant: 'coral'
+    bgGradient: 'from-[#FFF7E0] to-white',
+    borderColor: 'border-[#FFD166]/40',
+    accentText: 'text-[#B28200]',
+    badgeVariant: 'yellow'
   },
   focused: {
-    bgGradient: 'from-[#B9A8F5]/15 to-[#1E1B26]',
-    borderColor: 'border-[#B9A8F5]/30',
-    accentText: 'text-[#B9A8F5]',
+    bgGradient: 'from-[#EEEAFE] to-white',
+    borderColor: 'border-[#6C63FF]/30',
+    accentText: 'text-[#6C63FF]',
     badgeVariant: 'lavender'
   },
   reflective: {
-    bgGradient: 'from-[#E0AAFF]/15 to-[#1E1B26]',
-    borderColor: 'border-[#E0AAFF]/30',
-    accentText: 'text-[#E0AAFF]',
-    badgeVariant: 'lavender'
+    bgGradient: 'from-[#FFEAEA] to-white',
+    borderColor: 'border-[#FF6B6B]/30',
+    accentText: 'text-[#FF6B6B]',
+    badgeVariant: 'coral'
   }
 };
 
@@ -103,10 +103,12 @@ export default function MoodOrbitRoomPage({ params }) {
       const res = await moodOrbitService.getRoom(roomId);
       if (res?.success) {
         setRoom(res.room);
-        setMessages(res.room.messages || []);
+        setMessages(res.messages || []);
+      } else {
+        throw new Error(res?.message || 'Could not find room.');
       }
     } catch (err) {
-      setError(err.message || 'Failed to connect to Mood-Orbit space.');
+      setError(err.message || 'Error connecting to space.');
     } finally {
       setLoading(false);
     }
@@ -116,86 +118,63 @@ export default function MoodOrbitRoomPage({ params }) {
     loadRoomData();
   }, [loadRoomData]);
 
-  // Socket.IO Subscription and Live Stream Listeners
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Real-time socket presence and message subscription
   useEffect(() => {
     if (!socket || !roomId) return;
 
-    // Join room channel over socket
     socket.emit('mood_orbit:join', { roomId });
 
     const handleNewMessage = (payload) => {
       if (payload.roomId === roomId && payload.message) {
         setMessages((prev) => {
-          // Deduplicate if already present
           if (prev.some((m) => m._id === payload.message._id)) return prev;
           return [...prev, payload.message];
         });
       }
     };
 
-    const handleUserJoined = (payload) => {
-      if (payload.roomId === roomId) {
+    const handlePresenceUpdate = (payload) => {
+      if (payload.roomId === roomId && payload.participantsCount !== undefined) {
         setRoom((prev) => {
           if (!prev) return prev;
-          const exists = prev.participants?.some(
-            (p) => p.user?._id === payload.user?._id || p.user === payload.user?._id
-          );
-          if (exists) return prev;
           return {
             ...prev,
-            participants: [...(prev.participants || []), { user: payload.user, joinedAt: new Date() }],
-            participantsCount: (prev.participantsCount || 0) + 1
+            participantsCount: payload.participantsCount,
+            participants: payload.participants || prev.participants
           };
         });
       }
     };
 
-    const handleUserLeft = (payload) => {
-      if (payload.roomId === roomId) {
-        setRoom((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            participants: (prev.participants || []).filter(
-              (p) => p.user?._id !== payload.userId && p.user !== payload.userId
-            ),
-            participantsCount: Math.max(0, (prev.participantsCount || 1) - 1)
-          };
-        });
-      }
-    };
-
-    socket.on('mood_orbit:new_message', handleNewMessage);
-    socket.on('mood_orbit:user_joined', handleUserJoined);
-    socket.on('mood_orbit:user_left', handleUserLeft);
+    socket.on('mood_orbit:message', handleNewMessage);
+    socket.on('mood_orbit:presence', handlePresenceUpdate);
 
     return () => {
       socket.emit('mood_orbit:leave', { roomId });
-      socket.off('mood_orbit:new_message', handleNewMessage);
-      socket.off('mood_orbit:user_joined', handleUserJoined);
-      socket.off('mood_orbit:user_left', handleUserLeft);
+      socket.off('mood_orbit:message', handleNewMessage);
+      socket.off('mood_orbit:presence', handlePresenceUpdate);
     };
   }, [socket, roomId]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   const handleJoin = async () => {
     setJoining(true);
-    setError('');
     try {
-      await moodOrbitService.joinRoom(roomId);
-      loadRoomData();
+      const res = await moodOrbitService.joinRoom(roomId);
+      if (res?.success) {
+        setRoom(res.room);
+      }
     } catch (err) {
-      setError(err.message || 'Failed to join space.');
+      setError(err.message || 'Failed to enter space.');
     } finally {
       setJoining(false);
     }
   };
 
   const handleLeave = async () => {
-    if (!window.confirm('Leave this Mood-Orbit space?')) return;
     try {
       await moodOrbitService.leaveRoom(roomId);
       router.push(ROUTES.USER.MOOD_ORBIT);
@@ -246,8 +225,8 @@ export default function MoodOrbitRoomPage({ params }) {
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse p-4">
-        <div className="h-28 bg-[#1E1B26] rounded-2xl border border-[#2D2938]" />
-        <div className="h-96 bg-[#1E1B26] rounded-2xl border border-[#2D2938]" />
+        <div className="h-28 bg-white rounded-2xl border border-[#E7E5E0]" />
+        <div className="h-96 bg-white rounded-2xl border border-[#E7E5E0]" />
       </div>
     );
   }
@@ -255,11 +234,11 @@ export default function MoodOrbitRoomPage({ params }) {
   if (error && !room) {
     return (
       <div className="p-8 text-center space-y-4">
-        <div className="w-12 h-12 rounded-full bg-[#FF6257]/15 text-[#FF6257] mx-auto flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full bg-[#FFEAEA] text-[#FF6B6B] mx-auto flex items-center justify-center">
           <Icon name="alertCircle" className="w-6 h-6" />
         </div>
-        <h2 className="text-lg font-bold text-[#F6F2EA]">Orbit Connection Failed</h2>
-        <p className="text-xs text-[#777580]">{error}</p>
+        <h2 className="text-lg font-bold text-[#1E1E24]">Orbit Connection Failed</h2>
+        <p className="text-xs text-[#6B6B73]">{error}</p>
         <Link href={ROUTES.USER.MOOD_ORBIT}>
           <Button variant="outline" size="sm">
             Back to Mood-Orbit
@@ -275,10 +254,10 @@ export default function MoodOrbitRoomPage({ params }) {
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Top Header & Navigation Bar */}
-      <div className="flex items-center justify-between text-xs text-[#777580]">
+      <div className="flex items-center justify-between text-xs text-[#6B6B73]">
         <Link
           href={ROUTES.USER.MOOD_ORBIT}
-          className="inline-flex items-center gap-1.5 hover:text-[#D5F36A] transition-colors"
+          className="inline-flex items-center gap-1.5 hover:text-[#6C63FF] transition-colors"
         >
           <Icon name="arrowLeft" className="w-3.5 h-3.5" />
           <span>All Mood-Orbit Rooms</span>
@@ -288,15 +267,15 @@ export default function MoodOrbitRoomPage({ params }) {
           <button
             type="button"
             onClick={() => setShowReportModal(true)}
-            className="hover:text-[#FF6257] transition-colors"
+            className="hover:text-[#FF6B6B] transition-colors cursor-pointer"
           >
             Report Space
           </button>
-          {room.isParticipant && (
+          {room?.isParticipant && (
             <button
               type="button"
               onClick={handleLeave}
-              className="text-[#FF6257] hover:underline"
+              className="text-[#FF6B6B] hover:underline cursor-pointer"
             >
               Leave Space
             </button>
@@ -305,51 +284,51 @@ export default function MoodOrbitRoomPage({ params }) {
       </div>
 
       {reportSuccess && (
-        <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] flex items-center justify-between">
           <span>{reportSuccess}</span>
-          <button type="button" onClick={() => setReportSuccess('')} className="font-bold">✕</button>
+          <button type="button" onClick={() => setReportSuccess('')} className="font-bold cursor-pointer">✕</button>
         </div>
       )}
 
       {/* Atmospheric Space Banner */}
       <div
-        className={`p-6 sm:p-8 rounded-2xl bg-gradient-to-br ${moodTheme.bgGradient} bg-[#1E1B26] border ${moodTheme.borderColor} shadow-xl relative overflow-hidden space-y-4`}
+        className={`p-6 sm:p-7 rounded-2xl bg-gradient-to-br ${moodTheme.bgGradient} bg-white border ${moodTheme.borderColor} shadow-xs relative overflow-hidden space-y-4`}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#D5F36A]">
+            <span className="p-2 rounded-xl bg-white border border-[#E7E5E0] text-[#6C63FF] shadow-2xs">
               <Icon name="sparkles" className="w-5 h-5" />
             </span>
             <Badge variant={moodTheme.badgeVariant} size="sm">
-              {room.mood?.toUpperCase()} ORBIT
+              {room?.mood?.toUpperCase()} ORBIT
             </Badge>
-            <span className="text-xs font-mono text-[#777580]">
-              {formatCountdown(room.expiresAt)}
+            <span className="text-xs font-mono text-[#6B6B73]">
+              {formatCountdown(room?.expiresAt)}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-[#17151D] border border-[#2D2938] text-[#F6F2EA]">
-              <span className="w-2 h-2 rounded-full bg-[#D5F36A] animate-pulse" />
-              {room.participantsCount || 0} / {room.maxParticipants} Active
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-white border border-[#E7E5E0] text-[#1E1E24] shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#4CAF78] animate-pulse" />
+              {room?.participantsCount || 0} / {room?.maxParticipants} Active
             </span>
           </div>
         </div>
 
         <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-black text-[#F6F2EA] font-display tracking-tight">
-            {room.name}
+          <h1 className="text-2xl sm:text-3xl font-black text-[#1E1E24] font-display tracking-tight">
+            {room?.name}
           </h1>
-          <p className="text-xs sm:text-sm text-[#777580] leading-relaxed max-w-2xl">
-            {room.intention}
+          <p className="text-xs sm:text-sm text-[#6B6B73] leading-relaxed max-w-2xl">
+            {room?.intention}
           </p>
         </div>
 
         {/* Room Prompt Card */}
-        {room.prompt && (
-          <div className="p-3.5 rounded-xl bg-[#17151D]/90 border border-[#2D2938] flex items-center gap-3">
-            <Icon name="info" className="w-4 h-4 text-[#D5F36A] shrink-0" />
-            <p className="text-xs text-[#F6F2EA] italic">
+        {room?.prompt && (
+          <div className="p-3.5 rounded-xl bg-white/90 border border-[#E7E5E0] flex items-center gap-3 shadow-2xs">
+            <Icon name="info" className="w-4 h-4 text-[#6C63FF] shrink-0" />
+            <p className="text-xs text-[#1E1E24] italic">
               <strong>Atmospheric Prompt:</strong> "{room.prompt}"
             </p>
           </div>
@@ -360,11 +339,11 @@ export default function MoodOrbitRoomPage({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Conversation Stream */}
         <div className="lg:col-span-3 space-y-4">
-          <Card className="bg-[#1E1B26] border-[#2D2938] flex flex-col h-[520px]">
-            <CardHeader className="pb-3 border-b border-[#2D2938]">
+          <Card className="bg-white border-[#E7E5E0] flex flex-col h-[520px] shadow-xs">
+            <CardHeader className="pb-3 border-b border-[#E7E5E0]">
               <div className="flex items-center justify-between">
                 <CardTitle>Atmospheric Stream</CardTitle>
-                <span className="text-[11px] text-[#777580] font-mono">
+                <span className="text-[11px] text-[#6B6B73] font-mono">
                   Real-time broadcast active
                 </span>
               </div>
@@ -373,11 +352,11 @@ export default function MoodOrbitRoomPage({ params }) {
             {/* Messages Feed */}
             <div className="flex-1 p-4 overflow-y-auto space-y-3.5 scrollbar-thin">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-8 text-[#777580] space-y-2">
-                  <Icon name="sparkles" className="w-8 h-8 text-[#D5F36A]/60" />
-                  <p className="text-xs font-semibold text-[#F6F2EA]">A Quiet Orbit</p>
+                <div className="h-full flex flex-col items-center justify-center text-center p-8 text-[#6B6B73] space-y-2">
+                  <Icon name="sparkles" className="w-8 h-8 text-[#6C63FF]/60" />
+                  <p className="text-xs font-semibold text-[#1E1E24]">A Quiet Orbit</p>
                   <p className="text-[11px] max-w-xs">
-                    Be the first operative to share a thought, answer the prompt, or set the atmosphere.
+                    Be the first to share a thought, answer the prompt, or set the atmosphere.
                   </p>
                 </div>
               ) : (
@@ -392,7 +371,7 @@ export default function MoodOrbitRoomPage({ params }) {
                       }`}
                     >
                       <Avatar
-                        name={msg.senderName || 'Operative'}
+                        name={msg.senderName || 'Member'}
                         src={msg.senderAvatar}
                         size="xs"
                         className="shrink-0 mt-0.5"
@@ -403,18 +382,18 @@ export default function MoodOrbitRoomPage({ params }) {
                             isCurrentUser ? 'justify-end' : ''
                           }`}
                         >
-                          <span className="font-semibold text-[#F6F2EA]">
+                          <span className="font-semibold text-[#1E1E24]">
                             {isCurrentUser ? 'You' : msg.senderName}
                           </span>
-                          <span className="text-[#777580] font-mono">
+                          <span className="text-[#6B6B73] font-mono">
                             {formatMessageTime(msg.createdAt)}
                           </span>
                         </div>
                         <div
                           className={`p-3 rounded-2xl text-xs leading-relaxed break-words ${
                             isCurrentUser
-                              ? 'bg-[#FF6257] text-[#110F17] rounded-tr-xs font-medium'
-                              : 'bg-[#17151D] border border-[#2D2938] text-[#F6F2EA] rounded-tl-xs'
+                              ? 'bg-[#6C63FF] text-white rounded-tr-xs font-medium'
+                              : 'bg-[#F1F0EC] border border-[#E7E5E0] text-[#1E1E24] rounded-tl-xs'
                           }`}
                         >
                           {msg.content}
@@ -428,14 +407,14 @@ export default function MoodOrbitRoomPage({ params }) {
             </div>
 
             {/* Composer Footer */}
-            <div className="p-3 border-t border-[#2D2938] bg-[#17151D]">
+            <div className="p-3 border-t border-[#E7E5E0] bg-[#F8F7F4] rounded-b-2xl">
               {isExpired ? (
-                <p className="text-center text-xs text-[#777580] italic py-2">
+                <p className="text-center text-xs text-[#6B6B73] italic py-2">
                   This Mood-Orbit room has expired and closed.
                 </p>
-              ) : !room.isParticipant ? (
+              ) : !room?.isParticipant ? (
                 <div className="flex items-center justify-between p-2">
-                  <span className="text-xs text-[#777580]">
+                  <span className="text-xs text-[#6B6B73]">
                     You are in preview mode. Join the orbit to contribute to the stream.
                   </span>
                   <Button
@@ -456,7 +435,7 @@ export default function MoodOrbitRoomPage({ params }) {
                     onChange={(e) => setMessageInput(e.target.value)}
                     placeholder="Share an impression, project update, or thought..."
                     maxLength={500}
-                    className="flex-1 px-3.5 py-2 rounded-xl bg-[#110F17] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-none focus:border-[#D5F36A]"
+                    className="flex-1 px-3.5 py-2 rounded-xl bg-white border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder:text-[#6B6B73]/60 focus:outline-none focus:border-[#6C63FF]"
                   />
                   <Button
                     type="submit"
@@ -475,20 +454,20 @@ export default function MoodOrbitRoomPage({ params }) {
 
         {/* Presence Roster Column */}
         <div className="space-y-4">
-          <Card className="bg-[#1E1B26] border-[#2D2938]">
-            <CardHeader className="pb-3 border-b border-[#2D2938]">
+          <Card className="bg-white border-[#E7E5E0] shadow-xs">
+            <CardHeader className="pb-3 border-b border-[#E7E5E0]">
               <CardTitle className="text-xs">
-                Active Operatives ({room.participants?.length || 0})
+                Active Operatives ({room?.participants?.length || 0})
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-2 max-h-[460px] overflow-y-auto scrollbar-none">
-              {room.participants?.length === 0 ? (
-                <p className="text-[11px] text-[#777580] italic">No active operatives in this orbit.</p>
+              {room?.participants?.length === 0 ? (
+                <p className="text-[11px] text-[#6B6B73] italic">No active operatives in this orbit.</p>
               ) : (
-                room.participants?.map((p, idx) => (
+                room?.participants?.map((p, idx) => (
                   <div
                     key={p.user?._id || idx}
-                    className="flex items-center justify-between p-2 rounded-xl bg-[#17151D] border border-[#2D2938]/60"
+                    className="flex items-center justify-between p-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <Avatar
@@ -497,12 +476,12 @@ export default function MoodOrbitRoomPage({ params }) {
                         size="xs"
                         status="online"
                       />
-                      <span className="text-xs font-semibold text-[#F6F2EA] truncate">
+                      <span className="text-xs font-semibold text-[#1E1E24] truncate">
                         {p.user?.fullName || 'Anonymous'}
                       </span>
                     </div>
 
-                    <span className="w-2 h-2 rounded-full bg-[#D5F36A]" title="Present" />
+                    <span className="w-2 h-2 rounded-full bg-[#4CAF78]" title="Present" />
                   </div>
                 ))
               )}
@@ -516,15 +495,15 @@ export default function MoodOrbitRoomPage({ params }) {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
         >
-          <div className="w-full max-w-md bg-[#1E1B26] border border-[#2D2938] rounded-2xl p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
-              <h3 className="text-sm font-bold text-[#F6F2EA]">Report Mood-Orbit Space</h3>
+          <div className="w-full max-w-md bg-white border border-[#E7E5E0] rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
+              <h3 className="text-sm font-bold text-[#1E1E24]">Report Mood-Orbit Space</h3>
               <button
                 type="button"
                 onClick={() => setShowReportModal(false)}
-                className="text-[#777580] hover:text-[#F6F2EA]"
+                className="text-[#6B6B73] hover:text-[#1E1E24] p-1 cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -532,11 +511,11 @@ export default function MoodOrbitRoomPage({ params }) {
 
             <form onSubmit={handleReportSubmit} className="space-y-3 text-xs">
               <div className="space-y-1">
-                <label className="text-[#777580] font-semibold">Violation Category</label>
+                <label className="text-[#1E1E24] font-semibold">Violation Category</label>
                 <select
                   value={reportCategory}
                   onChange={(e) => setReportCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24]"
                 >
                   <option value="spam">Spam / Low Quality</option>
                   <option value="harassment">Harassment / Bullying</option>
@@ -546,13 +525,13 @@ export default function MoodOrbitRoomPage({ params }) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[#777580] font-semibold">Details / Context</label>
+                <label className="text-[#1E1E24] font-semibold">Details / Context</label>
                 <textarea
                   rows={3}
                   value={reportExplanation}
                   onChange={(e) => setReportExplanation(e.target.value)}
                   placeholder="Explain why this space violates community guidelines..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-[#F6F2EA]"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] text-[#1E1E24]"
                 />
               </div>
 
@@ -576,4 +555,3 @@ export default function MoodOrbitRoomPage({ params }) {
     </div>
   );
 }
-

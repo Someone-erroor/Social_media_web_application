@@ -8,7 +8,7 @@ import { privacyService } from '@/services/privacyService';
 import { useAuth } from '@/context/AuthContext';
 
 /**
- * Production-ready Follow / Unfollow Button (Editorial Expression Theme)
+ * Follow / Unfollow Button
  * Handles asynchronous relationship toggling, optimistic feedback, loading states,
  * and error rollback.
  */
@@ -67,7 +67,7 @@ export default function FollowButton({
         let res;
         try {
           res = await privacyService.cancelFollowRequest(userId);
-        } catch (e) {
+        } catch {
           res = await profileService.unfollowUser(userId);
         }
         if (res?.success) {
@@ -133,38 +133,38 @@ export default function FollowButton({
           </span>
         ) : following ? (
           isHovered ? (
-            <span className="flex items-center gap-1 text-[#FF6257]">
+            <span className="flex items-center gap-1 text-[#FF6B6B]">
               <Icon name="close" className="w-3.5 h-3.5" />
               <span>Unfollow</span>
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 text-[#D5F36A]">
-              <Icon name="check" className="w-3.5 h-3.5 text-[#D5F36A]" />
+            <span className="flex items-center gap-1.5 text-[#2E7D4E]">
+              <Icon name="check" className="w-3.5 h-3.5 text-[#2E7D4E]" />
               <span>Following</span>
             </span>
           )
         ) : pending ? (
           isHovered ? (
-            <span className="flex items-center gap-1 text-[#FF6257]">
+            <span className="flex items-center gap-1 text-[#FF6B6B]">
               <Icon name="close" className="w-3.5 h-3.5" />
               <span>Cancel</span>
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 text-[#B9A8F5]">
-              <Icon name="clock" className="w-3.5 h-3.5 text-[#B9A8F5]" />
+            <span className="flex items-center gap-1.5 text-[#6C63FF]">
+              <Icon name="clock" className="w-3.5 h-3.5 text-[#6C63FF]" />
               <span>Requested</span>
             </span>
           )
         ) : (
           <span className="flex items-center gap-1.5">
-            <Icon name="plus" className="w-3.5 h-3.5" />
+            <Icon name="plus" className="w-3.5 h-3.5 text-white" />
             <span>Follow</span>
           </span>
         )}
       </Button>
 
       {errorMessage && (
-        <span className="text-[11px] text-[#FF6257] mt-1 font-medium animate-fade-in">
+        <span className="text-[11px] text-[#FF6B6B] mt-1 font-medium animate-fade-in">
           {errorMessage}
         </span>
       )}

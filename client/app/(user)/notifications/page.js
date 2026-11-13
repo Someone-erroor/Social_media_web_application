@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
-import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Avatar from '@/components/ui/Avatar';
@@ -35,28 +33,28 @@ function formatTimestamp(dateString) {
 function getNotificationIcon(type) {
   switch (type) {
     case 'post_like':
-      return <Icon name="heart" className="w-3.5 h-3.5 text-[#FF6257] fill-[#FF6257]" />;
+      return <Icon name="heart" className="w-3.5 h-3.5 text-[#FF6B6B] fill-[#FF6B6B]" />;
     case 'post_comment':
-      return <Icon name="comments" className="w-3.5 h-3.5 text-[#B9A8F5]" />;
+      return <Icon name="comments" className="w-3.5 h-3.5 text-[#6C63FF]" />;
     case 'follow':
     case 'follow_request_accepted':
-      return <Icon name="users" className="w-3.5 h-3.5 text-[#D5F36A]" />;
+      return <Icon name="users" className="w-3.5 h-3.5 text-[#4CAF78]" />;
     case 'follow_request':
-      return <Icon name="clock" className="w-3.5 h-3.5 text-[#FBBF24]" />;
+      return <Icon name="clock" className="w-3.5 h-3.5 text-[#FFD166]" />;
     case 'message':
-      return <Icon name="message" className="w-3.5 h-3.5 text-[#FF6257]" />;
+      return <Icon name="message" className="w-3.5 h-3.5 text-[#6C63FF]" />;
     case 'circle_invite':
-      return <Icon name="circles" className="w-3.5 h-3.5 text-[#B9A8F5]" />;
+      return <Icon name="circles" className="w-3.5 h-3.5 text-[#6C63FF]" />;
     case 'time_capsule_unlocked':
-      return <Icon name="vault" className="w-3.5 h-3.5 text-[#D5F36A]" />;
+      return <Icon name="vault" className="w-3.5 h-3.5 text-[#4CAF78]" />;
     case 'game_challenge':
-      return <Icon name="play" className="w-3.5 h-3.5 text-[#D5F36A]" />;
+      return <Icon name="play" className="w-3.5 h-3.5 text-[#FFD166]" />;
     case 'moderation_warning':
-      return <Icon name="alertCircle" className="w-3.5 h-3.5 text-[#FF6257]" />;
+      return <Icon name="alertCircle" className="w-3.5 h-3.5 text-[#FF6B6B]" />;
     case 'login_alert':
-      return <Icon name="lock" className="w-3.5 h-3.5 text-[#FBBF24]" />;
+      return <Icon name="lock" className="w-3.5 h-3.5 text-[#FFD166]" />;
     default:
-      return <Icon name="notifications" className="w-3.5 h-3.5 text-[#777580]" />;
+      return <Icon name="notifications" className="w-3.5 h-3.5 text-[#6B6B73]" />;
   }
 }
 
@@ -156,7 +154,7 @@ export default function NotificationsPage() {
           title="Notifications"
           description="Real-time alerts, post reactions, member follows, and community interactions"
           badge={
-            <Badge variant={isConnected ? 'lime' : 'neutral'} size="sm">
+            <Badge variant={isConnected ? 'primary' : 'neutral'} size="sm">
               {isConnected ? 'Real-time Connected' : 'Sync Active'}
             </Badge>
           }
@@ -180,7 +178,7 @@ export default function NotificationsPage() {
               variant="primary"
               size="sm"
               onClick={markAllAsRead}
-              icon={<Icon name="check" className="w-3.5 h-3.5" />}
+              icon={<Icon name="check" className="w-3.5 h-3.5 text-white" />}
             >
               Mark all read ({unreadCount})
             </Button>
@@ -189,23 +187,23 @@ export default function NotificationsPage() {
       </div>
 
       {(contextError || errorNotice) && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between">
+        <div className="p-3.5 rounded-2xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between font-medium">
           <div className="flex items-center gap-2">
-            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6257] shrink-0" />
+            <Icon name="alertCircle" className="w-4 h-4 text-[#FF6B6B] shrink-0" />
             <span>{contextError || errorNotice}</span>
           </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-medium underline hover:text-[#FF8178] cursor-pointer"
+              className="font-medium underline hover:text-[#FF6B6B] cursor-pointer"
             >
               Retry
             </button>
             <button
               type="button"
               onClick={() => setErrorNotice('')}
-              className="text-[#FF6257] hover:text-[#FF8178] font-bold cursor-pointer"
+              className="text-[#FF6B6B] font-bold cursor-pointer"
             >
               ✕
             </button>
@@ -214,7 +212,7 @@ export default function NotificationsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-3 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#E7E5E0] pb-3 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => {
@@ -223,13 +221,13 @@ export default function NotificationsPage() {
           }}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
             filter === 'all'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           <span>All</span>
           <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-            filter === 'all' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+            filter === 'all' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
           }`}>
             {notifications.length}
           </span>
@@ -243,13 +241,13 @@ export default function NotificationsPage() {
           }}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
             filter === 'unread'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           <span>Unread</span>
           <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-            filter === 'unread' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+            filter === 'unread' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
           }`}>
             {unreadCount}
           </span>
@@ -263,13 +261,13 @@ export default function NotificationsPage() {
           }}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
             filter === 'reactions'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           <span>Reactions</span>
           <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-            filter === 'reactions' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+            filter === 'reactions' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
           }`}>
             {reactionsCount}
           </span>
@@ -283,13 +281,13 @@ export default function NotificationsPage() {
           }}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
             filter === 'social'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           <span>Social</span>
           <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-            filter === 'social' ? 'bg-[#17151D] text-[#FF6257]' : 'bg-[#24202E] text-[#777580]'
+            filter === 'social' ? 'bg-white/20 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
           }`}>
             {socialCount}
           </span>
@@ -300,11 +298,11 @@ export default function NotificationsPage() {
       {loading && notifications.length === 0 ? (
         <div className="space-y-3 animate-pulse">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-4 rounded-xl border border-[#2D2938] bg-[#1E1B26] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#24202E] shrink-0" />
+            <div key={i} className="p-4 rounded-xl border border-[#E7E5E0] bg-white shadow-xs flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#F1F0EC] shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 w-3/4 bg-[#24202E] rounded" />
-                <div className="h-2 w-1/4 bg-[#24202E]/60 rounded" />
+                <div className="h-3 w-3/4 bg-[#F1F0EC] rounded" />
+                <div className="h-2 w-1/4 bg-[#F1F0EC]/60 rounded" />
               </div>
             </div>
           ))}
@@ -344,8 +342,8 @@ export default function NotificationsPage() {
                 onClick={() => handleNotificationClick(notif)}
                 className={`group rounded-2xl border transition-all cursor-pointer p-4 flex items-start justify-between gap-3 text-xs ${
                   isUnread
-                    ? 'bg-[#1E1B26] border-[#FF6257]/40 shadow-sm hover:border-[#FF6257] shadow-black/40'
-                    : 'bg-[#1E1B26]/70 border-[#2D2938] hover:bg-[#24202E]/70 hover:border-[#2D2938]/90'
+                    ? 'bg-white border-[#6C63FF]/40 shadow-xs hover:border-[#6C63FF]'
+                    : 'bg-white/80 border-[#E7E5E0] hover:bg-[#F8F7F4] hover:border-[#E7E5E0]'
                 }`}
                 role="button"
                 tabIndex={0}
@@ -363,22 +361,22 @@ export default function NotificationsPage() {
                       src={actor.profile?.avatarUrl}
                       size="md"
                     />
-                    <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-[#17151D] border border-[#2D2938] shadow-xs">
+                    <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-white border border-[#E7E5E0] shadow-xs">
                       {getNotificationIcon(notif.type)}
                     </span>
                   </div>
 
                   <div className="min-w-0 space-y-1">
-                    <p className="text-[#F6F2EA] leading-snug group-hover:text-white transition-colors">
+                    <p className="text-[#1E1E24] leading-snug group-hover:text-[#6C63FF] transition-colors font-medium">
                       {notif.message}
                     </p>
-                    <div className="flex items-center gap-2 text-[11px] text-[#777580]">
+                    <div className="flex items-center gap-2 text-[11px] text-[#6B6B73]">
                       <span className="font-mono">{formatTimestamp(notif.createdAt)}</span>
                       {isUnread && (
                         <>
                           <span>•</span>
-                          <span className="inline-flex items-center gap-1 text-[#FF6257] font-semibold">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6257] animate-pulse" />
+                          <span className="inline-flex items-center gap-1 text-[#6C63FF] font-semibold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#6C63FF] animate-pulse" />
                             New
                           </span>
                         </>
@@ -395,7 +393,7 @@ export default function NotificationsPage() {
                         e.stopPropagation();
                         markAsRead(notif._id);
                       }}
-                      className="px-2.5 py-1 rounded-lg text-[#FF6257] bg-[#FF6257]/10 hover:bg-[#FF6257]/20 transition-colors text-[11px] font-semibold cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg text-[#6C63FF] bg-[#EEEAFE] hover:bg-[#6C63FF] hover:text-white transition-colors text-[11px] font-semibold cursor-pointer"
                       title="Mark as read"
                     >
                       Mark read
@@ -403,7 +401,7 @@ export default function NotificationsPage() {
                   )}
                   <Icon
                     name="chevronRight"
-                    className="w-4 h-4 text-[#777580] group-hover:text-[#F6F2EA] group-hover:translate-x-0.5 transition-all"
+                    className="w-4 h-4 text-[#6B6B73] group-hover:text-[#1E1E24] group-hover:translate-x-0.5 transition-all"
                   />
                 </div>
               </div>
@@ -412,7 +410,7 @@ export default function NotificationsPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="pt-4 flex items-center justify-between text-xs text-[#777580]">
+            <div className="pt-4 flex items-center justify-between text-xs text-[#6B6B73]">
               <span>
                 Page {page} of {totalPages}
               </span>

@@ -174,12 +174,12 @@ export default function SettingsPage() {
       />
 
       {feedbackMessage && (
-        <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center justify-between animate-fade-in">
+        <div className="p-3.5 rounded-xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] flex items-center justify-between animate-fade-in font-medium">
           <span>{feedbackMessage}</span>
           <button
             type="button"
             onClick={() => setFeedbackMessage('')}
-            className="text-[#D5F36A] hover:opacity-80 p-1 cursor-pointer font-bold"
+            className="text-[#2E7D4E] hover:opacity-80 p-1 cursor-pointer font-bold"
           >
             ✕
           </button>
@@ -187,12 +187,12 @@ export default function SettingsPage() {
       )}
 
       {errorMessage && (
-        <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between animate-fade-in">
+        <div className="p-3.5 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between animate-fade-in font-medium">
           <span>{errorMessage}</span>
           <button
             type="button"
             onClick={() => setErrorMessage('')}
-            className="text-[#FF6257] hover:opacity-80 p-1 cursor-pointer font-bold"
+            className="text-[#FF6B6B] hover:opacity-80 p-1 cursor-pointer font-bold"
           >
             ✕
           </button>
@@ -200,14 +200,14 @@ export default function SettingsPage() {
       )}
 
       {/* Section Navigation Pills */}
-      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-3 text-xs overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[#E7E5E0] pb-3 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('all')}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer ${
             activeTab === 'all'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           All Settings
@@ -217,8 +217,8 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('account')}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer ${
             activeTab === 'account'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           Account
@@ -228,8 +228,8 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('privacy')}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer ${
             activeTab === 'privacy'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           Privacy &amp; Requests ({followRequests.length})
@@ -239,8 +239,8 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('safety')}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer ${
             activeTab === 'safety'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           Safety &amp; Appeals
@@ -250,8 +250,8 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('security')}
           className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer ${
             activeTab === 'security'
-              ? 'bg-[#FF6257] text-[#17151D] shadow-sm'
-              : 'text-[#777580] hover:text-[#F6F2EA] hover:bg-[#1E1B26]'
+              ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+              : 'text-[#6B6B73] hover:text-[#1E1E24] hover:bg-white'
           }`}
         >
           Security &amp; Session
@@ -260,7 +260,7 @@ export default function SettingsPage() {
 
       {/* 1. Account Overview Card */}
       {(activeTab === 'all' || activeTab === 'account') && (
-        <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
+        <Card className="border-[#E7E5E0] bg-white shadow-xs">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -269,34 +269,34 @@ export default function SettingsPage() {
                   Primary account credentials, verification status, and profile information
                 </CardDescription>
               </div>
-              <Badge variant={user?.role === 'admin' ? 'danger' : 'lavender'}>
+              <Badge variant={user?.role === 'admin' ? 'coral' : 'lavender'}>
                 {user?.role === 'admin' ? 'Administrator' : 'Creator'}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="min-w-0 p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1">
-                <span className="text-[#777580] font-medium">Display Name</span>
-                <p className="text-sm font-semibold text-[#F6F2EA] truncate">{user?.fullName || 'User'}</p>
+              <div className="min-w-0 p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1">
+                <span className="text-[#6B6B73] font-medium">Display Name</span>
+                <p className="text-sm font-semibold text-[#1E1E24] truncate">{user?.fullName || 'User'}</p>
               </div>
 
-              <div className="min-w-0 p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1">
-                <span className="text-[#777580] font-medium">Email Address</span>
-                <p className="text-sm font-semibold text-[#F6F2EA] truncate">{user?.email || '—'}</p>
+              <div className="min-w-0 p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1">
+                <span className="text-[#6B6B73] font-medium">Email Address</span>
+                <p className="text-sm font-semibold text-[#1E1E24] truncate">{user?.email || '—'}</p>
               </div>
 
-              <div className="min-w-0 p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1">
-                <span className="text-[#777580] font-medium">Email Verification</span>
+              <div className="min-w-0 p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1">
+                <span className="text-[#6B6B73] font-medium">Email Verification</span>
                 <div className="flex flex-wrap items-center gap-2 pt-0.5 min-w-0">
                   {user?.isEmailVerified ? (
-                    <span className="inline-flex items-center gap-1 text-[#D5F36A] font-semibold text-xs">
+                    <span className="inline-flex items-center gap-1 text-[#2E7D4E] font-semibold text-xs">
                       <Icon name="check" className="w-3.5 h-3.5 shrink-0" /> Verified
                     </span>
                   ) : (
                     <Link
                       href={ROUTES.PUBLIC.VERIFY_EMAIL}
-                      className="inline-flex flex-wrap items-center gap-1 text-[#FF6257] font-semibold text-xs hover:underline"
+                      className="inline-flex flex-wrap items-center gap-1 text-[#FF6B6B] font-semibold text-xs hover:underline"
                     >
                       <Icon name="alertCircle" className="w-3.5 h-3.5 shrink-0" />
                       <span>Unverified (Verify now)</span>
@@ -305,14 +305,14 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="min-w-0 p-3.5 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1">
-                <span className="text-[#777580] font-medium">Member Since</span>
-                <p className="text-sm font-semibold text-[#F6F2EA] truncate">{memberSince}</p>
+              <div className="min-w-0 p-3.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1">
+                <span className="text-[#6B6B73] font-medium">Member Since</span>
+                <p className="text-sm font-semibold text-[#1E1E24] truncate">{memberSince}</p>
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-between border-t border-[#2D2938]">
-              <p className="text-xs text-[#777580]">
+            <div className="pt-2 flex items-center justify-between border-t border-[#E7E5E0]">
+              <p className="text-xs text-[#6B6B73]">
                 To change your avatar or biography, visit the profile editor.
               </p>
               <Button
@@ -330,7 +330,7 @@ export default function SettingsPage() {
 
       {/* 2. Privacy & Account Visibility Card */}
       {(activeTab === 'all' || activeTab === 'privacy') && (
-        <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
+        <Card className="border-[#E7E5E0] bg-white shadow-xs">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -339,16 +339,16 @@ export default function SettingsPage() {
                   Control who can view your publications, dual-perspective media, and follow requests
                 </CardDescription>
               </div>
-              <Badge variant={isPrivate ? 'warning' : 'primary'}>
+              <Badge variant={isPrivate ? 'yellow' : 'primary'}>
                 {isPrivate ? 'Private Account' : 'Public Account'}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#17151D] border border-[#2D2938]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]">
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#F6F2EA]">Private Profile Mode</p>
-                <p className="text-[11px] text-[#777580] leading-relaxed max-w-md">
+                <p className="text-xs font-semibold text-[#1E1E24]">Private Profile Mode</p>
+                <p className="text-[11px] text-[#6B6B73] leading-relaxed max-w-md">
                   When your account is private, only followers you approve can view your posts and Split-Reality media.
                   Incoming follow requests will require your explicit approval below.
                 </p>
@@ -366,22 +366,22 @@ export default function SettingsPage() {
             </div>
 
             {/* Pending Follow Requests Drawer */}
-            <div className="space-y-3 pt-2 border-t border-[#2D2938]">
+            <div className="space-y-3 pt-2 border-t border-[#E7E5E0]">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-[#F6F2EA] flex items-center gap-2 font-display">
-                  <Icon name="users" className="w-4 h-4 text-[#FF6257]" />
+                <h3 className="text-xs font-bold text-[#1E1E24] flex items-center gap-2">
+                  <Icon name="users" className="w-4 h-4 text-[#6C63FF]" />
                   Pending Follow Requests ({followRequests.length})
                 </h3>
               </div>
 
               {loadingRequests ? (
-                <p className="text-xs text-[#777580] animate-pulse">Checking pending follow requests...</p>
+                <p className="text-xs text-[#6B6B73] animate-pulse">Checking pending follow requests...</p>
               ) : followRequests.length === 0 ? (
-                <p className="text-xs text-[#777580] italic">
+                <p className="text-xs text-[#6B6B73] italic">
                   No pending follow requests at this time.
                 </p>
               ) : (
-                <div className="space-y-2 divide-y divide-[#2D2938]">
+                <div className="space-y-2 divide-y divide-[#E7E5E0]">
                   {followRequests.map((req) => {
                     const requester = req.user || req;
                     return (
@@ -396,10 +396,10 @@ export default function SettingsPage() {
                             size="sm"
                           />
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-[#F6F2EA] truncate">
+                            <p className="text-xs font-semibold text-[#1E1E24] truncate">
                               {requester.fullName || 'User'}
                             </p>
-                            <p className="text-[10px] text-[#777580] truncate font-mono">
+                            <p className="text-[10px] text-[#6B6B73] truncate font-mono">
                               {requester.email ? `@${requester.email.split('@')[0]}` : ''}
                             </p>
                           </div>
@@ -434,7 +434,7 @@ export default function SettingsPage() {
 
       {/* 3. Safety & Blocked Users Card */}
       {(activeTab === 'all' || activeTab === 'safety') && (
-        <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
+        <Card className="border-[#E7E5E0] bg-white shadow-xs">
           <CardHeader>
             <CardTitle>Safety &amp; Blocked Users</CardTitle>
             <CardDescription>
@@ -443,13 +443,13 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-5">
             {loadingBlocked ? (
-              <p className="text-xs text-[#777580] animate-pulse">Loading blocked members list...</p>
+              <p className="text-xs text-[#6B6B73] animate-pulse">Loading blocked members list...</p>
             ) : blockedUsers.length === 0 ? (
-              <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#777580]">
+              <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#6B6B73]">
                 You have not blocked any members.
               </div>
             ) : (
-              <div className="space-y-2 divide-y divide-[#2D2938]">
+              <div className="space-y-2 divide-y divide-[#E7E5E0]">
                 {blockedUsers.map((blocked) => (
                   <div
                     key={blocked._id}
@@ -462,10 +462,10 @@ export default function SettingsPage() {
                         size="sm"
                       />
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-[#F6F2EA] truncate">
+                        <p className="text-xs font-semibold text-[#1E1E24] truncate">
                           {blocked.fullName}
                         </p>
-                        <p className="text-[10px] text-[#777580] truncate font-mono">
+                        <p className="text-[10px] text-[#6B6B73] truncate font-mono">
                           {blocked.email ? `@${blocked.email.split('@')[0]}` : ''}
                         </p>
                       </div>
@@ -485,18 +485,18 @@ export default function SettingsPage() {
             )}
 
             {/* Moderation Appeals Form */}
-            <div className="pt-4 border-t border-[#2D2938] space-y-3">
+            <div className="pt-4 border-t border-[#E7E5E0] space-y-3">
               <div>
-                <h3 className="text-xs font-bold text-[#F6F2EA] font-display">
+                <h3 className="text-xs font-bold text-[#1E1E24]">
                   Community Moderation Appeals
                 </h3>
-                <p className="text-[11px] text-[#777580]">
+                <p className="text-[11px] text-[#6B6B73]">
                   Submit an appeal if you believe a moderation warning or action on your account was made in error.
                 </p>
               </div>
 
               {appealNotice && (
-                <div className="p-3.5 rounded-xl bg-[#D5F36A]/10 border border-[#D5F36A]/30 text-xs text-[#D5F36A] flex items-center gap-2">
+                <div className="p-3.5 rounded-xl bg-[#E8F7EE] border border-[#4CAF78]/30 text-xs text-[#2E7D4E] flex items-center gap-2 font-medium">
                   <Icon name="check" className="w-4 h-4 shrink-0" />
                   <span>{appealNotice}</span>
                 </div>
@@ -509,7 +509,7 @@ export default function SettingsPage() {
                   value={appealReason}
                   onChange={(e) => setAppealReason(e.target.value)}
                   placeholder="Explain the context and why you believe the moderation action was mistaken..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257] transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder-[#6B6B73] focus:outline-hidden focus:border-[#6C63FF] focus:bg-white transition-colors"
                   required
                 />
                 <Button
@@ -528,7 +528,7 @@ export default function SettingsPage() {
 
       {/* 4. Security & Active Session Card */}
       {(activeTab === 'all' || activeTab === 'security') && (
-        <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
+        <Card className="border-[#E7E5E0] bg-white shadow-xs">
           <CardHeader>
             <CardTitle>Security &amp; Session Management</CardTitle>
             <CardDescription>
@@ -536,10 +536,10 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#17151D] border border-[#2D2938]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]">
               <div>
-                <p className="text-xs font-semibold text-[#F6F2EA]">Password Recovery</p>
-                <p className="text-[11px] text-[#777580]">
+                <p className="text-xs font-semibold text-[#1E1E24]">Password Recovery</p>
+                <p className="text-[11px] text-[#6B6B73]">
                   Send secure instructions to reset your password via your verified email address.
                 </p>
               </div>
@@ -553,10 +553,10 @@ export default function SettingsPage() {
               </Button>
             </div>
 
-            <div className="pt-2 flex items-center justify-between border-t border-[#2D2938]">
+            <div className="pt-2 flex items-center justify-between border-t border-[#E7E5E0]">
               <div>
-                <p className="text-xs font-semibold text-[#FF6257]">Active Browser Session</p>
-                <p className="text-[11px] text-[#777580]">
+                <p className="text-xs font-semibold text-[#FF6B6B]">Active Browser Session</p>
+                <p className="text-[11px] text-[#6B6B73]">
                   Sign out of Looply on this device and terminate current session tokens.
                 </p>
               </div>
@@ -575,7 +575,7 @@ export default function SettingsPage() {
 
       {/* 5. Live Notifications Overview Card */}
       {(activeTab === 'all' || activeTab === 'account') && (
-        <Card className="border-[#2D2938] bg-[#1E1B26] shadow-xl">
+        <Card className="border-[#E7E5E0] bg-white shadow-xs">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -584,18 +584,18 @@ export default function SettingsPage() {
                   Real-time alerts, post reactions, member follows, and community interactions
                 </CardDescription>
               </div>
-              <Badge variant={isConnected ? 'lime' : 'neutral'} size="sm">
+              <Badge variant={isConnected ? 'primary' : 'neutral'} size="sm">
                 {isConnected ? 'Real-time Connected' : 'Sync Active'}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#17151D] border border-[#2D2938]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0]">
               <div>
-                <p className="text-xs font-semibold text-[#F6F2EA]">
+                <p className="text-xs font-semibold text-[#1E1E24]">
                   Activity Center ({unreadCount} unread)
                 </p>
-                <p className="text-[11px] text-[#777580]">
+                <p className="text-[11px] text-[#6B6B73]">
                   Interactions on your publications, direct messages, and follows are streamed live via Socket.IO.
                 </p>
               </div>

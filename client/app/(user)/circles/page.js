@@ -152,11 +152,11 @@ export default function CirclesPage() {
         action={
           <Button
             type="button"
-            variant="lime"
+            variant="primary"
             size="md"
             onClick={() => setShowCreateModal(true)}
-            icon={<Icon name="plus" className="w-4 h-4 text-[#17151D]" />}
-            className="shadow-lg shadow-[#D5F36A]/20 font-bold shrink-0"
+            icon={<Icon name="plus" className="w-4 h-4 text-white" />}
+            className="shadow-sm font-semibold shrink-0"
           >
             Create Circle
           </Button>
@@ -164,7 +164,7 @@ export default function CirclesPage() {
       />
 
       {error && (
-        <div className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center gap-2 font-medium">
           <Icon name="alertCircle" className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -173,14 +173,14 @@ export default function CirclesPage() {
       {/* 2. Primary Tabs & Search Input */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Navigation Tabs (Discover vs My Circles) */}
-        <div className="flex items-center gap-2 border-b border-[#2D2938] pb-1">
+        <div className="flex items-center gap-2 border-b border-[#E7E5E0] pb-1">
           <button
             type="button"
             onClick={() => setActiveTab('discover')}
             className={`px-4 py-2 text-xs font-bold transition-colors cursor-pointer border-b-2 -mb-[2px] ${
               activeTab === 'discover'
-                ? 'border-[#D5F36A] text-[#D5F36A]'
-                : 'border-transparent text-[#777580] hover:text-[#F6F2EA]'
+                ? 'border-[#6C63FF] text-[#6C63FF]'
+                : 'border-transparent text-[#6B6B73] hover:text-[#1E1E24]'
             }`}
           >
             Discover All Circles
@@ -190,8 +190,8 @@ export default function CirclesPage() {
             onClick={() => setActiveTab('my_circles')}
             className={`px-4 py-2 text-xs font-bold transition-colors cursor-pointer border-b-2 -mb-[2px] ${
               activeTab === 'my_circles'
-                ? 'border-[#D5F36A] text-[#D5F36A]'
-                : 'border-transparent text-[#777580] hover:text-[#F6F2EA]'
+                ? 'border-[#6C63FF] text-[#6C63FF]'
+                : 'border-transparent text-[#6B6B73] hover:text-[#1E1E24]'
             }`}
           >
             My Circles
@@ -205,17 +205,17 @@ export default function CirclesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search circles by name or topic..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#1E1B26] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#D5F36A] transition-colors"
+            className="w-full pl-9 pr-8 py-2 rounded-xl bg-white border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder-[#6B6B73] focus:outline-hidden focus:border-[#6C63FF] shadow-2xs transition-colors"
           />
           <Icon
             name="search"
-            className="w-4 h-4 text-[#777580] absolute left-3 top-1/2 -translate-y-1/2"
+            className="w-4 h-4 text-[#6B6B73] absolute left-3 top-1/2 -translate-y-1/2"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#777580] hover:text-[#F6F2EA]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B6B73] hover:text-[#1E1E24]"
             >
               <Icon name="close" className="w-3.5 h-3.5" />
             </button>
@@ -234,8 +234,8 @@ export default function CirclesPage() {
               onClick={() => setCategory(cat.id)}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-[#D5F36A] text-[#17151D] shadow-md shadow-[#D5F36A]/20 font-bold'
-                  : 'bg-[#1E1B26] border border-[#2D2938] text-[#777580] hover:text-[#F6F2EA] hover:border-[#777580]/40'
+                  ? 'bg-[#6C63FF] text-white shadow-xs font-bold'
+                  : 'bg-white border border-[#E7E5E0] text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F8F7F4]'
               }`}
             >
               {cat.label}
@@ -248,14 +248,14 @@ export default function CirclesPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse space-y-3">
+            <div key={i} className="p-5 rounded-2xl bg-white border border-[#E7E5E0] animate-pulse space-y-3 shadow-xs">
               <div className="flex justify-between items-center">
-                <div className="w-20 h-4 bg-[#24202E] rounded" />
-                <div className="w-16 h-4 bg-[#24202E] rounded" />
+                <div className="w-20 h-4 bg-[#F1F0EC] rounded" />
+                <div className="w-16 h-4 bg-[#F1F0EC] rounded" />
               </div>
-              <div className="w-3/4 h-5 bg-[#24202E] rounded" />
-              <div className="w-full h-10 bg-[#24202E] rounded" />
-              <div className="w-full h-8 bg-[#24202E] rounded" />
+              <div className="w-3/4 h-5 bg-[#F1F0EC] rounded" />
+              <div className="w-full h-10 bg-[#F1F0EC] rounded" />
+              <div className="w-full h-8 bg-[#F1F0EC] rounded" />
             </div>
           ))}
         </div>
@@ -280,10 +280,10 @@ export default function CirclesPage() {
           action={
             <Button
               type="button"
-              variant="lime"
+              variant="primary"
               size="sm"
               onClick={() => setShowCreateModal(true)}
-              icon={<Icon name="plus" className="w-4 h-4 text-[#17151D]" />}
+              icon={<Icon name="plus" className="w-4 h-4 text-white" />}
             >
               Create Circle
             </Button>
@@ -301,16 +301,16 @@ export default function CirclesPage() {
             return (
               <Card
                 key={circle._id}
-                className="bg-[#1E1B26] border-[#2D2938] hover:border-[#D5F36A]/40 transition-all flex flex-col justify-between shadow-xl group"
+                className="bg-white border-[#E7E5E0] hover:border-[#6C63FF]/40 transition-all flex flex-col justify-between shadow-xs hover:shadow-md group"
               >
                 <CardContent className="p-5 sm:p-6 space-y-4">
                   {/* Category Pill and Member Count */}
                   <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30 font-display">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/20">
                       {circle.category}
                     </span>
-                    <span className="text-[11px] text-[#777580] flex items-center gap-1.5 font-medium">
-                      <Icon name="users" className="w-3.5 h-3.5 text-[#D5F36A]" />
+                    <span className="text-[11px] text-[#6B6B73] flex items-center gap-1.5 font-medium">
+                      <Icon name="users" className="w-3.5 h-3.5 text-[#6C63FF]" />
                       {circle.memberCount || circle.membersCount || circle.members?.length || 1} members
                     </span>
                   </div>
@@ -319,24 +319,24 @@ export default function CirclesPage() {
                   <div className="space-y-1.5">
                     <Link
                       href={ROUTES.USER.CIRCLE_DETAIL(circle.slug)}
-                      className="text-sm font-bold text-[#F6F2EA] group-hover:text-[#D5F36A] font-display transition-colors line-clamp-1 block"
+                      className="text-sm font-bold text-[#1E1E24] group-hover:text-[#6C63FF] transition-colors line-clamp-1 block"
                     >
                       {circle.name}
                     </Link>
-                    <p className="text-xs text-[#777580] line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#6B6B73] line-clamp-2 leading-relaxed">
                       {circle.description}
                     </p>
                   </div>
 
                   {/* Creator and Membership Action */}
-                  <div className="pt-3 border-t border-[#2D2938] flex items-center justify-between">
+                  <div className="pt-3 border-t border-[#E7E5E0] flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Avatar
                         name={circle.creator?.fullName || 'Creator'}
                         src={circle.creator?.profile?.avatarUrl}
                         size="xs"
                       />
-                      <span className="text-[11px] text-[#777580] truncate max-w-[90px]">
+                      <span className="text-[11px] text-[#6B6B73] truncate max-w-[90px]">
                         {circle.creator?.fullName || 'Creator'}
                       </span>
                     </div>
@@ -345,7 +345,7 @@ export default function CirclesPage() {
                       <Button
                         type="button"
                         size="sm"
-                        variant={isMember ? 'outline' : 'lime'}
+                        variant={isMember ? 'outline' : 'primary'}
                         disabled={isActing}
                         onClick={() => handleJoinLeave(circle)}
                         className="text-xs font-semibold"
@@ -357,7 +357,7 @@ export default function CirclesPage() {
                           : 'Join'}
                       </Button>
                       <Link href={ROUTES.USER.CIRCLE_DETAIL(circle.slug)}>
-                        <Button type="button" size="sm" variant="ghost" className="text-xs">
+                        <Button type="button" size="sm" variant="ghost" className="text-xs text-[#6B6B73] hover:text-[#1E1E24]">
                           View
                         </Button>
                       </Link>
@@ -371,41 +371,41 @@ export default function CirclesPage() {
       )}
 
       {/* 5. Supporting Information / About Circles */}
-      <section className="p-6 rounded-2xl bg-[#1E1B26]/80 border border-[#2D2938] space-y-4">
+      <section className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-4">
         <div className="flex items-center gap-2">
-          <Icon name="circles" className="w-4 h-4 text-[#D5F36A]" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F6F2EA] font-display">
+          <Icon name="circles" className="w-4 h-4 text-[#6C63FF]" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#1E1E24]">
             About Looply Community Circles
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
-            <div className="w-6 h-6 rounded-lg bg-[#D5F36A]/15 text-[#D5F36A] flex items-center justify-center text-xs font-bold font-display">
+          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#EEEAFE] text-[#6C63FF] flex items-center justify-center text-xs font-bold">
               1
             </div>
-            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Focused Micro-Spaces</h3>
-            <p className="text-[11px] text-[#777580] leading-relaxed">
-              Every circle is dedicated strictly to a shared hobby, technical craft, or creative discipline.
+            <h3 className="text-xs font-bold text-[#1E1E24]">Focused Micro-Spaces</h3>
+            <p className="text-[11px] text-[#6B6B73] leading-relaxed">
+              Every circle is dedicated strictly to a shared hobby, craft, or creative discipline.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
-            <div className="w-6 h-6 rounded-lg bg-[#B9A8F5]/15 text-[#B9A8F5] flex items-center justify-center text-xs font-bold font-display">
+          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#FFF7E0] text-[#B28200] flex items-center justify-center text-xs font-bold">
               2
             </div>
-            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Creator Hubs</h3>
-            <p className="text-[11px] text-[#777580] leading-relaxed">
-              Lead discussions, announce live collabs, and foster meaningful conversation away from algorithmic feeds.
+            <h3 className="text-xs font-bold text-[#1E1E24]">Creator Hubs</h3>
+            <p className="text-[11px] text-[#6B6B73] leading-relaxed">
+              Lead discussions, collaborate, and foster genuine connection without algorithmic noise.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#17151D] border border-[#2D2938] space-y-1.5">
-            <div className="w-6 h-6 rounded-lg bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center text-xs font-bold font-display">
+          <div className="p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] space-y-1.5">
+            <div className="w-6 h-6 rounded-lg bg-[#FFEAEA] text-[#FF6B6B] flex items-center justify-center text-xs font-bold">
               3
             </div>
-            <h3 className="text-xs font-bold text-[#F6F2EA] font-display">Dedicated Streams</h3>
-            <p className="text-[11px] text-[#777580] leading-relaxed">
-              Posts published into circles reach members directly in their dedicated community feed.
+            <h3 className="text-xs font-bold text-[#1E1E24]">Dedicated Streams</h3>
+            <p className="text-[11px] text-[#6B6B73] leading-relaxed">
+              Posts published into circles reach fellow members directly in their dedicated community feed.
             </p>
           </div>
         </div>
@@ -416,20 +416,20 @@ export default function CirclesPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/85 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
         >
-          <div className="w-full max-w-md bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
+          <div className="w-full max-w-md bg-white border border-[#E7E5E0] rounded-2xl shadow-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#D5F36A]/15 flex items-center justify-center text-[#D5F36A]">
+                <div className="w-8 h-8 rounded-lg bg-[#EEEAFE] flex items-center justify-center text-[#6C63FF]">
                   <Icon name="circles" className="w-4 h-4" />
                 </div>
-                <h2 className="text-sm font-bold text-[#F6F2EA] font-display">Create a New Circle</h2>
+                <h2 className="text-sm font-bold text-[#1E1E24]">Create a New Circle</h2>
               </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-[#777580] hover:text-[#F6F2EA] p-1 rounded-lg hover:bg-[#24202E] cursor-pointer"
+                className="text-[#6B6B73] hover:text-[#1E1E24] p-1 rounded-lg hover:bg-[#F1F0EC] cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -437,29 +437,29 @@ export default function CirclesPage() {
 
             <form onSubmit={handleCreate} className="space-y-4">
               {createError && (
-                <div className="p-3 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+                <div className="p-3 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] font-medium">
                   {createError}
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#F6F2EA] font-display">Circle Name</label>
+                <label className="text-xs font-bold text-[#1E1E24]">Circle Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Next.js Developers"
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#D5F36A]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder-[#6B6B73] focus:outline-hidden focus:border-[#6C63FF] focus:bg-white"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#F6F2EA] font-display">Category</label>
+                <label className="text-xs font-bold text-[#1E1E24]">Category</label>
                 <select
                   value={circleCategory}
                   onChange={(e) => setCircleCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] focus:outline-hidden focus:border-[#D5F36A]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] focus:outline-hidden focus:border-[#6C63FF] focus:bg-white"
                 >
                   <option value="Technology">Technology</option>
                   <option value="Gaming">Gaming</option>
@@ -474,13 +474,13 @@ export default function CirclesPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#F6F2EA] font-display">Description</label>
+                <label className="text-xs font-bold text-[#1E1E24]">Description</label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe what your circle is about and community guidelines..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#D5F36A]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs text-[#1E1E24] placeholder-[#6B6B73] focus:outline-hidden focus:border-[#6C63FF] focus:bg-white"
                   required
                 />
               </div>
@@ -491,9 +491,9 @@ export default function CirclesPage() {
                   id="circleIsPrivate"
                   checked={isPrivate}
                   onChange={(e) => setIsPrivate(e.target.checked)}
-                  className="rounded border-[#2D2938] bg-[#17151D] text-[#D5F36A] focus:ring-[#D5F36A]"
+                  className="rounded border-[#E7E5E0] text-[#6C63FF] focus:ring-[#6C63FF]"
                 />
-                <label htmlFor="circleIsPrivate" className="text-xs text-[#F6F2EA] cursor-pointer">
+                <label htmlFor="circleIsPrivate" className="text-xs text-[#1E1E24] cursor-pointer font-medium">
                   Private Circle (invite only)
                 </label>
               </div>
@@ -509,7 +509,7 @@ export default function CirclesPage() {
                 </Button>
                 <Button
                   type="submit"
-                  variant="lime"
+                  variant="primary"
                   size="sm"
                   disabled={submitting}
                 >

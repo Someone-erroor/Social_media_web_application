@@ -24,7 +24,7 @@ export default function ExplorePage() {
   const [activeTab, setActiveTab] = useState('visuals'); // 'visuals' | 'circles' | 'experiences'
   const [visualCategory, setVisualCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Visual posts state
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
@@ -171,9 +171,9 @@ export default function ExplorePage() {
   const experienceSpotlights = [
     {
       id: 'split-reality',
-      title: 'Split-Reality Storytelling',
+      title: 'Split-Reality Stories',
       badge: 'Signature',
-      badgeColor: 'coral',
+      badgeColor: 'primary',
       icon: 'split',
       desc: 'Publish two synchronized perspectives of one moment: The Final result and Behind the Reality.',
       href: ROUTES.USER.FEED,
@@ -183,7 +183,7 @@ export default function ExplorePage() {
       id: 'play',
       title: 'Looply Play Games',
       badge: 'Interactive',
-      badgeColor: 'coral',
+      badgeColor: 'yellow',
       icon: 'play',
       desc: 'Spark friendly banter with "Who Knows Me?", "Two Truths & Lie", and emoji riddles.',
       href: ROUTES.USER.PLAY,
@@ -195,14 +195,14 @@ export default function ExplorePage() {
       badge: 'Vaults',
       badgeColor: 'lavender',
       icon: 'vault',
-      desc: 'Lock personal letters, milestone predictions, and memories into time-locked encryption vaults.',
+      desc: 'Lock personal letters, milestone predictions, and memories into time-locked vaults.',
       href: ROUTES.USER.TIME_CAPSULE,
       action: 'Open Vaults'
     },
     {
       id: 'circles',
       title: 'Community Circles',
-      badge: 'Social',
+      badge: 'Spaces',
       badgeColor: 'lime',
       icon: 'circles',
       desc: 'Join focused micro-communities dedicated strictly to design, tech, gaming, and photography.',
@@ -244,19 +244,19 @@ export default function ExplorePage() {
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* 1. Explore Hero & Context */}
-      <header className="p-5 sm:p-6 rounded-2xl bg-[#1E1B26] border border-[#2D2938] shadow-xl relative overflow-hidden space-y-4">
+      <header className="p-5 sm:p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs relative overflow-hidden space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF6257]/15 text-[#FF6257] border border-[#FF6257]/30 font-display">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/20 font-display">
                 Visual Discovery
               </span>
-              <span className="text-[11px] text-[#777580]">Photography & Split-Reality</span>
+              <span className="text-[11px] text-[#6B6B73]">Photography &amp; Split-Reality</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-[#F6F2EA] font-display tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-[#1E1E24] font-display tracking-tight">
               Explore Visual Discoveries
             </h1>
-            <p className="text-xs sm:text-sm text-[#777580] max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#6B6B73] max-w-xl leading-relaxed">
               Immerse yourself in photography, creative digital art, and interactive Split-Reality moments from creators worldwide.
             </p>
           </div>
@@ -264,16 +264,16 @@ export default function ExplorePage() {
           <div className="flex items-center gap-2">
             <Link
               href={ROUTES.USER.FEED}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#F6F2EA] bg-[#17151D] border border-[#2D2938] hover:border-[#FF6257]/50 transition-all font-display"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#1E1E24] bg-[#F1F0EC] border border-[#E7E5E0] hover:bg-[#E7E5E0] transition-all font-display"
             >
-              <Icon name="feed" className="w-3.5 h-3.5 text-[#FF6257]" />
+              <Icon name="feed" className="w-3.5 h-3.5 text-[#6C63FF]" />
               <span>Text Feed</span>
             </Link>
             <Link
               href={ROUTES.USER.EXPERIENCES}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#17151D] bg-[#D5F36A] hover:bg-[#c6e655] transition-all shadow-md shadow-[#D5F36A]/20 shrink-0 font-display"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#6C63FF] hover:bg-[#574FE8] transition-all shadow-xs shrink-0 font-display"
             >
-              <Icon name="experiences" className="w-3.5 h-3.5 text-[#17151D]" />
+              <Icon name="experiences" className="w-3.5 h-3.5" />
               <span>Experiences</span>
             </Link>
           </div>
@@ -287,17 +287,17 @@ export default function ExplorePage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search visual discoveries by tags, creators, or keywords..."
             aria-label="Search visual media and communities"
-            className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-[#17151D] border border-[#2D2938] text-xs sm:text-sm text-[#F6F2EA] placeholder-[#777580] focus:outline-hidden focus:border-[#FF6257] transition-colors"
+            className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-[#F8F7F4] border border-[#E7E5E0] text-xs sm:text-sm text-[#1E1E24] placeholder:text-[#6B6B73]/60 focus:outline-hidden focus:bg-white focus:border-[#6C63FF] transition-all"
           />
           <Icon
             name="search"
-            className="w-4 h-4 text-[#777580] absolute left-3.5 top-[calc(50%+2px)] -translate-y-1/2 pointer-events-none"
+            className="w-4 h-4 text-[#6B6B73] absolute left-3.5 top-[calc(50%+2px)] -translate-y-1/2 pointer-events-none"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-3.5 top-[calc(50%+2px)] -translate-y-1/2 text-[#777580] hover:text-[#F6F2EA] p-1 cursor-pointer"
+              className="absolute right-3.5 top-[calc(50%+2px)] -translate-y-1/2 text-[#6B6B73] hover:text-[#1E1E24] p-1 cursor-pointer"
               aria-label="Clear search"
             >
               <Icon name="close" className="w-3.5 h-3.5" />
@@ -307,7 +307,7 @@ export default function ExplorePage() {
       </header>
 
       {/* 2. Top-level Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#2D2938] pb-3 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-2 border-b border-[#E7E5E0] pb-3 overflow-x-auto scrollbar-none">
         {[
           { id: 'visuals', label: 'Visuals & Perspectives', count: filteredPosts.length },
           { id: 'circles', label: 'Topic Communities', count: filteredCircles.length },
@@ -320,16 +320,16 @@ export default function ExplorePage() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               aria-pressed={isActive}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap min-h-[36px] ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap min-h-[36px] ${
                 isActive
-                  ? 'bg-[#FF6257] text-[#17151D] font-bold shadow-md shadow-[#FF6257]/20'
-                  : 'bg-[#1E1B26] border border-[#2D2938] text-[#777580] hover:text-[#F6F2EA]'
+                  ? 'bg-[#6C63FF] text-white shadow-xs'
+                  : 'bg-white border border-[#E7E5E0] text-[#6B6B73] hover:text-[#1E1E24]'
               }`}
             >
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  isActive ? 'bg-[#17151D]/20 text-[#17151D]' : 'bg-[#2D2938] text-[#777580]'
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  isActive ? 'bg-white/25 text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
                 }`}
               >
                 {tab.count}
@@ -343,7 +343,7 @@ export default function ExplorePage() {
       {postsError && activeTab === 'visuals' && (
         <div
           role="alert"
-          className="p-4 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257] flex items-center justify-between"
+          className="p-4 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B] flex items-center justify-between"
         >
           <span>{postsError}</span>
           <Button type="button" variant="outline" size="sm" onClick={() => loadExplorePosts(1, visualCategory)}>
@@ -369,8 +369,8 @@ export default function ExplorePage() {
                   onClick={() => setVisualCategory(cat.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-[#24202E] text-[#D5F36A] border border-[#D5F36A]/40'
-                      : 'text-[#777580] hover:text-[#F6F2EA] bg-[#17151D] border border-[#2D2938]'
+                      ? 'bg-[#EEEAFE] text-[#6C63FF] border border-[#6C63FF]/30 font-bold'
+                      : 'text-[#6B6B73] hover:text-[#1E1E24] bg-white border border-[#E7E5E0]'
                   }`}
                 >
                   {cat.label}
@@ -384,12 +384,12 @@ export default function ExplorePage() {
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse overflow-hidden space-y-3"
+                  className="rounded-2xl bg-white border border-[#E7E5E0] animate-pulse overflow-hidden space-y-3"
                 >
-                  <div className="w-full h-48 bg-[#24202E]" />
+                  <div className="w-full h-48 bg-[#F1F0EC]" />
                   <div className="p-3 space-y-2">
-                    <div className="w-3/4 h-3 bg-[#24202E] rounded" />
-                    <div className="w-1/2 h-2.5 bg-[#24202E]/60 rounded" />
+                    <div className="w-3/4 h-3 bg-[#F1F0EC] rounded" />
+                    <div className="w-1/2 h-2.5 bg-[#F1F0EC]/60 rounded" />
                   </div>
                 </div>
               ))}
@@ -416,16 +416,15 @@ export default function ExplorePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {filteredPosts.map((post) => {
                 const isSplitReality = post.postType === 'splitReality';
-                const hasLiked = likedPostsMap[post._id] || false;
 
                 return (
                   <div
                     key={post._id}
                     onClick={() => setSelectedVisualPost(post)}
-                    className="group relative rounded-2xl overflow-hidden bg-[#1E1B26] border border-[#2D2938] hover:border-[#FF6257]/50 transition-all cursor-pointer shadow-lg flex flex-col justify-between"
+                    className="group relative rounded-2xl overflow-hidden bg-white border border-[#E7E5E0] hover:border-[#6C63FF]/50 transition-all cursor-pointer shadow-xs hover:shadow-md flex flex-col justify-between"
                   >
                     {/* Media Display */}
-                    <div className="relative aspect-4/3 w-full overflow-hidden bg-[#17151D]">
+                    <div className="relative aspect-4/3 w-full overflow-hidden bg-[#F1F0EC]">
                       <img
                         src={post.primaryMedia || 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26'}
                         alt={post.content || 'Visual perspective'}
@@ -436,46 +435,46 @@ export default function ExplorePage() {
                       {/* Perspective Badge */}
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                         {isSplitReality ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF6257] text-[#17151D] shadow-md font-display flex items-center gap-1">
-                            <Icon name="split" className="w-3 h-3 text-[#17151D]" />
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#6C63FF] text-white shadow-xs font-display flex items-center gap-1">
+                            <Icon name="split" className="w-3 h-3 text-white" />
                             Split-Reality
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#17151D]/80 backdrop-blur-md text-[#F6F2EA] border border-[#2D2938]">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/90 backdrop-blur-md text-[#1E1E24] border border-[#E7E5E0] shadow-xs">
                             Visual
                           </span>
                         )}
                       </div>
 
                       {/* Hover stats overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#110F17]/90 via-[#110F17]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
-                        <p className="text-xs text-[#F6F2EA] line-clamp-2 font-medium">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
+                        <p className="text-xs text-white line-clamp-2 font-medium">
                           {post.content || 'Tap to view perspective'}
                         </p>
                       </div>
                     </div>
 
                     {/* Card Footer: Author & Engagement */}
-                    <div className="p-3 bg-[#1E1B26] border-t border-[#2D2938] flex items-center justify-between">
+                    <div className="p-3 bg-white border-t border-[#E7E5E0] flex items-center justify-between">
                       <div className="flex items-center gap-2 truncate">
                         <Avatar
                           name={post.author?.fullName || 'Creator'}
                           src={post.author?.profile?.avatarUrl}
                           size="xs"
                         />
-                        <span className="text-[11px] font-semibold text-[#F6F2EA] truncate">
+                        <span className="text-[11px] font-semibold text-[#1E1E24] truncate">
                           {post.author?.fullName || 'Creator'}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 text-[11px] text-[#777580] shrink-0">
+                      <div className="flex items-center gap-2 text-[11px] text-[#6B6B73] shrink-0">
                         <span className="flex items-center gap-1">
-                          <Icon name="heart" className="w-3 h-3 text-[#FF6257]" />
+                          <Icon name="heart" className="w-3 h-3 text-[#FF6B6B]" />
                           {post.likesCount || 0}
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                          <Icon name="chat" className="w-3 h-3 text-[#D5F36A]" />
+                          <Icon name="chat" className="w-3 h-3 text-[#6C63FF]" />
                           {post.commentsCount || 0}
                         </span>
                       </div>
@@ -509,7 +508,7 @@ export default function ExplorePage() {
       {activeTab === 'circles' && (
         <div className="space-y-4">
           {circlesError && (
-            <div className="p-3.5 rounded-xl bg-[#FF6257]/10 border border-[#FF6257]/30 text-xs text-[#FF6257]">
+            <div className="p-3.5 rounded-xl bg-[#FFEAEA] border border-[#FF6B6B]/30 text-xs text-[#FF6B6B]">
               {circlesError}
             </div>
           )}
@@ -517,10 +516,10 @@ export default function ExplorePage() {
           {loadingCircles ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="p-5 rounded-2xl bg-[#1E1B26] border border-[#2D2938] animate-pulse space-y-3">
-                  <div className="w-20 h-4 bg-[#24202E] rounded" />
-                  <div className="w-3/4 h-5 bg-[#24202E] rounded" />
-                  <div className="w-full h-8 bg-[#24202E] rounded" />
+                <div key={i} className="p-5 rounded-2xl bg-white border border-[#E7E5E0] animate-pulse space-y-3">
+                  <div className="w-20 h-4 bg-[#F1F0EC] rounded" />
+                  <div className="w-3/4 h-5 bg-[#F1F0EC] rounded" />
+                  <div className="w-full h-8 bg-[#F1F0EC] rounded" />
                 </div>
               ))}
             </div>
@@ -547,31 +546,31 @@ export default function ExplorePage() {
               {filteredCircles.map((circle) => (
                 <Card
                   key={circle._id}
-                  className="bg-[#1E1B26] border-[#2D2938] hover:border-[#D5F36A]/40 transition-all flex flex-col justify-between shadow-xl"
+                  className="bg-white border-[#E7E5E0] hover:border-[#6C63FF]/40 transition-all flex flex-col justify-between shadow-xs"
                 >
                   <CardContent className="p-5 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D5F36A]/15 text-[#D5F36A] border border-[#D5F36A]/30 font-display">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#E8F7EE] text-[#2E7D4E] border border-[#4CAF78]/30 font-display">
                         {circle.category}
                       </span>
-                      <span className="text-[11px] text-[#777580]">
+                      <span className="text-[11px] text-[#6B6B73]">
                         {circle.memberCount || circle.members?.length || 0} members
                       </span>
                     </div>
 
                     <div className="space-y-1">
-                      <h3 className="text-sm font-bold text-[#F6F2EA] font-display line-clamp-1">
+                      <h3 className="text-sm font-bold text-[#1E1E24] font-display line-clamp-1">
                         {circle.name}
                       </h3>
-                      <p className="text-xs text-[#777580] line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-[#6B6B73] line-clamp-2 leading-relaxed">
                         {circle.description}
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-[#2D2938] flex items-center justify-between">
+                    <div className="pt-3 border-t border-[#E7E5E0] flex items-center justify-between">
                       <Link
                         href={ROUTES.USER.CIRCLE_DETAIL(circle.slug)}
-                        className="text-xs text-[#D5F36A] font-semibold hover:underline"
+                        className="text-xs text-[#6C63FF] font-semibold hover:underline"
                       >
                         Enter Community →
                       </Link>
@@ -592,11 +591,11 @@ export default function ExplorePage() {
           {experienceSpotlights.map((exp) => (
             <Card
               key={exp.id}
-              className="bg-[#1E1B26] border-[#2D2938] hover:border-[#FF6257]/40 transition-all flex flex-col justify-between shadow-xl"
+              className="bg-white border-[#E7E5E0] hover:border-[#6C63FF]/40 transition-all flex flex-col justify-between shadow-xs"
             >
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-lg bg-[#FF6257]/15 text-[#FF6257] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-[#EEEAFE] text-[#6C63FF] flex items-center justify-center">
                     <Icon name={exp.icon} className="w-4 h-4" />
                   </div>
                   <Badge variant={exp.badgeColor} size="sm">
@@ -605,15 +604,15 @@ export default function ExplorePage() {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-[#F6F2EA] font-display">
+                  <h3 className="text-sm font-bold text-[#1E1E24] font-display">
                     {exp.title}
                   </h3>
-                  <p className="text-xs text-[#777580] leading-relaxed">
+                  <p className="text-xs text-[#6B6B73] leading-relaxed">
                     {exp.desc}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-[#2D2938]">
+                <div className="pt-3 border-t border-[#E7E5E0]">
                   <Link href={exp.href}>
                     <Button type="button" variant="outline" size="sm" className="w-full text-xs">
                       {exp.action}
@@ -633,11 +632,11 @@ export default function ExplorePage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#110F17]/90 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fade-in"
         >
-          <div className="w-full max-w-2xl bg-[#1E1B26] border border-[#2D2938] rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white border border-[#E7E5E0] rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#2D2938]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E7E5E0]">
               <div className="flex items-center gap-2.5">
                 <Avatar
                   name={selectedVisualPost.author?.fullName || 'Creator'}
@@ -645,10 +644,10 @@ export default function ExplorePage() {
                   size="sm"
                 />
                 <div>
-                  <h3 className="text-xs font-bold text-[#F6F2EA]">
+                  <h3 className="text-xs font-bold text-[#1E1E24]">
                     {selectedVisualPost.author?.fullName || 'Creator'}
                   </h3>
-                  <span className="text-[10px] text-[#777580]">
+                  <span className="text-[10px] text-[#6B6B73]">
                     {selectedVisualPost.postType === 'splitReality' ? 'Split-Reality Dual Perspective' : 'Visual Publication'}
                   </span>
                 </div>
@@ -658,7 +657,7 @@ export default function ExplorePage() {
                 type="button"
                 onClick={() => setSelectedVisualPost(null)}
                 aria-label="Close lightbox"
-                className="text-[#777580] hover:text-[#F6F2EA] p-1.5 rounded-lg hover:bg-[#24202E] cursor-pointer"
+                className="text-[#6B6B73] hover:text-[#1E1E24] p-1.5 rounded-lg hover:bg-[#F1F0EC] cursor-pointer"
               >
                 <Icon name="close" className="w-4 h-4" />
               </button>
@@ -667,17 +666,17 @@ export default function ExplorePage() {
             {/* Media Presentation */}
             {selectedVisualPost.postType === 'splitReality' ? (
               <div className="space-y-2">
-                <div className="text-[11px] text-[#777580] flex items-center justify-between">
+                <div className="text-[11px] text-[#6B6B73] flex items-center justify-between">
                   <span>✨ Slide left/right to reveal behind the scenes</span>
                 </div>
                 <SplitRealityViewer
                   primaryMedia={selectedVisualPost.primaryMedia}
                   realityMedia={selectedVisualPost.realityMedia}
-                  className="rounded-xl overflow-hidden shadow-2xl"
+                  className="rounded-xl overflow-hidden shadow-xs"
                 />
               </div>
             ) : (
-              <div className="rounded-xl overflow-hidden border border-[#2D2938] bg-[#17151D]">
+              <div className="rounded-xl overflow-hidden border border-[#E7E5E0] bg-[#F1F0EC]">
                 <img
                   src={selectedVisualPost.primaryMedia}
                   alt={selectedVisualPost.content || 'Visual'}
@@ -688,23 +687,23 @@ export default function ExplorePage() {
 
             {/* Caption & Story */}
             {selectedVisualPost.content && (
-              <p className="text-xs text-[#F6F2EA] leading-relaxed bg-[#17151D] p-3 rounded-xl border border-[#2D2938]">
+              <p className="text-xs text-[#1E1E24] leading-relaxed bg-[#F8F7F4] p-3 rounded-xl border border-[#E7E5E0]">
                 {selectedVisualPost.content}
               </p>
             )}
 
             {/* Engagement Footer */}
-            <div className="pt-2 flex items-center justify-between border-t border-[#2D2938]">
+            <div className="pt-2 flex items-center justify-between border-t border-[#E7E5E0]">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => handleLikePost(selectedVisualPost._id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#2D2938] bg-[#17151D] hover:border-[#FF6257] text-xs font-semibold text-[#F6F2EA] cursor-pointer transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#E7E5E0] bg-[#F8F7F4] hover:border-[#6C63FF] text-xs font-semibold text-[#1E1E24] cursor-pointer transition-colors"
                 >
-                  <Icon name="heart" className="w-4 h-4 text-[#FF6257]" />
+                  <Icon name="heart" className="w-4 h-4 text-[#FF6B6B]" />
                   <span>{selectedVisualPost.likesCount || 0} Likes</span>
                 </button>
-                <span className="text-xs text-[#777580]">
+                <span className="text-xs text-[#6B6B73]">
                   {selectedVisualPost.commentsCount || 0} Comments
                 </span>
               </div>
