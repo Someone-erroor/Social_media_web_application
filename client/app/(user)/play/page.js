@@ -121,10 +121,10 @@ export default function PlayPage() {
           prev.map((c) =>
             c._id === activeChallenge._id
               ? {
-                  ...c,
-                  played: true,
-                  participants: [...(c.participants || []), { user: user?._id, score: res.score }]
-                }
+                ...c,
+                played: true,
+                participants: [...(c.participants || []), { user: user?._id, score: res.score }]
+              }
               : c
           )
         );
@@ -318,11 +318,10 @@ export default function PlayPage() {
                 key={gt.id}
                 type="button"
                 onClick={() => setSelectedType(gt.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                  isSelected
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${isSelected
                     ? 'bg-[#FFD166] text-[#1E1E24] shadow-xs font-bold'
                     : 'bg-white border border-[#E7E5E0] text-[#6B6B73] hover:text-[#1E1E24]'
-                }`}
+                  }`}
               >
                 <Icon name={gt.icon} className="w-3.5 h-3.5" />
                 <span>{gt.label}</span>
@@ -343,11 +342,10 @@ export default function PlayPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setStatusFilter(tab.id)}
-                className={`text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer font-medium ${
-                  statusFilter === tab.id
+                className={`text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer font-medium ${statusFilter === tab.id
                     ? 'bg-[#EEEAFE] text-[#6C63FF] font-bold'
                     : 'text-[#6B6B73] hover:text-[#1E1E24]'
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -519,11 +517,10 @@ export default function PlayPage() {
             {playResult ? (
               <div className="py-4 space-y-5 text-center">
                 <div
-                  className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl shadow-xs ${
-                    playResult.score > 0
+                  className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl shadow-xs ${playResult.score > 0
                       ? 'bg-[#E8F7EE] text-[#2E7D4E] border border-[#4CAF78]/40'
                       : 'bg-[#FFEAEA] text-[#FF6B6B] border border-[#FF6B6B]/40'
-                  }`}
+                    }`}
                 >
                   {playResult.score === playResult.maxScore ? '🎉' : playResult.score > 0 ? '✨' : '😅'}
                 </div>
@@ -573,11 +570,10 @@ export default function PlayPage() {
                       return (
                         <div
                           key={idx}
-                          className={`p-3 rounded-xl border text-xs ${
-                            isLie
+                          className={`p-3 rounded-xl border text-xs ${isLie
                               ? 'border-[#FF6B6B] bg-[#FFEAEA] text-[#1E1E24]'
                               : 'border-[#E7E5E0] bg-white text-[#6B6B73]'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between font-bold pb-1">
                             <span>Statement {idx + 1}</span>
@@ -651,13 +647,12 @@ export default function PlayPage() {
                           {questions.map((_, idx) => (
                             <span
                               key={idx}
-                              className={`w-5 h-1.5 rounded-full transition-all ${
-                                idx === wkmCurrentQ
+                              className={`w-5 h-1.5 rounded-full transition-all ${idx === wkmCurrentQ
                                   ? 'bg-[#6C63FF]'
                                   : wkmAnswers[`q${idx}`] !== undefined
-                                  ? 'bg-[#4CAF78]'
-                                  : 'bg-[#E7E5E0]'
-                              }`}
+                                    ? 'bg-[#4CAF78]'
+                                    : 'bg-[#E7E5E0]'
+                                }`}
                             />
                           ))}
                         </div>
@@ -679,16 +674,14 @@ export default function PlayPage() {
                               key={optIdx}
                               type="button"
                               onClick={() => setWkmAnswers(prev => ({ ...prev, [`q${wkmCurrentQ}`]: optIdx }))}
-                              className={`w-full p-3.5 rounded-xl border text-xs text-left transition-all flex items-center justify-between cursor-pointer ${
-                                isSelected
+                              className={`w-full p-3.5 rounded-xl border text-xs text-left transition-all flex items-center justify-between cursor-pointer ${isSelected
                                   ? 'border-[#6C63FF] bg-[#EEEAFE] text-[#1E1E24] font-bold shadow-2xs'
                                   : 'border-[#E7E5E0] hover:bg-[#F8F7F4] text-[#6B6B73]'
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-2.5">
-                                <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
-                                  isSelected ? 'bg-[#6C63FF] text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
-                                }`}>
+                                <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${isSelected ? 'bg-[#6C63FF] text-white' : 'bg-[#F1F0EC] text-[#6B6B73]'
+                                  }`}>
                                   {String.fromCharCode(65 + optIdx)}
                                 </span>
                                 <span>{opt}</span>
@@ -759,11 +752,10 @@ export default function PlayPage() {
                               key={idx}
                               type="button"
                               onClick={() => setSelectedLieIndex(idx)}
-                              className={`w-full p-4 rounded-xl border text-xs text-left transition-all cursor-pointer space-y-1.5 ${
-                                isSelected
+                              className={`w-full p-4 rounded-xl border text-xs text-left transition-all cursor-pointer space-y-1.5 ${isSelected
                                   ? 'border-[#FF6B6B] bg-[#FFEAEA] text-[#1E1E24] shadow-2xs font-bold'
                                   : 'border-[#E7E5E0] hover:bg-[#F8F7F4] text-[#6B6B73]'
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center justify-between text-[11px] font-bold">
                                 <span className={isSelected ? 'text-[#FF6B6B]' : 'text-[#6B6B73]'}>
@@ -1027,11 +1019,10 @@ export default function PlayPage() {
                       key={f.id}
                       type="button"
                       onClick={() => setCreateType(f.id)}
-                      className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all ${
-                        createType === f.id
+                      className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all ${createType === f.id
                           ? 'border-[#6C63FF] bg-[#EEEAFE] text-[#6C63FF] font-bold shadow-2xs'
                           : 'border-[#E7E5E0] bg-white text-[#6B6B73] hover:text-[#1E1E24]'
-                      }`}
+                        }`}
                     >
                       <Icon name={f.icon} className="w-4 h-4 shrink-0 text-[#6C63FF]" />
                       <span>{f.label}</span>

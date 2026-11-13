@@ -77,7 +77,7 @@ export default function EventsPage() {
           setLeaderboard(res.leaderboard || []);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [selectedEvent]);
 
   const handleSubmitAnswer = async (e) => {
@@ -182,11 +182,10 @@ export default function EventsPage() {
                       setSelectedEvent(ev);
                       setFeedback(null);
                     }}
-                    className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                      isSelected
+                    className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${isSelected
                         ? 'bg-[#FF6B6B] text-white shadow-xs font-bold'
                         : 'bg-white border border-[#E7E5E0] text-[#6B6B73] hover:text-[#1E1E24] hover:bg-[#F8F7F4]'
-                    }`}
+                      }`}
                   >
                     {ev.title}
                   </button>
@@ -287,11 +286,10 @@ export default function EventsPage() {
 
                       {feedback && (
                         <div
-                          className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 font-medium ${
-                            feedback.isCorrect
+                          className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 font-medium ${feedback.isCorrect
                               ? 'bg-[#E8F7EE] border-[#4CAF78]/30 text-[#2E7D4E]'
                               : 'bg-[#FF6B6B]/10 border-[#FF6B6B]/30 text-[#FF6B6B]'
-                          }`}
+                            }`}
                         >
                           <Icon
                             name={feedback.isCorrect ? 'check' : 'alertCircle'}
@@ -372,15 +370,14 @@ export default function EventsPage() {
                         >
                           <div className="flex items-center gap-2.5">
                             <span
-                              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                                index === 0
+                              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${index === 0
                                   ? 'bg-[#FFD166] text-[#6B4E00]'
                                   : index === 1
-                                  ? 'bg-[#EEEAFE] text-[#6C63FF]'
-                                  : index === 2
-                                  ? 'bg-[#FFEAEA] text-[#FF6B6B]'
-                                  : 'text-[#6B6B73] bg-[#E7E5E0]'
-                              }`}
+                                    ? 'bg-[#EEEAFE] text-[#6C63FF]'
+                                    : index === 2
+                                      ? 'bg-[#FFEAEA] text-[#FF6B6B]'
+                                      : 'text-[#6B6B73] bg-[#E7E5E0]'
+                                }`}
                             >
                               {index + 1}
                             </span>
